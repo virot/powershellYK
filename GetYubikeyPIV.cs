@@ -21,6 +21,7 @@ namespace Virot.Yubikey
 
         protected override void BeginProcessing()
         {
+            WriteDebug("BeginProcessing in Get-YubikeyPIV");
             //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]             //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]            //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]
             if (YubiKey is null)
             {
@@ -34,15 +35,15 @@ namespace Virot.Yubikey
                 try
                 {
                     var yubiKeys = gy.Invoke<YubiKeyDevice>();
-                    YubiKey = (YubiKeyDevice?)yubiKeys.First();
+                    YubiKey = yubiKeys.First();
                 }
                 catch (ItemNotFoundException e)
                 {
                     throw new ItemNotFoundException("No Yubikey found", e);
                 }
-                catch
+                catch (Exception e)
                 {
-                    throw new Exception("Multiple Yubikeys found");
+                    throw new Exception("Multiple Yubikeys found", e);
                 }
             }
             try
@@ -57,6 +58,8 @@ namespace Virot.Yubikey
 
         protected override void ProcessRecord()
         {
+            WriteDebug("ProcessRecord in Get-YubikeyPIV");
+
             if (Slot is null)
             {
                 //build a custom object to be returned with the following properties: Pin retries left, pin retries, puk retries left, puk retries
@@ -128,6 +131,7 @@ namespace Virot.Yubikey
 
         protected override void EndProcessing()
         {
+            WriteDebug("EndProcessing in Get-YubikeyPIV");
             if (connection is not null)
             {
                 connection.Dispose();

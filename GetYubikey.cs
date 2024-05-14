@@ -12,7 +12,10 @@ namespace Virot.Yubikey
         public SwitchParameter OnlyOne { get; set; }
 
         protected override void BeginProcessing()
-        {
+
+
+{
+            WriteDebug("ProcessRecord in Get-Yubikey");
             var yubiKeys = YubiKeyDevice.FindAll();
             //return the yubikey or an an array of yubikeys, if no youbikey is found throw [eu.virot.yubikey.nonfound            //return the yubikey or an an array of yubikeys, if no youbikey is found throw [eu.virot.yubikey.nonfound]
 
