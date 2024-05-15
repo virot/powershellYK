@@ -36,21 +36,23 @@ namespace Yubikey_Powershell
 
         protected override void ProcessRecord()
         {
-            //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]             //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]            //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]
-            if (YubiKeyModule._connection is null) { throw new Exception("PIV not connected, use Connect-YubikeyPIV first"); }
-
-            try
+            if (YubiKeyModule._pivSession is null) { throw new Exception("PIV not connected, use Connect-YubikeyPIV first"); }
+         
+            if (ShouldProcess($"Slot {Slot}", "Replace"))
             {
-                WriteDebug("ProcessRecord in New-YubikeyPIVKey");
-                GenerateKeyPairCommand newKey = new GenerateKeyPairCommand(Slot, Algorithm, PinPolicy, TouchPolicy);
-                GenerateKeyPairResponse response = YubiKeyModule._connection.SendCommand(newKey);
-                response.GetData();
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not create keypair", e);
-            }
+try
+                {
+                    WriteDebug("ProcessRecord in New-YubikeyPIVKey");
+                    PivPublicKey publicKey = YubiKeyModule._pivSession.GenerateKeyPair(Slot, Algorithm, PinPolicy, TouchPolicy);
+                    if (publicKey is not null) { WriteObject("KeyPair created"); }
+                    else { throw new Exception("Could not create keypair"); }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Could not create keypair", e);
+                }
 
+            }
         }
     }
 }

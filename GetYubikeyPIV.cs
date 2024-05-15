@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 
 namespace Yubikey_Powershell
@@ -16,36 +17,33 @@ namespace Yubikey_Powershell
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Retrive a info from specific slot")]
         public byte? Slot { get; set; }
 
+        protected override void BeginProcessing()
+        {
+            if (YubiKeyModule._pivSession is null) { throw new Exception("PIV not connected, use Connect-YubikeyPIV first"); }
+        }
 
         protected override void ProcessRecord()
         {
-            if (YubiKeyModule._connection is null) { throw new Exception("No YubikeyPIV is connected, use Connect-YubikeyPIV first"); }
-
             if (Slot is null)
             {
-                //build a custom object to be returned with the following properties: Pin retries left, pin retries, puk retries left, puk retries
                 int pin_retry, pin_remaining, puk_retry, puk_remaining;
-                GetMetadataCommand metadataCommand = new GetMetadataCommand(0x80);
-                GetMetadataResponse metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
-
-                if (metadataResponse.Status == ResponseStatus.Success)
-                {
-                    pin_retry = metadataResponse.GetData().RetryCount;
-                    pin_remaining = metadataResponse.GetData().RetriesRemaining;
+                try { 
+                    PivMetadata pin = YubiKeyModule._pivSession.GetMetadata(PivSlot.Pin);
+                    pin_retry = pin.RetryCount;
+                    pin_remaining = pin.RetriesRemaining;
                 }
-                else
+                catch
                 {
                     pin_retry = -1;
                     pin_remaining = -1;
                 }
-                metadataCommand = new GetMetadataCommand(0x81);
-                metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
-                if (metadataResponse.Status == ResponseStatus.Success)
+                try
                 {
-                    puk_retry = metadataResponse.GetData().RetryCount;
-                    puk_remaining = metadataResponse.GetData().RetriesRemaining;
+                    PivMetadata puk = YubiKeyModule._pivSession.GetMetadata(PivSlot.Puk);
+                    puk_retry = puk.RetryCount;
+                    puk_remaining = puk.RetriesRemaining;
                 }
-                else
+                catch
                 {
                     puk_retry = -1;
                     puk_remaining = -1;
@@ -56,11 +54,14 @@ namespace Yubikey_Powershell
 
                 foreach (byte location in locationsToCheck)
                 {
-                    metadataCommand = new GetMetadataCommand(location);
-                    metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
-                    if (metadataResponse.Status == ResponseStatus.Success)
+                    try
                     {
+                        PivPublicKey pubkey = YubiKeyModule._pivSession.GetMetadata(location).PublicKey;
                         certificateLocations.Add(location);
+                    }
+                    catch
+                    {
+                        continue;
                     }
                 }
 
@@ -79,11 +80,14 @@ namespace Yubikey_Powershell
             }
             else
             {
-                GetMetadataCommand metadataCommand = new GetMetadataCommand((byte)Slot);
-                GetMetadataResponse metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
-                if (metadataResponse.Status == ResponseStatus.Success)
+                try
                 {
-                    WriteObject(metadataResponse.GetData());
+                    PivMetadata output = YubiKeyModule._pivSession.GetMetadata((byte)Slot);
+                    WriteObject(output);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Failed to get metadata from slot {Slot}", e);
                 }
 
             }

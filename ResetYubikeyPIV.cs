@@ -16,8 +16,7 @@ namespace Yubikey_Powershell
         public SwitchParameter Force { get; set; } = false;
         protected override void BeginProcessing()
         {
-            //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]             //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]            //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]
-            if (YubiKeyModule._connection is null) { throw new Exception("No Yubikey is selected, use Connect-YubikeyPIV first"); }
+            if (YubiKeyModule._pivSession is null) { throw new Exception("PIV not connected, use Connect-YubikeyPIV first"); }
         }
 
         protected override void ProcessRecord()
@@ -41,18 +40,13 @@ namespace Yubikey_Powershell
                 }
                 blockPIVPINPUK.Invoke();
                 */
-
-                ResetPivCommand resetPivCmd = new ResetPivCommand();
-                ResetPivResponse resetPivResp = YubiKeyModule._connection.SendCommand(resetPivCmd);
-                if (resetPivResp.Status == ResponseStatus.Success)
+                try
                 {
-                    YubiKeyModule._connection.Dispose();
-                    YubiKeyModule._connection = null;
-                    WriteObject(true);
+                    YubiKeyModule._pivSession.ResetApplication();
                 }
-                else
+                catch (Exception e)
                 {
-                    throw new Exception("Failed to reset Yubikey PIV");
+                    throw new Exception("Failed to reset Yubikey PIV", e);
                 }
 
 

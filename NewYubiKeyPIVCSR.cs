@@ -23,12 +23,13 @@ namespace Yubikey_Powershell
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subjectname of certificate")]
 
         public string Subjectname { get; set; } = "CN=SubjectName to be supplied by Server,O=Fake";
+        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Save CSR as file")]
+
+        public string? OutFile { get; set; } = null;
 
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._pivSession is null) { throw new Exception("PIV not connected, use Connect-YubikeyPIV first"); }
-
-
         }
 
         protected override void ProcessRecord()
@@ -51,11 +52,29 @@ namespace Yubikey_Powershell
 
                 rsaPublicKeyObject = RSA.Create(rsaParams);
                 CertificateRequest request = new CertificateRequest(Subjectname, rsaPublicKeyObject, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                if (Attestation.IsPresent)
+                {
+                    X509Certificate2 slotAttestationCertificate = YubiKeyModule._pivSession.CreateAttestationStatement(Slot);
+                    byte[] slotAttestationCertificateBytes = slotAttestationCertificate.Export(X509ContentType.Cert);
+                    X509Certificate2 yubikeyIntermediateAttestationCertificate = YubiKeyModule._pivSession.GetAttestationCertificate();
+                    byte[] yubikeyIntermediateAttestationCertificateBytes = yubikeyIntermediateAttestationCertificate.Export(X509ContentType.Cert);
+                    Oid oidIntermediate = new Oid("1.3.6.1.4.1.41482.3.2");
+                    Oid oidSlotAttestation = new Oid("1.3.6.1.4.1.41482.3.11");
+                    request.CertificateExtensions.Add(new X509Extension(oidSlotAttestation, slotAttestationCertificateBytes, false));
+                    request.CertificateExtensions.Add(new X509Extension(oidIntermediate, yubikeyIntermediateAttestationCertificateBytes, false));
+                }
                 //public byte[] CreateSigningRequest(X509SignatureGenerator signatureGenerator);
                 var signer = new YubiKeySignatureGenerator(YubiKeyModule._pivSession, Slot, rsaPublicKeyObject, RSASignaturePadding.Pss);
                 byte[] requestSigned = request.CreateSigningRequest(signer);
-                char[] pemData = PemEncoding.Write("CERTIFICATE REQUEST", requestSigned);
-                WriteObject(pemData);
+                string pemData = PemEncoding.WriteString("CERTIFICATE REQUEST", requestSigned);
+                if (OutFile is not null)
+                {
+                    System.IO.File.WriteAllText(OutFile, pemData);
+                }
+                else
+                {
+                    WriteObject(pemData);
+                }
             }
             else
             {

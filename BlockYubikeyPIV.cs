@@ -17,76 +17,35 @@ namespace Yubikey_Powershell
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Block the PUK for the PIV device")]
         public SwitchParameter PUK { get; set; }
 
+        protected override void BeginProcessing()
+        {
+            if (YubiKeyModule._pivSession is null) { throw new Exception("PIV not connected, use Connect-YubikeyPIV first"); }
+        }
         protected override void ProcessRecord()
         {
-            if (YubiKeyModule._connection is null) { throw new Exception("No Yubikey is selected, use Connect-YubikeyPIV first"); }
-            WriteDebug("ProcessRecord in Block-YubikeyPIV");
-
-            GetMetadataCommand metadataCommand;
-            GetMetadataResponse metadataResponse;
-
+         
             if (PIN.IsPresent)
             {
-                int i, puk_remaining;
-                metadataCommand = new GetMetadataCommand(PivSlot.Pin);
-                metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
-                if (metadataResponse.Status == ResponseStatus.Success)
-                {
-                    puk_remaining = metadataResponse.GetData().RetriesRemaining;
-                }
-                else
-                {
-                    throw new Exception("Failed to request number of remaining tries");
-                }
-
-                //create a random number to fail with                //create a random number to fail with
+                int? retriesRemaining = 1;
                 Random rnd = new Random();
-                int randomNumber = rnd.Next(0, 99999999);
-                for (i = 0; i <= puk_remaining; i++)
+                while (retriesRemaining > 0)
                 {
-                    string pukfail = (randomNumber + i).ToString("00000000");
-                    WriteDebug("Trying PUK: " + pukfail);
-                    // convert pukfail to byte array                    // conv                    // convert pukfail to byte array                    // convert pukfail to byte array
-                    byte[] pukfailBytes = Encoding.UTF8.GetBytes(pukfail);
-
-                    ChangeReferenceDataCommand blockPukCommand = new ChangeReferenceDataCommand(PivSlot.Pin, pukfailBytes, pukfailBytes);
-                    ChangeReferenceDataResponse blockPukResponse = YubiKeyModule._connection.SendCommand(blockPukCommand);
-                    if (blockPukResponse.Status == ResponseStatus.Success)
-                    {
-                        WriteObject("PUK Blocked");
-                    }
-                }
+                    int randomNumber = rnd.Next(0, 99999999);
+                    string pinfail = randomNumber.ToString("00000000");
+                    byte[] pinfailBytes = Encoding.UTF8.GetBytes(pinfail);
+                    YubiKeyModule._pivSession.TryChangePin(pinfailBytes, pinfailBytes, out retriesRemaining);
+                }   
             }
             if (PUK.IsPresent)
             {
-                int i, puk_remaining;
-                metadataCommand = new GetMetadataCommand(PivSlot.Puk);
-                metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
-                if (metadataResponse.Status == ResponseStatus.Success)
-                {
-                    puk_remaining = metadataResponse.GetData().RetriesRemaining;
-                }
-                else
-                {
-                    throw new Exception("Failed to request number of remaining tries");
-                }
-
-                //create a random number to fail with                //create a random number to fail with
+                int? retriesRemaining = 1;
                 Random rnd = new Random();
-                int randomNumber = rnd.Next(0, 99999999);
-                for (i = 0; i <= puk_remaining; i++)
+                while (retriesRemaining > 0)
                 {
-                    string pukfail = (randomNumber + i).ToString("00000000");
-                    WriteDebug("Trying PUK: " + pukfail);
-                    // convert pukfail to byte array                    // conv                    // convert pukfail to byte array                    // convert pukfail to byte array
+                    int randomNumber = rnd.Next(0, 99999999);
+                    string pukfail = randomNumber.ToString("00000000");
                     byte[] pukfailBytes = Encoding.UTF8.GetBytes(pukfail);
-
-                    ChangeReferenceDataCommand blockPukCommand = new ChangeReferenceDataCommand(PivSlot.Puk, pukfailBytes, pukfailBytes);
-                    ChangeReferenceDataResponse blockPukResponse = YubiKeyModule._connection.SendCommand(blockPukCommand);
-                    if (blockPukResponse.Status == ResponseStatus.Success)
-                    {
-                        WriteObject("PUK Blocked");
-                    }
+                    YubiKeyModule._pivSession.TryChangePin(pukfailBytes, pukfailBytes, out retriesRemaining);
                 }
             }
         }
