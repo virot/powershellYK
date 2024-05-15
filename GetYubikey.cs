@@ -1,42 +1,27 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
+using Yubikey_Powershell;
 
-namespace Virot.Yubikey
+namespace Yubikey_Powershell
 {
     [Cmdlet(VerbsCommon.Get, "Yubikey")]
     public class GetYubikeyCommand : Cmdlet
     {
-        //add a switch variable call only one, that will only return one yubikey if set to true        //add a switch variable call only one, that will only return one yubikey if set to true
-        // set default to false
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only one Yubikey")]
-        public SwitchParameter OnlyOne { get; set; }
-
         protected override void BeginProcessing()
-
-
-{
-            WriteDebug("ProcessRecord in Get-Yubikey");
-            var yubiKeys = YubiKeyDevice.FindAll();
-            //return the yubikey or an an array of yubikeys, if no youbikey is found throw [eu.virot.yubikey.nonfound            //return the yubikey or an an array of yubikeys, if no youbikey is found throw [eu.virot.yubikey.nonfound]
-
-            if (yubiKeys.Count() == 1)
+        {
+            if (YubiKeyModule._yubikey is null)
             {
-                WriteObject(yubiKeys.First());
+                var yubiKeys = YubiKeyDevice.FindAll();
+                if (yubiKeys.Count() == 1)
+                {
+                    YubiKeyModule._yubikey = (YubiKeyDevice)yubiKeys.First();
+                }
+                else
+                {
+                    new Exception("None or multiple YubiKeys found");
+                }
             }
-            else if (yubiKeys.Count() == 0)
-            {
-                throw new ItemNotFoundException("No Yubikey found");
-            }
-            else if (OnlyOne.IsPresent)
-            {
-                throw new Exception("Multiple Yubikeys found");
-            }
-            else
-            {
-                WriteObject(yubiKeys.ToArray());
-            }
-
-
+            WriteObject(YubiKeyModule._yubikey);
         }
     }
 }

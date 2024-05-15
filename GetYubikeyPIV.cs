@@ -5,67 +5,28 @@ using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 
 
-namespace Virot.Yubikey
+namespace Yubikey_Powershell
 {
     [Cmdlet(VerbsCommon.Get, "YubikeyPIV")]
     public class GetYubikeyPIVCommand : Cmdlet
     {
 
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Retrive a specific Yubikey by Serialnumber")]
+        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Which yubikey to connect to")]
         public YubiKeyDevice? YubiKey { get; set; }
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Retrive a info from specific slot")]
-        public Byte? Slot { get; set; }
+        public byte? Slot { get; set; }
 
-
-        private IYubiKeyConnection? connection = null;
-
-        protected override void BeginProcessing()
-        {
-            WriteDebug("BeginProcessing in Get-YubikeyPIV");
-            //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]             //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]            //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]
-            if (YubiKey is null)
-            {
-                //declare a variable called temp_yubikey of the type YubikeyDevice                //declare a variable called temp_yubikey of the type YubikeyDevice                //declare a variable called temp_yubikey of the type YubikeyDevice
-
-                //get all yubikeys                //get all yubikeys
-                //populate the yubikeys variable from the function GetYubiKey
-
-                GetYubikeyCommand gy = new GetYubikeyCommand();
-                gy.OnlyOne = true;
-                try
-                {
-                    var yubiKeys = gy.Invoke<YubiKeyDevice>();
-                    YubiKey = yubiKeys.First();
-                }
-                catch (ItemNotFoundException e)
-                {
-                    throw new ItemNotFoundException("No Yubikey found", e);
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("Multiple Yubikeys found", e);
-                }
-            }
-            try
-            {
-                connection = YubiKey.Connect(YubiKeyApplication.Piv);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not connect to Yubikey", e);
-            }
-        }
 
         protected override void ProcessRecord()
         {
-            WriteDebug("ProcessRecord in Get-YubikeyPIV");
+            if (YubiKeyModule._connection is null) { throw new Exception("No YubikeyPIV is connected, use Connect-YubikeyPIV first"); }
 
             if (Slot is null)
             {
                 //build a custom object to be returned with the following properties: Pin retries left, pin retries, puk retries left, puk retries
                 int pin_retry, pin_remaining, puk_retry, puk_remaining;
                 GetMetadataCommand metadataCommand = new GetMetadataCommand(0x80);
-                GetMetadataResponse metadataResponse = connection.SendCommand(metadataCommand);
+                GetMetadataResponse metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
 
                 if (metadataResponse.Status == ResponseStatus.Success)
                 {
@@ -78,7 +39,7 @@ namespace Virot.Yubikey
                     pin_remaining = -1;
                 }
                 metadataCommand = new GetMetadataCommand(0x81);
-                metadataResponse = connection.SendCommand(metadataCommand);
+                metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
                 if (metadataResponse.Status == ResponseStatus.Success)
                 {
                     puk_retry = metadataResponse.GetData().RetryCount;
@@ -96,7 +57,7 @@ namespace Virot.Yubikey
                 foreach (byte location in locationsToCheck)
                 {
                     metadataCommand = new GetMetadataCommand(location);
-                    metadataResponse = connection.SendCommand(metadataCommand);
+                    metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
                     if (metadataResponse.Status == ResponseStatus.Success)
                     {
                         certificateLocations.Add(location);
@@ -116,9 +77,10 @@ namespace Virot.Yubikey
 
                 WriteObject(customObject);
             }
-            else {
-                GetMetadataCommand metadataCommand = new GetMetadataCommand((Byte)Slot);
-                GetMetadataResponse metadataResponse = connection.SendCommand(metadataCommand);
+            else
+            {
+                GetMetadataCommand metadataCommand = new GetMetadataCommand((byte)Slot);
+                GetMetadataResponse metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
                 if (metadataResponse.Status == ResponseStatus.Success)
                 {
                     WriteObject(metadataResponse.GetData());
@@ -129,13 +91,5 @@ namespace Virot.Yubikey
         }
 
 
-        protected override void EndProcessing()
-        {
-            WriteDebug("EndProcessing in Get-YubikeyPIV");
-            if (connection is not null)
-            {
-                connection.Dispose();
-            }
-        }
     }
 }

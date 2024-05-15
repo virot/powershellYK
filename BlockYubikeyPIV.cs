@@ -6,63 +6,20 @@ using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 
 
-namespace Virot.Yubikey
+namespace Yubikey_Powershell
 {
     [Cmdlet(VerbsSecurity.Block, "YubikeyPIV")]
     public class BlockYubikeyPIVCommand : Cmdlet
     {
 
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Retrive a specific Yubikey by Serialnumber")]
-        public YubiKeyDevice? YubiKey {
-            get { return _yubikey; }
-            set { _yubikey = value; }
-        }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Block the PIN for the PIV device")]
         public SwitchParameter PIN { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Block the PUK for the PIV device")]
         public SwitchParameter PUK { get; set; }
-        private YubiKeyDevice? _yubikey;
-        private IYubiKeyConnection? _connection = null;
-
-        protected override void BeginProcessing()
-        {
-            WriteDebug("BeginProcessing in Block-YubikeyPIV");
-            //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]             //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]            //if there is no yubikey sent in, use the get-yubikey function, if that returns more than one yubikey, throw [eu.virot.yubikey.multiplefound]
-            if (YubiKey is null)
-            {
-                //declare a variable called temp_yubikey of the type YubikeyDevice                //declare a variable called temp_yubikey of the type YubikeyDevice                //declare a variable called temp_yubikey of the type YubikeyDevice
-
-                //get all yubikeys                //get all yubikeys
-                //populate the yubikeys variable from the function GetYubiKey
-
-                GetYubikeyCommand gy = new GetYubikeyCommand();
-                gy.OnlyOne = true;
-                try
-                {
-                    var yubiKeys = gy.Invoke<YubiKeyDevice>();
-                    _yubikey = (YubiKeyDevice?)yubiKeys.First();
-                }
-                catch (ItemNotFoundException e)
-                {
-                    throw new ItemNotFoundException("No Yubikey found", e);
-                }
-                catch
-                {
-                    throw new Exception("Multiple Yubikeys found");
-                }
-            }
-            try
-            {
-                _connection = _yubikey.Connect(YubiKeyApplication.Piv);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not connect to Yubikey", e);
-            }
-        }
 
         protected override void ProcessRecord()
         {
+            if (YubiKeyModule._connection is null) { throw new Exception("No Yubikey is selected, use Connect-YubikeyPIV first"); }
             WriteDebug("ProcessRecord in Block-YubikeyPIV");
 
             GetMetadataCommand metadataCommand;
@@ -72,7 +29,7 @@ namespace Virot.Yubikey
             {
                 int i, puk_remaining;
                 metadataCommand = new GetMetadataCommand(PivSlot.Pin);
-                metadataResponse = _connection.SendCommand(metadataCommand);
+                metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
                 if (metadataResponse.Status == ResponseStatus.Success)
                 {
                     puk_remaining = metadataResponse.GetData().RetriesRemaining;
@@ -92,8 +49,8 @@ namespace Virot.Yubikey
                     // convert pukfail to byte array                    // conv                    // convert pukfail to byte array                    // convert pukfail to byte array
                     byte[] pukfailBytes = Encoding.UTF8.GetBytes(pukfail);
 
-                    ChangeReferenceDataCommand blockPukCommand = new Yubico.YubiKey.Piv.Commands.ChangeReferenceDataCommand(PivSlot.Pin, pukfailBytes, pukfailBytes);
-                    ChangeReferenceDataResponse blockPukResponse = _connection.SendCommand(blockPukCommand);
+                    ChangeReferenceDataCommand blockPukCommand = new ChangeReferenceDataCommand(PivSlot.Pin, pukfailBytes, pukfailBytes);
+                    ChangeReferenceDataResponse blockPukResponse = YubiKeyModule._connection.SendCommand(blockPukCommand);
                     if (blockPukResponse.Status == ResponseStatus.Success)
                     {
                         WriteObject("PUK Blocked");
@@ -104,7 +61,7 @@ namespace Virot.Yubikey
             {
                 int i, puk_remaining;
                 metadataCommand = new GetMetadataCommand(PivSlot.Puk);
-                metadataResponse = _connection.SendCommand(metadataCommand);
+                metadataResponse = YubiKeyModule._connection.SendCommand(metadataCommand);
                 if (metadataResponse.Status == ResponseStatus.Success)
                 {
                     puk_remaining = metadataResponse.GetData().RetriesRemaining;
@@ -124,8 +81,8 @@ namespace Virot.Yubikey
                     // convert pukfail to byte array                    // conv                    // convert pukfail to byte array                    // convert pukfail to byte array
                     byte[] pukfailBytes = Encoding.UTF8.GetBytes(pukfail);
 
-                    ChangeReferenceDataCommand blockPukCommand = new Yubico.YubiKey.Piv.Commands.ChangeReferenceDataCommand(PivSlot.Puk, pukfailBytes, pukfailBytes);
-                    ChangeReferenceDataResponse blockPukResponse = _connection.SendCommand(blockPukCommand);
+                    ChangeReferenceDataCommand blockPukCommand = new ChangeReferenceDataCommand(PivSlot.Puk, pukfailBytes, pukfailBytes);
+                    ChangeReferenceDataResponse blockPukResponse = YubiKeyModule._connection.SendCommand(blockPukCommand);
                     if (blockPukResponse.Status == ResponseStatus.Success)
                     {
                         WriteObject("PUK Blocked");
@@ -134,14 +91,5 @@ namespace Virot.Yubikey
             }
         }
 
-
-        protected override void EndProcessing()
-        {
-            WriteDebug("EndProcessing in Block-YubikeyPIV");
-            if (_connection is not null)
-            {
-                _connection.Dispose();
-            }
-        }
     }
 }

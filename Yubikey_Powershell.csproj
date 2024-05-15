@@ -13,4 +13,8 @@
     <PackageReference Include="Yubico.YubiKey" Version="1.10.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Public\" />
+  </ItemGroup>
+
 </Project>
