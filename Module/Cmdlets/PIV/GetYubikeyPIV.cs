@@ -1,8 +1,10 @@
 ﻿using System.Management.Automation;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
+using Yubico.YubiKey.Piv.Objects;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 
@@ -74,13 +76,24 @@ namespace Yubikey_Powershell.Cmdlets.PIV
 
                 byte[] certificateLocationsArray = certificateLocations.ToArray();
 
+                CardholderUniqueId chuid;
+                try
+                {
+                    YubiKeyModule._pivSession.TryReadObject<CardholderUniqueId>(out chuid);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Failed to read CHUID", e);
+                }
+
                 var customObject = new
                 {
                     PinRetriesLeft = pin_remaining,
                     PinRetries = pin_retry,
                     PukRetriesLeft = puk_remaining,
                     PukRetries = puk_retry,
-                    SlotsWithCertificats = certificateLocationsArray
+                    CHUID = BitConverter.ToString(chuid.GuidValue.Span.ToArray()),
+                    SlotsWithPrivateKeys = certificateLocationsArray
                 };
 
                 WriteObject(customObject);

@@ -60,13 +60,12 @@ namespace Yubikey_Powershell.Cmdlets.PIV
             if (publicKey is PivRsaPublicKey)
             {
                 PivRsaPublicKey pivRsaPublicKey = (PivRsaPublicKey)publicKey;
-                RSA rsaPublicKeyObject = null;
+                RSA? rsaPublicKeyObject = null;
                 var rsaParams = new RSAParameters
                 {
                     Modulus = pivRsaPublicKey.Modulus.ToArray(),
                     Exponent = pivRsaPublicKey.PublicExponent.ToArray()
                 };
-
                 rsaPublicKeyObject = RSA.Create(rsaParams);
                 CertificateRequest request = new CertificateRequest(Subjectname, rsaPublicKeyObject, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                 if (Attestation.IsPresent)

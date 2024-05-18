@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
+using Yubico.YubiKey.Piv.Objects;
 using Yubikey_Powershell.support;
 
 
@@ -55,13 +56,18 @@ namespace Yubikey_Powershell.Cmdlets.PIV
 
         [ValidateSet("TripleDES", "AES128", "AES192", "AES256", IgnoreCase = true)]
         [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "Algoritm")]
+        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Algoritm")]
         public PivAlgorithm Algorithm { get; set; } = PivAlgorithm.TripleDes;
 
         [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]
         [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "TouchPolicy")]
         public PivTouchPolicy TouchPolicy { get; set; } = PivTouchPolicy.Default;
+
+        [Parameter(Mandatory = true, ParameterSetName = "newCHUID")]
+        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Generate new CHUID")]
+        public SwitchParameter newCHUID { get; set; }
+
 
         protected override void ProcessRecord()
         {
@@ -175,6 +181,20 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 {
                     CryptographicOperations.ZeroMemory(ManagementKeyarray);
                     CryptographicOperations.ZeroMemory(NewManagementKeyarray);
+                }
+            }
+
+            if (newCHUID.IsPresent)
+            {
+                CardholderUniqueId chuid = new CardholderUniqueId();
+                chuid.SetRandomGuid();
+                try
+                {
+                    YubiKeyModule._pivSession.WriteObject(chuid);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Failed to generate new CHUID", e);
                 }
             }
         }
