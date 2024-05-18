@@ -24,8 +24,11 @@ namespace Yubikey_Powershell.Cmdlets.PIV
 
         public string Subjectname { get; set; } = "CN=SubjectName to be supplied by Server,O=Fake";
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Save CSR as file")]
-
         public string? OutFile { get; set; } = null;
+
+        [ValidateSet("SHA1", "SHA256", "SHA384", "SHA512", IgnoreCase = true)]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "HashAlgoritm")]
+        public HashAlgorithmName HashAlgorithm { get; set; } = HashAlgorithmName.SHA256;
 
         protected override void ProcessRecord()
         {
@@ -67,7 +70,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                     Exponent = pivRsaPublicKey.PublicExponent.ToArray()
                 };
                 rsaPublicKeyObject = RSA.Create(rsaParams);
-                CertificateRequest request = new CertificateRequest(Subjectname, rsaPublicKeyObject, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                CertificateRequest request = new CertificateRequest(Subjectname, rsaPublicKeyObject, HashAlgorithm, RSASignaturePadding.Pkcs1);
                 if (Attestation.IsPresent)
                 {
                     X509Certificate2 slotAttestationCertificate = YubiKeyModule._pivSession.CreateAttestationStatement(Slot);
