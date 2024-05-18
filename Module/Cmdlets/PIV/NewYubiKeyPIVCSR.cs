@@ -46,7 +46,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
             PivPublicKey? publicKey = null;
             try
             {
-                publicKey = YubiKeyModule._pivSession.GetMetadata(Slot).PublicKey;
+                publicKey = YubiKeyModule._pivSession!.GetMetadata(Slot).PublicKey;
                 if (publicKey is null)
                 {
                     throw new Exception("Public key is null");

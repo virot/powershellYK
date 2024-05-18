@@ -31,7 +31,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
 
             WriteDebug("ProcessRecord in Reset-YubikeyPIV");
 
-            if (ShouldProcess($"Yubikey serialnumber {YubiKeyModule._yubikey.SerialNumber}", "Reset"))
+            if (ShouldProcess($"Yubikey PIV", "Reset"))
             {
                 try
                 {

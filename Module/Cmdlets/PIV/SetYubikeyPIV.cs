@@ -90,7 +90,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
             {
                 try
                 {
-                    YubiKeyModule._pivSession.ChangePinAndPukRetryCounts((byte)PinRetries, (byte)PukRetries);
+                    YubiKeyModule._pivSession!.ChangePinAndPukRetryCounts((byte)PinRetries, (byte)PukRetries);
                 }
                 catch (Exception e)
                 {
@@ -104,7 +104,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 int? retriesLeft = null;
                 try
                 {
-                    YubiKeyModule._pivSession.TryChangePin(pinarray, newpinarray, out retriesLeft);
+                    YubiKeyModule._pivSession!.TryChangePin(pinarray, newpinarray, out retriesLeft);
                 }
                 catch (Exception e)
                 {
@@ -123,7 +123,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 int? retriesLeft = null;
                 try
                 {
-                    YubiKeyModule._pivSession.TryChangePuk(pukarray, newpukarray, out retriesLeft);
+                    YubiKeyModule._pivSession!.TryChangePuk(pukarray, newpukarray, out retriesLeft);
                 }
                 catch (Exception e)
                 {
@@ -142,7 +142,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 int? retriesLeft = null;
                 try
                 {
-                    YubiKeyModule._pivSession.TryResetPin(pukarray, newpinarray, out retriesLeft);
+                    YubiKeyModule._pivSession!.TryResetPin(pukarray, newpinarray, out retriesLeft);
                 }
                 catch (Exception e)
                 {
@@ -164,7 +164,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 byte[] NewManagementKeyarray = HexConverter.StringToByteArray(NewManagementKey);
                 try
                 {
-                    if (YubiKeyModule._pivSession.TryChangeManagementKey(ManagementKeyarray, NewManagementKeyarray, (PivTouchPolicy)TouchPolicy, (PivAlgorithm)Algorithm))
+                    if (YubiKeyModule._pivSession!.TryChangeManagementKey(ManagementKeyarray, NewManagementKeyarray, (PivTouchPolicy)TouchPolicy, (PivAlgorithm)Algorithm))
                     {
                         WriteDebug("ManagementKey changed");
                     }
@@ -190,7 +190,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 chuid.SetRandomGuid();
                 try
                 {
-                    YubiKeyModule._pivSession.WriteObject(chuid);
+                    YubiKeyModule._pivSession!.WriteObject(chuid);
                 }
                 catch (Exception e)
                 {

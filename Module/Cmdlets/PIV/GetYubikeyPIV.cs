@@ -37,7 +37,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 int pin_retry, pin_remaining, puk_retry, puk_remaining;
                 try
                 {
-                    PivMetadata pin = YubiKeyModule._pivSession.GetMetadata(PivSlot.Pin);
+                    PivMetadata pin = YubiKeyModule._pivSession!.GetMetadata(PivSlot.Pin);
                     pin_retry = pin.RetryCount;
                     pin_remaining = pin.RetriesRemaining;
                 }
@@ -48,7 +48,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 }
                 try
                 {
-                    PivMetadata puk = YubiKeyModule._pivSession.GetMetadata(PivSlot.Puk);
+                    PivMetadata puk = YubiKeyModule._pivSession!.GetMetadata(PivSlot.Puk);
                     puk_retry = puk.RetryCount;
                     puk_remaining = puk.RetriesRemaining;
                 }
@@ -65,7 +65,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 {
                     try
                     {
-                        PivPublicKey pubkey = YubiKeyModule._pivSession.GetMetadata(location).PublicKey;
+                        PivPublicKey pubkey = YubiKeyModule._pivSession!.GetMetadata(location).PublicKey;
                         certificateLocations.Add(location);
                     }
                     catch
@@ -79,7 +79,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 CardholderUniqueId chuid;
                 try
                 {
-                    YubiKeyModule._pivSession.TryReadObject<CardholderUniqueId>(out chuid);
+                    YubiKeyModule._pivSession!.TryReadObject<CardholderUniqueId>(out chuid);
                 }
                 catch (Exception e)
                 {
@@ -102,7 +102,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
             {
                 try
                 {
-                    PivMetadata output = YubiKeyModule._pivSession.GetMetadata((byte)Slot);
+                    PivMetadata output = YubiKeyModule._pivSession!.GetMetadata((byte)Slot);
                     WriteObject(output);
                 }
                 catch (Exception e)

@@ -19,7 +19,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
 
         [Parameter(Mandatory = true, ParameterSetName = "File")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Path to certificate")]
-        public string Path { get; set; }
+        public string? Path { get; set; } = null;
 
         [Parameter(Mandatory = true, ParameterSetName = "Value")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Certificate to be stored")]
@@ -46,7 +46,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
             PivPublicKey? publicKey = null;
             try
             {
-                publicKey = YubiKeyModule._pivSession.GetMetadata(Slot).PublicKey;
+                publicKey = YubiKeyModule._pivSession!.GetMetadata(Slot).PublicKey;
             }
             catch (InvalidOperationException) { publicKey = null; }
             catch (Exception e)
@@ -67,21 +67,24 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                     throw new Exception("Failed to load certificate");
                 }
             }
-            else if (_certificate.GetType() == typeof(X509Certificate2))
+            else if (Certificate is not null)
             {
-                WriteDebug("Just taking the object passed");
-                _certificate = (X509Certificate2)Certificate;
-            }
-            else if (Certificate.GetType() == typeof(string))
-            {
-                try
+                if (Certificate.GetType() == typeof(X509Certificate2))
                 {
-                    WriteDebug("Put bytes of certificate into X509Certificate2");
-                    _certificate = new X509Certificate2(Encoding.UTF8.GetBytes((string)Certificate));
+                    WriteDebug("Just taking the object passed");
+                    _certificate = (X509Certificate2)Certificate;
                 }
-                catch
+                else if (Certificate.GetType() == typeof(string))
                 {
-                    throw new Exception("Failed to load certificate");
+                    try
+                    {
+                        WriteDebug("Put bytes of certificate into X509Certificate2");
+                        _certificate = new X509Certificate2(Encoding.UTF8.GetBytes((string)Certificate));
+                    }
+                    catch
+                    {
+                        throw new Exception("Failed to load certificate");
+                    }
                 }
             }
             else
@@ -123,7 +126,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
 
             try
             {
-                YubiKeyModule._pivSession.ImportCertificate(Slot, _certificate);
+                YubiKeyModule._pivSession!.ImportCertificate(Slot, _certificate);
                 WriteDebug("Upload complete");
             }
             catch (Exception e)

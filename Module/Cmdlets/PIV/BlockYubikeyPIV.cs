@@ -48,7 +48,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                         int randomNumber = rnd.Next(0, 99999999);
                         string pinfail = randomNumber.ToString("00000000");
                         byte[] pinfailBytes = Encoding.UTF8.GetBytes(pinfail);
-                        YubiKeyModule._pivSession.TryChangePin(pinfailBytes, pinfailBytes, out retriesRemaining);
+                        YubiKeyModule._pivSession!.TryChangePin(pinfailBytes, pinfailBytes, out retriesRemaining);
                     }
                 }
                 catch (Exception e)
@@ -70,7 +70,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                         int randomNumber = rnd.Next(0, 99999999);
                         string pukfail = randomNumber.ToString("00000000");
                         byte[] pukfailBytes = Encoding.UTF8.GetBytes(pukfail);
-                        YubiKeyModule._pivSession.TryChangePuk(pukfailBytes, pukfailBytes, out retriesRemaining);
+                        YubiKeyModule._pivSession!.TryChangePuk(pukfailBytes, pukfailBytes, out retriesRemaining);
                     }
                 }
                 catch (Exception e)
