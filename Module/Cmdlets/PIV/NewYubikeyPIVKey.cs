@@ -26,6 +26,7 @@ namespace Yubikey_Powershell.Cmdlets.PIV
         [ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy")]
         public PivPinPolicy PinPolicy { get; set; } = PivPinPolicy.Default;
+
         [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "TouchPolicy")]
         public PivTouchPolicy TouchPolicy { get; set; } = PivTouchPolicy.Default;

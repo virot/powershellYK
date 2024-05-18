@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
+using Yubikey_Powershell.support;
 
 
 namespace Yubikey_Powershell.Cmdlets.PIV
@@ -15,24 +16,53 @@ namespace Yubikey_Powershell.Cmdlets.PIV
         [Parameter(Mandatory = true, ParameterSetName = "ChangeRetries")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Change number of PIN retries")]
         public byte? PinRetries { get; set; }
+
         [Parameter(Mandatory = true, ParameterSetName = "ChangeRetries")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Change number of PUK retries")]
         public byte? PukRetries { get; set; }
 
+        [ValidateLength(6, 8)]
         [Parameter(Mandatory = true, ParameterSetName = "ChangePIN")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Current PIN")]
         public string? PIN { get; set; }
+
+        [ValidateLength(6, 8)]
         [Parameter(Mandatory = true, ParameterSetName = "ChangePIN")]
         [Parameter(Mandatory = true, ParameterSetName = "UnblockPIN")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "New PIN")]
         public string? NewPIN { get; set; }
+
+        [ValidateLength(6, 8)]
         [Parameter(Mandatory = true, ParameterSetName = "UnblockPIN")]
         [Parameter(Mandatory = true, ParameterSetName = "ChangePUK")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Current PUK")]
         public string? PUK { get; set; }
+
+        [ValidateLength(6, 8)]
         [Parameter(Mandatory = true, ParameterSetName = "ChangePUK")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "New PUK")]
         public string? NewPUK { get; set; }
+
+        [ValidateLength(48, 48)]
+        [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement")]
+        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Current ManagementKey")]
+        public string? ManagementKey { get; set; }
+
+        [ValidateLength(48, 48)]
+        [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement")]
+        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "New ManagementKey")]
+        public string? NewManagementKey { get; set; }
+
+        [ValidateSet("TripleDES", "AES128", "AES192", "AES256", IgnoreCase = true)]
+        [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement")]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "Algoritm")]
+        public PivAlgorithm Algorithm { get; set; } = PivAlgorithm.TripleDes;
+
+        [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]
+        [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement")]
+        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "TouchPolicy")]
+        public PivTouchPolicy TouchPolicy { get; set; } = PivTouchPolicy.Default;
+
         protected override void ProcessRecord()
         {
 
@@ -116,6 +146,35 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 {
                     CryptographicOperations.ZeroMemory(pukarray);
                     CryptographicOperations.ZeroMemory(newpinarray);
+                }
+            }
+
+            
+
+            if (ManagementKey is not null && NewManagementKey is not null)
+            {
+                WriteDebug("Changing ManagementKey");
+                byte[] ManagementKeyarray = HexConverter.StringToByteArray(ManagementKey);
+                byte[] NewManagementKeyarray = HexConverter.StringToByteArray(NewManagementKey);
+                try
+                {
+                    if (YubiKeyModule._pivSession.TryChangeManagementKey(ManagementKeyarray, NewManagementKeyarray, (PivTouchPolicy)TouchPolicy, (PivAlgorithm)Algorithm))
+                    {
+                        WriteDebug("ManagementKey changed");
+                    }
+                    else
+                    {
+                        throw new Exception("Failed to change ManagementKey");
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Failed to change ManagementKey", e);
+                }
+                finally
+                {
+                    CryptographicOperations.ZeroMemory(ManagementKeyarray);
+                    CryptographicOperations.ZeroMemory(NewManagementKeyarray);
                 }
             }
         }
