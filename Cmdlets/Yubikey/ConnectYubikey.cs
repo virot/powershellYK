@@ -1,8 +1,7 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
-using Yubikey_Powershell;
 
-namespace Yubikey_Powershell
+namespace Yubikey_Powershell.Cmdlets.Yubikey
 {
     [Cmdlet(VerbsCommunications.Connect, "Yubikey")]
     public class ConnectYubikeyCommand : Cmdlet
@@ -12,13 +11,22 @@ namespace Yubikey_Powershell
 
         protected override void BeginProcessing()
         {
+            //Start with disconnecting the old yubikey if connected.
+            if (YubiKeyModule._yubikey is not null)
+            {
+                DisconnectYubikeyCommand disconnectYubikey = new DisconnectYubikeyCommand();
+                disconnectYubikey.Invoke();
+            }
             WriteDebug("ProcessRecord in Connect-Yubikey");
             if (YubiKey is not null)
             {
+                WriteDebug("Using Yubikey from argument");
                 YubiKeyModule._yubikey = YubiKey;
-            } else {
+            }
+            else
+            {
+                WriteDebug("Searching for yubikeys");
                 var yubiKeys = YubiKeyDevice.FindAll();
-                //return the yubikey or an an array of yubikeys, if no youbikey is found throw [eu.virot.yubikey.nonfound            //return the yubikey or an an array of yubikeys, if no youbikey is found throw [eu.virot.yubikey.nonfound]
 
                 if (yubiKeys.Count() == 1)
                 {
@@ -26,9 +34,11 @@ namespace Yubikey_Powershell
                 }
                 else
                 {
-                    new Exception("None or multiple YubiKeys found");
+                    WriteDebug("Multiple or No Yubikeys found");
+                    throw new Exception("None or multiple YubiKeys found");
                 }
             }
+
 
 
         }

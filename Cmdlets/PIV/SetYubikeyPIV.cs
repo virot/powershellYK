@@ -4,10 +4,9 @@ using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
-using Yubikey_Powershell;
 
 
-namespace Yubikey_Powershell
+namespace Yubikey_Powershell.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.Set, "YubikeyPIV")]
     public class SetYubikeyPIVCommand : Cmdlet
@@ -32,15 +31,24 @@ namespace Yubikey_Powershell
         [Parameter(Mandatory = true, ParameterSetName = "ChangePUK")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "New PUK")]
         public string? NewPUK { get; set; }
-
-        protected override void BeginProcessing()
-        {
-            if (YubiKeyModule._pivSession is null) { throw new Exception("PIV not connected, use Connect-YubikeyPIV first"); }
-        }
         protected override void ProcessRecord()
         {
-         
-            if ((PinRetries is not null) && (PukRetries is not null))
+
+            if (YubiKeyModule._pivSession is null)
+            {
+                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
+                try
+                {
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                    myPowersShellInstance.Invoke();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message, e);
+                }
+            }
+
+            if (PinRetries is not null && PukRetries is not null)
             {
                 try
                 {
@@ -51,7 +59,7 @@ namespace Yubikey_Powershell
                     throw new Exception("Failed to set PIN and PUK retries", e);
                 }
             }
-            if ((PIN is not null) && (NewPIN is not null))
+            if (PIN is not null && NewPIN is not null)
             {
                 byte[] pinarray = System.Text.Encoding.UTF8.GetBytes(PIN);
                 byte[] newpinarray = System.Text.Encoding.UTF8.GetBytes(NewPIN);
@@ -70,7 +78,7 @@ namespace Yubikey_Powershell
                     CryptographicOperations.ZeroMemory(newpinarray);
                 }
             }
-            if ((PUK is not null) && (NewPUK is not null))
+            if (PUK is not null && NewPUK is not null)
             {
                 byte[] pukarray = System.Text.Encoding.UTF8.GetBytes(PUK);
                 byte[] newpukarray = System.Text.Encoding.UTF8.GetBytes(NewPUK);

@@ -6,28 +6,35 @@ using Yubico.YubiKey.Piv.Commands;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 
-namespace Yubikey_Powershell
+namespace Yubikey_Powershell.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.Get, "YubikeyPIV")]
     public class GetYubikeyPIVCommand : Cmdlet
     {
-
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Which yubikey to connect to")]
-        public YubiKeyDevice? YubiKey { get; set; }
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Retrive a info from specific slot")]
         public byte? Slot { get; set; }
 
-        protected override void BeginProcessing()
-        {
-            if (YubiKeyModule._pivSession is null) { throw new Exception("PIV not connected, use Connect-YubikeyPIV first"); }
-        }
-
         protected override void ProcessRecord()
         {
+            if (YubiKeyModule._pivSession is null)
+            {
+                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
+                try
+                {
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                    myPowersShellInstance.Invoke();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message, e);
+                }
+            }
+
             if (Slot is null)
             {
                 int pin_retry, pin_remaining, puk_retry, puk_remaining;
-                try { 
+                try
+                {
                     PivMetadata pin = YubiKeyModule._pivSession.GetMetadata(PivSlot.Pin);
                     pin_retry = pin.RetryCount;
                     pin_remaining = pin.RetriesRemaining;

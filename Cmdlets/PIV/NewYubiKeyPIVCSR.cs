@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using Yubikey_Powershell.support;
 
 
-namespace Yubikey_Powershell
+namespace Yubikey_Powershell.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.New, "YubikeyPIVCSR")]
     public class NewYubiKeyPIVCSRCommand : Cmdlet
@@ -27,17 +27,34 @@ namespace Yubikey_Powershell
 
         public string? OutFile { get; set; } = null;
 
-        protected override void BeginProcessing()
-        {
-            if (YubiKeyModule._pivSession is null) { throw new Exception("PIV not connected, use Connect-YubikeyPIV first"); }
-        }
-
         protected override void ProcessRecord()
         {
-            PivPublicKey publicKey = YubiKeyModule._pivSession.GetMetadata(Slot).PublicKey;
-            if (publicKey is null)
+            if (YubiKeyModule._pivSession is null)
             {
-                throw new Exception("Public key is null");
+                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
+                try
+                {
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                    myPowersShellInstance.Invoke();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message, e);
+                }
+            }
+
+            PivPublicKey? publicKey = null;
+            try
+            {
+                publicKey = YubiKeyModule._pivSession.GetMetadata(Slot).PublicKey;
+                if (publicKey is null)
+                {
+                    throw new Exception("Public key is null");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to get public key for slot 0x{Slot.ToString("X2")}, does there exist a key?", e);
             }
 
             if (publicKey is PivRsaPublicKey)
@@ -45,10 +62,10 @@ namespace Yubikey_Powershell
                 PivRsaPublicKey pivRsaPublicKey = (PivRsaPublicKey)publicKey;
                 RSA rsaPublicKeyObject = null;
                 var rsaParams = new RSAParameters
-                        {
-                            Modulus = pivRsaPublicKey.Modulus.ToArray(),
-                            Exponent = pivRsaPublicKey.PublicExponent.ToArray()
-                        };
+                {
+                    Modulus = pivRsaPublicKey.Modulus.ToArray(),
+                    Exponent = pivRsaPublicKey.PublicExponent.ToArray()
+                };
 
                 rsaPublicKeyObject = RSA.Create(rsaParams);
                 CertificateRequest request = new CertificateRequest(Subjectname, rsaPublicKeyObject, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -69,7 +86,7 @@ namespace Yubikey_Powershell
                 string pemData = PemEncoding.WriteString("CERTIFICATE REQUEST", requestSigned);
                 if (OutFile is not null)
                 {
-                    System.IO.File.WriteAllText(OutFile, pemData);
+                    File.WriteAllText(OutFile, pemData);
                 }
                 else
                 {

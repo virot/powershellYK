@@ -1,15 +1,15 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 
-namespace Yubikey_Powershell
+namespace Yubikey_Powershell.Cmdlets.Yubikey
 {
     [Cmdlet(VerbsCommon.Find, "Yubikey")]
     public class FindYubikeyCommand : Cmdlet
     {
-        //add a switch variable call only one, that will only return one yubikey if set to true        //add a switch variable call only one, that will only return one yubikey if set to true
-        // set default to false
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only one Yubikey")]
         public SwitchParameter OnlyOne { get; set; }
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only yubikey with serialnumber")]
+        public int? Serialnumber { get; set; }
 
         protected override void BeginProcessing()
 
@@ -17,7 +17,13 @@ namespace Yubikey_Powershell
         {
             WriteDebug("ProcessRecord in Get-Yubikey");
             var yubiKeys = YubiKeyDevice.FindAll();
-            //return the yubikey or an an array of yubikeys, if no youbikey is found throw [eu.virot.yubikey.nonfound            //return the yubikey or an an array of yubikeys, if no youbikey is found throw [eu.virot.yubikey.nonfound]
+
+            if (Serialnumber is not null)
+            {
+                //Filter out the yubikeys that does not match the serialnumber
+                yubiKeys = yubiKeys.Where(yubiKeys => yubiKeys.SerialNumber == Serialnumber);
+            }
+
 
             if (yubiKeys.Count() == 1)
             {

@@ -9,7 +9,7 @@ using Yubico.YubiKey.Piv.Commands;
 using Yubikey_Powershell.support;
 
 
-namespace Yubikey_Powershell
+namespace Yubikey_Powershell.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.New, "YubikeyPIVKey")]
     public class NewYubiKeyPIVKeyCommand : Cmdlet
@@ -36,11 +36,23 @@ namespace Yubikey_Powershell
 
         protected override void ProcessRecord()
         {
-            if (YubiKeyModule._pivSession is null) { throw new Exception("PIV not connected, use Connect-YubikeyPIV first"); }
-         
+            if (YubiKeyModule._pivSession is null)
+            {
+                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
+                try
+                {
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                    myPowersShellInstance.Invoke();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message, e);
+                }
+            }
+
             if (ShouldProcess($"Slot {Slot}", "Replace"))
             {
-try
+                try
                 {
                     WriteDebug("ProcessRecord in New-YubikeyPIVKey");
                     PivPublicKey publicKey = YubiKeyModule._pivSession.GenerateKeyPair(Slot, Algorithm, PinPolicy, TouchPolicy);
