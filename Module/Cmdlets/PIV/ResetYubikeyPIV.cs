@@ -33,21 +33,6 @@ namespace Yubikey_Powershell.Cmdlets.PIV
 
             if (ShouldProcess($"Yubikey serialnumber {YubiKeyModule._yubikey.SerialNumber}", "Reset"))
             {
-                /*
-                 * BlockYubikeyPIVCommand blockPIVPINPUK = new BlockYubikeyPIVCommand
-                {
-                    PIN = true,
-                    PUK = true
-                };
-                //if debug is set, make sure that blockpinpuk is also set to debug
-                if ()
-                {
-                    //add debug to blockpinpuk                    //add debug to blockpinpuk
-                    //blockPIVPINPUK.CommonParameters.Add("Debug");
-                    WriteObject("Debug is set");
-                }
-                blockPIVPINPUK.Invoke();
-                */
                 try
                 {
                     YubiKeyModule._pivSession.ResetApplication();

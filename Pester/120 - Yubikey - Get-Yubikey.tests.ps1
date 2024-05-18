@@ -1,4 +1,4 @@
-Import-Module "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\..\bin\Debug\net8.0\Yubikey_Powershell.dll"
+Import-Module "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\..\Module\bin\Debug\net8.0\Yubikey_Powershell.dll"
 
 Describe "Test Yubikey parts" {
     It "outputs 'Verify that Find-Yubikey throws fault, if serialnumber does not exist on present yubikeys.'" {

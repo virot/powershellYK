@@ -7,11 +7,12 @@ using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 using Yubikey_Powershell.support;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 
 namespace Yubikey_Powershell.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommon.New, "YubikeyPIVKey")]
+    [Cmdlet(VerbsCommon.New, "YubikeyPIVKey", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class NewYubiKeyPIVKeyCommand : Cmdlet
     {
         [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to create a new key for")]
@@ -29,11 +30,6 @@ namespace Yubikey_Powershell.Cmdlets.PIV
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "TouchPolicy")]
         public PivTouchPolicy TouchPolicy { get; set; } = PivTouchPolicy.Default;
 
-        [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "ManagementKey")]
-        public string ManagementKey { get; set; } = "010203040506070801020304050607080102030405060708";
-
-
         protected override void ProcessRecord()
         {
             if (YubiKeyModule._pivSession is null)
@@ -50,7 +46,15 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 }
             }
 
-            if (ShouldProcess($"Slot {Slot}", "Replace"))
+            bool keyExists = false;
+            try
+            {
+                PivPublicKey pubkey = YubiKeyModule._pivSession.GetMetadata(Slot).PublicKey;
+                keyExists = true;
+            }
+            catch { }
+
+            if ( ! keyExists || ShouldProcess($"Slot 0x{Slot.ToString("X2")}", "New"))
             {
                 try
                 {

@@ -23,8 +23,10 @@ namespace Yubikey_Powershell.Cmdlets.PIV
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Current PIN")]
         public string? PIN { get; set; }
         [Parameter(Mandatory = true, ParameterSetName = "ChangePIN")]
+        [Parameter(Mandatory = true, ParameterSetName = "UnblockPIN")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "New PIN")]
         public string? NewPIN { get; set; }
+        [Parameter(Mandatory = true, ParameterSetName = "UnblockPIN")]
         [Parameter(Mandatory = true, ParameterSetName = "ChangePUK")]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Current PUK")]
         public string? PUK { get; set; }
@@ -95,6 +97,25 @@ namespace Yubikey_Powershell.Cmdlets.PIV
                 {
                     CryptographicOperations.ZeroMemory(pukarray);
                     CryptographicOperations.ZeroMemory(newpukarray);
+                }
+            }
+            if (PUK is not null && NewPIN is not null)
+            {
+                byte[] pukarray = System.Text.Encoding.UTF8.GetBytes(PUK);
+                byte[] newpinarray = System.Text.Encoding.UTF8.GetBytes(NewPIN);
+                int? retriesLeft = null;
+                try
+                {
+                    YubiKeyModule._pivSession.TryResetPin(pukarray, newpinarray, out retriesLeft);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Failed to reset PIN", e);
+                }
+                finally
+                {
+                    CryptographicOperations.ZeroMemory(pukarray);
+                    CryptographicOperations.ZeroMemory(newpinarray);
                 }
             }
         }

@@ -8,7 +8,7 @@ using Yubico.YubiKey.Piv.Commands;
 
 namespace Yubikey_Powershell.Cmdlets.PIV
 {
-    [Cmdlet(VerbsSecurity.Block, "YubikeyPIV")]
+    [Cmdlet(VerbsSecurity.Block, "YubikeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Low)]
     public class BlockYubikeyPIVCommand : Cmdlet
     {
 
