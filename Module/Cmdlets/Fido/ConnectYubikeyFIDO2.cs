@@ -4,16 +4,14 @@ using Yubico.YubiKey.Fido2;
 using VirotYubikey.support;
 using System.Data.Common;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
-namespace VirotYubikey.Cmdlets.Fido2
+namespace VirotYubikey.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommunications.Connect, "YubikeyFIDO2")]
 
     public class ConnectYubikeyFIDO2Command : Cmdlet
     {
-
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "ManagementKey")]
-        public string ManagementKey { get; set; } = "010203040506070801020304050607080102030405060708";
         [ValidateLength(6, 8)]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "PIN")]
         public string PIN { get; set; } = "123456";
@@ -57,6 +55,21 @@ namespace VirotYubikey.Cmdlets.Fido2
                 throw new Exception("Could not connect to Yubikey FIDO2", e);
             }
 
+            try
+            {
+                byte[] pinarray = System.Text.Encoding.UTF8.GetBytes(PIN);
+                int? retries = null;
+                bool? rebootRequired;
+                if (YubiKeyModule._fido2Session.TryVerifyPin(pinarray, null, null, out retries, out rebootRequired) == false)
+                {
+                    throw new Exception("Could not authenticate Yubikey PIV, wrong PIN");
+                }
+                CryptographicOperations.ZeroMemory(pinarray);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Could not authenticate to YubiKey FIDO", e);
+            }
         }
     }
 }

@@ -8,33 +8,31 @@ schema: 2.0.0
 # Import-YubikeyPIVCertificate
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Import certificate
 
 ## SYNTAX
 
 ### File
 ```
-Import-YubikeyPIVCertificate [-Slot] <Byte> -Path <String> [-Certificate <Object>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Import-YubikeyPIVCertificate -Slot <Byte> -Path <String> [<CommonParameters>]
 ```
 
 ### Value
 ```
-Import-YubikeyPIVCertificate [-Slot] <Byte> [-Path <String>] -Certificate <Object>
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Import-YubikeyPIVCertificate -Slot <Byte> -Certificate <Object> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Imports a certicate into the Yubikey
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Import-YubikeyPIVCertificate -Slot 0x9a -Path certificate.cer
 ```
 
-{{ Add example description here }}
+Import certificate.cer into the certificate slot 0x9a
 
 ## PARAMETERS
 
@@ -66,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -Path
-{{ Fill Path Description }}
+Path to certificate file
 
 ```yaml
 Type: String
@@ -84,21 +82,6 @@ Accept wildcard characters: False
 Type: String
 Parameter Sets: Value
 Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
 
 Required: False
 Position: Named

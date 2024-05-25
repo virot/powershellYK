@@ -36,7 +36,7 @@ PS C:\> New-YubikeyPIVCSR -Slot 0x9a -OutFile "$($env:TEMP)\certificate_request.
 
 Would create a CSR with the default Subjectname and store it as certificate_request.req in the temp folder.
 
-### Example 1
+### Example 3
 ```powershell
 PS C:\> $CSR = New-YubikeyPIVCSR -Slot 0x9a -Attestation
 ```

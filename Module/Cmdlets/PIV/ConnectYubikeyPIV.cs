@@ -12,7 +12,7 @@ namespace VirotYubikey.Cmdlets.PIV
     public class ConnectYubikeyPIVCommand : Cmdlet
     {
 
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "ManagementKey")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "ManagementKey")]
         public string ManagementKey { get; set; } = "010203040506070801020304050607080102030405060708";
         [ValidateLength(6, 8)]
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "PIN")]

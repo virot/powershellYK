@@ -11,7 +11,7 @@ namespace VirotYubikey.Cmdlets.PIV
     [Cmdlet(VerbsCommon.Get, "YubikeyPIV")]
     public class GetYubikeyPIVCommand : Cmdlet
     {
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Retrive a info from specific slot")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Retrive a info from specific slot")]
         public byte? Slot { get; set; }
 
         protected override void ProcessRecord()

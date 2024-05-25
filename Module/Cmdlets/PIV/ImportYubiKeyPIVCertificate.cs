@@ -15,15 +15,15 @@ namespace VirotYubikey.Cmdlets.PIV
     [Cmdlet(VerbsData.Import, "YubikeyPIVCertificate")]
     public class ImportYubiKeyPIVCertificateCommand : Cmdlet
     {
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slotnumber")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slotnumber")]
         public byte Slot { get; set; }
 
         [Parameter(Mandatory = true, ParameterSetName = "File")]
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Path to certificate")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Path to certificate")]
         public string? Path { get; set; } = null;
 
         [Parameter(Mandatory = true, ParameterSetName = "Value")]
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Certificate to be stored")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Certificate to be stored")]
         public object? Certificate { get; set; } = null;
 
         private X509Certificate2? _certificate = null;

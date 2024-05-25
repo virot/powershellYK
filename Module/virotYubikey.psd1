@@ -12,7 +12,7 @@
 RootModule = 'VirotYubikey.dll'
 
 # Version number of this module.
-ModuleVersion = '0.0.2.1'
+ModuleVersion = '0.0.3.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -30,7 +30,7 @@ CompanyName = ''
 Copyright = '(c) Oscar Virot. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Allow the use of the Yubikey .NET SDK in Powershell'
+Description = 'Manage Yubikeys with Powershell'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '7.0'
@@ -78,6 +78,7 @@ CmdletsToExport = @(
  'Disconnect-Yubikey',
  'Find-Yubikey',
  'Connect-YubikeyFIDO2',
+ 'Get-YubikeyFIDO2Credentials',
  'Block-YubikeyPIV',
  'Connect-YubikeyPIV',
  'Export-YubikeyPIVCertificate',

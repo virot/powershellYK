@@ -14,15 +14,15 @@ namespace VirotYubikey.Cmdlets.PIV
     [Cmdlet(VerbsCommon.New, "YubikeyPIVSelfSign", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class NewYubiKeyPIVSelfSignCommand : Cmdlet
     {
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "Sign a self signed cert for slot")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Sign a self signed cert for slot")]
 
         public byte Slot { get; set; }
 
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subjectname of certificate")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subjectname of certificate")]
 
         public string Subjectname { get; set; } = "CN=SubjectName to be supplied by Server,O=Fake";
         [ValidateSet("SHA1", "SHA256", "SHA384", "SHA512", IgnoreCase = true)]
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "HashAlgoritm")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "HashAlgoritm")]
         public HashAlgorithmName HashAlgorithm { get; set; } = HashAlgorithmName.SHA256;
 
         protected override void ProcessRecord()

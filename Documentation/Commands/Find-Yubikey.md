@@ -8,7 +8,7 @@ schema: 2.0.0
 # Find-Yubikey
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Lists all Yubikeys on system
 
 ## SYNTAX
 
@@ -17,16 +17,16 @@ Find-Yubikey [-OnlyOne] [-Serialnumber <Int32>] [-ProgressAction <ActionPreferen
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+List all Yubikeys on the system
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Find-Yubikey
 ```
 
-{{ Add example description here }}
+Lists all Yubikeys on this system
 
 ## PARAMETERS
 
@@ -37,21 +37,6 @@ Return only one Yubikey
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
 
 Required: False
 Position: Named

@@ -8,26 +8,32 @@ schema: 2.0.0
 # Connect-YubikeyPIV
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Connect PIV module
 
 ## SYNTAX
 
 ```
-Connect-YubikeyPIV [[-ManagementKey] <String>] [[-PIN] <String>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Connect-YubikeyPIV [[-ManagementKey] <String>] [[-PIN] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Connects the PIV module for the currently connected Yubikey, with PIN and Managementkey as needed
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Connect-YubikeyPIV
 ```
 
-{{ Add example description here }}
+Connect to PIV module with default PIN and ManagmentKey
+
+### Example 2
+```powershell
+PS C:\> Connect-YubikeyPIV -PIN (Read-Host -MaskInput 'PIN')
+```
+
+Connect to PIV module with default Managementkey and requests the PIN from the commandline
 
 ## PARAMETERS
 
@@ -56,21 +62,6 @@ Aliases:
 
 Required: False
 Position: 0
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
