@@ -1,10 +1,13 @@
-﻿using System.Management.Automation;
+﻿using System;
+using System.Management.Automation;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 using Yubico.YubiKey.Piv.Objects;
+using Yubico.YubiKey.Sample.PivSampleCode;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 
@@ -102,8 +105,22 @@ namespace VirotYubikey.Cmdlets.PIV
             {
                 try
                 {
-                    PivMetadata output = YubiKeyModule._pivSession!.GetMetadata((byte)Slot);
-                    WriteObject(output);
+                    X509Certificate2? certificate = null;
+                    PivMetadata slotData = YubiKeyModule._pivSession!.GetMetadata((byte)Slot);
+                    using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(slotData.PublicKey);
+
+                    try { certificate = YubiKeyModule._pivSession.GetCertificate((byte)Slot); } catch { }
+                    var customObject = new
+                    {
+                        Slot = slotData.Slot,
+                        Algorithm = slotData.Algorithm,
+                        KeyStatus = slotData.KeyStatus,
+                        PinPolicy = slotData.PinPolicy,
+                        TouchPolicy = slotData.TouchPolicy,
+                        Certificate = certificate,
+                        PublicKey = dotNetPublicKey,
+                    };
+                    WriteObject(customObject);
                 }
                 catch (Exception e)
                 {
