@@ -1,7 +1,7 @@
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 
-namespace Yubikey_Powershell
+namespace VirotYubikey
 {
     public static class YubiKeyModule
     {

@@ -8,7 +8,7 @@ using Yubico.YubiKey.Piv.Objects;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 
-namespace Yubikey_Powershell.Cmdlets.PIV
+namespace VirotYubikey.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.Get, "YubikeyPIV")]
     public class GetYubikeyPIVCommand : Cmdlet

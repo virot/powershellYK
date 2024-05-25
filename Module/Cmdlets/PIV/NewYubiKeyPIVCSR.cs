@@ -5,10 +5,10 @@ using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 using System.Security.Cryptography;
-using Yubikey_Powershell.support;
+using VirotYubikey.support;
 
 
-namespace Yubikey_Powershell.Cmdlets.PIV
+namespace VirotYubikey.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.New, "YubikeyPIVCSR")]
     public class NewYubiKeyPIVCSRCommand : Cmdlet

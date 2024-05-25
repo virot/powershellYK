@@ -1,7 +1,7 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 
-namespace Yubikey_Powershell.Cmdlets.Yubikey
+namespace VirotYubikey.Cmdlets.Yubikey
 {
     [Cmdlet(VerbsCommon.Get, "Yubikey")]
     public class GetYubikeyCommand : Cmdlet

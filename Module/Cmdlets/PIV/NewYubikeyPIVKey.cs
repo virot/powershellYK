@@ -6,11 +6,11 @@ using System.Text;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
-using Yubikey_Powershell.support;
+using VirotYubikey.support;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 
-namespace Yubikey_Powershell.Cmdlets.PIV
+namespace VirotYubikey.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.New, "YubikeyPIVKey", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class NewYubiKeyPIVKeyCommand : Cmdlet

@@ -6,11 +6,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Yubico.YubiKey.Piv;
-using Yubikey_Powershell;
+using VirotYubikey;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Yubico.YubiKey.Cryptography;
 
-namespace Yubikey_Powershell.support
+namespace VirotYubikey.support
 {
     public sealed class YubiKeySignatureGenerator : X509SignatureGenerator
     {

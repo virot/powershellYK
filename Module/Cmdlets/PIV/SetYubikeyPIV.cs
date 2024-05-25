@@ -5,10 +5,10 @@ using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 using Yubico.YubiKey.Piv.Objects;
-using Yubikey_Powershell.support;
+using VirotYubikey.support;
 
 
-namespace Yubikey_Powershell.Cmdlets.PIV
+namespace VirotYubikey.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.Set, "YubikeyPIV")]
     public class SetYubikeyPIVCommand : Cmdlet

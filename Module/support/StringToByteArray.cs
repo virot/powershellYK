@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Yubikey_Powershell.support
+namespace VirotYubikey.support
 {
     public class HexConverter
     {
