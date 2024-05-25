@@ -26,14 +26,13 @@ namespace VirotYubikey.Cmdlets.Fido2
                 WriteDebug("Disconnecting old session");
                 YubiKeyModule._fido2Session.Dispose();
             }
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
+#if WINDOWS
                 PermisionsStuff permisionsStuff = new PermisionsStuff();
                 if (PermisionsStuff.IsRunningAsAdministrator() == false)
                 {
                     throw new Exception("You need to run this command as an administrator");
                 }
-            }
+#endif //WINDOWS
             if (YubiKeyModule._yubikey is null)
             {
                 WriteDebug("No Yubikey selected, calling Connect-Yubikey");

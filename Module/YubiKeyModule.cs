@@ -16,6 +16,7 @@ namespace VirotYubikey
         public static PivSession? _pivSession;
         public static Fido2Session? _fido2Session;
     }
+#if WINDOWS
     public class MyModuleAssemblyInitializer: IModuleAssemblyInitializer
     {
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -25,7 +26,11 @@ namespace VirotYubikey
         {
             string assemblyLocation = Assembly.GetExecutingAssembly().Location;
             string assemblyPath = Path.GetDirectoryName(assemblyLocation);
+#if PUBLISH
             string runtimePath = Path.Combine(assemblyPath, "runtimes\\win-x64\\native");
+#else //PUBLISH
+            string runtimePath = assemblyPath;
+#endif //PUBLISH
             IntPtr result = AddDllDirectory(runtimePath);
             if (result == IntPtr.Zero)
             {
@@ -34,4 +39,5 @@ namespace VirotYubikey
             }
         }
     }
-}
+#endif //WINDOWS
+        }
