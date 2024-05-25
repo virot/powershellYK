@@ -12,6 +12,8 @@ namespace VirotYubikey.support
             WindowsPrincipal principal = new WindowsPrincipal(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
 #pragma warning restore CA1416 // Validate platform compatibility
+#else 
+         return false;
 #endif //WINDOWS
         }
     }

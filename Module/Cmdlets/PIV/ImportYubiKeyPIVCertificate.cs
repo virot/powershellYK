@@ -7,6 +7,7 @@ using Yubico.YubiKey.Piv.Commands;
 using System.Security.Cryptography;
 using VirotYubikey.support;
 using System.Linq.Expressions;
+using Yubico.YubiKey.Sample.PivSampleCode;
 
 
 namespace VirotYubikey.Cmdlets.PIV
@@ -95,7 +96,7 @@ namespace VirotYubikey.Cmdlets.PIV
             WriteDebug($"Proceeding with import of thumbprint {_certificate.Thumbprint}");
             if (publicKey is null)
             {
-                WriteDebug("No public key found, uploading certificate");
+                throw new Exception("No public key found, not uploading certificate");
             }
             else if (publicKey is PivRsaPublicKey)
             {
@@ -121,7 +122,17 @@ namespace VirotYubikey.Cmdlets.PIV
             }
             else
             {
-                throw new Exception("Public key is not an RSA key");
+                using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
+                ECDsa certificatePublicKey = _certificate!.GetECDsaPublicKey();
+                if (certificatePublicKey.ExportParameters(false).Q.X.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.X) &&
+                                       certificatePublicKey.ExportParameters(false).Q.Y.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.Y))
+                {
+                    WriteDebug("Public key matches certificate key");
+                }
+                else
+                {
+                    throw new Exception("Public key does not match certificate key");
+                }
             }
 
             try

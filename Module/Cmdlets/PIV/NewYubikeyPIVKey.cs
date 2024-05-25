@@ -61,7 +61,9 @@ namespace VirotYubikey.Cmdlets.PIV
                 {
                     WriteDebug("ProcessRecord in New-YubikeyPIVKey");
                     PivPublicKey publicKey = YubiKeyModule._pivSession!.GenerateKeyPair(Slot, Algorithm, PinPolicy, TouchPolicy);
-                    if (publicKey is not null) { WriteObject("KeyPair created"); }
+                    if (publicKey is not null) { 
+                        WriteObject("KeyPair created");
+                    }
                     else { throw new Exception("Could not create keypair"); }
                 }
                 catch (Exception e)

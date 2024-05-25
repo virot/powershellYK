@@ -28,7 +28,7 @@ namespace VirotYubikey
             string assemblyPath = Path.GetDirectoryName(assemblyLocation);
 #if PUBLISH
             string runtimePath = assemblyPath;
-#else //PUBLISH
+#else //NOT PUBLISH
             string runtimePath = Path.Combine(assemblyPath, "runtimes\\win-x64\\native");
 #endif //PUBLISH
             IntPtr result = AddDllDirectory(runtimePath);

@@ -63,7 +63,7 @@ ProcessorArchitecture = 'Amd64'
 # TypesToProcess = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
-# FormatsToProcess = @()
+FormatsToProcess = @('VirotYubikey.format.ps1xml')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 # NestedModules = @()
@@ -85,6 +85,7 @@ CmdletsToExport = @(
  'Import-YubikeyPIVCertificate',
  'New-YubikeyPIVCSR',
  'New-YubikeyPIVKey',
+ 'New-YubikeyPIVSelfSign',
  'Reset-YubikeyPIV',
  'Set-YubikeyPIV'
 )
