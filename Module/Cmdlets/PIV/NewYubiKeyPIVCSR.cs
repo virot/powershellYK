@@ -103,7 +103,13 @@ namespace VirotYubikey.Cmdlets.PIV
                 //i   _defaultGenerator = X509SignatureGenerator.CreateForRSA((RSA)dotNetPublicKey, paddingScheme);
                 // }_defaultGenerator = X509SignatureGenerator.CreateForECDsa((ECDsa)dotNetPublicKey);
 
-
+                HashAlgorithm = publicKey.Algorithm switch
+                {
+                    PivAlgorithm.EccP256 => HashAlgorithmName.SHA256,
+                    PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,
+                    _ => throw new Exception("Unknown PublicKey algorithm")
+                };
+                WriteDebug($"Using Hash based on ECC size: {HashAlgorithm.ToString()}");
                 CertificateRequest request = new CertificateRequest(Subjectname, (ECDsa)dotNetPublicKey, HashAlgorithm);
                 WriteDebug("Generating CertificateRequest with publicKey");
                 if (Attestation.IsPresent)
