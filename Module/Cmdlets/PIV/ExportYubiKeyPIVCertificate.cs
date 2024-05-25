@@ -13,10 +13,10 @@ namespace VirotYubikey.Cmdlets.PIV
     [Cmdlet(VerbsData.Export, "YubikeyPIVCertificate")]
     public class ExportYubiKeyPIVCertificateCommand : Cmdlet
     {
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slot to extract")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slot to extract")]
         public byte Slot { get; set; }
 
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Output file")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Output file")]
         public string? OutFile { get; set; } = null;
 
         protected override void ProcessRecord()

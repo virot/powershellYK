@@ -1,14 +1,9 @@
-﻿using System;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
-using Yubico.YubiKey.Piv.Commands;
 using Yubico.YubiKey.Piv.Objects;
 using Yubico.YubiKey.Sample.PivSampleCode;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 
 namespace VirotYubikey.Cmdlets.PIV

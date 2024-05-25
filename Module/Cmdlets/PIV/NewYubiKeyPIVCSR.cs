@@ -14,21 +14,21 @@ namespace VirotYubikey.Cmdlets.PIV
     [Cmdlet(VerbsCommon.New, "YubikeyPIVCSR")]
     public class NewYubiKeyPIVCSRCommand : Cmdlet
     {
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "Create a CSR for slot")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Create a CSR for slot")]
 
         public byte Slot { get; set; }
 
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Include attestion certificate in CSR")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Include attestion certificate in CSR")]
 
         public SwitchParameter Attestation { get; set; }
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subjectname of certificate")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subjectname of certificate")]
 
         public string Subjectname { get; set; } = "CN=SubjectName to be supplied by Server,O=Fake";
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "Save CSR as file")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Save CSR as file")]
         public string? OutFile { get; set; } = null;
 
         [ValidateSet("SHA1", "SHA256", "SHA384", "SHA512", IgnoreCase = true)]
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "HashAlgoritm")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "HashAlgoritm")]
         public HashAlgorithmName HashAlgorithm { get; set; } = HashAlgorithmName.SHA256;
 
         protected override void ProcessRecord()

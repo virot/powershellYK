@@ -8,25 +8,25 @@ schema: 2.0.0
 # Reset-YubikeyPIV
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Resets the PIV part of your Yubikey
 
 ## SYNTAX
 
 ```
-Reset-YubikeyPIV [-Force] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Reset-YubikeyPIV [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+This command will reset your Yubikey to factory settings. PIN, PUK and Managmentkey will be default after.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Reset-YubikeyPIV
 ```
 
-{{ Add example description here }}
+Will reset the PIV part of your Yubikey
 
 ## PARAMETERS
 
@@ -37,21 +37,6 @@ Force reset
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
 
 Required: False
 Position: Named

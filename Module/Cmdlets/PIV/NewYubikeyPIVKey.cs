@@ -1,13 +1,5 @@
 ﻿using System.Management.Automation;
-using System.Net.NetworkInformation;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
-using Yubico.YubiKey.Piv.Commands;
-using VirotYubikey.support;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 
 namespace VirotYubikey.Cmdlets.PIV
@@ -20,11 +12,11 @@ namespace VirotYubikey.Cmdlets.PIV
         public byte Slot { get; set; }
 
         [ValidateSet("Rsa1024", "Rsa2048", "EccP256", "EccP384", IgnoreCase = true)]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "Algoritm")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Algoritm")]
         public PivAlgorithm Algorithm { get; set; }
 
         [ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy")]
         public PivPinPolicy PinPolicy { get; set; } = PivPinPolicy.Default;
 
         [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]

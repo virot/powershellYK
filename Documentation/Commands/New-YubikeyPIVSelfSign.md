@@ -8,26 +8,26 @@ schema: 2.0.0
 # New-YubikeyPIVSelfSign
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Create a self signed certificate
 
 ## SYNTAX
 
 ```
-New-YubikeyPIVSelfSign [-Slot] <Byte> [[-Subjectname] <String>] [[-HashAlgorithm] <HashAlgorithmName>]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-YubikeyPIVSelfSign -Slot <Byte> [[-Subjectname] <String>] [[-HashAlgorithm] <HashAlgorithmName>]
+[-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+This cmdlet creates a selfsigned certificate for a private key.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> New-YubikeyPIVSelfSign -Slot 0x9a
 ```
 
-{{ Add example description here }}
+Creates a selfsigned certificate and installs into the 0x9a slot.
 
 ## PARAMETERS
 
@@ -42,21 +42,6 @@ Accepted values: SHA1, SHA256, SHA384, SHA512
 
 Required: False
 Position: 0
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

@@ -8,27 +8,40 @@ schema: 2.0.0
 # New-YubikeyPIVKey
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Create a new private key
 
 ## SYNTAX
 
 ```
 New-YubikeyPIVKey [-Slot] <Byte> [-Algorithm] <PivAlgorithm> [[-PinPolicy] <PivPinPolicy>]
- [[-TouchPolicy] <PivTouchPolicy>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [[-TouchPolicy] <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+This cmdlet will create a new key, this can be done with either RSA or ECC keys.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm EccP384 
 ```
 
-{{ Add example description here }}
+Creates a new Elliptic curve P-384 key in slot 0x9a.
+
+### Example 2
+```powershell
+PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm RSA2048 -PinPolicy Never 
+```
+
+Create a RSA2048 in slot 0x9a with a PIN policy of never.
+
+### Example 3
+```powershell
+PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm EccP384 -TouchPolicy Cached
+```
+
+Create a RSA2048 in slot 0x9a with a touch policy of cached
 
 ## PARAMETERS
 
@@ -57,21 +70,6 @@ Aliases:
 
 Required: False
 Position: 0
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
