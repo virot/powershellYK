@@ -12,13 +12,11 @@ namespace VirotYubikey.Cmdlets.PIV
     public class BlockYubikeyPIVCommand : Cmdlet
     {
 
-        [Parameter(Mandatory = true, ParameterSetName = "BlockBoth")]
-        [Parameter(Mandatory = true, ParameterSetName = "BlockPIN")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Block the PIN for the PIV device")]
+        [Parameter(Mandatory = true, ParameterSetName = "BlockBoth", ValueFromPipeline = false, HelpMessage = "Block the PIN for the PIV device")]
+        [Parameter(Mandatory = true, ParameterSetName = "BlockPIN", ValueFromPipeline = false, HelpMessage = "Block the PIN for the PIV device")]
         public SwitchParameter PIN { get; set; }
-        [Parameter(Mandatory = true, ParameterSetName = "BlockBoth")]
-        [Parameter(Mandatory = true, ParameterSetName = "BlockPUK")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Block the PUK for the PIV device")]
+        [Parameter(Mandatory = true, ParameterSetName = "BlockBoth", HelpMessage = "Block the PUK for the PIV device")]
+        [Parameter(Mandatory = true, ParameterSetName = "BlockPUK", HelpMessage = "Block the PUK for the PIV device")]
         public SwitchParameter PUK { get; set; }
 
         protected override void ProcessRecord()

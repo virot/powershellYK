@@ -1,6 +1,6 @@
 ﻿---
 external help file: VirotYubikey.dll-Help.xml
-Module Name: VirotYubikey
+Module Name: virotYubikey
 online version:
 schema: 2.0.0
 ---
@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Get-YubikeyPIV [[-Slot] <Byte>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-YubikeyPIV [-Slot <Byte>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -54,7 +54,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

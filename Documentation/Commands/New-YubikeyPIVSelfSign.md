@@ -1,6 +1,6 @@
 ﻿---
 external help file: VirotYubikey.dll-Help.xml
-Module Name: VirotYubikey
+Module Name: virotYubikey
 online version:
 schema: 2.0.0
 ---
@@ -13,8 +13,8 @@ Create a self signed certificate
 ## SYNTAX
 
 ```
-New-YubikeyPIVSelfSign -Slot <Byte> [[-Subjectname] <String>] [[-HashAlgorithm] <HashAlgorithmName>]
-[-WhatIf] [-Confirm] [<CommonParameters>]
+New-YubikeyPIVSelfSign -Slot <Byte> [-Subjectname <String>] [-HashAlgorithm <HashAlgorithmName>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -41,7 +41,22 @@ Aliases:
 Accepted values: SHA1, SHA256, SHA384, SHA512
 
 Required: False
-Position: 0
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -56,7 +71,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -71,7 +86,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

@@ -1,6 +1,7 @@
 ﻿using System.Management.Automation;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using VirotYubikey.PIV;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Objects;
 using Yubico.YubiKey.Sample.PivSampleCode;
@@ -105,7 +106,8 @@ namespace VirotYubikey.Cmdlets.PIV
                     using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(slotData.PublicKey);
 
                     try { certificate = YubiKeyModule._pivSession.GetCertificate((byte)Slot); } catch { }
-                    var customObject = new
+
+                    SlotInfo returnSlot = new SlotInfo
                     {
                         Slot = slotData.Slot,
                         Algorithm = slotData.Algorithm,
@@ -115,7 +117,8 @@ namespace VirotYubikey.Cmdlets.PIV
                         Certificate = certificate,
                         PublicKey = dotNetPublicKey,
                     };
-                    WriteObject(customObject);
+                    WriteObject(returnSlot);
+
                 }
                 catch (Exception e)
                 {

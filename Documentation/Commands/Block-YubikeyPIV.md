@@ -1,6 +1,6 @@
 ﻿---
 external help file: VirotYubikey.dll-Help.xml
-Module Name: VirotYubikey
+Module Name: virotYubikey
 online version:
 schema: 2.0.0
 ---

@@ -64,6 +64,8 @@ namespace VirotYubikey.Cmdlets.PIV
                 throw new Exception($"Failed to get public key for slot 0x{Slot.ToString("X2")}, does there exist a key?", e);
             }
 
+
+
             using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
 
             if (publicKey is PivRsaPublicKey)

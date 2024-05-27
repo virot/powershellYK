@@ -47,7 +47,7 @@ namespace VirotYubikey.Cmdlets.PIV
             }
             catch (Exception e)
             {
-                throw new Exception("Could not connect to Yubikey PIV", e);
+                throw new Exception("Could not connect to Yubikey PIV Session", e);
             }
             try
             {

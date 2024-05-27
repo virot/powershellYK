@@ -1,6 +1,6 @@
 ﻿---
 external help file: VirotYubikey.dll-Help.xml
-Module Name: VirotYubikey
+Module Name: virotYubikey
 online version:
 schema: 2.0.0
 ---
@@ -13,8 +13,9 @@ Create a new private key
 ## SYNTAX
 
 ```
-New-YubikeyPIVKey [-Slot] <Byte> [-Algorithm] <PivAlgorithm> [[-PinPolicy] <PivPinPolicy>]
- [[-TouchPolicy] <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-YubikeyPIVKey [-Slot] <Byte> -Algorithm <PivAlgorithm> [-PinPolicy <PivPinPolicy>]
+ [[-TouchPolicy] <PivTouchPolicy>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,14 +25,14 @@ This cmdlet will create a new key, this can be done with either RSA or ECC keys.
 
 ### Example 1
 ```powershell
-PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm EccP384 
+PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm EccP384
 ```
 
 Creates a new Elliptic curve P-384 key in slot 0x9a.
 
 ### Example 2
 ```powershell
-PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm RSA2048 -PinPolicy Never 
+PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm RSA2048 -PinPolicy Never
 ```
 
 Create a RSA2048 in slot 0x9a with a PIN policy of never.
@@ -52,9 +53,10 @@ Algoritm
 Type: PivAlgorithm
 Parameter Sets: (All)
 Aliases:
+Accepted values: Rsa1024, Rsa2048, EccP256, EccP384
 
 Required: True
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -67,9 +69,25 @@ PinPolicy
 Type: PivPinPolicy
 Parameter Sets: (All)
 Aliases:
+Accepted values: Default, Never, None, Once
 
 Required: False
-Position: 0
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

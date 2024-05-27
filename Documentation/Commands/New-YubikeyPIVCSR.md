@@ -1,6 +1,6 @@
 ﻿---
 external help file: VirotYubikey.dll-Help.xml
-Module Name: VirotYubikey
+Module Name: virotYubikey
 online version:
 schema: 2.0.0
 ---
@@ -13,8 +13,8 @@ Creates a CSR for a slot in the Yubikey
 ## SYNTAX
 
 ```
-New-YubikeyPIVCSR -Slot <Byte> [-Attestation] [[-Subjectname] <String>] [[-OutFile] <String>]
- [[-HashAlgorithm] <HashAlgorithmName>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+New-YubikeyPIVCSR -Slot <Byte> [-Attestation] [-Subjectname <String>] [-OutFile <String>]
+ [-HashAlgorithm <HashAlgorithmName>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -54,7 +54,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -70,7 +70,7 @@ Aliases:
 Accepted values: SHA1, SHA256, SHA384, SHA512
 
 Required: False
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -85,7 +85,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -115,7 +115,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -130,7 +130,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

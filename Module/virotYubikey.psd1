@@ -12,7 +12,7 @@
 RootModule = 'VirotYubikey.dll'
 
 # Version number of this module.
-ModuleVersion = '0.0.3.1'
+ModuleVersion = '0.0.4.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -69,7 +69,7 @@ FormatsToProcess = @('VirotYubikey.format.ps1xml')
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @()
+# FunctionsToExport = @()
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @(
@@ -79,6 +79,7 @@ CmdletsToExport = @(
  'Find-Yubikey',
  'Connect-YubikeyFIDO2',
  'Get-YubikeyFIDO2Credentials',
+ 'Assert-YubikeyPIV',
  'Block-YubikeyPIV',
  'Connect-YubikeyPIV',
  'Export-YubikeyPIVCertificate',
@@ -92,7 +93,7 @@ CmdletsToExport = @(
 )
 
 # Variables to export from this module
-VariablesToExport = '*'
+VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = @()

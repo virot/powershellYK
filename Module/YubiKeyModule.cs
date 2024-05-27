@@ -40,4 +40,23 @@ namespace VirotYubikey
         }
     }
 #endif //WINDOWS
+
+    public class MyModuleAssemblyCleanup: IModuleAssemblyCleanup
+    {
+        public void OnRemove(PSModuleInfo psModuleInfo)
+        {
+            if (YubiKeyModule._pivSession is not null)
+            {
+                YubiKeyModule._pivSession.Dispose();
+            }
+            if (YubiKeyModule._fido2Session is not null)
+            {
+                YubiKeyModule._fido2Session.Dispose();
+            }
+            if (YubiKeyModule._connection is not null)
+            {
+                YubiKeyModule._connection.Dispose();
+            }
         }
+    }
+}

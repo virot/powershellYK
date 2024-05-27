@@ -1,11 +1,5 @@
 ﻿using System.Management.Automation;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using Yubico.YubiKey;
-using Yubico.YubiKey.Piv;
-using Yubico.YubiKey.Piv.Commands;
-using System.Security.Cryptography;
-using VirotYubikey.support;
 
 
 namespace VirotYubikey.Cmdlets.PIV
@@ -13,8 +7,11 @@ namespace VirotYubikey.Cmdlets.PIV
     [Cmdlet(VerbsData.Export, "YubikeyPIVCertificate")]
     public class ExportYubiKeyPIVCertificateCommand : Cmdlet
     {
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slot to extract")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slot to extract", ParameterSetName = "Slot")]
         public byte Slot { get; set; }
+
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Export Attestation certificate", ParameterSetName = "AttestationCertificate")]
+        public SwitchParameter AttestationCertificate { get; set; }
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Output file")]
         public string? OutFile { get; set; } = null;
@@ -36,13 +33,20 @@ namespace VirotYubikey.Cmdlets.PIV
                 }
             }
 
-            try
+            if (AttestationCertificate.IsPresent)
             {
-                certificate = YubiKeyModule._pivSession.GetCertificate(Slot);
+                certificate = YubiKeyModule._pivSession.GetAttestationCertificate();
             }
-            catch (Exception e)
+            else
             {
-                throw new Exception($"Failed to get certificate for slot 0x{Slot.ToString("X2")}", e);
+                try
+                {
+                    certificate = YubiKeyModule._pivSession.GetCertificate(Slot);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Failed to get certificate for slot 0x{Slot.ToString("X2")}", e);
+                }
             }
 
             if (OutFile is not null)

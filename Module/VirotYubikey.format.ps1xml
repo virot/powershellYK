@@ -1,5 +1,114 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
   <ViewDefinitions>
+    <View>
+      <Name>VirotYubikey.PIV.SlotInfo</Name>
+      <ViewSelectedBy>
+        <TypeName>VirotYubikey.PIV.SlotInfo</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem>
+                <PropertyName>Slot</PropertyName>
+                <FormatString>0x{0:X}</FormatString>
+              </ListItem>
+              <ListItem>
+                <PropertyName>KeyStatus</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>Algorithm</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>PinPolicy</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>TouchPolicy</PropertyName>
+              </ListItem>
+              <ListItem>
+                <Label>Subjectname</Label>
+                <ScriptBlock>$_.Certificate.SubjectName.Name</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>Issuer</Label>
+                <ScriptBlock>$_.Certificate.IssuerName.Name</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>NotBefore</Label>
+                <ScriptBlock>$_.Certificate.NotBefore</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>NotAfter</Label>
+                <ScriptBlock>$_.Certificate.NotAfter</ScriptBlock>
+              </ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+    <View>
+      <Name>VirotYubikey.PIV.SlotInfo</Name>
+      <ViewSelectedBy>
+        <TypeName>VirotYubikey.PIV.SlotInfo</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader>
+            <Label>Subjectname</Label>
+            <Width>32</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Issuer</Label>
+            <Width>32</Width>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>NotBefore</Label>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>NotAfter</Label>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Slot</PropertyName>
+                <FormatString>0x{0:X}</FormatString>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>KeyStatus</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Algorithm</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>PinPolicy</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>TouchPolicy</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>$_.Certificate.SubjectName.Name</ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>$_.Certificate.IssuerName.Name</ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>$_.Certificate.NotBefore</ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>$_.Certificate.NotAfter</ScriptBlock>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
   </ViewDefinitions>
 </Configuration>
