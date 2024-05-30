@@ -22,7 +22,7 @@ namespace VirotYubikey.Cmdlets.PIV
 
         protected override void ProcessRecord()
         {
-            X509Certificate2 certificate = null;
+            X509Certificate2? certificate = null;
             if (YubiKeyModule._pivSession is null)
             {
                 //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");

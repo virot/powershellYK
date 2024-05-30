@@ -49,7 +49,6 @@ namespace VirotYubikey.Cmdlets.PIV
             {
                 publicKey = YubiKeyModule._pivSession!.GetMetadata(Slot).PublicKey;
             }
-            catch (InvalidOperationException) { publicKey = null; }
             catch (Exception e)
             {
                 throw new Exception($"Failed to get public key for slot 0x{Slot.ToString("X2")}", e);
@@ -87,6 +86,10 @@ namespace VirotYubikey.Cmdlets.PIV
                         throw new Exception("Failed to load certificate");
                     }
                 }
+                else
+                {
+                    throw new Exception("Certificate is not a valid type");
+                }
             }
             else
             {
@@ -121,8 +124,7 @@ namespace VirotYubikey.Cmdlets.PIV
                 }
             }
             else
-            {
-                using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
+            {                using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
                 ECDsa certificatePublicKey = _certificate!.GetECDsaPublicKey();
                 if (certificatePublicKey.ExportParameters(false).Q.X.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.X) &&
                                        certificatePublicKey.ExportParameters(false).Q.Y.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.Y))

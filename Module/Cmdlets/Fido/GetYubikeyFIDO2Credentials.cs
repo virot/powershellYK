@@ -4,6 +4,8 @@ using Yubico.YubiKey.Fido2;
 using VirotYubikey.support;
 using System.Data.Common;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+using VirotYubikey.FIDO2;
 
 namespace VirotYubikey.Cmdlets.Fido
 {
@@ -29,7 +31,21 @@ namespace VirotYubikey.Cmdlets.Fido
 
             try
             {
-                WriteObject(YubiKeyModule._fido2Session.EnumerateRelyingParties());
+                var RelyingParties = YubiKeyModule._fido2Session!.EnumerateRelyingParties();
+                foreach (RelyingParty RelyingParty in RelyingParties)
+                {
+                    var relayCredentials = YubiKeyModule._fido2Session!.EnumerateCredentialsForRelyingParty(RelyingParty);
+                    foreach (CredentialUserInfo user in relayCredentials)
+                    {
+                        Credentials credentials = new Credentials
+                        {
+                            Site = RelyingParty.Id,
+                            Name = user.User.Name,
+                            DisplayName = user.User.DisplayName,
+                        };
+                        WriteObject(credentials);
+                    }
+                }
             }
             catch (Exception e)
             {

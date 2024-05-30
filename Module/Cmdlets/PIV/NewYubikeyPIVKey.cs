@@ -1,5 +1,7 @@
 ﻿using System.Management.Automation;
+using System.Security.Cryptography;
 using Yubico.YubiKey.Piv;
+using Yubico.YubiKey.Sample.PivSampleCode;
 
 
 namespace VirotYubikey.Cmdlets.PIV
@@ -20,9 +22,11 @@ namespace VirotYubikey.Cmdlets.PIV
         public PivPinPolicy PinPolicy { get; set; } = PivPinPolicy.Default;
 
         [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "TouchPolicy")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "TouchPolicy")]
         public PivTouchPolicy TouchPolicy { get; set; } = PivTouchPolicy.Default;
 
+        [Parameter(Mandatory = false, HelpMessage = "Returns an object that represents the item with which you're working. By default, this cmdlet doesn't generate any output.")]
+        public SwitchParameter PassThru { get; set; }
         protected override void ProcessRecord()
         {
             if (YubiKeyModule._pivSession is null)
@@ -42,7 +46,7 @@ namespace VirotYubikey.Cmdlets.PIV
             bool keyExists = false;
             try
             {
-                PivPublicKey pubkey = YubiKeyModule._pivSession.GetMetadata(Slot).PublicKey;
+                PivPublicKey pubkey = YubiKeyModule._pivSession!.GetMetadata(Slot).PublicKey;
                 keyExists = true;
             }
             catch { }
@@ -53,10 +57,24 @@ namespace VirotYubikey.Cmdlets.PIV
                 {
                     WriteDebug("ProcessRecord in New-YubikeyPIVKey");
                     PivPublicKey publicKey = YubiKeyModule._pivSession!.GenerateKeyPair(Slot, Algorithm, PinPolicy, TouchPolicy);
-                    if (publicKey is not null) { 
-                        WriteObject("KeyPair created");
+                    if (publicKey is not null) {
+                        if (PassThru.IsPresent)
+                        {
+                            using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
+                            if (publicKey is PivRsaPublicKey)
+                            {
+                                WriteObject((RSA)dotNetPublicKey);
+                            }
+                            else
+                            { 
+                                WriteObject((ECDsa)dotNetPublicKey);
+                            }
+                        }
                     }
-                    else { throw new Exception("Could not create keypair"); }
+                    else
+                    {
+                        throw new Exception("Could not create keypair");
+                    }
                 }
                 catch (Exception e)
                 {

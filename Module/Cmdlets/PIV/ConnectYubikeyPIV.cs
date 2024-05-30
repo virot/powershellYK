@@ -43,7 +43,7 @@ namespace VirotYubikey.Cmdlets.PIV
             try
             {
                 WriteDebug("Connecting to Yubikey PIV Session");
-                YubiKeyModule._pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey);
+                YubiKeyModule._pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!);
             }
             catch (Exception e)
             {

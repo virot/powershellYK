@@ -44,16 +44,20 @@ namespace VirotYubikey.Cmdlets.Other
                 if (CertificateRequest.BaseObject is string)
                 {
                     WriteDebug("CertificateRequest is string");
-                    match = regex.Match((string)CertificateRequest!.BaseObject.ToString());
+                    match = regex.Match(CertificateRequest.BaseObject.ToString());
                     if (match.Success)
                     {
                         WriteDebug("CertificateRequest is PEM string");
-                        _CertificateRequest = LoadSigningRequestPem((string)CertificateRequest.BaseObject, HashAlgorithmName.SHA256, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
+                        _CertificateRequest = LoadSigningRequestPem((string)CertificateRequest!.BaseObject, HashAlgorithmName.SHA256, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
                     }
                     else if (System.IO.File.Exists((string)CertificateRequest.BaseObject))
                     {
-                        string CertificateRequestString = System.IO.File.ReadAllText((string)CertificateRequest.BaseObject);
+                        string CertificateRequestString = System.IO.File.ReadAllText((string)CertificateRequest!.BaseObject);
                         _CertificateRequest = LoadSigningRequestPem(CertificateRequestString, HashAlgorithmName.SHA256, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("String must contain PEM certificate request or path to same.", "CertificateRequest");
                     }
                 }
                 else if (CertificateRequest.BaseObject is byte[])
@@ -67,7 +71,7 @@ namespace VirotYubikey.Cmdlets.Other
                 if (AttestionCertificate.BaseObject is string)
                 {
                     WriteDebug("AttestionCertificate is string");
-                    match = regex.Match((string)AttestionCertificate!.BaseObject.ToString());
+                    match = regex.Match(AttestionCertificate!.BaseObject.ToString());
                     if (match.Success)
                     {
                         WriteDebug("AttestionCertificate is PEM string");
@@ -92,10 +96,9 @@ namespace VirotYubikey.Cmdlets.Other
             }
             else
             {
-
-                extensioncsr = _CertificateRequest.CertificateExtensions
+                extensioncsr = _CertificateRequest!.CertificateExtensions
                     .Cast<X509Extension>()
-                    .FirstOrDefault(e => e.Oid.Value == "1.3.6.1.4.1.41482.3.11");
+                    .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.11");
                 if (extensioncsr is not null)
                 {
                     _AttestionCertificate = new X509Certificate2(extensioncsr.RawData);
@@ -111,7 +114,7 @@ namespace VirotYubikey.Cmdlets.Other
                 if (IntermediateCertificate.BaseObject is string)
                 {
                     WriteDebug("IntermediateCertificate is string");
-                    match = regex.Match((string)IntermediateCertificate.BaseObject.ToString());
+                    match = regex.Match(IntermediateCertificate.BaseObject.ToString());
                     if (match.Success)
                     {
                         WriteDebug("IntermediateCertificate is PEM string");
@@ -137,9 +140,9 @@ namespace VirotYubikey.Cmdlets.Other
             else
             {
                 // Read from CSR 1.3.6.1.4.1.41482.3.2
-                extensioncsr = _CertificateRequest.CertificateExtensions
+                extensioncsr = _CertificateRequest!.CertificateExtensions
                     .Cast<X509Extension>()
-                    .FirstOrDefault(e => e.Oid.Value == "1.3.6.1.4.1.41482.3.2");
+                    .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.2");
                 if (extensioncsr is not null)
                 {
                     _IntermediateCertificate = new X509Certificate2(extensioncsr.RawData);

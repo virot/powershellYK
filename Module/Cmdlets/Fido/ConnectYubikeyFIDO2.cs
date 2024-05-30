@@ -45,10 +45,11 @@ namespace VirotYubikey.Cmdlets.Fido
                     throw new Exception(e.Message, e);
                 }
             }
+
             try
             {
                 WriteDebug("Connecting to Yubikey FIDO2 Session");
-                YubiKeyModule._fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey);
+                YubiKeyModule._fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!);
             }
             catch (Exception e)
             {

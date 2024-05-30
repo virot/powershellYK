@@ -95,8 +95,8 @@ namespace VirotYubikey.Cmdlets.PIV
                     }
                     break;
                 case "ChangePIN":
-                    pinarray = System.Text.Encoding.UTF8.GetBytes(PIN);
-                    newpinarray = System.Text.Encoding.UTF8.GetBytes(NewPIN);
+                    pinarray = System.Text.Encoding.UTF8.GetBytes(PIN!);
+                    newpinarray = System.Text.Encoding.UTF8.GetBytes(NewPIN!);
                     try
                     {
                         YubiKeyModule._pivSession!.TryChangePin(pinarray, newpinarray, out retriesLeft);
@@ -112,8 +112,8 @@ namespace VirotYubikey.Cmdlets.PIV
                     }
                     break;
                 case "ChangePUK":
-                    pukarray = System.Text.Encoding.UTF8.GetBytes(PUK);
-                    newpukarray = System.Text.Encoding.UTF8.GetBytes(NewPUK);
+                    pukarray = System.Text.Encoding.UTF8.GetBytes(PUK!);
+                    newpukarray = System.Text.Encoding.UTF8.GetBytes(NewPUK!);
                     try
                     {
                         YubiKeyModule._pivSession!.TryChangePuk(pukarray, newpukarray, out retriesLeft);
@@ -129,8 +129,8 @@ namespace VirotYubikey.Cmdlets.PIV
                     }
                     break;
                 case "ResetPIN":
-                    pukarray = System.Text.Encoding.UTF8.GetBytes(PUK);
-                    newpinarray = System.Text.Encoding.UTF8.GetBytes(NewPIN);
+                    pukarray = System.Text.Encoding.UTF8.GetBytes(PUK!);
+                    newpinarray = System.Text.Encoding.UTF8.GetBytes(NewPIN!);
                     try
                     {
                         YubiKeyModule._pivSession!.TryResetPin(pukarray, newpinarray, out retriesLeft);
@@ -146,8 +146,8 @@ namespace VirotYubikey.Cmdlets.PIV
                     }
                     break;
                 case "ChangeManagement":
-                    byte[] ManagementKeyarray = HexConverter.StringToByteArray(ManagementKey);
-                    byte[] NewManagementKeyarray = HexConverter.StringToByteArray(NewManagementKey);
+                    byte[] ManagementKeyarray = HexConverter.StringToByteArray(ManagementKey!);
+                    byte[] NewManagementKeyarray = HexConverter.StringToByteArray(NewManagementKey!);
                     try
                     {
                         if (YubiKeyModule._pivSession!.TryChangeManagementKey(ManagementKeyarray, NewManagementKeyarray, (PivTouchPolicy)TouchPolicy, (PivAlgorithm)Algorithm))
