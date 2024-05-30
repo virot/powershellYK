@@ -14,14 +14,14 @@ Export certificate from Yubikey PIV
 
 ### Slot
 ```
-Export-YubikeyPIVCertificate -Slot <Byte> [-OutFile <String>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Export-YubikeyPIVCertificate -Slot <Byte> [-OutFile <String>] [-PEMEncoded]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### AttestationCertificate
 ```
-Export-YubikeyPIVCertificate -AttestationCertificate [-OutFile <String>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Export-YubikeyPIVCertificate [-AttestationIntermediateCertificate] [-OutFile <String>] [-PEMEncoded]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -52,13 +52,13 @@ Exports the builtin intermediate attestation certificate.
 
 ## PARAMETERS
 
-### -AttestationCertificate
+### -AttestationIntermediateCertificate
 Export Attestation certificate
 
 ```yaml
 Type: SwitchParameter
 Parameter Sets: AttestationCertificate
-Aliases:
+Aliases: AttestationCertificate
 
 Required: True
 Position: Named
@@ -74,6 +74,36 @@ Output file
 Type: String
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PEMEncoded
+Encode output as PEM
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

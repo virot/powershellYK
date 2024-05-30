@@ -14,7 +14,7 @@ Creates a CSR for a slot in the Yubikey
 
 ```
 New-YubikeyPIVCSR -Slot <Byte> [-Attestation] [-Subjectname <String>] [-OutFile <String>]
- [-HashAlgorithm <HashAlgorithmName>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -81,6 +81,21 @@ Save CSR as file
 
 ```yaml
 Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PEMEncoded
+Encode output as PEM
+
+```yaml
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 

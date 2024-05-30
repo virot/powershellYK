@@ -12,14 +12,18 @@ using Yubico.YubiKey.Sample.PivSampleCode;
 namespace VirotYubikey.Cmdlets.PIV
 {
     [Cmdlet(VerbsLifecycle.Assert, "YubikeyPIV")]
-    public class AssertYubiKeyPIVCommand : Cmdlet
+    public class AssertYubiKeyPIVCommand : PSCmdlet
     {
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot")]
-
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "ExportToFile")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "DisplayOnScreen")]
         public byte Slot { get; set; }
 
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Location of attestation certificate")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Location of attestation certificate", ParameterSetName = "ExportToFile")]
         public string? OutFile { get; set; } = null;
+
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Encode output as PEM", ParameterSetName = "DisplayOnScreen")]
+        public SwitchParameter PEMEncoded { get; set; }
+
 
         protected override void ProcessRecord()
         {
@@ -32,7 +36,14 @@ namespace VirotYubikey.Cmdlets.PIV
             }
             else
             {
-                WriteObject(pemData);
+                if (PEMEncoded.IsPresent)
+                {
+                    WriteObject(pemData);
+                }
+                else
+                {
+                    WriteObject(slotAttestationCertificate);
+                }
             }
         }
 

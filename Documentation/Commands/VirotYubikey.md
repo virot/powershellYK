@@ -12,7 +12,7 @@ A powershell module that use the Yubikey SDK to allow interaction with yubikeys
 
 ## virotYubikey Cmdlets
 ### [Assert-YubikeyPIV](Assert-YubikeyPIV.md)
-{{ Fill in the Synopsis }}
+Create attestation certificate
 
 ### [Block-YubikeyPIV](Block-YubikeyPIV.md)
 Block out PIN or PUK codes
@@ -39,7 +39,7 @@ Lists all Yubikeys on system
 Returns the connected Yubikey
 
 ### [Get-YubikeyFIDO2Credentials](Get-YubikeyFIDO2Credentials.md)
-{{ Fill in the Synopsis }}
+Read the FIDO2 Credentials
 
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
 {{ Fill in the Synopsis }}

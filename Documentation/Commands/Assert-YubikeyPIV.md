@@ -1,4 +1,4 @@
----
+﻿---
 external help file: VirotYubikey.dll-Help.xml
 Module Name: virotYubikey
 online version:
@@ -12,8 +12,14 @@ Create attestation certificate
 
 ## SYNTAX
 
+### ExportToFile
 ```
-Assert-YubikeyPIV -Slot <Byte> [-OutFile <String>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Assert-YubikeyPIV -Slot <Byte> -OutFile <String> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### DisplayOnScreen
+```
+Assert-YubikeyPIV -Slot <Byte> [-PEMEncoded] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -35,8 +41,38 @@ Location of attestation certificate
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: ExportToFile
 Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PEMEncoded
+Encode output as PEM
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: DisplayOnScreen
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

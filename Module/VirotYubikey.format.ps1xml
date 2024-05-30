@@ -110,5 +110,107 @@
         </TableRowEntries>
       </TableControl>
     </View>
+    <View>
+      <Name>VirotYubikey.Attestion</Name>
+      <ViewSelectedBy>
+        <TypeName>VirotYubikey.Attestion</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem>
+                <PropertyName>Slot</PropertyName>
+                <FormatString>0x{0:X}</FormatString>
+              </ListItem>
+              <ListItem>
+                <PropertyName>AttestionValidated</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>SerialNumber</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>FirmwareVersion</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>PinPolicy</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>TouchPolicy</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>FormFactor</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>isFIPSSeries</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>isCSPNSeries</PropertyName>
+              </ListItem>
+              <ListItem>
+                <PropertyName>AttestionMatchesCSR</PropertyName>
+              </ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
+    <View>
+      <Name>VirotYubikey.Attestion</Name>
+      <ViewSelectedBy>
+        <TypeName>VirotYubikey.Attestion</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+          <TableColumnHeader />
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Slot</PropertyName>
+                <FormatString>0x{0:X}</FormatString>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>AttestionValidated</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>SerialNumber</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>FirmwareVersion</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>PinPolicy</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>TouchPolicy</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>FormFactor</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>isFIPSSeries</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>isCSPNSeries</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>AttestionMatchesCSR</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
   </ViewDefinitions>
 </Configuration>

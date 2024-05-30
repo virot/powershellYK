@@ -60,12 +60,12 @@ namespace VirotYubikey.Cmdlets.PIV
             {
                 try
                 {
-                    WriteDebug($"Reading certificate from '{Path}'");
+                    WriteDebug($"Reading PEM certificate from '{Path}'");
                     _certificate = new X509Certificate2(Path);
                 }
-                catch
+                catch (Exception e)
                 {
-                    throw new Exception("Failed to load certificate");
+                    throw new Exception("Failed to load certificate", e);
                 }
             }
             else if (Certificate is not null)

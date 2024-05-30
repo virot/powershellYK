@@ -1,4 +1,5 @@
 ﻿using System.Management.Automation;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
 
@@ -9,12 +10,15 @@ namespace VirotYubikey.Cmdlets.PIV
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slot to extract", ParameterSetName = "Slot")]
         public byte Slot { get; set; }
-
+        [Alias("AttestationCertificate")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Export Attestation certificate", ParameterSetName = "AttestationCertificate")]
-        public SwitchParameter AttestationCertificate { get; set; }
+        public SwitchParameter AttestationIntermediateCertificate { get; set; }
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Output file")]
         public string? OutFile { get; set; } = null;
+
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Encode output as PEM")]
+        public SwitchParameter PEMEncoded { get; set; }
 
         protected override void ProcessRecord()
         {
@@ -33,7 +37,7 @@ namespace VirotYubikey.Cmdlets.PIV
                 }
             }
 
-            if (AttestationCertificate.IsPresent)
+            if (AttestationIntermediateCertificate.IsPresent)
             {
                 certificate = YubiKeyModule._pivSession.GetAttestationCertificate();
             }
@@ -49,14 +53,23 @@ namespace VirotYubikey.Cmdlets.PIV
                 }
             }
 
+            byte[] slotAttestationCertificateBytes = certificate.Export(X509ContentType.Cert);
+            string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
+
             if (OutFile is not null)
             {
-                string base64content = Convert.ToBase64String(certificate.Export(X509ContentType.Cert));
-                File.WriteAllText(OutFile, base64content);
+                File.WriteAllText(OutFile, pemData);
             }
             else
             {
-                WriteObject(certificate);
+                if (PEMEncoded.IsPresent)
+                {
+                    WriteObject(pemData);
+                }
+                else
+                {
+                    WriteObject(certificate);
+                }
             }
         }
     }

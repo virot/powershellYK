@@ -1,6 +1,6 @@
 ﻿---
 external help file: VirotYubikey.dll-Help.xml
-Module Name: VirotYubikey
+Module Name: virotYubikey
 online version:
 schema: 2.0.0
 ---
@@ -14,44 +14,33 @@ schema: 2.0.0
 
 ### ChangeRetries
 ```
-Set-YubikeyPIV -PinRetries <Byte> -PukRetries <Byte> [-PIN <String>] [-NewPIN <String>] [-PUK <String>]
- [-NewPUK <String>] [-ManagementKey <String>] [-NewManagementKey <String>] [-Algorithm <PivAlgorithm>]
- [-TouchPolicy <PivTouchPolicy>] [-newCHUID] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV -PinRetries <Byte> -PukRetries <Byte> [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ChangePIN
 ```
-Set-YubikeyPIV [-PinRetries <Byte>] [-PukRetries <Byte>] -PIN <String> -NewPIN <String> [-PUK <String>]
- [-NewPUK <String>] [-ManagementKey <String>] [-NewManagementKey <String>] [-Algorithm <PivAlgorithm>]
- [-TouchPolicy <PivTouchPolicy>] [-newCHUID] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV -PIN <String> -NewPIN <String> [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### UnblockPIN
 ```
-Set-YubikeyPIV [-PinRetries <Byte>] [-PukRetries <Byte>] [-PIN <String>] -NewPIN <String> -PUK <String>
- [-NewPUK <String>] [-ManagementKey <String>] [-NewManagementKey <String>] [-Algorithm <PivAlgorithm>]
- [-TouchPolicy <PivTouchPolicy>] [-newCHUID] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV -NewPIN <String> -PUK <String> [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ChangePUK
 ```
-Set-YubikeyPIV [-PinRetries <Byte>] [-PukRetries <Byte>] [-PIN <String>] [-NewPIN <String>] -PUK <String>
- -NewPUK <String> [-ManagementKey <String>] [-NewManagementKey <String>] [-Algorithm <PivAlgorithm>]
- [-TouchPolicy <PivTouchPolicy>] [-newCHUID] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV -PUK <String> -NewPUK <String> [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ChangeManagement
 ```
-Set-YubikeyPIV [-PinRetries <Byte>] [-PukRetries <Byte>] [-PIN <String>] [-NewPIN <String>] [-PUK <String>]
- [-NewPUK <String>] -ManagementKey <String> -NewManagementKey <String> -Algorithm <PivAlgorithm>
- -TouchPolicy <PivTouchPolicy> [-newCHUID] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV -ManagementKey <String> -NewManagementKey <String> -Algorithm <PivAlgorithm>
+ -TouchPolicy <PivTouchPolicy> [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### newCHUID
 ```
-Set-YubikeyPIV [-PinRetries <Byte>] [-PukRetries <Byte>] [-PIN <String>] [-NewPIN <String>] [-PUK <String>]
- [-NewPUK <String>] [-ManagementKey <String>] [-NewManagementKey <String>] [-Algorithm <PivAlgorithm>]
- [-TouchPolicy <PivTouchPolicy>] [-newCHUID] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV [-newCHUID] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -73,19 +62,6 @@ Algoritm
 
 ```yaml
 Type: PivAlgorithm
-Parameter Sets: ChangeRetries, ChangePIN, UnblockPIN, ChangePUK, newCHUID
-Aliases:
-Accepted values: TripleDES, AES128, AES192, AES256
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: PivAlgorithm
 Parameter Sets: ChangeManagement
 Aliases:
 Accepted values: TripleDES, AES128, AES192, AES256
@@ -99,18 +75,6 @@ Accept wildcard characters: False
 
 ### -ManagementKey
 Current ManagementKey
-
-```yaml
-Type: String
-Parameter Sets: ChangeRetries, ChangePIN, UnblockPIN, ChangePUK, newCHUID
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ```yaml
 Type: String
@@ -129,18 +93,6 @@ Generate new CHUID
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: ChangeRetries, ChangePIN, UnblockPIN, ChangePUK, ChangeManagement
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: SwitchParameter
 Parameter Sets: newCHUID
 Aliases:
 
@@ -153,18 +105,6 @@ Accept wildcard characters: False
 
 ### -NewManagementKey
 New ManagementKey
-
-```yaml
-Type: String
-Parameter Sets: ChangeRetries, ChangePIN, UnblockPIN, ChangePUK, newCHUID
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ```yaml
 Type: String
@@ -183,18 +123,6 @@ New PIN
 
 ```yaml
 Type: String
-Parameter Sets: ChangeRetries, ChangePUK, ChangeManagement, newCHUID
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: String
 Parameter Sets: ChangePIN, UnblockPIN
 Aliases:
 
@@ -210,18 +138,6 @@ New PUK
 
 ```yaml
 Type: String
-Parameter Sets: ChangeRetries, ChangePIN, UnblockPIN, ChangeManagement, newCHUID
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: String
 Parameter Sets: ChangePUK
 Aliases:
 
@@ -234,18 +150,6 @@ Accept wildcard characters: False
 
 ### -PIN
 Current PIN
-
-```yaml
-Type: String
-Parameter Sets: ChangeRetries, UnblockPIN, ChangePUK, ChangeManagement, newCHUID
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ```yaml
 Type: String
@@ -274,18 +178,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-```yaml
-Type: Byte
-Parameter Sets: ChangePIN, UnblockPIN, ChangePUK, ChangeManagement, newCHUID
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -ProgressAction
 {{ Fill ProgressAction Description }}
 
@@ -303,18 +195,6 @@ Accept wildcard characters: False
 
 ### -PUK
 Current PUK
-
-```yaml
-Type: String
-Parameter Sets: ChangeRetries, ChangePIN, ChangeManagement, newCHUID
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ```yaml
 Type: String
@@ -343,33 +223,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-```yaml
-Type: Byte
-Parameter Sets: ChangePIN, UnblockPIN, ChangePUK, ChangeManagement, newCHUID
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -TouchPolicy
 TouchPolicy
-
-```yaml
-Type: PivTouchPolicy
-Parameter Sets: ChangeRetries, ChangePIN, UnblockPIN, ChangePUK, newCHUID
-Aliases:
-Accepted values: Default, Never, Always, Cached
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ```yaml
 Type: PivTouchPolicy

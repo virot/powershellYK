@@ -31,6 +31,9 @@ namespace VirotYubikey.Cmdlets.PIV
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "HashAlgoritm")]
         public HashAlgorithmName HashAlgorithm { get; set; } = HashAlgorithmName.SHA256;
 
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Encode output as PEM")]
+        public SwitchParameter PEMEncoded { get; set; }
+
         protected override void ProcessRecord()
         {
             CertificateRequest request;
@@ -113,7 +116,14 @@ namespace VirotYubikey.Cmdlets.PIV
             }
             else
             {
-                WriteObject(pemData);
+                if (PEMEncoded.IsPresent)
+                {
+                    WriteObject(pemData);
+                }
+                else
+                {
+                    WriteObject(requestSigned);
+                }
             }
             WriteDebug("ProcessRecord in New-YubikeyPIVCSR");
         }

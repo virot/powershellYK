@@ -14,17 +14,17 @@ Block out PIN or PUK codes
 
 ### BlockBoth
 ```
-Block-YubikeyPIV -PIN -PUK [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Block-YubikeyPIV [-PIN] [-PUK] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### BlockPIN
 ```
-Block-YubikeyPIV -PIN [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Block-YubikeyPIV [-PIN] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### BlockPUK
 ```
-Block-YubikeyPIV -PUK [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Block-YubikeyPIV [-PUK] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -63,18 +63,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-```yaml
-Type: SwitchParameter
-Parameter Sets: BlockPUK
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -ProgressAction
 {{ Fill ProgressAction Description }}
 
@@ -99,18 +87,6 @@ Parameter Sets: BlockBoth, BlockPUK
 Aliases:
 
 Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: BlockPIN
-Aliases:
-
-Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

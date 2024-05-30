@@ -12,7 +12,7 @@
 RootModule = 'VirotYubikey.dll'
 
 # Version number of this module.
-ModuleVersion = '0.0.4.1'
+ModuleVersion = '0.0.5.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -90,6 +90,7 @@ CmdletsToExport = @(
  'New-YubikeyPIVSelfSign',
  'Reset-YubikeyPIV',
  'Set-YubikeyPIV'
+ 'Confirm-YubikeyAttestion'
 )
 
 # Variables to export from this module
