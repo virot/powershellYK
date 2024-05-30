@@ -1,6 +1,4 @@
-Import-Module "$(Split-Path -Parent $MyInvocation.MyCommand.Path)\..\Module\bin\Debug\net8.0\Yubikey_Powershell.dll"
-
-Describe "Test YubikeyPIV PIV/PUK management" {
+Describe "Test YubikeyPIV PIV/PUK management" -Tag "Destructive" {
     BeforeEach {
         {Reset-YubikeyPIV -Confirm:$false} | Should -Not -Throw
         {Connect-YubikeyPIV} | Should -Not -Throw
