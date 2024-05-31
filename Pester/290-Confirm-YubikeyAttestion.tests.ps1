@@ -179,6 +179,12 @@ $pest_int = [System.Security.Cryptography.X509Certificates.X509Certificate2]::ne
     }
 }
 
+Describe "Confirm-YubikeyAttestion Errors" {
+       It -Name "Incorrect string on CertificateRequest" -Test {
+        {Confirm-YubikeyAttestion -CertificateRequest ""} | Should -Throw
+    }
+}
+
 AfterAll -Scriptblock {
     $csr,$attestationcert,$intermediatecert |ForEach {if (Test-Path $_){ Remove-Item $_ }}
 }

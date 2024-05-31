@@ -89,8 +89,9 @@ CmdletsToExport = @(
  'New-YubikeyPIVKey',
  'New-YubikeyPIVSelfSign',
  'Reset-YubikeyPIV',
- 'Set-YubikeyPIV'
- 'Confirm-YubikeyAttestion'
+ 'Set-YubikeyPIV',
+ 'Confirm-YubikeyAttestion',
+ 'ConvertTo-AltSecurity'
 )
 
 # Variables to export from this module

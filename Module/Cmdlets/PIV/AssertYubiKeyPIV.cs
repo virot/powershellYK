@@ -27,6 +27,20 @@ namespace VirotYubikey.Cmdlets.PIV
 
         protected override void ProcessRecord()
         {
+            if (YubiKeyModule._pivSession is null)
+            {
+                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
+                try
+                {
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                    myPowersShellInstance.Invoke();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message, e);
+                }
+            }
+
             X509Certificate2 slotAttestationCertificate = YubiKeyModule._pivSession.CreateAttestationStatement(Slot);
             byte[] slotAttestationCertificateBytes = slotAttestationCertificate.Export(X509ContentType.Cert);
             string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
