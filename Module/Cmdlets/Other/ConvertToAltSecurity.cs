@@ -2,6 +2,7 @@
 using System.Management.Automation;           // Windows PowerShell namespace.
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.RegularExpressions;
 using VirotYubikey.support;
 using Yubico.YubiKey;
@@ -43,11 +44,12 @@ namespace VirotYubikey.Cmdlets.Other
 
             if (_certificate is not null)
             {
+                AlternativeIdentites alternativeIdentites = new AlternativeIdentites();
                 WriteDebug("Certificate successfully loaded");
                 if (_certificate.PublicKey.Oid.FriendlyName == "RSA")
                 {
                     WriteDebug("Certificate public key is of type RSA");
-                    WriteObject(GenerateIdentifier.SSHIdentifier(_certificate.PublicKey.GetRSAPublicKey(), _certificate.Subject));
+                    alternativeIdentites.sshAuthorized_key = GenerateIdentifier.SSHIdentifier(_certificate.PublicKey.GetRSAPublicKey(), _certificate.Subject);
                 }
                 else if (_certificate.PublicKey.Oid.FriendlyName == "ECC")
                 {
@@ -55,12 +57,24 @@ namespace VirotYubikey.Cmdlets.Other
                     ECParameters publicKeyParam = _certificate.PublicKey.GetECDsaPublicKey().ExportParameters(false);
                     WriteDebug($"ECC Curve: {publicKeyParam.Curve.Oid.FriendlyName}");
 
-                    WriteObject(GenerateIdentifier.SSHIdentifier(_certificate.PublicKey.GetECDsaPublicKey(), _certificate.Subject));
+                    alternativeIdentites.sshAuthorized_key = GenerateIdentifier.SSHIdentifier(_certificate.PublicKey.GetECDsaPublicKey(), _certificate.Subject);
                 }
                 else
                 {
                     throw new Exception("Unknown publickey format");
                 }
+
+                //Extract the Subject Key Identifier / 2.5.29.14
+                X509Extension? stringSKI = _certificate!.Extensions.Cast<X509Extension>().FirstOrDefault(extension => extension.Oid!.Value == "2.5.29.14");
+
+                alternativeIdentites.X509IssuerSubject = $"X509:<I>{_certificate.Issuer}<S>{_certificate.Subject}";
+                alternativeIdentites.X509SubjectOnly = $"X509:<S>{_certificate.Subject}";
+                //alternativeIdentites.X509RFC822 = $"X509:<I>{}";
+                alternativeIdentites.X509IssuerSerialNumber = $"X509:<I>{_certificate.Issuer}<SR>{_certificate.SerialNumber}";
+                alternativeIdentites.X509SKI = $"X509:<SKI>{((X509SubjectKeyIdentifierExtension)stringSKI).SubjectKeyIdentifier}";
+                alternativeIdentites.X509SHA1PublicKey = $"X509:<SHA1-PUKEY>{_certificate.Thumbprint}";
+
+                WriteObject(alternativeIdentites);
             }
             else
             {

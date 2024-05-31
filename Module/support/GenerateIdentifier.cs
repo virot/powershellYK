@@ -50,7 +50,7 @@ namespace VirotYubikey.support
             // Format as an SSH-RSA key
             return $"ssh-rsa {sshKey} {description}";
         }
-        public static object SSHIdentifier(ECDsa publicKey, string description = "")
+        public static string SSHIdentifier(ECDsa publicKey, string description = "")
         {
     
             ECParameters publicKeyParam = publicKey.ExportParameters(false);
