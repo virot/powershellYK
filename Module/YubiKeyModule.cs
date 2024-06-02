@@ -6,6 +6,7 @@ using System;
 using System.Reflection;
 using System.IO;
 using System.Runtime.InteropServices;
+using Yubico.YubiKey.Oath;
 
 namespace VirotYubikey
 {
@@ -15,6 +16,7 @@ namespace VirotYubikey
         public static IYubiKeyConnection? _connection;
         public static PivSession? _pivSession;
         public static Fido2Session? _fido2Session;
+        public static OathSession? _oathSession;
     }
 #if WINDOWS
     public class MyModuleAssemblyInitializer: IModuleAssemblyInitializer
@@ -57,6 +59,10 @@ namespace VirotYubikey
             {
                 YubiKeyModule._connection.Dispose();
             }
+            if (YubiKeyModule._oathSession is not null)
+            {
+                YubiKeyModule._oathSession.Dispose();
+            }   
         }
     }
 }
