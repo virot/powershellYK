@@ -4,7 +4,7 @@ using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 
 
-namespace VirotYubikey.Cmdlets.PIV
+namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.Reset, "YubikeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     [OutputType(typeof(bool))]

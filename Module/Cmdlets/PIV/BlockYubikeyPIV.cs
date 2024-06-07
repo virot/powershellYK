@@ -6,7 +6,7 @@ using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 
 
-namespace VirotYubikey.Cmdlets.PIV
+namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsSecurity.Block, "YubikeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Low)]
     public class BlockYubikeyPIVCommand : Cmdlet

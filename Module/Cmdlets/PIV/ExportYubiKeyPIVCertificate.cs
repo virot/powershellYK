@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
 
-namespace VirotYubikey.Cmdlets.PIV
+namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsData.Export, "YubikeyPIVCertificate")]
     public class ExportYubiKeyPIVCertificateCommand : Cmdlet

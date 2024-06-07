@@ -1,13 +1,13 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
-using VirotYubikey.support;
+using powershellYK.support;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
-using VirotYubikey.FIDO2;
+using powershellYK.FIDO2;
 
-namespace VirotYubikey.Cmdlets.Fido
+namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommon.Get, "YubikeyFIDO2Credentials")]
 

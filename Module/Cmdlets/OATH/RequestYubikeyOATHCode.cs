@@ -1,7 +1,7 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
-using VirotYubikey.support;
+using powershellYK.support;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
@@ -9,7 +9,7 @@ using Yubico.YubiKey.Oath;
 using System.Collections.Generic;
 using System;
 
-namespace VirotYubikey.Cmdlets.OATH
+namespace powershellYK.Cmdlets.OATH
 {
     [Cmdlet(VerbsLifecycle.Request, "YubikeyOATHCode")]
 
@@ -34,7 +34,7 @@ namespace VirotYubikey.Cmdlets.OATH
                 IDictionary <Credential, Code> oathCodes = YubiKeyModule._oathSession!.CalculateAllCredentials();
                 foreach (KeyValuePair<Credential, Code> oathCode in oathCodes)
                 {
-                    WriteObject(new VirotYubikey.OATH.Code.TOTP(oathCode.Key.Issuer != null ? oathCode.Key.Issuer : "", oathCode.Key.Name, oathCode.Value.ValidFrom, oathCode.Value.ValidUntil, oathCode.Value.Value != null ? oathCode.Value.Value : "")) ;
+                    WriteObject(new powershellYK.OATH.Code.TOTP(oathCode.Key.Issuer != null ? oathCode.Key.Issuer : "", oathCode.Key.Name, oathCode.Value.ValidFrom, oathCode.Value.ValidUntil, oathCode.Value.Value != null ? oathCode.Value.Value : "")) ;
                 }
             }
             else if (ParameterSetName == "Specific")
@@ -45,11 +45,11 @@ namespace VirotYubikey.Cmdlets.OATH
 
                     if ((oathCode.ValidFrom is not null) && (oathCode.ValidUntil is not null))
                     {
-                        WriteObject(new VirotYubikey.OATH.Code.TOTP(Credential.Issuer != null ? Credential.Issuer : "", Credential.Name, oathCode.ValidFrom, oathCode.ValidUntil, oathCode.Value != null ? oathCode.Value : ""));
+                        WriteObject(new powershellYK.OATH.Code.TOTP(Credential.Issuer != null ? Credential.Issuer : "", Credential.Name, oathCode.ValidFrom, oathCode.ValidUntil, oathCode.Value != null ? oathCode.Value : ""));
                     }
                     else
                     {
-                        WriteObject(new VirotYubikey.OATH.Code.HOTP(Credential.Issuer != null ? Credential.Issuer : "", Credential.Name, oathCode.Value != null ? oathCode.Value : ""));
+                        WriteObject(new powershellYK.OATH.Code.HOTP(Credential.Issuer != null ? Credential.Issuer : "", Credential.Name, oathCode.Value != null ? oathCode.Value : ""));
                     }
                 }
             }

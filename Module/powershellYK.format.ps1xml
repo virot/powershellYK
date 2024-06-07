@@ -2,9 +2,9 @@
 <Configuration>
   <ViewDefinitions>
     <View>
-      <Name>VirotYubikey.PIV.SlotInfo</Name>
+      <Name>powershellYK.PIV.SlotInfo</Name>
       <ViewSelectedBy>
-        <TypeName>VirotYubikey.PIV.SlotInfo</TypeName>
+        <TypeName>powershellYK.PIV.SlotInfo</TypeName>
       </ViewSelectedBy>
       <ListControl>
         <ListEntries>
@@ -48,9 +48,9 @@
       </ListControl>
     </View>
     <View>
-      <Name>VirotYubikey.PIV.SlotInfo</Name>
+      <Name>powershellYK.PIV.SlotInfo</Name>
       <ViewSelectedBy>
-        <TypeName>VirotYubikey.PIV.SlotInfo</TypeName>
+        <TypeName>powershellYK.PIV.SlotInfo</TypeName>
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>
@@ -111,9 +111,9 @@
       </TableControl>
     </View>
     <View>
-      <Name>VirotYubikey.Attestion</Name>
+      <Name>powershellYK.Attestion</Name>
       <ViewSelectedBy>
-        <TypeName>VirotYubikey.Attestion</TypeName>
+        <TypeName>powershellYK.Attestion</TypeName>
       </ViewSelectedBy>
       <ListControl>
         <ListEntries>
@@ -156,9 +156,9 @@
       </ListControl>
     </View>
     <View>
-      <Name>VirotYubikey.OATH.Codeget-</Name>
+      <Name>powershellYK.OATH.Codeget-</Name>
       <ViewSelectedBy>
-        <TypeName>VirotYubikey.OATH.Code.TOTP</TypeName>
+        <TypeName>powershellYK.OATH.Code.TOTP</TypeName>
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>

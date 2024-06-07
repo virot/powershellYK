@@ -3,7 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey.Piv;
 using System.Management.Automation;
 
-namespace VirotYubikey.PIV
+namespace powershellYK.PIV
 {
     public class SlotInfo
     {

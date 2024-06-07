@@ -9,10 +9,10 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'VirotYubikey.dll'
+RootModule = 'powershellYK.dll'
 
 # Version number of this module.
-ModuleVersion = '0.0.6.1'
+ModuleVersion = '0.0.7.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -30,7 +30,7 @@ CompanyName = ''
 Copyright = '(c) Oscar Virot. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Manage Yubikeys with Powershell'
+Description = 'Powershell wrapper for Yubico .NET SDK. Allows administration of Yubikeys from Powershell.'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '7.0'
@@ -63,7 +63,7 @@ ProcessorArchitecture = 'Amd64'
 # TypesToProcess = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
-FormatsToProcess = @('VirotYubikey.format.ps1xml')
+FormatsToProcess = @('powershellYK.format.ps1xml')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 # NestedModules = @()
@@ -127,7 +127,7 @@ PrivateData = @{
         # LicenseUri = ''
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/virot/VirotYubikey'
+        ProjectUri = 'https://github.com/virot/powershellYK'
 
         # A URL to an icon representing this module.
         # IconUri = ''

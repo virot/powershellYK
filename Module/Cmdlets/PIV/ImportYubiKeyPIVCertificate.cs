@@ -5,12 +5,12 @@ using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 using System.Security.Cryptography;
-using VirotYubikey.support;
+using powershellYK.support;
 using System.Linq.Expressions;
 using Yubico.YubiKey.Sample.PivSampleCode;
 
 
-namespace VirotYubikey.Cmdlets.PIV
+namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsData.Import, "YubikeyPIVCertificate")]
     public class ImportYubiKeyPIVCertificateCommand : Cmdlet

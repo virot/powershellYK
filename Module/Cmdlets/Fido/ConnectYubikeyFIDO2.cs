@@ -1,12 +1,12 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
-using VirotYubikey.support;
+using powershellYK.support;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace VirotYubikey.Cmdlets.Fido
+namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommunications.Connect, "YubikeyFIDO2")]
 

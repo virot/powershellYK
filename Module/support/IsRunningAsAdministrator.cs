@@ -1,6 +1,6 @@
 ﻿using System.Security.Principal;
 
-namespace VirotYubikey.support
+namespace powershellYK.support
 {
     public class PermisionsStuff
     {

@@ -2,10 +2,10 @@
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using System.Security.Cryptography;
-using VirotYubikey.support;
+using powershellYK.support;
 using System.Data.Common;
 
-namespace VirotYubikey.Cmdlets.PIV
+namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommunications.Connect, "YubikeyPIV")]
 

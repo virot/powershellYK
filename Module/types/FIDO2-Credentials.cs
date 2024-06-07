@@ -4,7 +4,7 @@ using Yubico.YubiKey.Piv;
 using System.Management.Automation;
 using Yubico.YubiKey.Fido2;
 
-namespace VirotYubikey.FIDO2
+namespace powershellYK.FIDO2
 {
     public class Credentials
     {

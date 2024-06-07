@@ -1,14 +1,14 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
-using VirotYubikey.support;
+using powershellYK.support;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey.Oath;
 using Yubico.YubiKey.Piv;
 
-namespace VirotYubikey.Cmdlets.OATH
+namespace powershellYK.Cmdlets.OATH
 {
     [Cmdlet(VerbsCommon.New, "YubikeyOATHCredential")]
 

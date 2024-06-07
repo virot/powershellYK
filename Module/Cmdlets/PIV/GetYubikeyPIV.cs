@@ -1,13 +1,13 @@
 ﻿using System.Management.Automation;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using VirotYubikey.PIV;
+using powershellYK.PIV;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Objects;
 using Yubico.YubiKey.Sample.PivSampleCode;
 
 
-namespace VirotYubikey.Cmdlets.PIV
+namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.Get, "YubikeyPIV")]
     public class GetYubikeyPIVCommand : Cmdlet

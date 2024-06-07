@@ -1,12 +1,12 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Oath;
-using VirotYubikey.support;
+using powershellYK.support;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace VirotYubikey.Cmdlets.OATH
+namespace powershellYK.Cmdlets.OATH
 {
     [Cmdlet(VerbsCommunications.Connect, "YubikeyOATH")]
 

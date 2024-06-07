@@ -4,7 +4,7 @@ using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Sample.PivSampleCode;
 
 
-namespace VirotYubikey.Cmdlets.PIV
+namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.New, "YubikeyPIVKey", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class NewYubiKeyPIVKeyCommand : Cmdlet

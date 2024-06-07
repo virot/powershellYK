@@ -5,7 +5,7 @@ using System.Management.Automation;
 using Newtonsoft.Json.Linq;
 using System;
 
-namespace VirotYubikey.OATH.Code
+namespace powershellYK.OATH.Code
 {
     public class TOTP
     {

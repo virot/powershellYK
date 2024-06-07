@@ -6,7 +6,7 @@ using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using static System.Security.Cryptography.X509Certificates.CertificateRequest;
 
-namespace VirotYubikey.Cmdlets.Other
+namespace powershellYK.Cmdlets.Other
 {
     [Cmdlet(VerbsLifecycle.Confirm, "YubikeyAttestion")]
     public class ConfirmYubikeyAttestionCommand : Cmdlet

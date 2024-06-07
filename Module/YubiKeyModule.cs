@@ -8,7 +8,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Yubico.YubiKey.Oath;
 
-namespace VirotYubikey
+namespace powershellYK
 {
     public static class YubiKeyModule
     {

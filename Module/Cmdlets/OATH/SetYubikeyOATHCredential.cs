@@ -2,7 +2,7 @@
 using Yubico.YubiKey.Oath;
 using Yubico.YubiKey.Otp;
 
-namespace VirotYubikey.Cmdlets.OATH
+namespace powershellYK.Cmdlets.OATH
 {
     [Cmdlet(VerbsCommon.Set, "YubikeyOATHCredential")]
 

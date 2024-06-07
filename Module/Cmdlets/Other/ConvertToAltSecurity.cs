@@ -4,13 +4,13 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
-using VirotYubikey.support;
+using powershellYK.support;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Sample.PivSampleCode;
 using static System.Security.Cryptography.X509Certificates.CertificateRequest;
 
-namespace VirotYubikey.Cmdlets.Other
+namespace powershellYK.Cmdlets.Other
 {
     [Cmdlet(VerbsData.ConvertTo, "AltSecurity")]
     public class ConvertToConvertToAltSecurityCommand : Cmdlet

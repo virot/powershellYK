@@ -4,7 +4,7 @@ using Yubico.YubiKey.Piv;
 using System.Management.Automation;
 using Yubico.YubiKey;
 
-namespace VirotYubikey
+namespace powershellYK
 {
     public class Attestion
     {
