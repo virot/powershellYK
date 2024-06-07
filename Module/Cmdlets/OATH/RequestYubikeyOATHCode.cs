@@ -34,7 +34,7 @@ namespace VirotYubikey.Cmdlets.OATH
                 IDictionary <Credential, Code> oathCodes = YubiKeyModule._oathSession!.CalculateAllCredentials();
                 foreach (KeyValuePair<Credential, Code> oathCode in oathCodes)
                 {
-                    WriteObject(new VirotYubikey.OATH.Code.TOTP(oathCode.Key.Issuer, oathCode.Key.Name, oathCode.Value.ValidFrom, oathCode.Value.ValidUntil, oathCode.Value.Value != null ? oathCode.Value.Value : "")) ;
+                    WriteObject(new VirotYubikey.OATH.Code.TOTP(oathCode.Key.Issuer != null ? oathCode.Key.Issuer : "", oathCode.Key.Name, oathCode.Value.ValidFrom, oathCode.Value.ValidUntil, oathCode.Value.Value != null ? oathCode.Value.Value : "")) ;
                 }
             }
             else if (ParameterSetName == "Specific")

@@ -104,7 +104,7 @@ namespace VirotYubikey.Cmdlets.PIV
             else if (publicKey is PivRsaPublicKey)
             {
                 WriteDebug("Verifying that the key matches the public key");
-                RSA certificatePublicKey = _certificate.GetRSAPublicKey();
+                RSA certificatePublicKey = _certificate.GetRSAPublicKey()!;
                 RSA keypublicKey = null;
                 var rsaParams = new RSAParameters
                 {

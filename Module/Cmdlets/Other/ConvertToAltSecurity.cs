@@ -49,15 +49,12 @@ namespace VirotYubikey.Cmdlets.Other
                 if (_certificate.PublicKey.Oid.FriendlyName == "RSA")
                 {
                     WriteDebug("Certificate public key is of type RSA");
-                    sshkey = GenerateIdentifier.SSHIdentifier(_certificate.PublicKey.GetRSAPublicKey(), _certificate.Subject);
+                    sshkey = GenerateIdentifier.SSHIdentifier(_certificate.PublicKey.GetRSAPublicKey()!, _certificate.Subject);
                 }
                 else if (_certificate.PublicKey.Oid.FriendlyName == "ECC")
                 {
                     WriteDebug("Certificate public key is of type ECC");
-                    ECParameters publicKeyParam = _certificate.PublicKey.GetECDsaPublicKey().ExportParameters(false);
-                    WriteDebug($"ECC Curve: {publicKeyParam.Curve.Oid.FriendlyName}");
-
-                    sshkey = GenerateIdentifier.SSHIdentifier(_certificate.PublicKey.GetECDsaPublicKey(), _certificate.Subject);
+                    sshkey = GenerateIdentifier.SSHIdentifier(_certificate.PublicKey.GetECDsaPublicKey()!, _certificate.Subject);
                 }
                 else
                 {
