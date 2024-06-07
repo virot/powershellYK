@@ -172,8 +172,16 @@ namespace powershellYK.Cmdlets.Other
             Attestion returnObject = new Attestion();
             returnObject.AttestionValidated = attestionComplete;
             WriteDebug($"Slot {_AttestionCertificate.Subject}");
-            string tmpSlot = _AttestionCertificate.Subject.Substring(_AttestionCertificate.Subject.Length - 2, 2);
-            returnObject.Slot = byte.Parse(tmpSlot, System.Globalization.NumberStyles.HexNumber);
+            string slotPattern = @"CN=YubiKey PIV Attestation (?<slot>[0-9A-Fa-f]{2})";
+            Regex slotRegex = new Regex(slotPattern);
+            Match slotMatch = slotRegex.Match(_AttestionCertificate.Subject);
+            if (slotMatch.Success) {
+                returnObject.Slot = byte.Parse(slotMatch.Groups["slot"].Value, System.Globalization.NumberStyles.HexNumber);
+            }
+            else
+            {
+                returnObject.Slot = 0x00;
+            }
 
             foreach (X509Extension extension in _AttestionCertificate.Extensions)
             {
