@@ -1,4 +1,4 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
@@ -13,7 +13,7 @@ Generate the alt security security identities for a certificate
 ## SYNTAX
 
 ```
-ConvertTo-AltSecurity [-Certificate] <PSObject> [<CommonParameters>]
+ConvertTo-AltSecurity [-Certificate] <PSObject> [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,10 +23,21 @@ Creates all altSecurityIdentities and ssh keys for a given certificate. The altS
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\>  ConvertTo-AltSecurity -Certificate SignedCertificate.cer
+
+sshAuthorizedkey       : ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDom6Eb5e6vpglN/YUAFAETRt0rlg7SBZZrJtZL8hiGR5z4tTwH8HRFQG
+                         9MiT8kjqPwDNJMaR7mXrvrthLGs6PBHyWm1d6VKSjiiVICTglXr/KkEgByHaEqdo4WpB+Qs0GEhKjr1Ly2l9U2DpBCQUkD
+                         0Gl/vefvZVqT8PpbdglA6Q== CN=SubjectName
+X509IssuerSubject      : X509:<I>CN=test-WIN-UNORS4P71FA-CA, DC=test, DC=virot, DC=eu<S>CN=SubjectName
+X509SubjectOnly        : X509:<S>CN=SubjectName
+X509RFC822             :
+X509IssuerSerialNumber : X509:<I>CN=test-WIN-UNORS4P71FA-CA, DC=test, DC=virot,
+                         DC=eu<SR>4D0000079348418CEBD4B0991C000000000793
+X509SKI                : X509:<SKI>E53887FCE0909BB0FF283E5255846B0DD5D86591
+X509SHA1PublicKey      : X509:<SHA1-PUKEY>DE8C524F6EB39431DD4CDAAEC965BE7143CCCD79
 ```
 
-{{ Add example description here }}
+Create all versions of altSecurityIdentities and ssh keys for the certificate SignedCertificate.cer
 
 ## PARAMETERS
 
@@ -42,21 +53,6 @@ Required: True
 Position: 0
 Default value: None
 Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

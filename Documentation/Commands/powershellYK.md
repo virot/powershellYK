@@ -33,7 +33,7 @@ Connect the module to the Yubikey
 Connect PIV module
 
 ### [ConvertTo-AltSecurity](ConvertTo-AltSecurity.md)
-{{ Fill in the Synopsis }}
+Generate the alt security security identities for a certificate
 
 ### [Disconnect-Yubikey](Disconnect-Yubikey.md)
 Disconnects the Yubikey

@@ -64,7 +64,7 @@ namespace powershellYK.Cmdlets.Other
                 //Extract the Subject Key Identifier / 2.5.29.14
                 X509Extension? stringSKI;
                 stringSKI = _certificate!.Extensions.Cast<X509Extension>().FirstOrDefault(extension => extension.Oid!.Value == "2.5.29.14");
-                if (stringSKI != null)
+                if (stringSKI == null)
                 {
                     stringSKI = new X509SubjectKeyIdentifierExtension();
                 }

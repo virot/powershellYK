@@ -1,4 +1,4 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
@@ -8,12 +8,12 @@ schema: 2.0.0
 # Connect-YubikeyOATH
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Connect to the OATH part of the connected Yubikey.
 
 ## SYNTAX
 
 ```
-Connect-YubikeyOATH [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Connect-YubikeyOATH [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,10 +23,10 @@ Connect-YubikeyOATH [-ProgressAction <ActionPreference>] [<CommonParameters>]
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Connect-YubikeyOATH
 ```
 
-{{ Add example description here }}
+Connect to the OATH part of the connected Yubikey.
 
 ## PARAMETERS
 
