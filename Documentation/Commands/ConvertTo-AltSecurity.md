@@ -1,34 +1,49 @@
-﻿---
+---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Get-Yubikey
+# ConvertTo-AltSecurity
 
 ## SYNOPSIS
-Returns the connected Yubikey
+Generate the alt security security identities for a certificate
 
 ## SYNTAX
 
 ```
-Get-Yubikey [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ConvertTo-AltSecurity [-Certificate] <PSObject> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This command will return information about the currently connected Yubikey
+Creates all altSecurityIdentities and ssh keys for a given certificate. The altSecurityIdentities are created by taking the certificate's subject and issuer and creating a UPN and SPN from them. The ssh keys are created by taking the certificate's public key and creating the public part of a ssh key pair from it.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> Get-Yubikey
+PS C:\> {{ Add example code here }}
 ```
 
-Information about Yubikey
+{{ Add example description here }}
 
 ## PARAMETERS
+
+### -Certificate
+Certificate to extract info from
+
+```yaml
+Type: PSObject
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: 0
+Default value: None
+Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
 
 ### -ProgressAction
 {{ Fill ProgressAction Description }}
@@ -50,7 +65,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
+### System.Management.Automation.PSObject
 
 ## OUTPUTS
 

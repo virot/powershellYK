@@ -1,19 +1,25 @@
-﻿---
+---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Get-YubikeyPIV
+# Request-YubikeyOATHCode
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
 
 ## SYNTAX
 
+### All
 ```
-Get-YubikeyPIV [-Slot <Byte>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Request-YubikeyOATHCode [-All] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### Specific
+```
+Request-YubikeyOATHCode -Credential <Credential> [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,6 +36,36 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
+### -All
+Get codes for all credentials
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: All
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Credential
+Credential to generate code for
+
+```yaml
+Type: Credential
+Parameter Sets: Specific
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
 ### -ProgressAction
 {{ Fill ProgressAction Description }}
 
@@ -45,27 +81,12 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Slot
-Retrive a info from specific slot
-
-```yaml
-Type: Byte
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### None
+### Yubico.YubiKey.Oath.Credential
 
 ## OUTPUTS
 

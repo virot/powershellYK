@@ -1,34 +1,49 @@
-﻿---
+---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Get-Yubikey
+# Remove-YubikeyOATHCredential
 
 ## SYNOPSIS
-Returns the connected Yubikey
+{{ Fill in the Synopsis }}
 
 ## SYNTAX
 
 ```
-Get-Yubikey [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Remove-YubikeyOATHCredential -Credential <Credential> [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This command will return information about the currently connected Yubikey
+{{ Fill in the Description }}
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> Get-Yubikey
+PS C:\> {{ Add example code here }}
 ```
 
-Information about Yubikey
+{{ Add example description here }}
 
 ## PARAMETERS
+
+### -Credential
+Credential to remove
+
+```yaml
+Type: Credential
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
 
 ### -ProgressAction
 {{ Fill ProgressAction Description }}
@@ -50,7 +65,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
+### Yubico.YubiKey.Oath.Credential
 
 ## OUTPUTS
 

@@ -1,16 +1,16 @@
 ﻿---
-Module Name: virotYubikey
-Module Guid: d947dd9b-87eb-49ea-a373-b91c7acc0917
+Module Name: powershellYK
+Module Guid: {{ Update Module Guid }}
 Download Help Link: {{ Update Download Link }}
-Help Version: 0.0.5.2
-Locale: en-US
+Help Version: {{ Update Help Version }}
+Locale: {{ Update Locale }}
 ---
 
-# virotYubikey Module
+# powershellYK Module
 ## Description
-A powershell module that use the Yubikey SDK to allow interaction with yubikeys
+{{ Fill in the Description }}
 
-## virotYubikey Cmdlets
+## powershellYK Cmdlets
 ### [Assert-YubikeyPIV](Assert-YubikeyPIV.md)
 Create attestation certificate
 
@@ -26,8 +26,14 @@ Connect the module to the Yubikey
 ### [Connect-YubikeyFIDO2](Connect-YubikeyFIDO2.md)
 {{ Fill in the Synopsis }}
 
+### [Connect-YubikeyOATH](Connect-YubikeyOATH.md)
+{{ Fill in the Synopsis }}
+
 ### [Connect-YubikeyPIV](Connect-YubikeyPIV.md)
 Connect PIV module
+
+### [ConvertTo-AltSecurity](ConvertTo-AltSecurity.md)
+{{ Fill in the Synopsis }}
 
 ### [Disconnect-Yubikey](Disconnect-Yubikey.md)
 Disconnects the Yubikey
@@ -44,11 +50,17 @@ Returns the connected Yubikey
 ### [Get-YubikeyFIDO2Credentials](Get-YubikeyFIDO2Credentials.md)
 Read the FIDO2 Credentials
 
+### [Get-YubikeyOATHCredential](Get-YubikeyOATHCredential.md)
+{{ Fill in the Synopsis }}
+
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
 {{ Fill in the Synopsis }}
 
 ### [Import-YubikeyPIVCertificate](Import-YubikeyPIVCertificate.md)
 Import certificate
+
+### [New-YubikeyOATHCredential](New-YubikeyOATHCredential.md)
+{{ Fill in the Synopsis }}
 
 ### [New-YubikeyPIVCSR](New-YubikeyPIVCSR.md)
 Creates a CSR for a slot in the Yubikey
@@ -59,8 +71,17 @@ Create a new private key
 ### [New-YubikeyPIVSelfSign](New-YubikeyPIVSelfSign.md)
 Create a self signed certificate
 
+### [Remove-YubikeyOATHCredential](Remove-YubikeyOATHCredential.md)
+{{ Fill in the Synopsis }}
+
+### [Request-YubikeyOATHCode](Request-YubikeyOATHCode.md)
+{{ Fill in the Synopsis }}
+
 ### [Reset-YubikeyPIV](Reset-YubikeyPIV.md)
 Resets the PIV part of your Yubikey
+
+### [Set-YubikeyOATHCredential](Set-YubikeyOATHCredential.md)
+{{ Fill in the Synopsis }}
 
 ### [Set-YubikeyPIV](Set-YubikeyPIV.md)
 {{ Fill in the Synopsis }}

@@ -1,6 +1,6 @@
----
-external help file: VirotYubikey.dll-Help.xml
-Module Name: virotYubikey
+﻿---
+external help file: powershellYK.dll-Help.xml
+Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
@@ -12,21 +12,22 @@ Confirm Yubikey Attestion
 
 ## SYNTAX
 
-### Verify request with external certificates
+### requestWithExternalAttestion
 ```
 Confirm-YubikeyAttestion -CertificateRequest <PSObject> -AttestionCertificate <PSObject>
- -IntermediateCertificate <PSObject> [<CommonParameters>]
+ -IntermediateCertificate <PSObject> [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### Verify request with builtin attestion
+### requestWithBuiltinAttestion
 ```
-Confirm-YubikeyAttestion -CertificateRequest <PSObject> [<CommonParameters>]
+Confirm-YubikeyAttestion -CertificateRequest <PSObject> [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
-### Just verify the attestion certificates
+### JustAttestCertificate
 ```
 Confirm-YubikeyAttestion -AttestionCertificate <PSObject> -IntermediateCertificate <PSObject>
-[<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -128,6 +129,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -136,9 +152,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### None
 
 ## OUTPUTS
-### VirotYubikey.Attestion
-Returns a collection of facts about the attestion status of the yubikey or certificate request.
 
+### System.Object
 ## NOTES
 
 ## RELATED LINKS

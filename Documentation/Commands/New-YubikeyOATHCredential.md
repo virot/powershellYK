@@ -1,59 +1,51 @@
-﻿---
+---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# New-YubikeyPIVKey
+# New-YubikeyOATHCredential
 
 ## SYNOPSIS
-Create a new private key
+{{ Fill in the Synopsis }}
 
 ## SYNTAX
 
+### HOTP
 ```
-New-YubikeyPIVKey [-Slot] <Byte> -Algorithm <PivAlgorithm> [-PinPolicy <PivPinPolicy>]
- [-TouchPolicy <PivTouchPolicy>] [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+New-YubikeyOATHCredential [-HOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
+ -Secret <String> [-Digits <Int32>] [-Counter] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### TOTP
+```
+New-YubikeyOATHCredential [-TOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
+ -Secret <String> -Period <CredentialPeriod> [-Digits <Int32>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This cmdlet will create a new key, this can be done with either RSA or ECC keys.
+{{ Fill in the Description }}
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm EccP384
+PS C:\> {{ Add example code here }}
 ```
 
-Creates a new Elliptic curve P-384 key in slot 0x9a.
-
-### Example 2
-```powershell
-PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm RSA2048 -PinPolicy Never
-```
-
-Create a RSA2048 in slot 0x9a with a PIN policy of never.
-
-### Example 3
-```powershell
-PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm EccP384 -TouchPolicy Cached
-```
-
-Create a RSA2048 in slot 0x9a with a touch policy of cached
+{{ Add example description here }}
 
 ## PARAMETERS
 
-### -Algorithm
-Algoritm
+### -Accountname
+Accountname
 
 ```yaml
-Type: PivAlgorithm
+Type: String
 Parameter Sets: (All)
 Aliases:
-Accepted values: Rsa1024, Rsa2048, EccP256, EccP384
 
 Required: True
 Position: Named
@@ -62,11 +54,42 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -PassThru
-Returns an object that represents the item with which you're working. By default, this cmdlet doesn't generate any output.
+### -Algorithm
+Algorithm
+
+```yaml
+Type: HashAlgorithm
+Parameter Sets: (All)
+Aliases:
+Accepted values: SHA1, SHA256, SHA512
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Counter
+Counter
 
 ```yaml
 Type: SwitchParameter
+Parameter Sets: HOTP
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Digits
+Digits
+
+```yaml
+Type: Int32
 Parameter Sets: (All)
 Aliases:
 
@@ -77,16 +100,46 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -PinPolicy
-PinPolicy
+### -HOTP
+Type of OATH
 
 ```yaml
-Type: PivPinPolicy
+Type: SwitchParameter
+Parameter Sets: HOTP
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Issuer
+Issuer
+
+```yaml
+Type: String
 Parameter Sets: (All)
 Aliases:
-Accepted values: Default, Never, None, Once
 
-Required: False
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Period
+Period for credential
+
+```yaml
+Type: CredentialPeriod
+Parameter Sets: TOTP
+Aliases:
+Accepted values: Undefined, Period15, Period30, Period60
+
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -108,62 +161,30 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Slot
-What slot to create a new key for
+### -Secret
+Secret
 
 ```yaml
-Type: Byte
+Type: String
 Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TouchPolicy
-TouchPolicy
+### -TOTP
+Type of OATH
 
 ```yaml
-Type: PivTouchPolicy
-Parameter Sets: (All)
+Type: SwitchParameter
+Parameter Sets: TOTP
 Aliases:
-Accepted values: Default, Never, Always, Cached
 
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Confirm
-Prompts you for confirmation before running the cmdlet.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: cf
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -WhatIf
-Shows what would happen if the cmdlet runs.
-The cmdlet is not run.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: wi
-
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False

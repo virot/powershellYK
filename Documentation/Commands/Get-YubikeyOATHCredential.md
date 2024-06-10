@@ -1,32 +1,32 @@
-﻿---
+---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Get-Yubikey
+# Get-YubikeyOATHCredential
 
 ## SYNOPSIS
-Returns the connected Yubikey
+{{ Fill in the Synopsis }}
 
 ## SYNTAX
 
 ```
-Get-Yubikey [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-YubikeyOATHCredential [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This command will return information about the currently connected Yubikey
+{{ Fill in the Description }}
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> Get-Yubikey
+PS C:\> {{ Add example code here }}
 ```
 
-Information about Yubikey
+{{ Add example description here }}
 
 ## PARAMETERS
 

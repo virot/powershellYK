@@ -1,49 +1,34 @@
-﻿---
+---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Get-Yubikey
+# Connect-YubikeyOATH
 
 ## SYNOPSIS
-Returns the connected Yubikey
+{{ Fill in the Synopsis }}
 
 ## SYNTAX
 
 ```
-Get-Yubikey [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Connect-YubikeyOATH [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This command will return information about the currently connected Yubikey
+{{ Fill in the Description }}
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> Get-Yubikey
+PS C:\> {{ Add example code here }}
 ```
 
-Information about Yubikey
+{{ Add example description here }}
 
 ## PARAMETERS
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).

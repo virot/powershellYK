@@ -1,6 +1,6 @@
----
-external help file: VirotYubikey.dll-Help.xml
-Module Name: virotYubikey
+﻿---
+external help file: powershellYK.dll-Help.xml
+Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
