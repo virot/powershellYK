@@ -13,7 +13,7 @@ namespace powershellYK.support
 {
     internal class GenerateIdentifier
     {
-        private static byte[] curveBytes;
+        private static byte[]? curveBytes;
 
         public static string SSHIdentifier(RSA publicKey, string description = "")
         {
@@ -22,10 +22,10 @@ namespace powershellYK.support
             // SSH-RSA keys are encoded in a specific format
             byte[] sshrsaBytes = Encoding.Default.GetBytes("ssh-rsa");
             byte[] lengthBytes = BitConverter.GetBytes(sshrsaBytes.Length);
-            byte[] exponentBytes = publicKeyParam.Exponent;
+            byte[] exponentBytes = publicKeyParam.Exponent!;
             byte[] exponentBytesLength = BitConverter.GetBytes((UInt32)exponentBytes.Length);
             byte[] keyLength = BitConverter.GetBytes((publicKey.KeySize / 8) + 1);
-            byte[] modulusBytes = publicKeyParam.Modulus;
+            byte[] modulusBytes = publicKeyParam.Modulus!;
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(lengthBytes);
@@ -54,7 +54,6 @@ namespace powershellYK.support
         {
     
             ECParameters publicKeyParam = publicKey.ExportParameters(false);
-            byte[]? curvebytes = null;
             string? keyType = null;
             switch (publicKeyParam.Curve.Oid.FriendlyName)
             {
@@ -77,10 +76,9 @@ namespace powershellYK.support
             byte[] lengthBytes = BitConverter.GetBytes(typeBytes.Length);
             byte keyForm = 0x04;
             byte[] curveByteLength = BitConverter.GetBytes(curveBytes.Length);
-            byte[] publicKeyValueQX = publicKeyParam.Q.X;
-            byte[] publicKeyValueQY = publicKeyParam.Q.Y;
+            byte[] publicKeyValueQX = publicKeyParam.Q.X!;
+            byte[] publicKeyValueQY = publicKeyParam.Q.Y!;
             byte[] publicKeyLength = BitConverter.GetBytes(publicKeyValueQX.Length+ publicKeyValueQY.Length);
-            byte[] cofactor = publicKeyParam.Curve.Cofactor;
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(lengthBytes);
@@ -92,7 +90,7 @@ namespace powershellYK.support
             //return $"QX:{(publicKeyParam.Q.X)[0]}, QY:{(publicKeyParam.Q.Y)[0]} ";
 
             // Combine the bytes together
-            byte[] totalBytes = new byte[lengthBytes.Length + typeBytes.Length + curveByteLength.Length + 8 + publicKeyLength.Length + 1 + publicKeyValueQX.Length + publicKeyValueQY.Length];
+            byte[] totalBytes = new byte[lengthBytes.Length + typeBytes.Length + curveByteLength.Length + curveBytes.Length + publicKeyLength.Length + 1 + publicKeyValueQX.Length + publicKeyValueQY.Length];
             Buffer.BlockCopy(lengthBytes, 0, totalBytes, 0, lengthBytes.Length);
             Buffer.BlockCopy(typeBytes, 0, totalBytes, lengthBytes.Length, typeBytes.Length);
             Buffer.BlockCopy(curveByteLength, 0, totalBytes, lengthBytes.Length + typeBytes.Length, curveByteLength.Length);
@@ -101,8 +99,6 @@ namespace powershellYK.support
             Buffer.SetByte(totalBytes, lengthBytes.Length + typeBytes.Length + curveByteLength.Length + curveBytes.Length + publicKeyLength.Length, keyForm);
             Buffer.BlockCopy(publicKeyValueQX, 0, totalBytes, lengthBytes.Length + typeBytes.Length + curveByteLength.Length + curveBytes.Length + publicKeyLength.Length + 1, publicKeyValueQX.Length);
             Buffer.BlockCopy(publicKeyValueQY, 0, totalBytes, lengthBytes.Length + typeBytes.Length + curveByteLength.Length + curveBytes.Length + publicKeyLength.Length + 1 + publicKeyValueQX.Length, publicKeyValueQY.Length);
-            //Buffer.BlockCopy(Encoding.Default.GetBytes(curveName), 0, totalBytes, keyType.Length, curveName.Length);
-            //Buffer.BlockCopy(publicKeyValue, 0, totalBytes, keyType.Length + curveName.Length, publicKeyValue.Length);
 
             // Convert to base64
             string sshKey = Convert.ToBase64String(totalBytes);

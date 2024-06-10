@@ -176,7 +176,7 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
             eccParams.D = null;
         }
 
-        public static void OverwriteBytes(byte[] buffer)
+        public static void OverwriteBytes(byte[]? buffer)
         {
             if (!(buffer is null))
             {

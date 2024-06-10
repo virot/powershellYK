@@ -87,7 +87,7 @@ namespace powershellYK.Cmdlets.PIV
                 case "ChangeRetries":
                     try
                     {
-                        YubiKeyModule._pivSession!.ChangePinAndPukRetryCounts((byte)PinRetries, (byte)PukRetries);
+                        YubiKeyModule._pivSession!.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
                     }
                     catch (Exception e)
                     {

@@ -44,7 +44,7 @@ namespace powershellYK.Cmdlets.Other
                 if (CertificateRequest.BaseObject is string)
                 {
                     WriteDebug("CertificateRequest is string");
-                    match = regex.Match(CertificateRequest.BaseObject.ToString());
+                    match = regex.Match(CertificateRequest.BaseObject.ToString()!);
                     if (match.Success)
                     {
                         WriteDebug("CertificateRequest is PEM string");
@@ -71,7 +71,7 @@ namespace powershellYK.Cmdlets.Other
                 if (AttestionCertificate.BaseObject is string)
                 {
                     WriteDebug("AttestionCertificate is string");
-                    match = regex.Match(AttestionCertificate!.BaseObject.ToString());
+                    match = regex.Match(AttestionCertificate.BaseObject.ToString()!);
                     if (match.Success)
                     {
                         WriteDebug("AttestionCertificate is PEM string");
@@ -114,7 +114,7 @@ namespace powershellYK.Cmdlets.Other
                 if (IntermediateCertificate.BaseObject is string)
                 {
                     WriteDebug("IntermediateCertificate is string");
-                    match = regex.Match(IntermediateCertificate.BaseObject.ToString());
+                    match = regex.Match(IntermediateCertificate.BaseObject.ToString()!);
                     if (match.Success)
                     {
                         WriteDebug("IntermediateCertificate is PEM string");

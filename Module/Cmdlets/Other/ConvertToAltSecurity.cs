@@ -15,7 +15,7 @@ namespace powershellYK.Cmdlets.Other
     [Cmdlet(VerbsData.ConvertTo, "AltSecurity")]
     public class ConvertToConvertToAltSecurityCommand : Cmdlet
     {
-        [Parameter(Mandatory = true, ValueFromPipeline = true, Position = 0 , HelpMessage = "Certificate to extract info from")]
+        [Parameter(Mandatory = true, ValueFromPipeline = true, Position = 0, HelpMessage = "Certificate to extract info from")]
         public PSObject? Certificate { get; set; }
         private X509Certificate2? _certificate = null;
         protected override void BeginProcessing()
@@ -24,7 +24,7 @@ namespace powershellYK.Cmdlets.Other
 
         protected override void ProcessRecord()
         {
-            WriteDebug($"Trying to load certificate from {Certificate.BaseObject.GetType().FullName}");
+            WriteDebug($"Trying to load certificate from {Certificate!.BaseObject.GetType().FullName}");
             if (Certificate.BaseObject is X509Certificate2)
             {
                 _certificate = Certificate.BaseObject as X509Certificate2;
@@ -35,7 +35,7 @@ namespace powershellYK.Cmdlets.Other
             }
             else if (Certificate.BaseObject is string)
             {
-                _certificate = new X509Certificate2(Certificate.BaseObject! as string);
+                _certificate = new X509Certificate2(Certificate.BaseObject.ToString()!);
             }
             else
             {
@@ -62,7 +62,12 @@ namespace powershellYK.Cmdlets.Other
                 }
 
                 //Extract the Subject Key Identifier / 2.5.29.14
-                X509Extension? stringSKI = _certificate!.Extensions.Cast<X509Extension>().FirstOrDefault(extension => extension.Oid!.Value == "2.5.29.14");
+                X509Extension? stringSKI;
+                stringSKI = _certificate!.Extensions.Cast<X509Extension>().FirstOrDefault(extension => extension.Oid!.Value == "2.5.29.14");
+                if (stringSKI != null)
+                {
+                    stringSKI = new X509SubjectKeyIdentifierExtension();
+                }
 
 
                 AlternativeIdentites alternativeIdentites = new AlternativeIdentites
@@ -72,7 +77,7 @@ namespace powershellYK.Cmdlets.Other
                     $"X509:<S>{_certificate.Subject}",
                     "", //alternativeIdentites.X509RFC822 = $"X509:<I>{}";
                     $"X509:<I>{_certificate.Issuer}<SR>{_certificate.SerialNumber}",
-                    $"X509:<SKI>{((X509SubjectKeyIdentifierExtension)stringSKI).SubjectKeyIdentifier}",
+                    $"X509:<SKI>{((X509SubjectKeyIdentifierExtension)stringSKI!).SubjectKeyIdentifier}",
                     $"X509:<SHA1-PUKEY>{_certificate.Thumbprint}"
                 );
 

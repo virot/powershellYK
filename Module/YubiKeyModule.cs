@@ -28,11 +28,7 @@ namespace powershellYK
         {
             string assemblyLocation = Assembly.GetExecutingAssembly().Location;
             string assemblyPath = Path.GetDirectoryName(assemblyLocation);
-#if PUBLISH
-            string runtimePath = assemblyPath != null ? assemblyPath : "";
-#else //NOT PUBLISH
             string runtimePath = assemblyPath != null ? Path.Combine(assemblyPath, "runtimes\\win-x64\\native") : "";
-#endif //PUBLISH
             IntPtr result = AddDllDirectory(runtimePath);
             if (result == IntPtr.Zero)
             {

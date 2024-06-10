@@ -25,23 +25,19 @@ namespace powershellYK.Cmdlets.PIV
         public SwitchParameter PEMEncoded { get; set; }
 
 
-        protected override void ProcessRecord()
+        protected override void BeginProcessing()
         {
             if (YubiKeyModule._pivSession is null)
             {
-                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
-                try
-                {
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
-                    myPowersShellInstance.Invoke();
-                }
-                catch (Exception e)
-                {
-                    throw new Exception(e.Message, e);
-                }
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                myPowersShellInstance.Invoke();
             }
+        }
 
-            X509Certificate2 slotAttestationCertificate = YubiKeyModule._pivSession.CreateAttestationStatement(Slot);
+        protected override void ProcessRecord()
+        {
+         
+            X509Certificate2 slotAttestationCertificate = YubiKeyModule._pivSession!.CreateAttestationStatement(Slot);
             byte[] slotAttestationCertificateBytes = slotAttestationCertificate.Export(X509ContentType.Cert);
             string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
             if (OutFile is not null)

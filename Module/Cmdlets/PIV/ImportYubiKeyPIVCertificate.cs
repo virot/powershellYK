@@ -105,7 +105,7 @@ namespace powershellYK.Cmdlets.PIV
             {
                 WriteDebug("Verifying that the key matches the public key");
                 RSA certificatePublicKey = _certificate.GetRSAPublicKey()!;
-                RSA keypublicKey = null;
+                RSA keypublicKey;
                 var rsaParams = new RSAParameters
                 {
                     Modulus = ((PivRsaPublicKey)publicKey).Modulus.ToArray(),
@@ -113,8 +113,8 @@ namespace powershellYK.Cmdlets.PIV
                 };
                 keypublicKey = RSA.Create(rsaParams);
 
-                if (certificatePublicKey.ExportParameters(false).Modulus.SequenceEqual(keypublicKey.ExportParameters(false).Modulus) &&
-                                       certificatePublicKey.ExportParameters(false).Exponent.SequenceEqual(keypublicKey.ExportParameters(false).Exponent))
+                if (certificatePublicKey.ExportParameters(false).Modulus!.SequenceEqual(keypublicKey.ExportParameters(false).Modulus!) &&
+                                       certificatePublicKey.ExportParameters(false).Exponent!.SequenceEqual(keypublicKey.ExportParameters(false).Exponent!))
                 {
                     WriteDebug("Public key matches certificate key");
                 }
@@ -125,9 +125,9 @@ namespace powershellYK.Cmdlets.PIV
             }
             else
             {                using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
-                ECDsa certificatePublicKey = _certificate!.GetECDsaPublicKey();
-                if (certificatePublicKey.ExportParameters(false).Q.X.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.X) &&
-                                       certificatePublicKey.ExportParameters(false).Q.Y.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.Y))
+                ECDsa certificatePublicKey = _certificate.GetECDsaPublicKey()!;
+                if (certificatePublicKey.ExportParameters(false).Q.X!.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.X!) &&
+                                       certificatePublicKey.ExportParameters(false).Q.Y!.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.Y!))
                 {
                     WriteDebug("Public key matches certificate key");
                 }

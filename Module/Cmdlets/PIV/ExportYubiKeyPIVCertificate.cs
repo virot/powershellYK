@@ -39,13 +39,13 @@ namespace powershellYK.Cmdlets.PIV
 
             if (AttestationIntermediateCertificate.IsPresent)
             {
-                certificate = YubiKeyModule._pivSession.GetAttestationCertificate();
+                certificate = YubiKeyModule._pivSession?.GetAttestationCertificate();
             }
             else
             {
                 try
                 {
-                    certificate = YubiKeyModule._pivSession.GetCertificate(Slot);
+                    certificate = YubiKeyModule._pivSession?.GetCertificate(Slot);
                 }
                 catch (Exception e)
                 {
@@ -53,7 +53,7 @@ namespace powershellYK.Cmdlets.PIV
                 }
             }
 
-            byte[] slotAttestationCertificateBytes = certificate.Export(X509ContentType.Cert);
+            byte[] slotAttestationCertificateBytes = certificate!.Export(X509ContentType.Cert);
             string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
 
             if (OutFile is not null)

@@ -50,15 +50,15 @@ namespace powershellYK.Cmdlets.OATH
 
         protected override void BeginProcessing()
         {
-        }
-        protected override void ProcessRecord()
-        {
-            // If already connected disconnect first
             if (YubiKeyModule._oathSession is null)
             {
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyOath");
                 myPowersShellInstance.Invoke();
             }
+        }
+        protected override void ProcessRecord()
+        {
+            // If already connected disconnect first
             try
             {
                 Credential newCredential = new Credential
@@ -75,7 +75,7 @@ namespace powershellYK.Cmdlets.OATH
                 };
 
 
-                YubiKeyModule._oathSession.AddCredential(newCredential);
+                YubiKeyModule._oathSession!.AddCredential(newCredential);
             }
             catch (Exception e)
             {

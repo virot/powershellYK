@@ -168,7 +168,7 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
             }
 
             _ = digester.TransformFinalBlock(data, 0, data.Length);
-            Array.Copy(digester.Hash, 0, digest, offset, digest.Length);
+            Array.Copy(digester.Hash!, 0, digest, offset, digest.Length);
 
             return digest;
         }

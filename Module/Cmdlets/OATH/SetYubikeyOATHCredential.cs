@@ -9,7 +9,7 @@ namespace powershellYK.Cmdlets.OATH
     public class SetYubikeyOATHCredentialCommand : Cmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Credential to remove")]
-        public Credential Credential { get; set; }
+        public Credential? Credential { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "New AccountName")]
         public string? NewAccountName { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "New Issuer")]
@@ -25,7 +25,7 @@ namespace powershellYK.Cmdlets.OATH
         }
         protected override void ProcessRecord()
         {
-            YubiKeyModule._oathSession!.RenameCredential(Credential, NewIssuer != null ? NewIssuer : Credential.Issuer, NewAccountName != null ? NewAccountName : Credential.AccountName!);
+            YubiKeyModule._oathSession!.RenameCredential(Credential!, NewIssuer != null ? NewIssuer : Credential!.Issuer, NewAccountName != null ? NewAccountName : Credential!.AccountName!);
         }
     }
 }

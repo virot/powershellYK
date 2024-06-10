@@ -66,7 +66,7 @@ ProcessorArchitecture = 'Amd64'
 FormatsToProcess = @('powershellYK.format.ps1xml')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-# NestedModules = @()
+NestedModules = @('.\module\powershellYK_loader.dll')
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 # FunctionsToExport = @()
@@ -121,7 +121,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('Yubikey','PIV','FIDO2')
+        Tags = @('Yubikey','PIV','FIDO2','TOTP','OATH')
 
         # A URL to the license for this module.
         # LicenseUri = ''

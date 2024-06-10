@@ -35,7 +35,7 @@ namespace powershellYK.Cmdlets.PIV
             {
                 try
                 {
-                    YubiKeyModule._pivSession.ResetApplication();
+                    YubiKeyModule._pivSession!.ResetApplication();
                 }
                 catch (Exception e)
                 {
