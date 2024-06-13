@@ -8,52 +8,60 @@ schema: 2.0.0
 # Set-YubikeyPIV
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Allows the updating of PIV settings
 
 ## SYNTAX
 
 ### ChangeRetries
 ```
-Set-YubikeyPIV -PinRetries <Byte> -PukRetries <Byte> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV -PinRetries <Byte> -PukRetries <Byte> [<CommonParameters>]
 ```
 
 ### ChangePIN
 ```
-Set-YubikeyPIV -PIN <String> -NewPIN <String> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV -PIN <String> -NewPIN <String> [<CommonParameters>]
 ```
 
 ### UnblockPIN
 ```
-Set-YubikeyPIV -NewPIN <String> -PUK <String> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV -NewPIN <String> -PUK <String> [<CommonParameters>]
 ```
 
 ### ChangePUK
 ```
-Set-YubikeyPIV -PUK <String> -NewPUK <String> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV -PUK <String> -NewPUK <String> [<CommonParameters>]
 ```
 
 ### ChangeManagement
 ```
 Set-YubikeyPIV -ManagementKey <String> -NewManagementKey <String> -Algorithm <PivAlgorithm>
- -TouchPolicy <PivTouchPolicy> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ -TouchPolicy <PivTouchPolicy> [<CommonParameters>]
 ```
 
 ### newCHUID
 ```
-Set-YubikeyPIV [-newCHUID] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-YubikeyPIV [-newCHUID] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Allows the modification of PIV settings like: PIN, PUK, ManagementKey and CHUID.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Set-YubikeyPIV -PinRetries 8 -PukRetries 4
+WARNING: PIN and PUK codes reset to default, remember to change.
 ```
 
-{{ Add example description here }}
+Updates the PIV to 8 PIN retries and 4 PUK retries.
+
+### Example 2
+```powershell
+PS C:\> Set-YubikeyPIV -newCHUID
+```
+
+Creates a new CHUID to allow windows to discover the yubikey as a new smartcard.
 
 ## PARAMETERS
 
@@ -172,21 +180,6 @@ Parameter Sets: ChangeRetries
 Aliases:
 
 Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

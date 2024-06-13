@@ -1,9 +1,9 @@
 ﻿---
 Module Name: powershellYK
-Module Guid: {{ Update Module Guid }}
+Module Guid: d947dd9b-87eb-49ea-a373-b91c7acc0917
 Download Help Link: {{ Update Download Link }}
-Help Version: {{ Update Help Version }}
-Locale: {{ Update Locale }}
+Help Version: 0.0.8.1
+Locale: en-US
 ---
 
 # powershellYK Module
@@ -24,10 +24,10 @@ Confirm Yubikey Attestion
 Connect the module to the Yubikey
 
 ### [Connect-YubikeyFIDO2](Connect-YubikeyFIDO2.md)
-{{ Fill in the Synopsis }}
+Connect to the FIDO2 session
 
 ### [Connect-YubikeyOATH](Connect-YubikeyOATH.md)
-{{ Fill in the Synopsis }}
+Connect to the OATH part of the connected Yubikey.
 
 ### [Connect-YubikeyPIV](Connect-YubikeyPIV.md)
 Connect PIV module
@@ -48,19 +48,19 @@ Lists all Yubikeys on system
 Returns the connected Yubikey
 
 ### [Get-YubikeyFIDO2Credentials](Get-YubikeyFIDO2Credentials.md)
-Read the FIDO2 Credentials
+Read the FIDO2 discoverable credentials
 
 ### [Get-YubikeyOATHCredential](Get-YubikeyOATHCredential.md)
-{{ Fill in the Synopsis }}
+List all OATH credentials
 
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
-{{ Fill in the Synopsis }}
+Gets information about the PIV module and specific slots.
 
 ### [Import-YubikeyPIVCertificate](Import-YubikeyPIVCertificate.md)
 Import certificate
 
 ### [New-YubikeyOATHCredential](New-YubikeyOATHCredential.md)
-{{ Fill in the Synopsis }}
+Created a TOTP or HOTP credential
 
 ### [New-YubikeyPIVCSR](New-YubikeyPIVCSR.md)
 Creates a CSR for a slot in the Yubikey
@@ -81,8 +81,8 @@ Create a self signed certificate
 Resets the PIV part of your Yubikey
 
 ### [Set-YubikeyOATHCredential](Set-YubikeyOATHCredential.md)
-{{ Fill in the Synopsis }}
+Update OATH credential
 
 ### [Set-YubikeyPIV](Set-YubikeyPIV.md)
-{{ Fill in the Synopsis }}
+Allows the updating of PIV settings
 

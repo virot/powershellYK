@@ -12,7 +12,7 @@
 RootModule = 'powershellYK.dll'
 
 # Version number of this module.
-ModuleVersion = '0.0.7.1'
+ModuleVersion = '0.0.8.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -30,7 +30,7 @@ CompanyName = ''
 Copyright = '(c) Oscar Virot. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Powershell wrapper for Yubico .NET SDK. Allows administration of Yubikeys from Powershell.'
+Description = 'A unofficial powershell wrapper for Yubico .NET SDK. Allows administration of Yubikeys from Powershell.'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '7.0'
@@ -48,7 +48,7 @@ PowerShellVersion = '7.0'
 # ClrVersion = ''
 
 # Processor architecture (None, X86, Amd64) required by this module
-ProcessorArchitecture = 'Amd64'
+ProcessorArchitecture = 'None'
 
 # Modules that must be imported into the global environment prior to importing this module
 # RequiredModules = @()

@@ -13,7 +13,7 @@ Generate the alt security security identities for a certificate
 ## SYNTAX
 
 ```
-ConvertTo-AltSecurity [-Certificate] <PSObject> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ConvertTo-AltSecurity [-Certificate] <PSObject> [<CommonParameters>]
 ```
 
 ## DESCRIPTION

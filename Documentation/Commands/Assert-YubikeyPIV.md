@@ -14,12 +14,12 @@ Create attestation certificate
 
 ### ExportToFile
 ```
-Assert-YubikeyPIV -Slot <Byte> -OutFile <String> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Assert-YubikeyPIV -Slot <Byte> -OutFile <String> [<CommonParameters>]
 ```
 
 ### DisplayOnScreen
 ```
-Assert-YubikeyPIV -Slot <Byte> [-PEMEncoded] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Assert-YubikeyPIV -Slot <Byte> [-PEMEncoded] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -58,21 +58,6 @@ Encode output as PEM
 Type: SwitchParameter
 Parameter Sets: DisplayOnScreen
 Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
 
 Required: False
 Position: Named

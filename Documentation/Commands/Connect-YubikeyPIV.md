@@ -13,8 +13,7 @@ Connect PIV module
 ## SYNTAX
 
 ```
-Connect-YubikeyPIV [-ManagementKey <String>] [[-PIN] <String>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Connect-YubikeyPIV [-ManagementKey <String>] [-PIN <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -60,21 +59,6 @@ PIN
 Type: String
 Parameter Sets: (All)
 Aliases:
-
-Required: False
-Position: 0
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
 
 Required: False
 Position: Named

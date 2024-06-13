@@ -13,7 +13,7 @@ namespace powershellYK.Cmdlets.Fido
     public class ConnectYubikeyFIDO2Command : Cmdlet
     {
         [ValidateLength(6, 8)]
-        [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = false, HelpMessage = "PIN")]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN")]
         public string PIN { get; set; } = "123456";
 
         protected override void BeginProcessing()

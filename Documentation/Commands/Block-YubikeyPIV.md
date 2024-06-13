@@ -14,17 +14,17 @@ Block out PIN or PUK codes
 
 ### BlockBoth
 ```
-Block-YubikeyPIV [-PIN] [-PUK] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Block-YubikeyPIV [-PIN] [-PUK] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### BlockPIN
 ```
-Block-YubikeyPIV [-PIN] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Block-YubikeyPIV [-PIN] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### BlockPUK
 ```
-Block-YubikeyPIV [-PUK] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Block-YubikeyPIV [-PUK] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -57,21 +57,6 @@ Parameter Sets: BlockBoth, BlockPIN
 Aliases:
 
 Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

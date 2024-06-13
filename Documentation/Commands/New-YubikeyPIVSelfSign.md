@@ -13,8 +13,8 @@ Create a self signed certificate
 ## SYNTAX
 
 ```
-New-YubikeyPIVSelfSign -Slot <Byte> [-Subjectname <String>] [-HashAlgorithm <HashAlgorithmName>]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-YubikeyPIVSelfSign -Slot <Byte> [-Subjectname <String>] [-HashAlgorithm <HashAlgorithmName>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -39,21 +39,6 @@ Type: HashAlgorithmName
 Parameter Sets: (All)
 Aliases:
 Accepted values: SHA1, SHA256, SHA384, SHA512
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
 
 Required: False
 Position: Named

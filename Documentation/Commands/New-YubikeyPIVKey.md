@@ -14,8 +14,7 @@ Create a new private key
 
 ```
 New-YubikeyPIVKey [-Slot] <Byte> -Algorithm <PivAlgorithm> [-PinPolicy <PivPinPolicy>]
- [-TouchPolicy <PivTouchPolicy>] [-PassThru] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [-TouchPolicy <PivTouchPolicy>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -85,21 +84,6 @@ Type: PivPinPolicy
 Parameter Sets: (All)
 Aliases:
 Accepted values: Default, Never, None, Once
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
 
 Required: False
 Position: Named

@@ -88,7 +88,9 @@ namespace powershellYK.Cmdlets.PIV
                     try
                     {
                         YubiKeyModule._pivSession!.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
+                        WriteWarning("PIN and PUK codes reset to default, remember to change.");
                     }
+                  
                     catch (Exception e)
                     {
                         throw new Exception("Failed to set PIN and PUK retries", e);

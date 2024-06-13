@@ -8,42 +8,31 @@ schema: 2.0.0
 # Get-YubikeyFIDO2Credentials
 
 ## SYNOPSIS
-Read the FIDO2 Credentials
+Read the FIDO2 discoverable credentials
 
 ## SYNTAX
 
 ```
-Get-YubikeyFIDO2Credentials [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-YubikeyFIDO2Credentials [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Get what FIDO2 credentials that have been saved in the Yubikey.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Get-YubikeyFIDO2Credentials
+
+Site            Name         DisplayName
+----            ----         -----------
+demo.yubico.com powershellYK powershellYK
 ```
 
-{{ Add example description here }}
+Lists all sites and usernames for all discoverable credentials.
 
 ## PARAMETERS
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).

@@ -1,4 +1,4 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
@@ -8,13 +8,13 @@ schema: 2.0.0
 # Set-YubikeyOATHCredential
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Update OATH credential
 
 ## SYNTAX
 
 ```
 Set-YubikeyOATHCredential -Credential <Credential> [-NewAccountName <String>] [-NewIssuer <String>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,10 +24,11 @@ Set-YubikeyOATHCredential -Credential <Credential> [-NewAccountName <String>] [-
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> $Credentialtochange = Get-YubikeyOATHCredential | Where-Object {$_.Issuer -eq 'Yubico Demo'}
+PS C:\> Set-YubikeyOATHCredential -Credential $Credentialtochange -NewIssuer "powershellYK Demo"
 ```
 
-{{ Add example description here }}
+Selects and updates the Issuer from 'Yubico Demo' to 'powershellYK Demo' 
 
 ## PARAMETERS
 
@@ -68,21 +69,6 @@ New Issuer
 Type: String
 Parameter Sets: (All)
 Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
 
 Required: False
 Position: Named

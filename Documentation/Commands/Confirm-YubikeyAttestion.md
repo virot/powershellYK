@@ -15,19 +15,18 @@ Confirm Yubikey Attestion
 ### requestWithExternalAttestion
 ```
 Confirm-YubikeyAttestion -CertificateRequest <PSObject> -AttestionCertificate <PSObject>
- -IntermediateCertificate <PSObject> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ -IntermediateCertificate <PSObject> [<CommonParameters>]
 ```
 
 ### requestWithBuiltinAttestion
 ```
-Confirm-YubikeyAttestion -CertificateRequest <PSObject> [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Confirm-YubikeyAttestion -CertificateRequest <PSObject> [<CommonParameters>]
 ```
 
 ### JustAttestCertificate
 ```
 Confirm-YubikeyAttestion -AttestionCertificate <PSObject> -IntermediateCertificate <PSObject>
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -123,21 +122,6 @@ Parameter Sets: requestWithExternalAttestion, JustAttestCertificate
 Aliases:
 
 Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

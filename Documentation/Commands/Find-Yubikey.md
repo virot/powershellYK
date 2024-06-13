@@ -13,7 +13,7 @@ Lists all Yubikeys on system
 ## SYNTAX
 
 ```
-Find-Yubikey [-OnlyOne] [-Serialnumber <Int32>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Find-Yubikey [-OnlyOne] [-Serialnumber <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -37,21 +37,6 @@ Return only one Yubikey
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
 
 Required: False
 Position: Named

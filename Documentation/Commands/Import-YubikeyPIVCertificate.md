@@ -14,14 +14,12 @@ Import certificate
 
 ### File
 ```
-Import-YubikeyPIVCertificate -Slot <Byte> -Path <String> [-Certificate <Object>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Import-YubikeyPIVCertificate -Slot <Byte> -Path <String> [-Certificate <Object>] [<CommonParameters>]
 ```
 
 ### Value
 ```
-Import-YubikeyPIVCertificate -Slot <Byte> [-Path <String>] -Certificate <Object>
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Import-YubikeyPIVCertificate -Slot <Byte> [-Path <String>] -Certificate <Object> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -84,21 +82,6 @@ Accept wildcard characters: False
 Type: String
 Parameter Sets: Value
 Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
 
 Required: False
 Position: Named

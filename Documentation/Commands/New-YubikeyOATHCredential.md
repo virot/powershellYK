@@ -1,4 +1,4 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
@@ -8,34 +8,34 @@ schema: 2.0.0
 # New-YubikeyOATHCredential
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Created a TOTP or HOTP credential
 
 ## SYNTAX
 
 ### HOTP
 ```
 New-YubikeyOATHCredential [-HOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
- -Secret <String> [-Digits <Int32>] [-Counter] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ -Secret <String> [-Digits <Int32>] [-Counter] [<CommonParameters>]
 ```
 
 ### TOTP
 ```
 New-YubikeyOATHCredential [-TOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
- -Secret <String> -Period <CredentialPeriod> [-Digits <Int32>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+ -Secret <String> -Period <CredentialPeriod> [-Digits <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Creates new credentials that can be viewed in the Yubikey Authenticator or using Request-YubikeyOATHCode.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> New-YubikeyOATHCredential -TOTP -Accountname "powershellYK" -Issuer "Demo" -Period 60 -Secret (Read-Host -Prompt 'Secret' -MaskInput)
+Secret: *****************
 ```
 
-{{ Add example description here }}
+Creates en entry
 
 ## PARAMETERS
 
@@ -140,21 +140,6 @@ Aliases:
 Accepted values: Undefined, Period15, Period30, Period60
 
 Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

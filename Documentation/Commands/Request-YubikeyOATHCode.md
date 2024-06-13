@@ -1,4 +1,4 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
@@ -14,12 +14,12 @@ schema: 2.0.0
 
 ### All
 ```
-Request-YubikeyOATHCode [-All] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Request-YubikeyOATHCode [-All] [<CommonParameters>]
 ```
 
 ### Specific
 ```
-Request-YubikeyOATHCode -Credential <Credential> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Request-YubikeyOATHCode -Credential <Credential> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -63,21 +63,6 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
-### -ProgressAction
-{{ Fill ProgressAction Description }}
-
-```yaml
-Type: ActionPreference
-Parameter Sets: (All)
-Aliases: proga
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
