@@ -108,9 +108,9 @@ namespace powershellYK.Cmdlets.PIV
                     {
                         if (YubiKeyModule._pivSession!.TryChangePin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PIN))!)
 , System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN!))!)
-, out retriesLeft))
+, out retriesLeft) == false)
                         {
-                            throw new Exception("Failed to reset PIN");
+                            throw new Exception("Incorrect PIN provided");
                         }
                     }
                     catch (Exception e)
@@ -125,9 +125,9 @@ namespace powershellYK.Cmdlets.PIV
                     try
                     {
                         if (YubiKeyModule._pivSession!.TryChangePuk(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PUK))!), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPUK))!)
-, out retriesLeft))
+, out retriesLeft) == false)
                         {
-                            throw new Exception("Failed to reset PIN");
+                            throw new Exception("Incorrect PUK provided");
                         }
                     }
                     catch (Exception e)
@@ -143,9 +143,9 @@ namespace powershellYK.Cmdlets.PIV
                     {
                         if (YubiKeyModule._pivSession!.TryResetPin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PUK))!)
 , System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN))!)
-, out retriesLeft))
+, out retriesLeft) == false)
                         {
-                            throw new Exception("Failed to reset PIN");
+                            throw new Exception("Incorrect PUK provided");
                         }
                     }
                     catch (Exception e)

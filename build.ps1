@@ -2,6 +2,7 @@ if (Test-Path 'release') {
     Remove-Item -Recurse 'release'
 }
 $Directory = New-Item -Type Directory 'release'
+
 dotnet publish module --nologo --framework 'net8.0' --output "$($Directory.fullname)\module"
 dotnet publish powershellYK_loader --nologo --framework 'net8.0' --output "$($Directory.fullname)\loader"
 
@@ -17,7 +18,7 @@ Move-Item "$($Directory.fullname)\module\powershellYK.format.ps1xml" "$($Directo
 
 Import-Module "$($Directory.fullname)\powershellYK.psd1"
 
-$parameters = @{
+$parameters = @{	
     Path = '.\Documentation\Commands'
     RefreshModulePage = $true
     AlphabeticParamsOrder = $true
@@ -29,4 +30,4 @@ $parameters = @{
 Update-MarkdownHelpModule @parameters
 
 New-ExternalHelp -Path '.\Documentation\Commands' -OutputPath "$($Directory.fullname)" -Force
-
+.
