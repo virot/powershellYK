@@ -19,17 +19,17 @@ Set-YubikeyPIV -PinRetries <Byte> -PukRetries <Byte> [<CommonParameters>]
 
 ### ChangePIN
 ```
-Set-YubikeyPIV -PIN <String> -NewPIN <String> [<CommonParameters>]
+Set-YubikeyPIV -PIN <SecureString> -NewPIN <SecureString> [-ChangePIN] [<CommonParameters>]
 ```
 
 ### UnblockPIN
 ```
-Set-YubikeyPIV -NewPIN <String> -PUK <String> [<CommonParameters>]
+Set-YubikeyPIV -NewPIN <SecureString> -PUK <SecureString> [-UnblockPIN] [<CommonParameters>]
 ```
 
 ### ChangePUK
 ```
-Set-YubikeyPIV -PUK <String> -NewPUK <String> [<CommonParameters>]
+Set-YubikeyPIV -PUK <SecureString> -NewPUK <SecureString> [-ChangePUK] [<CommonParameters>]
 ```
 
 ### ChangeManagement
@@ -56,12 +56,18 @@ WARNING: PIN and PUK codes reset to default, remember to change.
 
 Updates the PIV to 8 PIN retries and 4 PUK retries.
 
-### Example 2
+### Example 3
 ```powershell
-PS C:\> Set-YubikeyPIV -newCHUID
+PS C:\GIT-VS\Yubikey_Powershell> Set-YubikeyPIV -ChangePIN
+
+cmdlet Set-YubikeyPIV at command pipeline position 1
+Supply values for the following parameters:
+(Type !? for Help.)
+PIN: ******
+NewPIN: ******
 ```
 
-Creates a new CHUID to allow windows to discover the yubikey as a new smartcard.
+Change PIN with a easy way of requesting the new codes.
 
 ## PARAMETERS
 
@@ -75,6 +81,36 @@ Aliases:
 Accepted values: TripleDES, AES128, AES192, AES256
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ChangePIN
+Easy access to ChangePIN
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: ChangePIN
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ChangePUK
+Easy access to ChangePUK
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: ChangePUK
+Aliases:
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -130,7 +166,7 @@ Accept wildcard characters: False
 New PIN
 
 ```yaml
-Type: String
+Type: SecureString
 Parameter Sets: ChangePIN, UnblockPIN
 Aliases:
 
@@ -145,7 +181,7 @@ Accept wildcard characters: False
 New PUK
 
 ```yaml
-Type: String
+Type: SecureString
 Parameter Sets: ChangePUK
 Aliases:
 
@@ -160,7 +196,7 @@ Accept wildcard characters: False
 Current PIN
 
 ```yaml
-Type: String
+Type: SecureString
 Parameter Sets: ChangePIN
 Aliases:
 
@@ -190,7 +226,7 @@ Accept wildcard characters: False
 Current PUK
 
 ```yaml
-Type: String
+Type: SecureString
 Parameter Sets: UnblockPIN, ChangePUK
 Aliases:
 
@@ -226,6 +262,21 @@ Aliases:
 Accepted values: Default, Never, Always, Cached
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UnblockPIN
+Easy access to UnblockPIN
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: UnblockPIN
+Aliases:
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

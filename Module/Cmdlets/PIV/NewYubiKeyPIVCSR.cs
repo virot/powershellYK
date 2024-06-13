@@ -34,24 +34,28 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Encode output as PEM")]
         public SwitchParameter PEMEncoded { get; set; }
 
-        protected override void ProcessRecord()
+        protected override void BeginProcessing()
         {
-            CertificateRequest request;
-            X509SignatureGenerator signer;
-
-            if (YubiKeyModule._pivSession is null)
+            if (YubiKeyModule._pivSession is null || YubiKeyModule._pivSession.PinVerified == false)
             {
-                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
+                WriteWarning("PIV not connected/authorized, Invoking Connect-YubikeyPIV");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
                     myPowersShellInstance.Invoke();
                 }
+
                 catch (Exception e)
                 {
                     throw new Exception(e.Message, e);
                 }
             }
+        }
+        protected override void ProcessRecord()
+        {
+            CertificateRequest request;
+            X509SignatureGenerator signer;
+
 
             PivPublicKey? publicKey = null;
             try

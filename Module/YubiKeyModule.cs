@@ -27,7 +27,7 @@ namespace powershellYK
         public void OnImport()
         {
             string assemblyLocation = Assembly.GetExecutingAssembly().Location;
-            string assemblyPath = Path.GetDirectoryName(assemblyLocation);
+            string assemblyPath = Path.GetDirectoryName(assemblyLocation)!;
             string runtimePath = assemblyPath != null ? Path.Combine(assemblyPath, "runtimes\\win-x64\\native") : "";
             IntPtr result = AddDllDirectory(runtimePath);
             if (result == IntPtr.Zero)

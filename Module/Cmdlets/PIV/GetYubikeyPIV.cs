@@ -15,7 +15,7 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Retrive a info from specific slot")]
         public byte? Slot { get; set; }
 
-        protected override void ProcessRecord()
+        protected override void BeginProcessing()
         {
             if (YubiKeyModule._pivSession is null)
             {
@@ -27,9 +27,16 @@ namespace powershellYK.Cmdlets.PIV
                 }
                 catch (Exception e)
                 {
-                    throw new Exception(e.Message, e);
+                    if (YubiKeyModule._pivSession is null)
+                    {
+                        throw new Exception(e.Message, e);
+                    }
                 }
             }
+
+        }
+        protected override void ProcessRecord()
+        {
 
             if (Slot is null)
             {
@@ -92,7 +99,8 @@ namespace powershellYK.Cmdlets.PIV
                     PukRetriesLeft = puk_remaining,
                     PukRetries = puk_retry,
                     CHUID = BitConverter.ToString(chuid.GuidValue.Span.ToArray()),
-                    SlotsWithPrivateKeys = certificateLocationsArray
+                    SlotsWithPrivateKeys = certificateLocationsArray,
+                    PinVerified = YubiKeyModule._pivSession!.PinVerified,
                 };
 
                 WriteObject(customObject);

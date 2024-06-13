@@ -13,7 +13,7 @@ Connect PIV module
 ## SYNTAX
 
 ```
-Connect-YubikeyPIV [-ManagementKey <String>] [-PIN <String>] [<CommonParameters>]
+Connect-YubikeyPIV [-ManagementKey <String>] -PIN <SecureString> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,16 +24,31 @@ Connects the PIV module for the currently connected Yubikey, with PIN and Manage
 ### Example 1
 ```powershell
 PS C:\> Connect-YubikeyPIV
+
+cmdlet Connect-YubikeyPIV at command pipeline position 1
+Supply values for the following parameters:
+(Type !? for Help.)
+PIN: ******
 ```
 
-Connect to PIV module with default PIN and ManagmentKey
+Connect to PIV module with default ManagmentKey
 
 ### Example 2
 ```powershell
-PS C:\> Connect-YubikeyPIV -PIN (Read-Host -MaskInput 'PIN')
+PS C:\> $PIN = Read-Host -AsSecureString 'PIN'
+PIN: ******
+PS C:\> Connect-YubikeyPIV -PIN $PIN
 ```
 
-Connect to PIV module with default Managementkey and requests the PIN from the commandline
+Connect to PIV module with default Managementkey and a stored pin requested from the commandline
+
+### Example 3
+```powershell
+PS C:\> $PIN = ConvertTo-SecureString -String "123456" -AsPlainText -Force
+PS C:\> Connect-YubikeyPIV -PIN $PIN
+```
+
+Connect to PIV module with default Managementkey and a stored pin requested constructed from code
 
 ## PARAMETERS
 
@@ -56,11 +71,11 @@ Accept wildcard characters: False
 PIN
 
 ```yaml
-Type: String
+Type: SecureString
 Parameter Sets: (All)
 Aliases:
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False

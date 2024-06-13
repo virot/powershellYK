@@ -12,7 +12,7 @@
 RootModule = 'powershellYK.dll'
 
 # Version number of this module.
-ModuleVersion = '0.0.8.1'
+ModuleVersion = '0.0.9.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()

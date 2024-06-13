@@ -5,6 +5,7 @@ using powershellYK.support;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Security;
 
 namespace powershellYK.Cmdlets.Fido
 {
@@ -12,9 +13,8 @@ namespace powershellYK.Cmdlets.Fido
 
     public class ConnectYubikeyFIDO2Command : Cmdlet
     {
-        [ValidateLength(6, 8)]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN")]
-        public string PIN { get; set; } = "123456";
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN")]
+        public SecureString PIN { get; set; } = new SecureString();
 
         protected override void BeginProcessing()
         {
@@ -58,14 +58,12 @@ namespace powershellYK.Cmdlets.Fido
 
             try
             {
-                byte[] pinarray = System.Text.Encoding.UTF8.GetBytes(PIN);
                 int? retries = null;
                 bool? rebootRequired;
-                if (YubiKeyModule._fido2Session.TryVerifyPin(pinarray, null, null, out retries, out rebootRequired) == false)
+                if (YubiKeyModule._fido2Session.TryVerifyPin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PIN))!), null, null, out retries, out rebootRequired) == false)
                 {
                     throw new Exception("Could not authenticate Yubikey PIV, wrong PIN");
                 }
-                CryptographicOperations.ZeroMemory(pinarray);
             }
             catch (Exception e)
             {

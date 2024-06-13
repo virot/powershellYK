@@ -13,7 +13,7 @@ Connect to the FIDO2 session
 ## SYNTAX
 
 ```
-Connect-YubikeyFIDO2 [-PIN] <String> [<CommonParameters>]
+Connect-YubikeyFIDO2 -PIN <SecureString> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,11 +24,32 @@ Must be run as Administrator
 
 ### Example 1
 ```powershell
-PS C:\> connect-YubikeyFIDO2 -PIN (Read-Host -MaskInput -Prompt "PIN")
+PS C:\> Connect-YubikeyFIDO2
+
+cmdlet Connect-YubikeyFIDO2 at command pipeline position 1
+Supply values for the following parameters:
+(Type !? for Help.)
 PIN: ******
 ```
 
-Connect to the FIDO2 session without exposing the PIN code on the screen
+Connect to FIDO2 module with default ManagmentKey
+
+### Example 2
+```powershell
+PS C:\> $PIN = Read-Host -AsSecureString 'PIN'
+PIN: ******
+PS C:\> Connect-YubikeyFIDO2 -PIN $PIN
+```
+
+Connect to FIDO2 module with default Managementkey and a stored pin requested from the commandline
+
+### Example 3
+```powershell
+PS C:\> $PIN = ConvertTo-SecureString -String "123456" -AsPlainText -Force
+PS C:\> Connect-YubikeyFIDO2 -PIN $PIN
+```
+
+Connect to FIDO2 module with default Managementkey and a stored pin requested constructed from code
 
 ## PARAMETERS
 
@@ -36,12 +57,12 @@ Connect to the FIDO2 session without exposing the PIN code on the screen
 FIDO2 PIN
 
 ```yaml
-Type: String
+Type: SecureString
 Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

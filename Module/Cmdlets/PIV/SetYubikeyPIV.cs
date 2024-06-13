@@ -6,6 +6,8 @@ using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 using Yubico.YubiKey.Piv.Objects;
 using powershellYK.support;
+using System.Security;
+using System.Runtime.InteropServices;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -14,29 +16,34 @@ namespace powershellYK.Cmdlets.PIV
     public class SetYubikeyPIVCommand : PSCmdlet
     {
 
+        [Parameter(Mandatory = false, ParameterSetName = "ChangePIN", ValueFromPipeline = false, HelpMessage = "Easy access to ChangePIN")]
+        public SwitchParameter ChangePIN;
+        [Parameter(Mandatory = false, ParameterSetName = "ChangePUK", ValueFromPipeline = false, HelpMessage = "Easy access to ChangePUK")]
+        public SwitchParameter ChangePUK;
+        [Parameter(Mandatory = false, ParameterSetName = "UnblockPIN", ValueFromPipeline = false, HelpMessage = "Easy access to UnblockPIN")]
+        public SwitchParameter UnblockPIN;
+
+
         [Parameter(Mandatory = true, ParameterSetName = "ChangeRetries", ValueFromPipeline = false, HelpMessage = "Change number of PIN retries")]
         public byte? PinRetries { get; set; }
 
         [Parameter(Mandatory = true, ParameterSetName = "ChangeRetries", ValueFromPipeline = false, HelpMessage = "Change number of PUK retries")]
         public byte? PukRetries { get; set; }
 
-        [ValidateLength(6, 8)]
         [Parameter(Mandatory = true, ParameterSetName = "ChangePIN", ValueFromPipeline = false, HelpMessage = "Current PIN")]
-        public string? PIN { get; set; }
+        public SecureString PIN { get; set; } = new SecureString();
 
-        [ValidateLength(6, 8)]
         [Parameter(Mandatory = true, ParameterSetName = "ChangePIN", ValueFromPipeline = false, HelpMessage = "New PIN")]
         [Parameter(Mandatory = true, ParameterSetName = "UnblockPIN", ValueFromPipeline = false, HelpMessage = "New PIN")]
-        public string? NewPIN { get; set; }
+        public SecureString NewPIN { get; set; } = new SecureString();
 
-        [ValidateLength(6, 8)]
+
         [Parameter(Mandatory = true, ParameterSetName = "UnblockPIN", ValueFromPipeline = false, HelpMessage = "Current PUK")]
         [Parameter(Mandatory = true, ParameterSetName = "ChangePUK", ValueFromPipeline = false, HelpMessage = "Current PUK")]
-        public string? PUK { get; set; }
+        public SecureString PUK { get; set; } = new SecureString();
 
-        [ValidateLength(6, 8)]
         [Parameter(Mandatory = true, ParameterSetName = "ChangePUK", ValueFromPipeline = false, HelpMessage = "New PUK")]
-        public string? NewPUK { get; set; }
+        public SecureString NewPUK { get; set; } = new SecureString();
 
         [ValidateLength(48, 48)]
         [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "Current ManagementKey")]
@@ -58,28 +65,28 @@ namespace powershellYK.Cmdlets.PIV
         public SwitchParameter newCHUID { get; set; }
 
 
-        protected override void ProcessRecord()
+
+        protected override void BeginProcessing()
         {
-            if (YubiKeyModule._pivSession is null)
+            if (YubiKeyModule._pivSession is null || YubiKeyModule._pivSession.PinVerified == false)
             {
-                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
+                WriteWarning("PIV not connected/authorized, Invoking Connect-YubikeyPIV");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
                     myPowersShellInstance.Invoke();
                 }
+
                 catch (Exception e)
                 {
                     throw new Exception(e.Message, e);
                 }
             }
+        }
 
-            byte[] pinarray;
-            byte[] newpinarray;
-            byte[] pukarray;
-            byte[] newpukarray;
+        protected override void ProcessRecord()
+        {
             int? retriesLeft = null;
-
 
             WriteDebug($"Using ParameterSetName: {ParameterSetName}");
             switch (ParameterSetName)
@@ -97,11 +104,14 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     break;
                 case "ChangePIN":
-                    pinarray = System.Text.Encoding.UTF8.GetBytes(PIN!);
-                    newpinarray = System.Text.Encoding.UTF8.GetBytes(NewPIN!);
                     try
                     {
-                        YubiKeyModule._pivSession!.TryChangePin(pinarray, newpinarray, out retriesLeft);
+                        if (YubiKeyModule._pivSession!.TryChangePin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PIN))!)
+, System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN!))!)
+, out retriesLeft))
+                        {
+                            throw new Exception("Failed to reset PIN");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -109,16 +119,16 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     finally
                     {
-                        CryptographicOperations.ZeroMemory(pinarray);
-                        CryptographicOperations.ZeroMemory(newpinarray);
                     }
                     break;
                 case "ChangePUK":
-                    pukarray = System.Text.Encoding.UTF8.GetBytes(PUK!);
-                    newpukarray = System.Text.Encoding.UTF8.GetBytes(NewPUK!);
                     try
                     {
-                        YubiKeyModule._pivSession!.TryChangePuk(pukarray, newpukarray, out retriesLeft);
+                        if (YubiKeyModule._pivSession!.TryChangePuk(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PUK))!), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPUK))!)
+, out retriesLeft))
+                        {
+                            throw new Exception("Failed to reset PIN");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -126,16 +136,17 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     finally
                     {
-                        CryptographicOperations.ZeroMemory(pukarray);
-                        CryptographicOperations.ZeroMemory(newpukarray);
                     }
                     break;
                 case "ResetPIN":
-                    pukarray = System.Text.Encoding.UTF8.GetBytes(PUK!);
-                    newpinarray = System.Text.Encoding.UTF8.GetBytes(NewPIN!);
                     try
                     {
-                        YubiKeyModule._pivSession!.TryResetPin(pukarray, newpinarray, out retriesLeft);
+                        if (YubiKeyModule._pivSession!.TryResetPin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PUK))!)
+, System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN))!)
+, out retriesLeft))
+                        {
+                            throw new Exception("Failed to reset PIN");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -143,8 +154,6 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     finally
                     {
-                        CryptographicOperations.ZeroMemory(pukarray);
-                        CryptographicOperations.ZeroMemory(newpinarray);
                     }
                     break;
                 case "ChangeManagement":

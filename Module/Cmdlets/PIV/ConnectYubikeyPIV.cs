@@ -4,6 +4,8 @@ using Yubico.YubiKey.Piv;
 using System.Security.Cryptography;
 using powershellYK.support;
 using System.Data.Common;
+using System.Runtime.InteropServices;
+using System.Security;
 
 namespace powershellYK.Cmdlets.PIV
 {
@@ -14,9 +16,8 @@ namespace powershellYK.Cmdlets.PIV
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "ManagementKey")]
         public string ManagementKey { get; set; } = "010203040506070801020304050607080102030405060708";
-        [ValidateLength(6, 8)]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PIN")]
-        public string PIN { get; set; } = "123456";
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN")]
+        public SecureString PIN { get; set; } = new SecureString();
 
         protected override void BeginProcessing()
         {
@@ -67,13 +68,17 @@ namespace powershellYK.Cmdlets.PIV
 
             try
             {
-                byte[] pinarray = System.Text.Encoding.UTF8.GetBytes(PIN);
+                byte[] pinarray = System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PIN))!);
                 int? retries = null;
                 if (YubiKeyModule._pivSession.TryVerifyPin(pinarray, out retries) == false)
                 {
                     throw new Exception("Could not authenticate Yubikey PIV, wrong PIN");
                 }
                 CryptographicOperations.ZeroMemory(pinarray);
+            }
+            catch (OperationCanceledException e)
+            {
+                throw new OperationCanceledException("Could not authenticate Yubikey PIV, wrong PIN", e);
             }
             catch (Exception e)
             {
