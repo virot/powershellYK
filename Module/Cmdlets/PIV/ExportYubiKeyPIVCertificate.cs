@@ -1,6 +1,8 @@
 ﻿using System.Management.Automation;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Yubico.YubiKey.Piv;
+using Yubico.YubiKey;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -20,55 +22,64 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Encode output as PEM")]
         public SwitchParameter PEMEncoded { get; set; }
 
-        protected override void ProcessRecord()
+        protected override void BeginProcessing()
         {
-            X509Certificate2? certificate = null;
-            if (YubiKeyModule._pivSession is null)
+            if (YubiKeyModule._yubikey is null)
             {
-                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
                 try
                 {
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
+                    WriteDebug($"Successfully connected");
                 }
                 catch (Exception e)
                 {
                     throw new Exception(e.Message, e);
                 }
             }
+        }
 
-            if (AttestationIntermediateCertificate.IsPresent)
+        protected override void ProcessRecord()
+        {
+            using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                certificate = YubiKeyModule._pivSession?.GetAttestationCertificate();
-            }
-            else
-            {
-                try
-                {
-                    certificate = YubiKeyModule._pivSession?.GetCertificate(Slot);
-                }
-                catch (Exception e)
-                {
-                    throw new Exception($"Failed to get certificate for slot 0x{Slot.ToString("X2")}", e);
-                }
-            }
+                pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                X509Certificate2? certificate = null;
 
-            byte[] slotAttestationCertificateBytes = certificate!.Export(X509ContentType.Cert);
-            string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
-
-            if (OutFile is not null)
-            {
-                File.WriteAllText(OutFile, pemData);
-            }
-            else
-            {
-                if (PEMEncoded.IsPresent)
+                if (AttestationIntermediateCertificate.IsPresent)
                 {
-                    WriteObject(pemData);
+                    certificate = pivSession.GetAttestationCertificate();
                 }
                 else
                 {
-                    WriteObject(certificate);
+                    try
+                    {
+                        certificate = pivSession.GetCertificate(Slot);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception($"Failed to get certificate for slot 0x{Slot.ToString("X2")}", e);
+                    }
+                }
+
+                byte[] slotAttestationCertificateBytes = certificate!.Export(X509ContentType.Cert);
+                string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
+
+                if (OutFile is not null)
+                {
+                    File.WriteAllText(OutFile, pemData);
+                }
+                else
+                {
+                    if (PEMEncoded.IsPresent)
+                    {
+                        WriteObject(pemData);
+                    }
+                    else
+                    {
+                        WriteObject(certificate);
+                    }
                 }
             }
         }

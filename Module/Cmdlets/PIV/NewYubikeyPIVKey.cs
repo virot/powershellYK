@@ -1,5 +1,6 @@
 ﻿using System.Management.Automation;
 using System.Security.Cryptography;
+using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Sample.PivSampleCode;
 
@@ -27,60 +28,70 @@ namespace powershellYK.Cmdlets.PIV
 
         [Parameter(Mandatory = false, HelpMessage = "Returns an object that represents the item with which you're working. By default, this cmdlet doesn't generate any output.")]
         public SwitchParameter PassThru { get; set; }
-        protected override void ProcessRecord()
+
+        protected override void BeginProcessing()
         {
-            if (YubiKeyModule._pivSession is null)
+            if (YubiKeyModule._yubikey is null)
             {
-                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
                 try
                 {
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
+                    WriteDebug($"Successfully connected");
                 }
                 catch (Exception e)
                 {
                     throw new Exception(e.Message, e);
                 }
             }
-
-            bool keyExists = false;
-            try
+        }
+        protected override void ProcessRecord()
+        {
+            using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                PivPublicKey pubkey = YubiKeyModule._pivSession!.GetMetadata(Slot).PublicKey;
-                keyExists = true;
-            }
-            catch { }
+                pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-            if ( ! keyExists || ShouldProcess($"Slot 0x{Slot.ToString("X2")}", "New"))
-            {
+                bool keyExists = false;
                 try
                 {
-                    WriteDebug("ProcessRecord in New-YubikeyPIVKey");
-                    PivPublicKey publicKey = YubiKeyModule._pivSession!.GenerateKeyPair(Slot, Algorithm, PinPolicy, TouchPolicy);
-                    if (publicKey is not null) {
-                        if (PassThru.IsPresent)
+                    PivPublicKey pubkey = pivSession.GetMetadata(Slot).PublicKey;
+                    keyExists = true;
+                }
+                catch { }
+
+                if (!keyExists || ShouldProcess($"Slot 0x{Slot.ToString("X2")}", "New"))
+                {
+                    try
+                    {
+                        WriteDebug("ProcessRecord in New-YubikeyPIVKey");
+                        PivPublicKey publicKey = pivSession.GenerateKeyPair(Slot, Algorithm, PinPolicy, TouchPolicy);
+                        if (publicKey is not null)
                         {
-                            using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
-                            if (publicKey is PivRsaPublicKey)
+                            if (PassThru.IsPresent)
                             {
-                                WriteObject((RSA)dotNetPublicKey);
-                            }
-                            else
-                            { 
-                                WriteObject((ECDsa)dotNetPublicKey);
+                                using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
+                                if (publicKey is PivRsaPublicKey)
+                                {
+                                    WriteObject((RSA)dotNetPublicKey);
+                                }
+                                else
+                                {
+                                    WriteObject((ECDsa)dotNetPublicKey);
+                                }
                             }
                         }
+                        else
+                        {
+                            throw new Exception("Could not create keypair");
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        throw new Exception("Could not create keypair");
+                        throw new Exception("Could not create keypair", e);
                     }
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("Could not create keypair", e);
-                }
 
+                }
             }
         }
     }

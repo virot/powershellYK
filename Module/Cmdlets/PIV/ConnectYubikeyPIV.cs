@@ -6,27 +6,26 @@ using powershellYK.support;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security;
+using powershellYK;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommunications.Connect, "YubikeyPIV")]
+    [Cmdlet(VerbsCommunications.Connect, "YubikeyPIV", DefaultParameterSetName = "PIN")]
 
     public class ConnectYubikeyPIVCommand : Cmdlet
     {
 
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "ManagementKey")]
-        public string ManagementKey { get; set; } = "010203040506070801020304050607080102030405060708";
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN")]
-        public SecureString PIN { get; set; } = new SecureString();
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ManagementKey", ParameterSetName = "PIN&Management")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ManagementKey", ParameterSetName = "Management")]
+        public string? ManagementKey;
+        //Move validataion to here, I just could not get it to work.
+        //[ValidateScript("$_.Length -ge 6 -and $_ -le 8", ErrorMessage = "PIN must be between 6 and 8 characters")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN", ParameterSetName = "PIN&Management")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN", ParameterSetName = "PIN")]
+        public SecureString? PIN;
 
         protected override void BeginProcessing()
         {
-            // If already connected disconnect first
-            if (YubiKeyModule._pivSession is not null)
-            {
-                WriteDebug("Disconnecting old session");
-                YubiKeyModule._pivSession.Dispose();
-            }
             if (YubiKeyModule._yubikey is null)
             {
                 WriteDebug("No Yubikey selected, calling Connect-Yubikey");
@@ -41,50 +40,31 @@ namespace powershellYK.Cmdlets.PIV
                     throw new Exception(e.Message, e);
                 }
             }
-            try
+        }
+        protected override void ProcessRecord()
+        {
+            if (PIN is not null)
             {
-                WriteDebug("Connecting to Yubikey PIV Session");
-                YubiKeyModule._pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not connect to Yubikey PIV Session", e);
-            }
-            try
-            {
-                byte[] mgmtKey = HexConverter.StringToByteArray(ManagementKey);
-                if (YubiKeyModule._pivSession.TryAuthenticateManagementKey(mgmtKey, true)) {
+                if (PIN.Length < 6 || PIN.Length > 8)
+                {
+                    throw new ArgumentException("PIN must be between 6 and 8 characters");
                 }
                 else
                 {
-                    throw new Exception("Could not authenticate to YubiKey");
+                    YubiKeyModule._pivPIN = PIN;
                 }
-                WriteDebug("Initial Authentication");
-                CryptographicOperations.ZeroMemory(mgmtKey);
             }
-            catch (Exception e) {
-                new Exception("Could not authenticate Yubikey PIV, wrong ManagementKey", e);
-            }
-
-            try
+            if (ManagementKey is not null)
             {
-                byte[] pinarray = System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PIN))!);
-                int? retries = null;
-                if (YubiKeyModule._pivSession.TryVerifyPin(pinarray, out retries) == false)
-                {
-                    throw new Exception("Could not authenticate Yubikey PIV, wrong PIN");
-                }
-                CryptographicOperations.ZeroMemory(pinarray);
+                YubiKeyModule._pivManagementKey = HexConverter.StringToByteArray(ManagementKey);
             }
-            catch (OperationCanceledException e)
+            using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                throw new OperationCanceledException("Could not authenticate Yubikey PIV, wrong PIN", e);
+                
+                pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                pivSession.VerifyPin();
+                pivSession.AuthenticateManagementKey();
             }
-            catch (Exception e)
-            {
-                throw new Exception("Could not authenticate Yubikey PIV, wrong PIN", e);
-            }
-
         }
     }
 }
