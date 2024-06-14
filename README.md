@@ -1,5 +1,11 @@
-# Yubikey_Powershell
+# powershellYK
 
+## 💾 Installation
+To install the powershellYK (PowerShell YubiKey) module:
+
+1. Open PowerShell
+2. Execute the following command: ```Install-Module powershellYK```
+3. Press ```Y``` when prompted to proceed with installation.
 
 ## PIV feature comparison
 | Feature | Powershell Module | ykman GUI | ykman CLI | yubico-piv-tool |
