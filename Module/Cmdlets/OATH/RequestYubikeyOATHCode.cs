@@ -21,35 +21,43 @@ namespace powershellYK.Cmdlets.OATH
         public Credential? Credential { get; set; }
         protected override void BeginProcessing()
         {
-            if (YubiKeyModule._oathSession is null)
+            if (YubiKeyModule._yubikey is null)
             {
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyOath");
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 myPowersShellInstance.Invoke();
+                WriteDebug($"Successfully connected");
             }
         }
+
         protected override void ProcessRecord()
         {
-            if (ParameterSetName == "All")
+            using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                IDictionary <Credential, Code> oathCodes = YubiKeyModule._oathSession!.CalculateAllCredentials();
-                foreach (KeyValuePair<Credential, Code> oathCode in oathCodes)
-                {
-                    WriteObject(new powershellYK.OATH.Code.TOTP(oathCode.Key.Issuer != null ? oathCode.Key.Issuer : "", oathCode.Key.Name, oathCode.Value.ValidFrom, oathCode.Value.ValidUntil, oathCode.Value.Value != null ? oathCode.Value.Value : "")) ;
-                }
-            }
-            else if (ParameterSetName == "Specific")
-            {
-                if (Credential is not null)
-                {
-                    Code oathCode = YubiKeyModule._oathSession!.CalculateCredential(Credential);
+                oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                    if ((oathCode.ValidFrom is not null) && (oathCode.ValidUntil is not null))
+                if (ParameterSetName == "All")
+                {
+                    IDictionary<Credential, Code> oathCodes = oathSession.CalculateAllCredentials();
+                    foreach (KeyValuePair<Credential, Code> oathCode in oathCodes)
                     {
-                        WriteObject(new powershellYK.OATH.Code.TOTP(Credential.Issuer != null ? Credential.Issuer : "", Credential.Name, oathCode.ValidFrom, oathCode.ValidUntil, oathCode.Value != null ? oathCode.Value : ""));
+                        WriteObject(new powershellYK.OATH.Code.TOTP(oathCode.Key.Issuer != null ? oathCode.Key.Issuer : "", oathCode.Key.Name, oathCode.Value.ValidFrom, oathCode.Value.ValidUntil, oathCode.Value.Value != null ? oathCode.Value.Value : ""));
                     }
-                    else
+                }
+                else if (ParameterSetName == "Specific")
+                {
+                    if (Credential is not null)
                     {
-                        WriteObject(new powershellYK.OATH.Code.HOTP(Credential.Issuer != null ? Credential.Issuer : "", Credential.Name, oathCode.Value != null ? oathCode.Value : ""));
+                        Code oathCode = oathSession.CalculateCredential(Credential);
+
+                        if ((oathCode.ValidFrom is not null) && (oathCode.ValidUntil is not null))
+                        {
+                            WriteObject(new powershellYK.OATH.Code.TOTP(Credential.Issuer != null ? Credential.Issuer : "", Credential.Name, oathCode.ValidFrom, oathCode.ValidUntil, oathCode.Value != null ? oathCode.Value : ""));
+                        }
+                        else
+                        {
+                            WriteObject(new powershellYK.OATH.Code.HOTP(Credential.Issuer != null ? Credential.Issuer : "", Credential.Name, oathCode.Value != null ? oathCode.Value : ""));
+                        }
                     }
                 }
             }

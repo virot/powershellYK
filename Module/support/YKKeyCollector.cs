@@ -31,6 +31,7 @@ namespace powershellYK
                         throw new Exception("Incorrect Management Key.");
                         return false;
 
+                    case KeyEntryRequest.VerifyFido2Pin:
                     case KeyEntryRequest.VerifyPivPin:
                         if (!(keyEntryData.RetriesRemaining is null))
                         {
@@ -61,9 +62,18 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyPivPin:
                     if (YubiKeyModule._pivPIN is null)
                     {
-                        throw new Exception("PIN not set, use Connect-YubikeyPIV -PIN XXXXXX");
+                        throw new Exception("PIN not set, use Connect-YubikeyPIV");
                     }
                     currentValue = System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._pivPIN!))!);
+                    keyEntryData.SubmitValue(currentValue);
+                    break;
+
+                case KeyEntryRequest.VerifyFido2Pin:
+                    if (YubiKeyModule._fido2PIN is null)
+                    {
+                        throw new Exception("PIN not set, use Connect-YubikeyFIDO2");
+                    }
+                    currentValue = System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PIN!))!);
                     keyEntryData.SubmitValue(currentValue);
                     break;
 
