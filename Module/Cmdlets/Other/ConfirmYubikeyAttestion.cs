@@ -9,7 +9,7 @@ using static System.Security.Cryptography.X509Certificates.CertificateRequest;
 namespace powershellYK.Cmdlets.Other
 {
     [Cmdlet(VerbsLifecycle.Confirm, "YubikeyAttestion")]
-    public class ConfirmYubikeyAttestionCommand : Cmdlet
+    public class ConfirmYubikeyAttestionCommand : PSCmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithExternalAttestion")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithBuiltinAttestion")]
@@ -50,14 +50,21 @@ namespace powershellYK.Cmdlets.Other
                         WriteDebug("CertificateRequest is PEM string");
                         _CertificateRequest = LoadSigningRequestPem((string)CertificateRequest!.BaseObject, HashAlgorithmName.SHA256, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
                     }
-                    else if (System.IO.File.Exists((string)CertificateRequest.BaseObject))
+                    else // Check if it is a file or throw an error.
                     {
-                        string CertificateRequestString = System.IO.File.ReadAllText((string)CertificateRequest!.BaseObject);
-                        _CertificateRequest = LoadSigningRequestPem(CertificateRequestString, HashAlgorithmName.SHA256, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("String must contain PEM certificate request or path to same.", "CertificateRequest");
+                        // there is a bug with GetCurrentDirectory, which breaks relative paths
+                        // Should probably really revert to the incorrect path after this.
+                        System.IO.Directory.SetCurrentDirectory(this.SessionState.Path.CurrentLocation.ToString());
+                        if (System.IO.File.Exists(CertificateRequest.BaseObject.ToString()))
+                        {
+                            WriteDebug("CertificateRequest is filepath");
+                            string CertificateRequestString = System.IO.File.ReadAllText((string)CertificateRequest!.BaseObject);
+                            _CertificateRequest = LoadSigningRequestPem(CertificateRequestString, HashAlgorithmName.SHA256, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
+                        }
+                        else
+                        {
+                            throw new ArgumentException("String must contain PEM certificate request or path to same.", "CertificateRequest");
+                        }
                     }
                 }
                 else if (CertificateRequest.BaseObject is byte[])
