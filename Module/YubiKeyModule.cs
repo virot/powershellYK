@@ -22,13 +22,37 @@ namespace powershellYK
         public static SecureString? _fido2PIN;
         public static byte[] _pivManagementKey = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
     }
-#if WINDOWS
     public class MyModuleAssemblyInitializer: IModuleAssemblyInitializer
     {
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr AddDllDirectory(string NewDirectory);
 
         public void OnImport()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                WindowsOnly.AddDllDirectory();
+            }
+        }
+    }
+
+    public class MyModuleAssemblyCleanup: IModuleAssemblyCleanup
+    {
+        public void OnRemove(PSModuleInfo psModuleInfo)
+        {
+            if (YubiKeyModule._connection is not null)
+            {
+                YubiKeyModule._connection.Dispose();
+            }
+        }
+    }
+
+    public class WindowsOnly
+    {
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern IntPtr AddDllDirectory(string NewDirectory);
+
+        public static void AddDllDirectory()
         {
             string assemblyLocation = Assembly.GetExecutingAssembly().Location;
             string assemblyPath = Path.GetDirectoryName(assemblyLocation)!;
@@ -41,17 +65,6 @@ namespace powershellYK
             }
         }
     }
-#endif //WINDOWS
 
-    public class MyModuleAssemblyCleanup: IModuleAssemblyCleanup
-    {
-        public void OnRemove(PSModuleInfo psModuleInfo)
-        {
-            if (YubiKeyModule._connection is not null)
-            {
-                YubiKeyModule._connection.Dispose();
-            }
-        }
-    }
 
 }

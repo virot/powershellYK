@@ -12,6 +12,10 @@ Remove-Item -Recurse "$($Directory.fullname)\loader"
 Move-Item "$($Directory.fullname)\module\powershellYK.psd1" "$($Directory.fullname)"
 Move-Item "$($Directory.fullname)\module\powershellYK.format.ps1xml" "$($Directory.fullname)"
 
+Remove-Item -Recurse "$($Directory.fullname)\module\runtimes\linux*"
+Remove-Item -Recurse "$($Directory.fullname)\module\runtimes\osx*"
+Remove-Item -Recurse "$($Directory.fullname)\module\runtimes\unix*"
+
 
 & "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe" sign /sha1 "8079DD82969461B1B7A8769B26262726AA0F6D89" /fd SHA256 /t http://timestamp.sectigo.com "$($Directory.fullname)\powershellYK.format.ps1xml"
 & "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe" sign /sha1 "8079DD82969461B1B7A8769B26262726AA0F6D89" /fd SHA256 /t http://timestamp.sectigo.com "$($Directory.fullname)\module\powershellYK.dll"
@@ -30,4 +34,4 @@ $parameters = @{
 Update-MarkdownHelpModule @parameters
 
 New-ExternalHelp -Path '.\Documentation\Commands' -OutputPath "$($Directory.fullname)" -Force
-.
+
