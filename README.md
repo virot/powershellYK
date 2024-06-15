@@ -19,12 +19,13 @@ To install the powershellYK (PowerShell YubiKey) module:
 ## 📖 Usage
 
 ### Output AltSecurityIdentities attribute(s)
-To output applicable AltSecurityIdentities attributes for a given certificate: ```convertto-AltSecurity -Certificate <path>\<filename>```
-💡To instead write attributes to file, use: ```convertto-AltSecurity -Certificate <path>\<filename> > <path>\<output_filename>```
+To output applicable AltSecurityIdentities attributes for a given certificate: ```convertto-AltSecurity -Certificate <path>\<filename>```.
+
+💡To instead write attributes to file, use: ```convertto-AltSecurity -Certificate <path>\<filename> > <path>\<output_filename>```.
 
 
 #### Example command output:
-Here is an example command execution with its corresponding oresult:
+Here is an example command execution with its corresponding result:
 
 ```
 PS C:\> convertto-AltSecurity -Certificate C:\alice.crt
