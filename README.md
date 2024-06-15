@@ -41,7 +41,7 @@ X509SKI                : X509:<SKI>
 X509SHA1PublicKey      : X509:<SHA1-PUKEY>D82C910ABBA48A03600DB0DC5ABF2C15B24C215D
 ```
 
-**Note**: Only ```X509IssuerSerialNumber```, ```X509SKI``` and ```X509SHA1PublicKey``` are considered _strong_ bindings (by [Microsoft](https://support.microsoft.com/en-us/topic/kb5014754-certificate-based-authentication-changes-on-windows-domain-controllers-ad2c23b0-15d8-4340-a468-4d4f3b188f16))).
+**Note**: Only ```X509IssuerSerialNumber```, ```X509SKI``` and ```X509SHA1PublicKey``` are considered _strong_ bindings (by [Microsoft](https://support.microsoft.com/en-us/topic/kb5014754-certificate-based-authentication-changes-on-windows-domain-controllers-ad2c23b0-15d8-4340-a468-4d4f3b188f16)).
 
 
 
