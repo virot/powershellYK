@@ -38,47 +38,50 @@ namespace powershellYK.Cmdlets.PIV
         }
         protected override void ProcessRecord()
         {
-            throw new Exception("Required reimplementation");
-            if (PIN.IsPresent)
+            using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                try
+                if (PIN.IsPresent)
                 {
-                    int? retriesRemaining = 1;
-                    Random rnd = new Random();
-                    while (retriesRemaining > 0)
+                    try
                     {
-                        int randomNumber = rnd.Next(0, 99999999);
-                        string pinfail = randomNumber.ToString("00000000");
-                        byte[] pinfailBytes = Encoding.UTF8.GetBytes(pinfail);
-                        //YubiKeyModule._pivSession!.TryChangePin(pinfailBytes, pinfailBytes, out retriesRemaining);
+                        int? retriesRemaining = 1;
+                        Random rnd = new Random();
+                        while (retriesRemaining > 0)
+                        {
+                            int randomNumber = rnd.Next(0, 99999999);
+                            string pinfail = randomNumber.ToString("00000000");
+                            byte[] pinfailBytes = Encoding.UTF8.GetBytes(pinfail);
+                            pivSession.TryChangePin(pinfailBytes, pinfailBytes, out retriesRemaining);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        if (e.Message != "There are no retries remaining for a PIN, PUK, or other authentication element.")
+                        {
+                            throw new Exception("Failed to block PUK", e);
+                        }
                     }
                 }
-                catch (Exception e)
+                if (PUK.IsPresent)
                 {
-                    if (e.Message != "There are no retries remaining for a PIN, PUK, or other authentication element.")
+                    try
                     {
-                        throw new Exception("Failed to block PUK", e);
+                        int? retriesRemaining = 1;
+                        Random rnd = new Random();
+                        while (retriesRemaining > 0)
+                        {
+                            int randomNumber = rnd.Next(0, 99999999);
+                            string pukfail = randomNumber.ToString("00000000");
+                            byte[] pukfailBytes = Encoding.UTF8.GetBytes(pukfail);
+                            pivSession.TryChangePuk(pukfailBytes, pukfailBytes, out retriesRemaining);
+                        }
                     }
-                }
-            }
-            if (PUK.IsPresent)
-            {
-                try
-                {
-                    int? retriesRemaining = 1;
-                    Random rnd = new Random();
-                    while (retriesRemaining > 0)
+                    catch (Exception e)
                     {
-                        int randomNumber = rnd.Next(0, 99999999);
-                        string pukfail = randomNumber.ToString("00000000");
-                        byte[] pukfailBytes = Encoding.UTF8.GetBytes(pukfail);
-                        //YubiKeyModule._pivSession!.TryChangePuk(pukfailBytes, pukfailBytes, out retriesRemaining);
-                    }
-                }
-                catch (Exception e)
-                {
-                    if (e.Message != "There are no retries remaining for a PIN, PUK, or other authentication element.") {
-                        throw new Exception("Failed to block PUK", e);
+                        if (e.Message != "There are no retries remaining for a PIN, PUK, or other authentication element.")
+                        {
+                            throw new Exception("Failed to block PUK", e);
+                        }
                     }
                 }
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using powershellYK.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -25,11 +26,11 @@ namespace powershellYK
                 {
                     default:
                         throw new Exception("Unknown request.");
-                        return false;
+                        //return false;
 
                     case KeyEntryRequest.AuthenticatePivManagementKey:
                         throw new Exception("Incorrect Management Key.");
-                        return false;
+                        //return false;
 
                     case KeyEntryRequest.VerifyFido2Pin:
                     case KeyEntryRequest.VerifyPivPin:
@@ -37,11 +38,11 @@ namespace powershellYK
                         {
                             if (keyEntryData.RetriesRemaining == 0)
                             {
-                                throw new Exception("Incorrect PIN, no retries remaining.");
+                                throw new PINIncorrectException("Incorrect PIN, no retries remaining.", 0);
                             }
                             else
                             {
-                                throw new Exception($"Incorrect PIN, {keyEntryData.RetriesRemaining} retries remaining.");
+                                throw new PINIncorrectException($"Incorrect PIN, {keyEntryData.RetriesRemaining} retries remaining.", keyEntryData.RetriesRemaining);
                             }
                         }
                         return false;
@@ -62,7 +63,7 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyPivPin:
                     if (YubiKeyModule._pivPIN is null)
                     {
-                        throw new Exception("PIN not set, use Connect-YubikeyPIV");
+                        throw new PIVNotConnectedException("PIN not set, use Connect-YubikeyPIV to authorize");
                     }
                     currentValue = System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._pivPIN!))!);
                     keyEntryData.SubmitValue(currentValue);
@@ -71,7 +72,7 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyFido2Pin:
                     if (YubiKeyModule._fido2PIN is null)
                     {
-                        throw new Exception("PIN not set, use Connect-YubikeyFIDO2");
+                        throw new FIDO2NotConnectedException("PIN not set, use Connect-YubikeyFIDO2 to authorize");
                     }
                     currentValue = System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PIN!))!);
                     keyEntryData.SubmitValue(currentValue);
