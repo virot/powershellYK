@@ -1,16 +1,19 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
+using Yubico.YubiKey.Fido2;
+using powershellYK.support;
+using System.Data.Common;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey.Oath;
-using Yubico.YubiKey.Otp;
+using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsCommon.Remove, "YubikeyOATHCredential", ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Reset, "YubikeyOATH", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
 
-    public class RemoveYubikeyOATHCredentialCommand : Cmdlet
+    public class ResetYubikeyOATH2Command : Cmdlet
     {
-        [Parameter(Mandatory = true, ValueFromPipeline = true, HelpMessage = "Credential to remove")]
-        public Credential Credential { get; set; } = new Credential();
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -24,10 +27,13 @@ namespace powershellYK.Cmdlets.OATH
 
         protected override void ProcessRecord()
         {
-            using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
+            if (ShouldProcess($"Yubikey OATH", "Reset"))
             {
-                oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                oathSession.RemoveCredential(Credential);
+                using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
+                {
+                    oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                    oathSession.ResetApplication();
+                }
             }
         }
     }

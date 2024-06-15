@@ -1,21 +1,19 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
+using Yubico.YubiKey.Fido2;
+using powershellYK.support;
+using System.Data.Common;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey.Oath;
-using Yubico.YubiKey.Otp;
+using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsCommon.Set, "YubikeyOATHCredential")]
+    [Cmdlet(VerbsCommon.Get, "YubikeyOATH")]
 
-    public class SetYubikeyOATHCredentialCommand : Cmdlet
+    public class GetYubikeyOATH2Command : Cmdlet
     {
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Credential to remove")]
-        public Credential? Credential { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "New AccountName")]
-        public string? NewAccountName { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "New Issuer")]
-        public string? NewIssuer { get; set; }
-
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -32,8 +30,13 @@ namespace powershellYK.Cmdlets.OATH
             using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                oathSession.RenameCredential(Credential!, NewIssuer != null ? NewIssuer : Credential!.Issuer, NewAccountName != null ? NewAccountName : Credential!.AccountName!);
-                }
+
+                var customObject = new
+                {
+                    PasswordProtected = oathSession.IsPasswordProtected,
+                };
+                WriteObject(customObject);
+            }
         }
     }
 }

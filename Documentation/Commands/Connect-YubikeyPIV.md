@@ -12,8 +12,19 @@ Connect PIV module
 
 ## SYNTAX
 
+### PIN (Default)
 ```
-Connect-YubikeyPIV [-ManagementKey <String>] -PIN <SecureString> [<CommonParameters>]
+Connect-YubikeyPIV -PIN <SecureString> [<CommonParameters>]
+```
+
+### PIN&Management
+```
+Connect-YubikeyPIV -ManagementKey <String> -PIN <SecureString> [<CommonParameters>]
+```
+
+### Management
+```
+Connect-YubikeyPIV -ManagementKey <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -57,10 +68,10 @@ ManagementKey
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: PIN&Management, Management
 Aliases:
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -72,7 +83,7 @@ PIN
 
 ```yaml
 Type: SecureString
-Parameter Sets: (All)
+Parameter Sets: PIN, PIN&Management
 Aliases:
 
 Required: True

@@ -9,10 +9,10 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'powershellYK.dll'
+RootModule = '.\module\powershellYK.dll'
 
 # Version number of this module.
-ModuleVersion = '0.0.10.1'
+ModuleVersion = '0.0.10.2'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -66,7 +66,7 @@ ProcessorArchitecture = 'None'
 FormatsToProcess = @('powershellYK.format.ps1xml')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-NestedModules = @('.\module\powershellYK_loader.dll')
+# NestedModules = @('.\module\powershellYK_loader.dll')
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 # FunctionsToExport = @()
@@ -80,11 +80,13 @@ CmdletsToExport = @(
  'Connect-YubikeyFIDO2',
  'Get-YubikeyFIDO2Credentials',
  'Connect-YubikeyOATH',
- 'Get-YubikeyOATHCredential',
- 'New-YubikeyOATHCredential',
- 'Remove-YubikeyOATHCredential',
+ 'Get-YubikeyOATH',
+ 'Get-YubikeyOATHAccount',
+ 'New-YubikeyOATHAccount',
+ 'Remove-YubikeyOATHAccount',
+ 'Reset-YubikeyOATH',
  'Request-YubikeyOATHCode',
- 'Set-YubikeyOATHCredential',
+ 'Set-YubikeyOATHAccount',
  'Assert-YubikeyPIV',
  'Block-YubikeyPIV',
  'Connect-YubikeyPIV',
