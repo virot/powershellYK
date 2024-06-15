@@ -30,13 +30,13 @@ Removes the account with the issuer 'Yubico Demo'.
 
 ## PARAMETERS
 
-### -Credential
+### -Account
 Credential to remove
 
 ```yaml
 Type: Credential
 Parameter Sets: (All)
-Aliases:
+Aliases: Credential
 
 Required: True
 Position: Named

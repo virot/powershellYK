@@ -14,13 +14,13 @@ Created a TOTP or HOTP account
 
 ### HOTP
 ```
-New-YubikeyOATHCredential [-HOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
+New-YubikeyOATHAccount [-HOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
  -Secret <String> [-Digits <Int32>] [-Counter] [<CommonParameters>]
 ```
 
 ### TOTP
 ```
-New-YubikeyOATHCredential [-TOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
+New-YubikeyOATHAccount [-TOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
  -Secret <String> -Period <CredentialPeriod> [-Digits <Int32>] [<CommonParameters>]
 ```
 

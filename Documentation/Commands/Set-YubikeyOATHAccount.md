@@ -13,7 +13,7 @@ Update OATH account
 ## SYNTAX
 
 ```
-Set-YubikeyOATHCredential -Credential <Credential> [-NewAccountName <String>] [-NewIssuer <String>]
+Set-YubikeyOATHAccount -Account <Credential> [-NewAccountName <String>] [-NewIssuer <String>]
  [<CommonParameters>]
 ```
 
@@ -38,7 +38,7 @@ Account to remove
 ```yaml
 Type: Credential
 Parameter Sets: (All)
-Aliases:
+Aliases: Credential
 
 Required: True
 Position: Named

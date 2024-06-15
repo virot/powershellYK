@@ -53,6 +53,9 @@ Read the FIDO2 discoverable credentials
 ### [Get-YubikeyOATH](Get-YubikeyOATH.md)
 Get information about the OATH module
 
+### [Get-YubikeyOATHAccount](Get-YubikeyOATHAccount.md)
+List all OATH accounts
+
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
 Gets information about the PIV module and specific slots.
 
@@ -60,7 +63,7 @@ Gets information about the PIV module and specific slots.
 Import certificate
 
 ### [New-YubikeyOATHAccount](New-YubikeyOATHAccount.md)
-{{ Fill in the Synopsis }}
+Created a TOTP or HOTP account
 
 ### [New-YubikeyPIVCSR](New-YubikeyPIVCSR.md)
 Creates a CSR for a slot in the Yubikey
@@ -71,14 +74,20 @@ Create a new private key
 ### [New-YubikeyPIVSelfSign](New-YubikeyPIVSelfSign.md)
 Create a self signed certificate
 
+### [Remove-YubikeyOATHAccount](Remove-YubikeyOATHAccount.md)
+Removes an account from the Yubikey OATH application
+
 ### [Request-YubikeyOATHCode](Request-YubikeyOATHCode.md)
-{{ Fill in the Synopsis }}
+Displays TOTP / HOTP codes for Yubikey OATH credentials
 
 ### [Reset-YubikeyOATH](Reset-YubikeyOATH.md)
-{{ Fill in the Synopsis }}
+Reset the entire Yubikey OATH application.
 
 ### [Reset-YubikeyPIV](Reset-YubikeyPIV.md)
 Resets the PIV part of your Yubikey
+
+### [Set-YubikeyOATHAccount](Set-YubikeyOATHAccount.md)
+Update OATH account
 
 ### [Set-YubikeyPIV](Set-YubikeyPIV.md)
 Allows the updating of PIV settings
