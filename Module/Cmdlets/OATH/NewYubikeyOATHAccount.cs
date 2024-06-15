@@ -10,9 +10,9 @@ using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsCommon.New, "YubikeyOATHCredential")]
+    [Cmdlet(VerbsCommon.New, "YubikeyOATHAccount")]
 
-    public class NewYubikeyOATH2CredentialCommand : PSCmdlet
+    public class NewYubikeyOATH2AccountCommand : PSCmdlet
     {
         
 

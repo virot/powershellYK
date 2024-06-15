@@ -15,10 +15,11 @@ namespace powershellYK.Cmdlets.OATH
 
     public class GetYubikeyOATHCodeCommand : PSCmdlet
     {
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Get codes for all credentials", ParameterSetName = "All")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Get codes for all accounts", ParameterSetName = "All")]
         public SwitchParameter All { get; set; }
-        [Parameter(Mandatory = true, ValueFromPipeline = true, HelpMessage = "Credential to generate code for", ParameterSetName = "Specific")]
-        public Credential? Credential { get; set; }
+        [Parameter(Mandatory = true, ValueFromPipeline = true, HelpMessage = "Account to generate code for", ParameterSetName = "Specific")]
+        [Alias("Credential")]
+        public Credential? Account { get; set; }
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -46,17 +47,17 @@ namespace powershellYK.Cmdlets.OATH
                 }
                 else if (ParameterSetName == "Specific")
                 {
-                    if (Credential is not null)
+                    if (Account is not null)
                     {
-                        Code oathCode = oathSession.CalculateCredential(Credential);
+                        Code oathCode = oathSession.CalculateCredential(Account);
 
                         if ((oathCode.ValidFrom is not null) && (oathCode.ValidUntil is not null))
                         {
-                            WriteObject(new powershellYK.OATH.Code.TOTP(Credential.Issuer != null ? Credential.Issuer : "", Credential.Name, oathCode.ValidFrom, oathCode.ValidUntil, oathCode.Value != null ? oathCode.Value : ""));
+                            WriteObject(new powershellYK.OATH.Code.TOTP(Account.Issuer != null ? Account.Issuer : "", Account.Name, oathCode.ValidFrom, oathCode.ValidUntil, oathCode.Value != null ? oathCode.Value : ""));
                         }
                         else
                         {
-                            WriteObject(new powershellYK.OATH.Code.HOTP(Credential.Issuer != null ? Credential.Issuer : "", Credential.Name, oathCode.Value != null ? oathCode.Value : ""));
+                            WriteObject(new powershellYK.OATH.Code.HOTP(Account.Issuer != null ? Account.Issuer : "", Account.Name, oathCode.Value != null ? oathCode.Value : ""));
                         }
                     }
                 }

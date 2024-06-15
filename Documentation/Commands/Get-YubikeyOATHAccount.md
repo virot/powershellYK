@@ -5,15 +5,15 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-YubikeyOATHCredential
+# Get-YubikeyOATHAccount
 
 ## SYNOPSIS
-List all OATH credentials
+List all OATH accounts
 
 ## SYNTAX
 
 ```
-Get-YubikeyOATHCredential [<CommonParameters>]
+Get-YubikeyOATHAccount [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,7 +24,7 @@ Both TOTP (Time-based one-time password) and HOTP (HMAC-based one-time password 
 
 ### Example 1
 ```powershell
-PS C:\> Get-YubikeyOATHCredential
+PS C:\> Get-YubikeyOATHAccount
 
 Type              : Totp
 Algorithm         : Sha1
@@ -39,7 +39,7 @@ Name              : Yubico Demo:powershellYK
 IsValidNameLength : True
 ```
 
-Lists all TOTP credentials registered on the Yubikey
+Lists all TOTP Account registered on the Yubikey
 
 ## PARAMETERS
 
