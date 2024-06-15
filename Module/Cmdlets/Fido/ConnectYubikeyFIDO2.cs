@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security;
+using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.Fido
 {
@@ -18,56 +19,40 @@ namespace powershellYK.Cmdlets.Fido
 
         protected override void BeginProcessing()
         {
-            // If already connected disconnect first
-            if (YubiKeyModule._fido2Session is not null)
             {
-                WriteDebug("Disconnecting old session");
-                YubiKeyModule._fido2Session.Dispose();
-            }
-#if WINDOWS
-                PermisionsStuff permisionsStuff = new PermisionsStuff();
-                if (PermisionsStuff.IsRunningAsAdministrator() == false)
+                if (YubiKeyModule._yubikey is null)
                 {
-                    throw new Exception("You need to run this command as an administrator");
-                }
-#endif //WINDOWS
-            if (YubiKeyModule._yubikey is null)
-            {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
-                try
-                {
+                    WriteDebug("No Yubikey selected, calling Connect-Yubikey");
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
                     WriteDebug($"Successfully connected");
                 }
-                catch (Exception e)
+            }
+#if WINDOWS
+            PermisionsStuff permisionsStuff = new PermisionsStuff();
+            if (PermisionsStuff.IsRunningAsAdministrator() == false)
+            {
+                throw new Exception("You need to run this command as an administrator");
+            }
+#endif //WINDOWS
+        }
+        protected override void ProcessRecord()
+        {
+            if (PIN is not null)
+            {
+                if (PIN.Length < 6 || PIN.Length > 8)
                 {
-                    throw new Exception(e.Message, e);
+                    throw new ArgumentException("PIN must be between 6 and 8 characters");
+                }
+                else
+                {
+                    YubiKeyModule._fido2PIN = PIN;
                 }
             }
-
-            try
+            using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                WriteDebug("Connecting to Yubikey FIDO2 Session");
-                YubiKeyModule._fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not connect to Yubikey FIDO2", e);
-            }
-
-            try
-            {
-                int? retries = null;
-                bool? rebootRequired;
-                if (YubiKeyModule._fido2Session.TryVerifyPin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PIN))!), null, null, out retries, out rebootRequired) == false)
-                {
-                    throw new Exception("Could not authenticate Yubikey PIV, wrong PIN");
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not authenticate to YubiKey FIDO", e);
+                fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                fido2Session.VerifyPin();
             }
         }
     }

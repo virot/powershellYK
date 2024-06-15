@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using powershellYK.FIDO2;
+using Yubico.YubiKey.Oath;
 
 namespace powershellYK.Cmdlets.Fido
 {
@@ -15,26 +16,34 @@ namespace powershellYK.Cmdlets.Fido
     {
         protected override void BeginProcessing()
         {
-            // If already connected disconnect first
-            if (YubiKeyModule._fido2Session is null)
             {
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFido2");
-                myPowersShellInstance.Invoke();
+                if (YubiKeyModule._yubikey is null)
+                {
+                    WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    myPowersShellInstance.Invoke();
+                    WriteDebug($"Successfully connected");
+                }
             }
 #if WINDOWS
-                PermisionsStuff permisionsStuff = new PermisionsStuff();
-                if (PermisionsStuff.IsRunningAsAdministrator() == false)
-                {
-                    throw new Exception("You need to run this command as an administrator");
-                }
-#endif //WINDOWS
-
-            try
+            PermisionsStuff permisionsStuff = new PermisionsStuff();
+            if (PermisionsStuff.IsRunningAsAdministrator() == false)
             {
-                var RelyingParties = YubiKeyModule._fido2Session!.EnumerateRelyingParties();
+                throw new Exception("You need to run this command as an administrator");
+            }
+#endif //WINDOWS
+        }
+
+        protected override void ProcessRecord()
+        {
+            using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
+            {
+                fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+
+                var RelyingParties = fido2Session.EnumerateRelyingParties();
                 foreach (RelyingParty RelyingParty in RelyingParties)
                 {
-                    var relayCredentials = YubiKeyModule._fido2Session!.EnumerateCredentialsForRelyingParty(RelyingParty);
+                    var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
                     foreach (CredentialUserInfo user in relayCredentials)
                     {
                         Credentials credentials = new Credentials
@@ -46,10 +55,6 @@ namespace powershellYK.Cmdlets.Fido
                         WriteObject(credentials);
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not EnumerateRelyingParties", e);
             }
         }
     }

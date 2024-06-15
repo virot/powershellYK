@@ -50,36 +50,34 @@ namespace powershellYK.Cmdlets.OATH
 
         protected override void BeginProcessing()
         {
-            if (YubiKeyModule._oathSession is null)
+            if (YubiKeyModule._yubikey is null)
             {
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyOath");
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 myPowersShellInstance.Invoke();
+                WriteDebug($"Successfully connected");
             }
         }
+
         protected override void ProcessRecord()
         {
-            // If already connected disconnect first
-            try
+            Credential newCredential = new Credential
             {
-                Credential newCredential = new Credential
-                {
-                    Issuer = Issuer,
-                    AccountName = Accountname,
-                    Secret = Secret,
-                    Period = Period,
-                    Algorithm = Algorithm,
-                    Type = HOTP.IsPresent ? CredentialType.Hotp : CredentialType.Totp,
-                    //RequireTouch = RequireTouch.IsPresent,
-                    Digits = Digits,
-                    Counter = Counter.IsPresent ? 0 : null
-                };
+                Issuer = Issuer,
+                AccountName = Accountname,
+                Secret = Secret,
+                Period = Period,
+                Algorithm = Algorithm,
+                Type = HOTP.IsPresent ? CredentialType.Hotp : CredentialType.Totp,
+                //RequireTouch = RequireTouch.IsPresent,
+                Digits = Digits,
+                Counter = Counter.IsPresent ? 0 : null
+            };
 
-
-                YubiKeyModule._oathSession!.AddCredential(newCredential);
-            }
-            catch (Exception e)
+            using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                throw new Exception("Could not enumerate credentials", e);
+                oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                oathSession.AddCredential(newCredential);
             }
         }
     }

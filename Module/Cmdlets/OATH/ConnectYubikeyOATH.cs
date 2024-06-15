@@ -15,35 +15,19 @@ namespace powershellYK.Cmdlets.OATH
 
         protected override void BeginProcessing()
         {
-            // If already connected disconnect first
-            if (YubiKeyModule._oathSession is not null)
-            {
-                WriteDebug("Disconnecting old session");
-                YubiKeyModule._oathSession.Dispose();
-            }
             if (YubiKeyModule._yubikey is null)
             {
                 WriteDebug("No Yubikey selected, calling Connect-Yubikey");
-                try
-                {
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
-                    myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
-                }
-                catch (Exception e)
-                {
-                    throw new Exception(e.Message, e);
-                }
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                myPowersShellInstance.Invoke();
+                WriteDebug($"Successfully connected");
             }
-
-            try
+        }
+        protected override void ProcessRecord()
+        {
+            using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                WriteDebug("Connecting to Yubikey OATH Session");
-                YubiKeyModule._oathSession  = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not connect to Yubikey OATH", e);
+                oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
             }
         }
     }

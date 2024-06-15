@@ -14,9 +14,14 @@ namespace powershellYK.Cmdlets.Yubikey
             //Start with disconnecting the old yubikey if connected.
             if (YubiKeyModule._yubikey is not null)
             {
-                DisconnectYubikeyCommand disconnectYubikey = new DisconnectYubikeyCommand();
-                disconnectYubikey.Invoke();
+                if (YubiKeyModule._pivPIN is not null)
+                {
+                    YubiKeyModule._pivPIN.Dispose();
+                }
             }
+        }
+        protected override void ProcessRecord()
+        {
             WriteDebug("ProcessRecord in Connect-Yubikey");
             if (YubiKey is not null)
             {
@@ -38,9 +43,6 @@ namespace powershellYK.Cmdlets.Yubikey
                     throw new Exception("None or multiple YubiKeys found");
                 }
             }
-
-
-
         }
     }
 }

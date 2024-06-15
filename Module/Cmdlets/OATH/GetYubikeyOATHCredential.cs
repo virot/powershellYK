@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey.Oath;
+using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.OATH
 {
@@ -13,26 +14,27 @@ namespace powershellYK.Cmdlets.OATH
 
     public class GetYubikeyOATH2CredentialCommand : Cmdlet
     {
+        protected override void BeginProcessing()
+        {
+            if (YubiKeyModule._yubikey is null)
+            {
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                myPowersShellInstance.Invoke();
+                WriteDebug($"Successfully connected");
+            }
+        }
 
         protected override void ProcessRecord()
         {
-            // If already connected disconnect first
-            if (YubiKeyModule._oathSession is null)
+            using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyOath");
-                myPowersShellInstance.Invoke();
-            }
-            try
-            {
-                IList<Credential> credentials = YubiKeyModule._oathSession!.GetCredentials();
+                oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                IList<Credential> credentials = oathSession.GetCredentials();
                 foreach (Credential credential in credentials)
                 {
                     WriteObject(credential);
                 }
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not enumerate credentials", e);
             }
         }
     }

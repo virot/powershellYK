@@ -7,6 +7,9 @@ using System.Reflection;
 using System.IO;
 using System.Runtime.InteropServices;
 using Yubico.YubiKey.Oath;
+using System.Security.Cryptography;
+using System.Security;
+using System.Net.NetworkInformation;
 
 namespace powershellYK
 {
@@ -14,9 +17,10 @@ namespace powershellYK
     {
         public static YubiKeyDevice? _yubikey;
         public static IYubiKeyConnection? _connection;
-        public static PivSession? _pivSession;
-        public static Fido2Session? _fido2Session;
-        public static OathSession? _oathSession;
+        public static YKKeyCollector _KeyCollector = new YKKeyCollector();
+        public static SecureString? _pivPIN;
+        public static SecureString? _fido2PIN;
+        public static byte[] _pivManagementKey = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
     }
 #if WINDOWS
     public class MyModuleAssemblyInitializer: IModuleAssemblyInitializer
@@ -43,22 +47,11 @@ namespace powershellYK
     {
         public void OnRemove(PSModuleInfo psModuleInfo)
         {
-            if (YubiKeyModule._pivSession is not null)
-            {
-                YubiKeyModule._pivSession.Dispose();
-            }
-            if (YubiKeyModule._fido2Session is not null)
-            {
-                YubiKeyModule._fido2Session.Dispose();
-            }
             if (YubiKeyModule._connection is not null)
             {
                 YubiKeyModule._connection.Dispose();
             }
-            if (YubiKeyModule._oathSession is not null)
-            {
-                YubiKeyModule._oathSession.Dispose();
-            }   
         }
     }
+
 }

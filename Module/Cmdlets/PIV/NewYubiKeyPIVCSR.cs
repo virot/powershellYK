@@ -36,15 +36,15 @@ namespace powershellYK.Cmdlets.PIV
 
         protected override void BeginProcessing()
         {
-            if (YubiKeyModule._pivSession is null || YubiKeyModule._pivSession.PinVerified == false)
+            if (YubiKeyModule._yubikey is null)
             {
-                WriteWarning("PIV not connected/authorized, Invoking Connect-YubikeyPIV");
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
                 try
                 {
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
+                    WriteDebug($"Successfully connected");
                 }
-
                 catch (Exception e)
                 {
                     throw new Exception(e.Message, e);
@@ -53,83 +53,88 @@ namespace powershellYK.Cmdlets.PIV
         }
         protected override void ProcessRecord()
         {
-            CertificateRequest request;
-            X509SignatureGenerator signer;
-
-
-            PivPublicKey? publicKey = null;
-            try
+            using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                publicKey = YubiKeyModule._pivSession!.GetMetadata(Slot).PublicKey;
-                if (publicKey is null)
+                pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+
+                CertificateRequest request;
+                X509SignatureGenerator signer;
+
+
+                PivPublicKey? publicKey = null;
+                try
                 {
-                    throw new Exception("Public key is null");
+                    publicKey = pivSession.GetMetadata(Slot).PublicKey;
+                    if (publicKey is null)
+                    {
+                        throw new Exception("Public key is null");
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Failed to get public key for slot 0x{Slot.ToString("X2")}, does there exist a key?", e);
-            }
-
-
-
-            using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
-
-            if (publicKey is PivRsaPublicKey)
-            {
-                request = new CertificateRequest(Subjectname, (RSA)dotNetPublicKey, HashAlgorithm, RSASignaturePadding.Pkcs1);
-            }
-            else
-            {
-                HashAlgorithm = publicKey.Algorithm switch
+                catch (Exception e)
                 {
-                    PivAlgorithm.EccP256 => HashAlgorithmName.SHA256,
-                    PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,
-                    _ => throw new Exception("Unknown PublicKey algorithm")
-                };
-                WriteDebug($"Using Hash based on ECC size: {HashAlgorithm.ToString()}");
-                request = new CertificateRequest(Subjectname, (ECDsa)dotNetPublicKey, HashAlgorithm);
-            }
+                    throw new Exception($"Failed to get public key for slot 0x{Slot.ToString("X2")}, does there exist a key?", e);
+                }
 
-            if (Attestation.IsPresent)
-            {
-                X509Certificate2 slotAttestationCertificate = YubiKeyModule._pivSession.CreateAttestationStatement(Slot);
-                byte[] slotAttestationCertificateBytes = slotAttestationCertificate.Export(X509ContentType.Cert);
-                X509Certificate2 yubikeyIntermediateAttestationCertificate = YubiKeyModule._pivSession.GetAttestationCertificate();
-                byte[] yubikeyIntermediateAttestationCertificateBytes = yubikeyIntermediateAttestationCertificate.Export(X509ContentType.Cert);
-                Oid oidIntermediate = new Oid("1.3.6.1.4.1.41482.3.2");
-                Oid oidSlotAttestation = new Oid("1.3.6.1.4.1.41482.3.11");
-                request.CertificateExtensions.Add(new X509Extension(oidSlotAttestation, slotAttestationCertificateBytes, false));
-                request.CertificateExtensions.Add(new X509Extension(oidIntermediate, yubikeyIntermediateAttestationCertificateBytes, false));
-            }
 
-            if (publicKey is PivRsaPublicKey)
-            {
-                signer = new YubiKeySignatureGenerator(YubiKeyModule._pivSession, Slot, publicKey, RSASignaturePaddingMode.Pss);
-            }
-            else
-            {
-                signer = new YubiKeySignatureGenerator(YubiKeyModule._pivSession, Slot, publicKey);
-            }
 
-            byte[] requestSigned = request.CreateSigningRequest(signer);
-            string pemData = PemEncoding.WriteString("CERTIFICATE REQUEST", requestSigned);
-            if (OutFile is not null)
-            {
-                File.WriteAllText(OutFile, pemData);
-            }
-            else
-            {
-                if (PEMEncoded.IsPresent)
+                using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
+
+                if (publicKey is PivRsaPublicKey)
                 {
-                    WriteObject(pemData);
+                    request = new CertificateRequest(Subjectname, (RSA)dotNetPublicKey, HashAlgorithm, RSASignaturePadding.Pkcs1);
                 }
                 else
                 {
-                    WriteObject(requestSigned);
+                    HashAlgorithm = publicKey.Algorithm switch
+                    {
+                        PivAlgorithm.EccP256 => HashAlgorithmName.SHA256,
+                        PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,
+                        _ => throw new Exception("Unknown PublicKey algorithm")
+                    };
+                    WriteDebug($"Using Hash based on ECC size: {HashAlgorithm.ToString()}");
+                    request = new CertificateRequest(Subjectname, (ECDsa)dotNetPublicKey, HashAlgorithm);
                 }
+
+                if (Attestation.IsPresent)
+                {
+                    X509Certificate2 slotAttestationCertificate = pivSession.CreateAttestationStatement(Slot);
+                    byte[] slotAttestationCertificateBytes = slotAttestationCertificate.Export(X509ContentType.Cert);
+                    X509Certificate2 yubikeyIntermediateAttestationCertificate = pivSession.GetAttestationCertificate();
+                    byte[] yubikeyIntermediateAttestationCertificateBytes = yubikeyIntermediateAttestationCertificate.Export(X509ContentType.Cert);
+                    Oid oidIntermediate = new Oid("1.3.6.1.4.1.41482.3.2");
+                    Oid oidSlotAttestation = new Oid("1.3.6.1.4.1.41482.3.11");
+                    request.CertificateExtensions.Add(new X509Extension(oidSlotAttestation, slotAttestationCertificateBytes, false));
+                    request.CertificateExtensions.Add(new X509Extension(oidIntermediate, yubikeyIntermediateAttestationCertificateBytes, false));
+                }
+
+                if (publicKey is PivRsaPublicKey)
+                {
+                    signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey, RSASignaturePaddingMode.Pss);
+                }
+                else
+                {
+                    signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey);
+                }
+
+                byte[] requestSigned = request.CreateSigningRequest(signer);
+                string pemData = PemEncoding.WriteString("CERTIFICATE REQUEST", requestSigned);
+                if (OutFile is not null)
+                {
+                    File.WriteAllText(OutFile, pemData);
+                }
+                else
+                {
+                    if (PEMEncoded.IsPresent)
+                    {
+                        WriteObject(pemData);
+                    }
+                    else
+                    {
+                        WriteObject(requestSigned);
+                    }
+                }
+                WriteDebug("ProcessRecord in New-YubikeyPIVCSR");
             }
-            WriteDebug("ProcessRecord in New-YubikeyPIVCSR");
         }
 
 

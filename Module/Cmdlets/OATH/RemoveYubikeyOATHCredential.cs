@@ -1,4 +1,5 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
+using Yubico.YubiKey;
 using Yubico.YubiKey.Oath;
 using Yubico.YubiKey.Otp;
 
@@ -9,20 +10,24 @@ namespace powershellYK.Cmdlets.OATH
     public class RemoveYubikeyOATHCredentialCommand : Cmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = true, HelpMessage = "Credential to remove")]
-        public Credential? Credential { get; set; }
+        public Credential Credential { get; set; } = new Credential();
         protected override void BeginProcessing()
         {
-            if (YubiKeyModule._oathSession is null)
+            if (YubiKeyModule._yubikey is null)
             {
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyOath");
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 myPowersShellInstance.Invoke();
+                WriteDebug($"Successfully connected");
             }
         }
+
         protected override void ProcessRecord()
         {
-            if (Credential is not null && ShouldProcess($"{Credential.Name}", "Remove"))
+            using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                YubiKeyModule._oathSession!.RemoveCredential(Credential);
+                oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                oathSession.RemoveCredential(Credential);
             }
         }
     }

@@ -68,15 +68,15 @@ namespace powershellYK.Cmdlets.PIV
 
         protected override void BeginProcessing()
         {
-            if (YubiKeyModule._pivSession is null || YubiKeyModule._pivSession.PinVerified == false)
+            if (YubiKeyModule._yubikey is null)
             {
-                WriteWarning("PIV not connected/authorized, Invoking Connect-YubikeyPIV");
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
                 try
                 {
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
+                    WriteDebug($"Successfully connected");
                 }
-
                 catch (Exception e)
                 {
                     throw new Exception(e.Message, e);
@@ -87,111 +87,114 @@ namespace powershellYK.Cmdlets.PIV
         protected override void ProcessRecord()
         {
             int? retriesLeft = null;
-
-            WriteDebug($"Using ParameterSetName: {ParameterSetName}");
-            switch (ParameterSetName)
+            using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                case "ChangeRetries":
-                    try
-                    {
-                        YubiKeyModule._pivSession!.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
-                        WriteWarning("PIN and PUK codes reset to default, remember to change.");
-                    }
-                  
-                    catch (Exception e)
-                    {
-                        throw new Exception("Failed to set PIN and PUK retries", e);
-                    }
-                    break;
-                case "ChangePIN":
-                    try
-                    {
-                        if (YubiKeyModule._pivSession!.TryChangePin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PIN))!)
-, System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN!))!)
-, out retriesLeft) == false)
+                pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                WriteDebug($"Using ParameterSetName: {ParameterSetName}");
+                switch (ParameterSetName)
+                {
+                    case "ChangeRetries":
+                        try
                         {
-                            throw new Exception("Incorrect PIN provided");
+                            pivSession.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
+                            WriteWarning("PIN and PUK codes reset to default, remember to change.");
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Failed to change PIN", e);
-                    }
-                    finally
-                    {
-                    }
-                    break;
-                case "ChangePUK":
-                    try
-                    {
-                        if (YubiKeyModule._pivSession!.TryChangePuk(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PUK))!), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPUK))!)
-, out retriesLeft) == false)
+
+                        catch (Exception e)
                         {
-                            throw new Exception("Incorrect PUK provided");
+                            throw new Exception("Failed to set PIN and PUK retries", e);
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Failed to change PUK", e);
-                    }
-                    finally
-                    {
-                    }
-                    break;
-                case "ResetPIN":
-                    try
-                    {
-                        if (YubiKeyModule._pivSession!.TryResetPin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PUK))!)
-, System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN))!)
-, out retriesLeft) == false)
+                        break;
+                    case "ChangePIN":
+                        try
                         {
-                            throw new Exception("Incorrect PUK provided");
+                            if (pivSession.TryChangePin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PIN))!)
+    , System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN!))!)
+    , out retriesLeft) == false)
+                            {
+                                throw new Exception("Incorrect PIN provided");
+                            }
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Failed to reset PIN", e);
-                    }
-                    finally
-                    {
-                    }
-                    break;
-                case "ChangeManagement":
-                    byte[] ManagementKeyarray = HexConverter.StringToByteArray(ManagementKey!);
-                    byte[] NewManagementKeyarray = HexConverter.StringToByteArray(NewManagementKey!);
-                    try
-                    {
-                        if (YubiKeyModule._pivSession!.TryChangeManagementKey(ManagementKeyarray, NewManagementKeyarray, (PivTouchPolicy)TouchPolicy, (PivAlgorithm)Algorithm))
+                        catch (Exception e)
                         {
-                            WriteDebug("ManagementKey changed");
+                            throw new Exception("Failed to change PIN", e);
                         }
-                        else
+                        finally
                         {
-                            throw new Exception("Failed to change ManagementKey");
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Failed to change ManagementKey", e);
-                    }
-                    finally
-                    {
-                        CryptographicOperations.ZeroMemory(ManagementKeyarray);
-                        CryptographicOperations.ZeroMemory(NewManagementKeyarray);
-                    }
-                    break;
-                case "newCHUID":
-                    CardholderUniqueId chuid = new CardholderUniqueId();
-                    chuid.SetRandomGuid();
-                    try
-                    {
-                        YubiKeyModule._pivSession!.WriteObject(chuid);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Failed to generate new CHUID", e);
-                    }
-                    break;
+                        break;
+                    case "ChangePUK":
+                        try
+                        {
+                            if (pivSession.TryChangePuk(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PUK))!), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPUK))!)
+    , out retriesLeft) == false)
+                            {
+                                throw new Exception("Incorrect PUK provided");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception("Failed to change PUK", e);
+                        }
+                        finally
+                        {
+                        }
+                        break;
+                    case "ResetPIN":
+                        try
+                        {
+                            if (pivSession.TryResetPin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PUK))!)
+    , System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN))!)
+    , out retriesLeft) == false)
+                            {
+                                throw new Exception("Incorrect PUK provided");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception("Failed to reset PIN", e);
+                        }
+                        finally
+                        {
+                        }
+                        break;
+                    case "ChangeManagement":
+                        byte[] ManagementKeyarray = HexConverter.StringToByteArray(ManagementKey!);
+                        byte[] NewManagementKeyarray = HexConverter.StringToByteArray(NewManagementKey!);
+                        try
+                        {
+                            if (pivSession.TryChangeManagementKey(ManagementKeyarray, NewManagementKeyarray, (PivTouchPolicy)TouchPolicy, (PivAlgorithm)Algorithm))
+                            {
+                                WriteDebug("ManagementKey changed");
+                            }
+                            else
+                            {
+                                throw new Exception("Failed to change ManagementKey");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception("Failed to change ManagementKey", e);
+                        }
+                        finally
+                        {
+                            CryptographicOperations.ZeroMemory(ManagementKeyarray);
+                            CryptographicOperations.ZeroMemory(NewManagementKeyarray);
+                        }
+                        break;
+                    case "newCHUID":
+                        CardholderUniqueId chuid = new CardholderUniqueId();
+                        chuid.SetRandomGuid();
+                        try
+                        {
+                            pivSession.WriteObject(chuid);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception("Failed to generate new CHUID", e);
+                        }
+                        break;
+                }
             }
         }
     }

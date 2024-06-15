@@ -27,36 +27,47 @@ namespace powershellYK.Cmdlets.PIV
 
         protected override void BeginProcessing()
         {
-            if (YubiKeyModule._pivSession is null)
+            if (YubiKeyModule._yubikey is null)
             {
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
-                myPowersShellInstance.Invoke();
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                try
+                {
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    myPowersShellInstance.Invoke();
+                    WriteDebug($"Successfully connected");
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message, e);
+                }
             }
         }
 
         protected override void ProcessRecord()
         {
-         
-            X509Certificate2 slotAttestationCertificate = YubiKeyModule._pivSession!.CreateAttestationStatement(Slot);
-            byte[] slotAttestationCertificateBytes = slotAttestationCertificate.Export(X509ContentType.Cert);
-            string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
-            if (OutFile is not null)
+            using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                File.WriteAllText(OutFile, pemData);
-            }
-            else
-            {
-                if (PEMEncoded.IsPresent)
+                pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                X509Certificate2 slotAttestationCertificate = pivSession.CreateAttestationStatement(Slot);
+                byte[] slotAttestationCertificateBytes = slotAttestationCertificate.Export(X509ContentType.Cert);
+                string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
+                if (OutFile is not null)
                 {
-                    WriteObject(pemData);
+                    File.WriteAllText(OutFile, pemData);
                 }
                 else
                 {
-                    WriteObject(slotAttestationCertificate);
+                    if (PEMEncoded.IsPresent)
+                    {
+                        WriteObject(pemData);
+                    }
+                    else
+                    {
+                        WriteObject(slotAttestationCertificate);
+                    }
                 }
             }
         }
-
 
         protected override void EndProcessing()
         {

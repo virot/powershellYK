@@ -1,4 +1,5 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
+using Yubico.YubiKey;
 using Yubico.YubiKey.Oath;
 using Yubico.YubiKey.Otp;
 
@@ -17,15 +18,22 @@ namespace powershellYK.Cmdlets.OATH
 
         protected override void BeginProcessing()
         {
-            if (YubiKeyModule._oathSession is null)
+            if (YubiKeyModule._yubikey is null)
             {
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyOath");
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 myPowersShellInstance.Invoke();
+                WriteDebug($"Successfully connected");
             }
         }
+
         protected override void ProcessRecord()
         {
-            YubiKeyModule._oathSession!.RenameCredential(Credential!, NewIssuer != null ? NewIssuer : Credential!.Issuer, NewAccountName != null ? NewAccountName : Credential!.AccountName!);
+            using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
+            {
+                oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                oathSession.RenameCredential(Credential!, NewIssuer != null ? NewIssuer : Credential!.Issuer, NewAccountName != null ? NewAccountName : Credential!.AccountName!);
+                }
         }
     }
 }

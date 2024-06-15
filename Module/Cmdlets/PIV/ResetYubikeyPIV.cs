@@ -16,21 +16,18 @@ namespace powershellYK.Cmdlets.PIV
 
         protected override void BeginProcessing()
         {
-            if (YubiKeyModule._pivSession is null)
+            if (YubiKeyModule._yubikey is null)
             {
-                WriteWarning("PIV not connected, Invoking Connect-YubikeyPIV");
-                //throw new Exception("PIV not connected, use Connect-YubikeyPIV first");
+                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
                 try
                 {
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyPIV");
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
+                    WriteDebug($"Successfully connected");
                 }
                 catch (Exception e)
                 {
-                    if (YubiKeyModule._pivSession is null)
-                    {
-                        throw new Exception(e.Message, e);
-                    }
+                    throw new Exception(e.Message, e);
                 }
             }
         }
@@ -38,21 +35,13 @@ namespace powershellYK.Cmdlets.PIV
         {
 
             WriteDebug("ProcessRecord in Reset-YubikeyPIV");
-
             if (ShouldProcess($"Yubikey PIV", "Reset"))
             {
-                try
+                using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
-                    YubiKeyModule._pivSession!.ResetApplication();
-                    YubiKeyModule._pivSession.Dispose();
-                    YubiKeyModule._pivSession = null;
+                    pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                    pivSession.ResetApplication();
                 }
-                catch (Exception e)
-                {
-                    throw new Exception("Failed to reset Yubikey PIV", e);
-                }
-
-
             }
         }
     }
