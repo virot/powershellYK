@@ -5,10 +5,10 @@ online version:
 schema: 2.0.0
 ---
 
-# New-YubikeyOATHCredential
+# New-YubikeyOATHAccount
 
 ## SYNOPSIS
-Created a TOTP or HOTP credential
+Created a TOTP or HOTP account
 
 ## SYNTAX
 
@@ -25,13 +25,13 @@ New-YubikeyOATHCredential [-TOTP] -Issuer <String> -Accountname <String> [-Algor
 ```
 
 ## DESCRIPTION
-Creates new credentials that can be viewed in the Yubikey Authenticator or using Request-YubikeyOATHCode.
+Creates new account that can be viewed in the Yubikey Authenticator or using Request-YubikeyOATHCode.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> New-YubikeyOATHCredential -TOTP -Accountname "powershellYK" -Issuer "Demo" -Period 60 -Secret (Read-Host -Prompt 'Secret' -MaskInput)
+PS C:\> New-YubikeyOATHAccount -TOTP -Accountname "powershellYK" -Issuer "Demo" -Period 60 -Secret (Read-Host -Prompt 'Secret' -MaskInput)
 Secret: *****************
 ```
 

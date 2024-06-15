@@ -8,7 +8,7 @@ schema: 2.0.0
 # Request-YubikeyOATHCode
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Displays TOTP / HOTP codes for Yubikey OATH credentials
 
 ## SYNTAX
 
@@ -19,22 +19,43 @@ Request-YubikeyOATHCode [-All] [<CommonParameters>]
 
 ### Specific
 ```
-Request-YubikeyOATHCode -Credential <Credential> [<CommonParameters>]
+Request-YubikeyOATHCode -Account <Credential> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Displays TOTP / HOTP codes for Yubikey OATH credentials
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> request-YubikeyOATHCode -All
+
+                                 Value  validFrom           validUntil
+              Name
+
+-------------------------------- -----  ---------           ----------
+Issuer Issuer:dsa                221624 2024-06-15 19:26:00 2024-06-15 19:26:30
 ```
 
-{{ Add example description here }}
+List the current code for all OATH credentials
 
 ## PARAMETERS
+
+### -Account
+Account to generate code for
+
+```yaml
+Type: Credential
+Parameter Sets: Specific
+Aliases: Credential
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
 
 ### -All
 Get codes for all credentials
@@ -48,21 +69,6 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Credential
-Credential to generate code for
-
-```yaml
-Type: Credential
-Parameter Sets: Specific
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 

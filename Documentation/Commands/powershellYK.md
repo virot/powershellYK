@@ -50,8 +50,8 @@ Returns the connected Yubikey
 ### [Get-YubikeyFIDO2Credentials](Get-YubikeyFIDO2Credentials.md)
 Read the FIDO2 discoverable credentials
 
-### [Get-YubikeyOATHCredential](Get-YubikeyOATHCredential.md)
-List all OATH credentials
+### [Get-YubikeyOATH](Get-YubikeyOATH.md)
+Get information about the OATH module
 
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
 Gets information about the PIV module and specific slots.
@@ -59,8 +59,8 @@ Gets information about the PIV module and specific slots.
 ### [Import-YubikeyPIVCertificate](Import-YubikeyPIVCertificate.md)
 Import certificate
 
-### [New-YubikeyOATHCredential](New-YubikeyOATHCredential.md)
-Created a TOTP or HOTP credential
+### [New-YubikeyOATHAccount](New-YubikeyOATHAccount.md)
+{{ Fill in the Synopsis }}
 
 ### [New-YubikeyPIVCSR](New-YubikeyPIVCSR.md)
 Creates a CSR for a slot in the Yubikey
@@ -71,17 +71,14 @@ Create a new private key
 ### [New-YubikeyPIVSelfSign](New-YubikeyPIVSelfSign.md)
 Create a self signed certificate
 
-### [Remove-YubikeyOATHCredential](Remove-YubikeyOATHCredential.md)
+### [Request-YubikeyOATHCode](Request-YubikeyOATHCode.md)
 {{ Fill in the Synopsis }}
 
-### [Request-YubikeyOATHCode](Request-YubikeyOATHCode.md)
+### [Reset-YubikeyOATH](Reset-YubikeyOATH.md)
 {{ Fill in the Synopsis }}
 
 ### [Reset-YubikeyPIV](Reset-YubikeyPIV.md)
 Resets the PIV part of your Yubikey
-
-### [Set-YubikeyOATHCredential](Set-YubikeyOATHCredential.md)
-Update OATH credential
 
 ### [Set-YubikeyPIV](Set-YubikeyPIV.md)
 Allows the updating of PIV settings

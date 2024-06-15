@@ -1,47 +1,63 @@
-﻿---
+---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Remove-YubikeyOATHCredential
+# Reset-YubikeyOATH
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Reset the entire Yubikey OATH application.
 
 ## SYNTAX
 
 ```
-Remove-YubikeyOATHCredential -Credential <Credential> [<CommonParameters>]
+Reset-YubikeyOATH [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Reset the entire Yubikey OATH application.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Reset-YubikeyOATH
 ```
 
-{{ Add example description here }}
+Resets the entire Yubikey OATH application.
 
 ## PARAMETERS
 
-### -Credential
-Credential to remove
+### -Confirm
+Prompts you for confirmation before running the cmdlet.
 
 ```yaml
-Type: Credential
+Type: SwitchParameter
 Parameter Sets: (All)
-Aliases:
+Aliases: cf
 
-Required: True
+Required: False
 Position: Named
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WhatIf
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -50,7 +66,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Yubico.YubiKey.Oath.Credential
+### None
 
 ## OUTPUTS
 

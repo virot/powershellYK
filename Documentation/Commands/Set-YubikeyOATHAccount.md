@@ -5,10 +5,10 @@ online version:
 schema: 2.0.0
 ---
 
-# Set-YubikeyOATHCredential
+# Set-YubikeyOATHAccount
 
 ## SYNOPSIS
-Update OATH credential
+Update OATH account
 
 ## SYNTAX
 
@@ -18,22 +18,22 @@ Set-YubikeyOATHCredential -Credential <Credential> [-NewAccountName <String>] [-
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Update OATH account
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> $Credentialtochange = Get-YubikeyOATHCredential | Where-Object {$_.Issuer -eq 'Yubico Demo'}
-PS C:\> Set-YubikeyOATHCredential -Credential $Credentialtochange -NewIssuer "powershellYK Demo"
+PS C:\> $Accounttochange = Get-YubikeyOATHAccount | Where-Object {$_.Issuer -eq 'Yubico Demo'}
+PS C:\> Set-YubikeyOATHAccount -Credential $Accounttochange -NewIssuer "powershellYK Demo"
 ```
 
 Selects and updates the Issuer from 'Yubico Demo' to 'powershellYK Demo' 
 
 ## PARAMETERS
 
-### -Credential
-Credential to remove
+### -Account
+Account to remove
 
 ```yaml
 Type: Credential
