@@ -34,4 +34,3 @@ $parameters = @{
 Update-MarkdownHelpModule @parameters
 
 New-ExternalHelp -Path '.\Documentation\Commands' -OutputPath "$($Directory.fullname)" -Force
-

@@ -95,6 +95,9 @@ Resets the PIV part of your Yubikey
 ### [Set-YubikeyOATHAccount](Set-YubikeyOATHAccount.md)
 Update OATH account
 
+### [Set-YubikeyOTP](Set-YubikeyOTP.md)
+Configure OTP slots
+
 ### [Set-YubikeyPIV](Set-YubikeyPIV.md)
 Allows the updating of PIV settings
 

@@ -1,9 +1,7 @@
 ﻿using System.Management.Automation;
-using powershellYK.OTP;
 using Yubico.YubiKey;
+using Yubico.YubiKey.Oath;
 using Yubico.YubiKey.Otp;
-
-
 
 namespace powershellYK.Cmdlets.OTP
 {
@@ -34,6 +32,5 @@ namespace powershellYK.Cmdlets.OTP
                 otpSession.SwapSlots();
             }
         }
-
     }
 }
