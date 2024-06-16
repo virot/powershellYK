@@ -5,36 +5,44 @@ online version:
 schema: 2.0.0
 ---
 
-# Connect-YubikeyOATH
+# Remove-YubikeyOTP
 
 ## SYNOPSIS
-Connect to the OATH part of the connected Yubikey.
+Remove Yubikey OTP slot
 
 ## SYNTAX
 
 ```
-Connect-YubikeyOATH -Password <SecureString> [<CommonParameters>]
+Remove-YubikeyOTP -Slot <PSObject> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Remove the OTP configuration from a slot on the Yubikey
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> Connect-YubikeyOATH
+PS C:\> Remove-YubikeyOTP -Slot 1
 ```
 
-Connect to the OATH part of the connected Yubikey.
+Removes the OTP configuration from slot 1 (Short press)
+
+### Example 2
+```powershell
+PS C:\> $Slot = [Yubico.YubiKey.Otp.Slot]::ShortPress
+PS C:\> Remove-YubikeyOTP -Slot $Slot
+```
+
+Removes the OTP configuration from slot 1 (Short press)
 
 ## PARAMETERS
 
-### -Password
-Password
+### -Slot
+Yubikey OTP Slot
 
 ```yaml
-Type: SecureString
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

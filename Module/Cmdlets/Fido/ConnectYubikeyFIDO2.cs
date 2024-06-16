@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security;
 using Yubico.YubiKey.Piv;
+using powershellYK.support.Validators;
 
 namespace powershellYK.Cmdlets.Fido
 {
@@ -14,6 +15,7 @@ namespace powershellYK.Cmdlets.Fido
 
     public class ConnectYubikeyFIDO2Command : Cmdlet
     {
+        [ValidateYubikeyPIN(6, 8)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN")]
         public SecureString PIN { get; set; } = new SecureString();
 
@@ -40,14 +42,7 @@ namespace powershellYK.Cmdlets.Fido
         {
             if (PIN is not null)
             {
-                if (PIN.Length < 6 || PIN.Length > 8)
-                {
-                    throw new ArgumentException("PIN must be between 6 and 8 characters");
-                }
-                else
-                {
-                    YubiKeyModule._fido2PIN = PIN;
-                }
+                YubiKeyModule._fido2PIN = PIN;
             }
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {

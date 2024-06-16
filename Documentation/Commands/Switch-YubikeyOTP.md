@@ -5,45 +5,30 @@ online version:
 schema: 2.0.0
 ---
 
-# Connect-YubikeyOATH
+# Switch-YubikeyOTP
 
 ## SYNOPSIS
-Connect to the OATH part of the connected Yubikey.
+Switch places for the configuration of the Yubikey OTP
 
 ## SYNTAX
 
 ```
-Connect-YubikeyOATH -Password <SecureString> [<CommonParameters>]
+Switch-YubikeyOTP [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+This command switches the Long and Short presses for the Yubikey OTP.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> Connect-YubikeyOATH
+PS C:\> Switch-YubikeyOTP
 ```
 
-Connect to the OATH part of the connected Yubikey.
+This command outputs no information, but switches the Long and Short presses for the Yubikey OTP.
 
 ## PARAMETERS
-
-### -Password
-Password
-
-```yaml
-Type: SecureString
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).

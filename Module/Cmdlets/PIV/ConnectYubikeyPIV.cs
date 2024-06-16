@@ -7,6 +7,8 @@ using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security;
 using powershellYK;
+using powershellYK.support.Validators;
+using System.ComponentModel.DataAnnotations;
 
 namespace powershellYK.Cmdlets.PIV
 {
@@ -18,8 +20,7 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ManagementKey", ParameterSetName = "PIN&Management")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ManagementKey", ParameterSetName = "Management")]
         public string? ManagementKey;
-        //Move validataion to here, I just could not get it to work.
-        //[ValidateScript("$_.Length -ge 6 -and $_ -le 8", ErrorMessage = "PIN must be between 6 and 8 characters")]
+        [ValidateYubikeyPIN(6, 8)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN", ParameterSetName = "PIN&Management")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN", ParameterSetName = "PIN")]
         public SecureString? PIN;
@@ -45,14 +46,7 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (PIN is not null)
             {
-                if (PIN.Length < 6 || PIN.Length > 8)
-                {
-                    throw new ArgumentException("PIN must be between 6 and 8 characters");
-                }
-                else
-                {
-                    YubiKeyModule._pivPIN = PIN;
-                }
+                YubiKeyModule._pivPIN = PIN;
             }
             if (ManagementKey is not null)
             {

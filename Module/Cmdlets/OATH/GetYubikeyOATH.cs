@@ -10,10 +10,11 @@ using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsCommon.Get, "YubikeyOATH")]
+    [Cmdlet(VerbsCommon.Get, "YubikeyOATH", DefaultParameterSetName = "PIN")]
 
     public class GetYubikeyOATH2Command : Cmdlet
     {
+
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)

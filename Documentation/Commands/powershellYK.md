@@ -56,6 +56,9 @@ Get information about the OATH module
 ### [Get-YubikeyOATHAccount](Get-YubikeyOATHAccount.md)
 List all OATH accounts
 
+### [Get-YubikeyOTP](Get-YubikeyOTP.md)
+Yubikey OTP Information
+
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
 Gets information about the PIV module and specific slots.
 
@@ -77,6 +80,9 @@ Create a self signed certificate
 ### [Remove-YubikeyOATHAccount](Remove-YubikeyOATHAccount.md)
 Removes an account from the Yubikey OATH application
 
+### [Remove-YubikeyOTP](Remove-YubikeyOTP.md)
+Remove Yubikey OTP slot
+
 ### [Request-YubikeyOATHCode](Request-YubikeyOATHCode.md)
 Displays TOTP / HOTP codes for Yubikey OATH credentials
 
@@ -91,4 +97,7 @@ Update OATH account
 
 ### [Set-YubikeyPIV](Set-YubikeyPIV.md)
 Allows the updating of PIV settings
+
+### [Switch-YubikeyOTP](Switch-YubikeyOTP.md)
+Switch places for the configuration of the Yubikey OTP
 

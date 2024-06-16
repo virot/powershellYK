@@ -13,7 +13,7 @@ Move-Item "$($Directory.fullname)\module\powershellYK.psd1" "$($Directory.fullna
 Move-Item "$($Directory.fullname)\module\powershellYK.format.ps1xml" "$($Directory.fullname)"
 
 Remove-Item -Recurse "$($Directory.fullname)\module\runtimes\linux*"
-Remove-Item -Recurse "$($Directory.fullname)\module\runtimes\osx*"
+#Remove-Item -Recurse "$($Directory.fullname)\module\runtimes\osx*"
 Remove-Item -Recurse "$($Directory.fullname)\module\runtimes\unix*"
 
 

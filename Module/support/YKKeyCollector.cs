@@ -30,8 +30,10 @@ namespace powershellYK
 
                     case KeyEntryRequest.AuthenticatePivManagementKey:
                         throw new Exception("Incorrect Management Key.");
-                        //return false;
+                    //return false;
 
+                    case KeyEntryRequest.VerifyOathPassword:
+                        throw new Exception("Incorrect Password.");
                     case KeyEntryRequest.VerifyFido2Pin:
                     case KeyEntryRequest.VerifyPivPin:
                         if (!(keyEntryData.RetriesRemaining is null))
@@ -63,7 +65,7 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyPivPin:
                     if (YubiKeyModule._pivPIN is null)
                     {
-                        throw new PIVNotConnectedException("PIN not set, use Connect-YubikeyPIV to authorize");
+                        throw new PIVNotConnectedException("Needed PIN not set, use Connect-YubikeyPIV to authorize");
                     }
                     currentValue = System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._pivPIN!))!);
                     keyEntryData.SubmitValue(currentValue);
@@ -72,10 +74,18 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyFido2Pin:
                     if (YubiKeyModule._fido2PIN is null)
                     {
-                        throw new FIDO2NotConnectedException("PIN not set, use Connect-YubikeyFIDO2 to authorize");
+                        throw new FIDO2NotConnectedException("Needed PIN not set, use Connect-YubikeyFIDO2 to authorize");
                     }
                     currentValue = System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PIN!))!);
                     keyEntryData.SubmitValue(currentValue);
+                    break;
+
+                case KeyEntryRequest.VerifyOathPassword:
+                    if (YubiKeyModule._OATHPassword is null)
+                    {
+                        throw new OATHNotConnectedException("Needed password not set, use Connect-OATH to authorize");
+                    }
+                    keyEntryData.SubmitValue(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPassword!))!));
                     break;
 
                 case KeyEntryRequest.AuthenticatePivManagementKey:
