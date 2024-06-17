@@ -15,7 +15,7 @@ The easiest way to install the module is:
 
 ### FIDO2
 | Feature | powershellYK | ykman GUI | ykman CLI | Yubico Authenticator |
-| --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | List credentials | $${\color{green}Yes}$$ | $${\color{red}No}$$ | $${\color{green}yes}$$ | $${\color{green}yes}$$ |
 | Remove credentials | $${\color{green}Yes}$$ | $${\color{red}No}$$ | $${\color{green}yes}$$ | $${\color{green}yes}$$ |
 
