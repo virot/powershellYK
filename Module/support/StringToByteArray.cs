@@ -8,7 +8,6 @@ namespace powershellYK.support
 {
     public class HexConverter
     {
-
         public static byte[] StringToByteArray(string hex)
         {
             int numberChars = hex.Length;
@@ -18,6 +17,11 @@ namespace powershellYK.support
                 bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             }
             return bytes;
+        }
+        
+        public static string ByteArrayToString(byte[] bytes)
+        {
+            return BitConverter.ToString(bytes).Replace("-", "");
         }
     }
 }

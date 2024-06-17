@@ -5,6 +5,7 @@ using System.Management.Automation;
 using Newtonsoft.Json.Linq;
 using System;
 using Yubico.Core.Buffers;
+using powershellYK.support;
 
 namespace powershellYK.OTP
 {
@@ -37,12 +38,24 @@ namespace powershellYK.OTP
         {
             this.Serial = serial;
             this.PublicIDByte = PublicID;
-            this.PublicID = ModHex.EncodeBytes(this.PublicIDByte);
+            this.PublicID = HexConverter.ByteArrayToString(this.PublicIDByte);
             this.PrivateIDByte = PrivateID;
-            this.PrivateID = ModHex.EncodeBytes(this.PrivateIDByte);
+            this.PrivateID = HexConverter.ByteArrayToString(this.PrivateIDByte);
             this.SecretKeyByte = SecretKey;
-            this.SecretKey= ModHex.EncodeBytes(this.SecretKeyByte);
+            this.SecretKey= HexConverter.ByteArrayToString(this.SecretKeyByte);
             this.onboardUrl = onboardUrl;
+        }
+    }
+
+    public class ChallangeResponse
+    {
+        public byte[] SecretKeyByte { get; }
+        public String SecretKey { get; } = "";
+
+        public ChallangeResponse(byte[] SecretKey)
+        {
+            this.SecretKeyByte = SecretKey;
+            this.SecretKey = HexConverter.ByteArrayToString(this.SecretKeyByte);
         }
     }
 

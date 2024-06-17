@@ -15,7 +15,7 @@ Configure OTP slots
 ### Yubico OTP
 ```
 Set-YubikeyOTP -Slot <PSObject> [-YubicoOTP] [-PublicID <Byte[]>] [-PrivateID <Byte[]>] [-SecretKey <Byte[]>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Upload] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Static Password
@@ -28,6 +28,12 @@ Set-YubikeyOTP -Slot <PSObject> [-StaticPassword] -Password <SecureString> [-Key
 ```
 Set-YubikeyOTP -Slot <PSObject> [-StaticPassword] -PasswordLength <Int32> [-KeyboardLayout <KeyboardLayout>]
  [-AppendCarriageReturn] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### ChallengeResponse
+```
+Set-YubikeyOTP -Slot <PSObject> [-ChallengeResponse] [-SecretKey <Byte[]>]
+ [-Algorithm <ChallengeResponseAlgorithm>] [-RequireTouch] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -50,7 +56,42 @@ Password: ******
 
 Creates a statick password for a Swedish keyboard layout.
 
+### Example 3
+```powershell
+PS C:\> Set-YubikeyOTP -Slot 1 -ChallengeResponse
+
+SecretKeyByte         SecretKey
+-------------         ---------
+{164, 239, 163, 131…} A4EFA38352F551FF4E1711322BDD1D952CF659DF
+```
+
+Generate a new Challenge Response Secret Key. The ke will be printed after it is stored.
+
+### Example 4
+```powershell
+PS C:\> $OldKey = [powershellYK.support.HexConverter]::StringToByteArray('A4EFA38352F551FF4E1711322BDD1D952CF659DF')
+PS C:\> Set-YubikeyOTP -Slot 1 -ChallengeResponse -SecretKey $OldKey
+```
+
+Generate a new Challenge Response Secret Key. The ke will be printed after it is stored.
+
 ## PARAMETERS
+
+### -Algorithm
+Algorithm for challange response
+
+```yaml
+Type: ChallengeResponseAlgorithm
+Parameter Sets: ChallengeResponse
+Aliases:
+Accepted values: None, YubicoOtp, HmacSha1
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -AppendCarriageReturn
 Append carriage return
@@ -58,6 +99,21 @@ Append carriage return
 ```yaml
 Type: SwitchParameter
 Parameter Sets: Static Password, Static Generated Password
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ChallengeResponse
+Allows for Challenge-Response configuration with all defaults
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: ChallengeResponse
 Aliases:
 
 Required: False
@@ -143,12 +199,27 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -RequireTouch
+Require Touch
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: ChallengeResponse
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -SecretKey
 Sets the Secret key, defaults to random 16 bytes
 
 ```yaml
 Type: Byte[]
-Parameter Sets: Yubico OTP
+Parameter Sets: Yubico OTP, ChallengeResponse
 Aliases:
 
 Required: False
@@ -179,6 +250,21 @@ Allows configuration with all defaults
 ```yaml
 Type: SwitchParameter
 Parameter Sets: Static Password, Static Generated Password
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Upload
+Upload to Yubicloud
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Yubico OTP
 Aliases:
 
 Required: False

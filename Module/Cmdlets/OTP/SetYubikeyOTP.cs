@@ -22,11 +22,14 @@ namespace powershellYK.Cmdlets.OTP
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows configuration with all defaults", ParameterSetName = "Static Password")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows configuration with all defaults", ParameterSetName = "Static Generated Password")]
         public SwitchParameter StaticPassword { get; set; }
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows for Challenge-Response configuration with all defaults", ParameterSetName = "ChallengeResponse")]
+        public SwitchParameter ChallengeResponse { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Public ID, defaults to the serialnumber", ParameterSetName = "Yubico OTP")]
-        public byte[] PublicID { get; set; }
+        public byte[]? PublicID { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Private ID, defaults to random 6 bytes", ParameterSetName = "Yubico OTP")]
         public byte[]? PrivateID { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret key, defaults to random 16 bytes ", ParameterSetName = "Yubico OTP")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret key, defaults to random 16 bytes", ParameterSetName = "Yubico OTP")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret key, defaults to random 20 bytes", ParameterSetName = "ChallengeResponse")]
         public byte[]? SecretKey { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Upload to Yubicloud", ParameterSetName = "Yubico OTP")]
         public SwitchParameter Upload{ get; set; }
@@ -42,6 +45,13 @@ namespace powershellYK.Cmdlets.OTP
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return ", ParameterSetName = "Static Password")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return ", ParameterSetName = "Static Generated Password")]
         public SwitchParameter AppendCarriageReturn { get; set; }
+
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Algorithm for challange response", ParameterSetName = "ChallengeResponse")]
+        public ChallengeResponseAlgorithm Algorithm { get; set; } = ChallengeResponseAlgorithm.HmacSha1;
+
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Require Touch", ParameterSetName = "ChallengeResponse")]
+        public SwitchParameter RequireTouch { get; set; }
+
 
         private Slot _slot { get; set; }
 
@@ -122,7 +132,7 @@ namespace powershellYK.Cmdlets.OTP
                             configureyubicoOtp.Execute();
                             if (PublicID is null || PrivateID is null || SecretKey is null)
                             {
-                                YubicoOTP retur = new YubicoOTP(serial, _publicID.ToArray(), [0x0, 0x0], [0x0, 0x0], "");
+                                YubicoOTP retur = new YubicoOTP(serial, _publicID.ToArray(), _privateID.ToArray(), _secretKey.ToArray(), "");
                                 WriteObject(retur);
                             }
                             if (Upload.IsPresent)
@@ -153,6 +163,37 @@ namespace powershellYK.Cmdlets.OTP
                                 staticgenpassword = staticgenpassword.AppendCarriageReturn();
                             }
                             staticgenpassword.Execute();
+                            break;
+                        case "ChallengeResponse":
+                            Memory<byte> _CRsecretKey = new Memory<byte>(new byte[20]);
+                            ConfigureChallengeResponse configureCR = otpSession.ConfigureChallengeResponse(_slot);
+                            if (SecretKey is null)
+                            { 
+                                configureCR = configureCR.GenerateKey(_CRsecretKey);
+                            }
+                            else
+                            {
+                                _CRsecretKey = SecretKey;
+                                configureCR = configureCR.UseKey(SecretKey);
+                            }
+                            if (RequireTouch.IsPresent)
+                            {
+                                configureCR = configureCR.UseButton();
+                            }
+                            if (Algorithm == ChallengeResponseAlgorithm.HmacSha1)
+                            {
+                                configureCR = configureCR.UseHmacSha1();
+                            }
+                            else if (Algorithm == ChallengeResponseAlgorithm.YubicoOtp)
+                            {
+                                configureCR = configureCR.UseYubiOtp();
+                            }
+                            configureCR.Execute();
+                            if (SecretKey is null)
+                            {
+                                ChallangeResponse retur = new ChallangeResponse(_CRsecretKey.ToArray());
+                                WriteObject(retur);
+                            }
                             break;
                     }
                 }
