@@ -1,4 +1,5 @@
-﻿using System.Management.Automation;           // Windows PowerShell namespace.
+﻿using powershellYK.support.transform;
+using System.Management.Automation;           // Windows PowerShell namespace.
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
@@ -15,10 +16,12 @@ namespace powershellYK.Cmdlets.Other
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithBuiltinAttestion")]
         public PSObject? CertificateRequest { get; set; }
 
+        [TransformCertificatePath_Certificate()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "AttestionCertificate", ParameterSetName = "requestWithExternalAttestion")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "AttestionCertificate", ParameterSetName = "JustAttestCertificate")]
         public PSObject? AttestionCertificate { get; set; }
 
+        [TransformCertificatePath_Certificate()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "AttestionCertificate", ParameterSetName = "requestWithExternalAttestion")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "IntermediateCertificate", ParameterSetName = "JustAttestCertificate")]
         public PSObject? IntermediateCertificate { get; set; }
@@ -75,23 +78,7 @@ namespace powershellYK.Cmdlets.Other
             }
 
             if (AttestionCertificate is not null) {
-                if (AttestionCertificate.BaseObject is string)
-                {
-                    WriteDebug("AttestionCertificate is string");
-                    match = regex.Match(AttestionCertificate.BaseObject.ToString()!);
-                    if (match.Success)
-                    {
-                        WriteDebug("AttestionCertificate is PEM string");
-                        byte[] certificateAttBytes = Convert.FromBase64String(match.Groups["certificateContent"].Value);
-                        _AttestionCertificate = new X509Certificate2(certificateAttBytes);
-                    }
-                    else if (System.IO.File.Exists((string)AttestionCertificate.BaseObject))
-                    {
-                        WriteDebug("AttestionCertificate is filepath");
-                        _AttestionCertificate = new X509Certificate2((string)AttestionCertificate.BaseObject);
-                    }
-                }
-                else if (AttestionCertificate.BaseObject is X509Certificate2)
+                if (AttestionCertificate.BaseObject is X509Certificate2)
                 {
                     WriteDebug("AttestionCertificate is X509Certificate2");
                     _AttestionCertificate = (X509Certificate2)AttestionCertificate.BaseObject;
@@ -118,23 +105,7 @@ namespace powershellYK.Cmdlets.Other
 
             if (IntermediateCertificate is not null)
             {
-                if (IntermediateCertificate.BaseObject is string)
-                {
-                    WriteDebug("IntermediateCertificate is string");
-                    match = regex.Match(IntermediateCertificate.BaseObject.ToString()!);
-                    if (match.Success)
-                    {
-                        WriteDebug("IntermediateCertificate is PEM string");
-                        byte[] certificateIntBytes = Convert.FromBase64String(match.Groups["certificateContent"].Value);
-                        _IntermediateCertificate = new X509Certificate2(certificateIntBytes);
-                    }
-                    else if (System.IO.File.Exists((string)IntermediateCertificate.BaseObject))
-                    {
-                        WriteDebug("IntermediateCertificate is filepath");
-                        _IntermediateCertificate = new X509Certificate2((string)IntermediateCertificate.BaseObject);
-                    }
-                }
-                else if (IntermediateCertificate.BaseObject is X509Certificate2)
+                if (IntermediateCertificate.BaseObject is X509Certificate2)
                 {
                     WriteDebug("IntermediateCertificate is X509Certificate2");
                     _IntermediateCertificate = (X509Certificate2)IntermediateCertificate.BaseObject;
@@ -163,6 +134,7 @@ namespace powershellYK.Cmdlets.Other
 
             if (_AttestionCertificate is null || _IntermediateCertificate is null)
             {
+                // Is this still needed??
                 throw new Exception("Attestion Certificate or Intermediate Certificate is missing");
             }
 

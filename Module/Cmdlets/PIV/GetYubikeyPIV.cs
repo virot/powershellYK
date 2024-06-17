@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using powershellYK.PIV;
+using powershellYK.support.transform;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Objects;
@@ -13,6 +14,9 @@ namespace powershellYK.Cmdlets.PIV
     [Cmdlet(VerbsCommon.Get, "YubikeyPIV")]
     public class GetYubikeyPIVCommand : Cmdlet
     {
+        [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
+        [TransformPivSlot()]
+
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Retrive a info from specific slot")]
         public byte? Slot { get; set; }
 

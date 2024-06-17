@@ -1,17 +1,19 @@
 ﻿using System.Management.Automation;
+using System.Management.Automation.Host;
 using System.Security.Cryptography;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Sample.PivSampleCode;
-
+using powershellYK.support.transform;
 
 namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.New, "YubikeyPIVKey", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class NewYubiKeyPIVKeyCommand : Cmdlet
     {
+        [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
+        [TransformPivSlot()]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to create a new key for")]
-
         public byte Slot { get; set; }
 
         [ValidateSet("Rsa1024", "Rsa2048", "EccP256", "EccP384", IgnoreCase = true)]

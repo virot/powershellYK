@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using powershellYK.support;
+using powershellYK.support.transform;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Sample.PivSampleCode;
@@ -15,6 +16,7 @@ namespace powershellYK.Cmdlets.Other
     [Cmdlet(VerbsData.ConvertTo, "AltSecurity")]
     public class ConvertToConvertToAltSecurityCommand : Cmdlet
     {
+        [TransformCertificatePath_Certificate()]
         [Parameter(Mandatory = true, ValueFromPipeline = true, Position = 0, HelpMessage = "Certificate to extract info from")]
         public PSObject? Certificate { get; set; }
         private X509Certificate2? _certificate = null;
@@ -28,18 +30,6 @@ namespace powershellYK.Cmdlets.Other
             if (Certificate.BaseObject is X509Certificate2)
             {
                 _certificate = Certificate.BaseObject as X509Certificate2;
-            }
-            else if (Certificate.BaseObject is X509Certificate)
-            {
-                _certificate = new X509Certificate2((X509Certificate)Certificate.BaseObject);
-            }
-            else if (Certificate.BaseObject is string)
-            {
-                _certificate = new X509Certificate2(Certificate.BaseObject.ToString()!);
-            }
-            else
-            {
-                throw new Exception($"Unknown certificate format, {Certificate.BaseObject.GetType().FullName}");
             }
 
             if (_certificate is not null)

@@ -2,7 +2,7 @@
 Module Name: powershellYK
 Module Guid: d947dd9b-87eb-49ea-a373-b91c7acc0917
 Download Help Link: {{ Update Download Link }}
-Help Version: 0.0.9.1
+Help Version: 0.0.12.1
 Locale: en-US
 ---
 

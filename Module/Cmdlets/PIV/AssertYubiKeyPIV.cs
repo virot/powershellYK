@@ -7,6 +7,7 @@ using Yubico.YubiKey.Piv.Commands;
 using System.Security.Cryptography;
 using powershellYK.support;
 using Yubico.YubiKey.Sample.PivSampleCode;
+using powershellYK.support.transform;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -14,6 +15,9 @@ namespace powershellYK.Cmdlets.PIV
     [Cmdlet(VerbsLifecycle.Assert, "YubikeyPIV")]
     public class AssertYubiKeyPIVCommand : PSCmdlet
     {
+        [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
+        [TransformPivSlot()]
+
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "ExportToFile")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "DisplayOnScreen")]
         public byte Slot { get; set; }

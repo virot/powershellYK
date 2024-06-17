@@ -2,6 +2,7 @@
 using Yubico.YubiKey;
 using Yubico.YubiKey.Otp;
 using powershellYK.support.Validators;
+using powershellYK.support.transform;
 using Yubico.YubiKey.Oath;
 
 
@@ -10,7 +11,9 @@ namespace powershellYK.Cmdlets.OTP
     [Cmdlet(VerbsCommon.Remove, "YubikeyOTP", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class RemoveYubikeyOTPCommand : Cmdlet
     {
+        [TransformOTPSlot()]
         [ValidateOTPSlot()]
+        [ArgumentCompletions("ShortPress", "LongPress")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey OTP Slot", ParameterSetName = "Remove")]
         public PSObject? Slot { get; set; }
         private Slot _slot { get; set; }
@@ -38,14 +41,6 @@ namespace powershellYK.Cmdlets.OTP
             if (Slot!.BaseObject is Slot)
             {
                 _slot = (Slot)Slot.BaseObject;
-            }
-            else if ((int)Slot.BaseObject == 1)
-            {
-                _slot = Yubico.YubiKey.Otp.Slot.ShortPress;
-            }
-            else if ((int)Slot.BaseObject == 1)
-            {
-                _slot = Yubico.YubiKey.Otp.Slot.LongPress;
             }
             if (ShouldProcess($"Yubikey OTP {_slot}", "Set"))
             {

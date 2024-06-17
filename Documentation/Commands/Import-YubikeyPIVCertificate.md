@@ -12,14 +12,8 @@ Import certificate
 
 ## SYNTAX
 
-### File
 ```
-Import-YubikeyPIVCertificate -Slot <Byte> -Path <String> [-Certificate <Object>] [<CommonParameters>]
-```
-
-### Value
-```
-Import-YubikeyPIVCertificate -Slot <Byte> [-Path <String>] -Certificate <Object> [<CommonParameters>]
+Import-YubikeyPIVCertificate -Slot <Byte> -Certificate <Object> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -41,49 +35,10 @@ Certificate to be stored
 
 ```yaml
 Type: Object
-Parameter Sets: File
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: Object
-Parameter Sets: Value
+Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Path
-Path to certificate file
-
-```yaml
-Type: String
-Parameter Sets: File
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: String
-Parameter Sets: Value
-Aliases:
-
-Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

@@ -7,6 +7,7 @@ using Yubico.YubiKey.Piv.Commands;
 using System.Security.Cryptography;
 using powershellYK.support;
 using Yubico.YubiKey.Sample.PivSampleCode;
+using powershellYK.support.transform;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -14,12 +15,11 @@ namespace powershellYK.Cmdlets.PIV
     [Cmdlet(VerbsCommon.New, "YubikeyPIVCSR")]
     public class NewYubiKeyPIVCSRCommand : Cmdlet
     {
+        [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
+        [TransformPivSlot()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Create a CSR for slot")]
-
         public byte Slot { get; set; }
-
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Include attestion certificate in CSR")]
-
         public SwitchParameter Attestation { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subjectname of certificate")]
 

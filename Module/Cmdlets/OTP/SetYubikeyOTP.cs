@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using powershellYK.OTP;
 using powershellYK.support.Validators;
+using powershellYK.support.transform;
 using Yubico.Core.Buffers;
 using Yubico.Core.Devices.Hid;
 using Yubico.YubiKey;
@@ -14,7 +15,9 @@ namespace powershellYK.Cmdlets.OTP
     [Cmdlet(VerbsCommon.Set, "YubikeyOTP", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class SetYubikeyOTPCommand : PSCmdlet
     {
+        [TransformOTPSlot()]
         [ValidateOTPSlot()]
+        [ArgumentCompletions("ShortPress","LongPress")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey OTP Slot")]
         public PSObject? Slot { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows configuration with all defaults", ParameterSetName = "Yubico OTP")]
@@ -78,18 +81,9 @@ namespace powershellYK.Cmdlets.OTP
         {
             using (var otpSession = new OtpSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                // Set an internal Slot variable to work with.
                 if (Slot!.BaseObject is Slot)
                 {
                     _slot = (Slot)Slot.BaseObject;
-                }
-                else if ((int)Slot.BaseObject == 1)
-                {
-                    _slot = Yubico.YubiKey.Otp.Slot.ShortPress;
-                }
-                else if ((int)Slot.BaseObject == 1)
-                {
-                    _slot = Yubico.YubiKey.Otp.Slot.LongPress;
                 }
                 WriteDebug($"Working with {ParameterSetName}");
                 if ((_slot == Yubico.YubiKey.Otp.Slot.ShortPress && !otpSession.IsShortPressConfigured) || (_slot == Yubico.YubiKey.Otp.Slot.LongPress && !otpSession.IsLongPressConfigured) || ShouldProcess($"Yubikey OTP {_slot}", "Set"))

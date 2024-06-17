@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using powershellYK.support;
 using System.Linq.Expressions;
 using Yubico.YubiKey.Sample.PivSampleCode;
+using powershellYK.support.transform;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -15,15 +16,13 @@ namespace powershellYK.Cmdlets.PIV
     [Cmdlet(VerbsData.Import, "YubikeyPIVCertificate")]
     public class ImportYubiKeyPIVCertificateCommand : Cmdlet
     {
+        [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
+        [TransformPivSlot()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slotnumber")]
         public byte Slot { get; set; }
 
-        [Parameter(Mandatory = true, ParameterSetName = "File")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Path to certificate")]
-        public string? Path { get; set; } = null;
-
-        [Parameter(Mandatory = true, ParameterSetName = "Value")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Certificate to be stored")]
+        [TransformCertificatePath_Certificate()]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Certificate to be stored")]
         public object? Certificate { get; set; } = null;
 
         private X509Certificate2? _certificate = null;
@@ -61,47 +60,11 @@ namespace powershellYK.Cmdlets.PIV
                 }
 
                 WriteDebug("Entering certificate load section");
-                if (Path is not null)
+                if (Certificate is null)
                 {
-                    try
-                    {
-                        WriteDebug($"Reading PEM certificate from '{Path}'");
-                        _certificate = new X509Certificate2(Path);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Failed to load certificate", e);
-                    }
+                    throw new ArgumentException("No certificate found");
                 }
-                else if (Certificate is not null)
-                {
-                    if (Certificate.GetType() == typeof(X509Certificate2))
-                    {
-                        WriteDebug("Just taking the object passed");
-                        _certificate = (X509Certificate2)Certificate;
-                    }
-                    else if (Certificate.GetType() == typeof(string))
-                    {
-                        try
-                        {
-                            WriteDebug("Put bytes of certificate into X509Certificate2");
-                            _certificate = new X509Certificate2(Encoding.UTF8.GetBytes((string)Certificate));
-                        }
-                        catch
-                        {
-                            throw new Exception("Failed to load certificate");
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("Certificate is not a valid type");
-                    }
-                }
-                else
-                {
-                    WriteDebug("Unable to guess type of certificate");
-                    throw new Exception("Certificate is not a valid type");
-                }
+                _certificate = (X509Certificate2)Certificate!;
                 WriteDebug($"Proceeding with import of thumbprint {_certificate.Thumbprint}");
                 if (publicKey is null)
                 {
