@@ -14,10 +14,10 @@ The easiest way to install the module is:
 ## Feature difference between powershellYK and Yubikey tools
 
 ### FIDO2
-| Feature | powershellYK | ykman GUI | ykman CLI |
+| Feature | powershellYK | ykman GUI | ykman CLI | Yubico Authenticator |
 | --- | --- | --- | --- |
-| List credentials | $${\color{green}Yes}$$ | $${\color{red}No}$$ | $${\color{green}yes}$$ |
-| Remove credentials | $${\color{green}Yes}$$ | $${\color{red}No}$$ | $${\color{green}yes}$$ |
+| List credentials | $${\color{green}Yes}$$ | $${\color{red}No}$$ | $${\color{green}yes}$$ | $${\color{green}yes}$$ |
+| Remove credentials | $${\color{green}Yes}$$ | $${\color{red}No}$$ | $${\color{green}yes}$$ | $${\color{green}yes}$$ |
 
 ### OATH
 | Feature | powershellYK | ykman GUI | ykman CLI | Yubico Authenticator |
