@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using powershellYK.OTP;
 using powershellYK.support.Validators;
+using Yubico.Core.Buffers;
 using Yubico.Core.Devices.Hid;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Otp;
@@ -22,11 +23,13 @@ namespace powershellYK.Cmdlets.OTP
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows configuration with all defaults", ParameterSetName = "Static Generated Password")]
         public SwitchParameter StaticPassword { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Public ID, defaults to the serialnumber", ParameterSetName = "Yubico OTP")]
-        public byte[]? PublicID { get; set; }
+        public byte[] PublicID { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Private ID, defaults to random 6 bytes", ParameterSetName = "Yubico OTP")]
         public byte[]? PrivateID { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret key, defaults to random 16 bytes ", ParameterSetName = "Yubico OTP")]
         public byte[]? SecretKey { get; set; }
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Upload to Yubicloud", ParameterSetName = "Yubico OTP")]
+        public SwitchParameter Upload{ get; set; }
         [ValidateYubikeyPassword(1,38)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Static password that will be set", ParameterSetName = "Static Password")]
         public SecureString? Password { get; set; }
@@ -83,7 +86,51 @@ namespace powershellYK.Cmdlets.OTP
                 {
                     switch (ParameterSetName)
                     {
-                        case "dasdas":
+                        case "Yubico OTP":
+                            Memory<byte> _publicID = new Memory<byte>(new byte[6]);
+                            Memory<byte> _privateID = new Memory<byte>(new byte[6]);
+                            Memory<byte> _secretKey = new Memory<byte>(new byte[16]);
+                            ConfigureYubicoOtp configureyubicoOtp = otpSession.ConfigureYubicoOtp(_slot);
+                            int? serial = YubiKeyModule._yubikey!.SerialNumber;
+                            if (PublicID is null)
+                            {
+                                configureyubicoOtp = configureyubicoOtp.UseSerialNumberAsPublicId(_publicID);
+                            }
+                            else
+                            {
+                                _publicID = PublicID;
+                                configureyubicoOtp = configureyubicoOtp.UsePublicId(PublicID);
+                            }
+                            if (PrivateID is null)
+                            {
+                                configureyubicoOtp = configureyubicoOtp.GeneratePrivateId(_privateID);
+                            }
+                            else
+                            {
+                                _privateID = PrivateID;
+                                configureyubicoOtp = configureyubicoOtp.UsePublicId(PrivateID);
+                            }
+                            if (SecretKey is null)
+                            {
+                                configureyubicoOtp = configureyubicoOtp.GenerateKey(_secretKey);
+                            }
+                            else
+                            {
+                                _secretKey = SecretKey;
+                                configureyubicoOtp = configureyubicoOtp.UseKey(SecretKey);
+                            }
+                            configureyubicoOtp.Execute();
+                            if (PublicID is null || PrivateID is null || SecretKey is null)
+                            {
+                                YubicoOTP retur = new YubicoOTP(serial, _publicID.ToArray(), [0x0, 0x0], [0x0, 0x0], "");
+                                WriteObject(retur);
+                            }
+                            if (Upload.IsPresent)
+                            {
+                                // https://github.com/Yubico/yubikey-manager/blob/fbdae2bc12ba0451bcfc62372bc9191c10ecad0c/ykman/otp.py#L95
+                                // TODO: Implement Upload to Yubicloud
+                                WriteWarning("Upload to Yubicloud is not implemented yet");
+                            }
                             break;
 
                         case "Static Password":

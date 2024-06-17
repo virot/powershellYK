@@ -1,15 +1,9 @@
 using Yubico.YubiKey;
-using Yubico.YubiKey.Piv;
-using Yubico.YubiKey.Fido2;
 using System.Management.Automation;
-using System;
-using System.Reflection;
-using System.IO;
 using System.Runtime.InteropServices;
-using Yubico.YubiKey.Oath;
-using System.Security.Cryptography;
 using System.Security;
-using System.Net.NetworkInformation;
+using powershellYK.support;
+using System;
 
 namespace powershellYK
 {
@@ -32,7 +26,23 @@ namespace powershellYK
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                WindowsOnly.AddDllDirectory();
+                Windows.AddDllDirectory();
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                /*string DYLD_LIBRARY_PATH = (System.Environment.GetEnvironmentVariable("DYLD_LIBRARY_PATH") is not null) ? System.Environment.GetEnvironmentVariable("DYLD_LIBRARY_PATH")! : "" ;
+                DYLD_LIBRARY_PATH += ";./runtimes/osx/native";
+                if (RuntimeInformation.OSArchitecture == Architecture.Arm64)
+                {
+                    DYLD_LIBRARY_PATH += ";./runtimes/osx-arm64/native";
+                }
+                else
+                {
+                    DYLD_LIBRARY_PATH += ";./runtimes/osx-x64/native";
+                }
+                System.Environment.SetEnvironmentVariable("DYLD_LIBRARY_PATH", DYLD_LIBRARY_PATH,EnvironmentVariableTarget.Process);
+                */
+                NativeLibrary.SetDllImportResolver(typeof(YubiKeyModule).Assembly, MacOS.ResolveDllImport);
             }
         }
     }
@@ -48,24 +58,6 @@ namespace powershellYK
         }
     }
 
-    public class WindowsOnly
-    {
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern IntPtr AddDllDirectory(string NewDirectory);
-
-        public static void AddDllDirectory()
-        {
-            string assemblyLocation = Assembly.GetExecutingAssembly().Location;
-            string assemblyPath = Path.GetDirectoryName(assemblyLocation)!;
-            string runtimePath = assemblyPath != null ? Path.Combine(assemblyPath, "runtimes\\win-x64\\native") : "";
-            IntPtr result = AddDllDirectory(runtimePath);
-            if (result == IntPtr.Zero)
-            {
-                // Call failed, you can get the error code by calling Marshal.GetLastWin32Error()
-                int errorCode = Marshal.GetLastWin32Error();
-            }
-        }
-    }
-
+   
 
 }
