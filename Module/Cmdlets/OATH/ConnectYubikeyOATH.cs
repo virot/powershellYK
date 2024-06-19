@@ -5,7 +5,7 @@ using powershellYK.support;
 using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using powershellYK.support.Validators;
+using powershellYK.support.validators;
 using System.Security;
 
 namespace powershellYK.Cmdlets.OATH

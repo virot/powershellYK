@@ -10,11 +10,11 @@ namespace powershellYK.support.transform
         {
             if (inputData is string)
             {
-                if ((string)inputData == "1" || (string)inputData == "ShortPress" || (string)inputData == "[Yubico.YubiKey.Otp.Slot]::ShortPress")
+                if ((string)inputData == "1" || (string)inputData == "ShortPress" || (string)inputData == "Short" || (string)inputData == "[Yubico.YubiKey.Otp.Slot]::ShortPress")
                 {
                     return Yubico.YubiKey.Otp.Slot.ShortPress;
                 }
-                else if ((string)inputData == "2" || (string)inputData == "LongPress" || (string)inputData == "[Yubico.YubiKey.Otp.Slot]::LongPress")
+                else if ((string)inputData == "2" || (string)inputData == "LongPress" || (string)inputData == "Long" || (string)inputData == "[Yubico.YubiKey.Otp.Slot]::LongPress")
                 {
                     return Yubico.YubiKey.Otp.Slot.LongPress;
                 }

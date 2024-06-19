@@ -7,8 +7,9 @@ using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Security;
 using powershellYK;
-using powershellYK.support.Validators;
+using powershellYK.support.validators;
 using System.ComponentModel.DataAnnotations;
+using powershellYK.support.transform;
 
 namespace powershellYK.Cmdlets.PIV
 {
@@ -16,10 +17,11 @@ namespace powershellYK.Cmdlets.PIV
 
     public class ConnectYubikeyPIVCommand : Cmdlet
     {
-
+        [TransformPivManagementKey()]
+        [ValidatePIVManagementKey()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ManagementKey", ParameterSetName = "PIN&Management")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ManagementKey", ParameterSetName = "Management")]
-        public string? ManagementKey;
+        public PSObject? ManagementKey;
         [ValidateYubikeyPIN(6, 8)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN", ParameterSetName = "PIN&Management")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN", ParameterSetName = "PIN")]
@@ -44,20 +46,19 @@ namespace powershellYK.Cmdlets.PIV
         }
         protected override void ProcessRecord()
         {
-            if (PIN is not null)
-            {
-                YubiKeyModule._pivPIN = PIN;
-            }
-            if (ManagementKey is not null)
-            {
-                YubiKeyModule._pivManagementKey = HexConverter.StringToByteArray(ManagementKey);
-            }
             using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                pivSession.VerifyPin();
-                pivSession.AuthenticateManagementKey();
+                if (PIN is not null)
+                {
+                    YubiKeyModule._pivPIN = PIN;
+                    pivSession.VerifyPin();
+                }
+                if (ManagementKey is not null)
+                {
+                    YubiKeyModule._pivManagementKey = (byte[])ManagementKey.BaseObject;
+                    pivSession.AuthenticateManagementKey();
+                }
             }
         }
     }

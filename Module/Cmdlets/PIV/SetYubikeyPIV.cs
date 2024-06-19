@@ -8,11 +8,12 @@ using Yubico.YubiKey.Piv.Objects;
 using powershellYK.support;
 using System.Security;
 using System.Runtime.InteropServices;
-
+using powershellYK.support.transform;
+using powershellYK.support.validators;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommon.Set, "YubikeyPIV")]
+    [Cmdlet(VerbsCommon.Set, "YubikeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class SetYubikeyPIVCommand : PSCmdlet
     {
 
@@ -45,13 +46,15 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ParameterSetName = "ChangePUK", ValueFromPipeline = false, HelpMessage = "New PUK")]
         public SecureString NewPUK { get; set; } = new SecureString();
 
-        [ValidateLength(48, 48)]
+        [TransformPivManagementKey()]
+        [ValidatePIVManagementKey()]
         [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "Current ManagementKey")]
-        public string? ManagementKey { get; set; }
+        public PSObject ManagementKey { get; set; } = new PSObject();
 
-        [ValidateLength(48, 48)]
+        [TransformPivManagementKey()]
+        [ValidatePIVManagementKey()]
         [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "New ManagementKey")]
-        public string? NewManagementKey { get; set; }
+        public PSObject NewManagementKey { get; set; } = new PSObject();
 
         [ValidateSet("TripleDES", "AES128", "AES192", "AES256", IgnoreCase = true)]
         [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "Algoritm")]
@@ -63,6 +66,8 @@ namespace powershellYK.Cmdlets.PIV
 
         [Parameter(Mandatory = true, ParameterSetName = "newCHUID", ValueFromPipeline = false, HelpMessage = "Generate new CHUID")]
         public SwitchParameter newCHUID { get; set; }
+        [Parameter(Mandatory = true, ParameterSetName = "Set Managementkey to PIN protected", ValueFromPipeline = false, HelpMessage = "PIN protect the Managementkey")]
+        public SwitchParameter PINProtectedManagementkey { get; set; }
 
 
 
@@ -94,15 +99,30 @@ namespace powershellYK.Cmdlets.PIV
                 switch (ParameterSetName)
                 {
                     case "ChangeRetries":
-                        try
+                        // powershellYK does more than the SDK here, it also blocks the PUK if 
+                        pivSession.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
+                        //WriteWarning("PIN and PUK codes reset to default, remember to change.");
+                        if (pivSession.GetPinOnlyMode().HasFlag(PivPinOnlyMode.PinProtected))
                         {
-                            pivSession.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
-                            WriteWarning("PIN and PUK codes reset to default, remember to change.");
+                            WriteDebug("Management key is PIN Protected, Blocking PUK");
+                            retriesLeft = 1;
+                            while (retriesLeft > 0)
+                            {
+                                pivSession.TryChangePuk(System.Text.Encoding.UTF8.GetBytes("87654321"), System.Text.Encoding.UTF8.GetBytes("23456789"), out retriesLeft);
+                            }
+                            if (YubiKeyModule._pivPIN is not null && YubiKeyModule._pivPIN.Length > 0 && Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._pivPIN!)) != "123456")
+                            {
+                                WriteDebug("Trying to revert PIN");
+                                pivSession.TryChangePin(System.Text.Encoding.UTF8.GetBytes("123456"), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._pivPIN!))!), out retriesLeft);
+                            }
+                            else
+                            {
+                                WriteWarning("PIN not set, remember to change.");
+                            }
                         }
-
-                        catch (Exception e)
+                        else
                         {
-                            throw new Exception("Failed to set PIN and PUK retries", e);
+                            WriteWarning("PIN and PUK codes reset to default, remember to change.");
                         }
                         break;
                     case "ChangePIN":
@@ -110,7 +130,11 @@ namespace powershellYK.Cmdlets.PIV
                         {
                             if (pivSession.TryChangePin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PIN))!)
     , System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN!))!)
-    , out retriesLeft) == false)
+    , out retriesLeft) == true)
+                            {
+                                YubiKeyModule._pivPIN = NewPIN;
+                            }
+                            else
                             {
                                 throw new Exception("Incorrect PIN provided");
                             }
@@ -159,8 +183,8 @@ namespace powershellYK.Cmdlets.PIV
                         }
                         break;
                     case "ChangeManagement":
-                        byte[] ManagementKeyarray = HexConverter.StringToByteArray(ManagementKey!);
-                        byte[] NewManagementKeyarray = HexConverter.StringToByteArray(NewManagementKey!);
+                        byte[] ManagementKeyarray = (byte[])ManagementKey.BaseObject;
+                        byte[] NewManagementKeyarray = (byte[])NewManagementKey.BaseObject;
                         try
                         {
                             if (pivSession.TryChangeManagementKey(ManagementKeyarray, NewManagementKeyarray, (PivTouchPolicy)TouchPolicy, (PivAlgorithm)Algorithm))
@@ -193,6 +217,10 @@ namespace powershellYK.Cmdlets.PIV
                         {
                             throw new Exception("Failed to generate new CHUID", e);
                         }
+                        break;
+                    case "Set Managementkey to PIN protected":
+                        PivAlgorithm mgmtKeyAlgorithm = ((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivAesManagementKey) ? PivAlgorithm.Aes256 : PivAlgorithm.TripleDes;
+                        pivSession.SetPinOnlyMode(PivPinOnlyMode.PinProtected, mgmtKeyAlgorithm);
                         break;
                 }
             }

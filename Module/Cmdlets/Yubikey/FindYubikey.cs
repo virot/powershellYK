@@ -24,25 +24,15 @@ namespace powershellYK.Cmdlets.Yubikey
                 yubiKeys = yubiKeys.Where(yubiKeys => yubiKeys.SerialNumber == Serialnumber);
             }
 
-
-            if (yubiKeys.Count() == 1)
+            foreach (var yubiKey in yubiKeys)
             {
-                WriteObject(yubiKeys.First());
-            }
-            else if (yubiKeys.Count() == 0)
-            {
-                throw new ItemNotFoundException("No Yubikey found");
-            }
-            else if (OnlyOne.IsPresent)
-            {
-                throw new Exception("Multiple Yubikeys found");
-            }
-            else
-            {
-                WriteObject(yubiKeys.ToArray());
+                WriteObject((YubiKeyDevice)yubiKey);
             }
 
-
+            if (yubiKeys.ToArray().Length == 0)
+            {
+                WriteWarning("No yubikeys found, Yubikeys with ONLY FIDO interfaces enabled requires Administrator permissions in Windows");
+            }
         }
     }
 }

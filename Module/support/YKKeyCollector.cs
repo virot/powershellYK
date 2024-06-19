@@ -44,6 +44,7 @@ namespace powershellYK
                             }
                             else
                             {
+                                YubiKeyModule._pivPIN = null;
                                 throw new PINIncorrectException($"Incorrect PIN, {keyEntryData.RetriesRemaining} retries remaining.", keyEntryData.RetriesRemaining);
                             }
                         }

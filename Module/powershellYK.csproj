@@ -35,7 +35,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Management.Automation" Version="7.4.2" />
+    <PackageReference Include="System.Management.Automation" Version="7.4.3" />
     <PackageReference Include="Yubico.YubiKey" Version="1.10.0" />
   </ItemGroup>
 
@@ -46,6 +46,10 @@
     <None Update="powershellYK.psd1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Cmdlets\GPG\" />
   </ItemGroup>
   
 </Project>

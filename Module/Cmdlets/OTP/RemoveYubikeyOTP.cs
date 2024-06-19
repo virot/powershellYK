@@ -1,7 +1,7 @@
 ﻿using System.Management.Automation;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Otp;
-using powershellYK.support.Validators;
+using powershellYK.support.validators;
 using powershellYK.support.transform;
 using Yubico.YubiKey.Oath;
 

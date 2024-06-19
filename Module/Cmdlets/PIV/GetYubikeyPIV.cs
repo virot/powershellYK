@@ -103,6 +103,7 @@ namespace powershellYK.Cmdlets.PIV
                         PukRetries = puk_retry,
                         CHUID = BitConverter.ToString(chuid.GuidValue.Span.ToArray()),
                         SlotsWithPrivateKeys = certificateLocationsArray,
+                        ManagementkeyPIN = pivSession.GetPinOnlyMode(),
                     };
 
                     WriteObject(customObject);

@@ -35,7 +35,7 @@ namespace powershellYK.Cmdlets.PIV
         {
 
             WriteDebug("ProcessRecord in Reset-YubikeyPIV");
-            if (ShouldProcess($"Yubikey PIV", "Reset"))
+            if (ShouldProcess("Yubikey PIV", "Reset"))
             {
                 using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {

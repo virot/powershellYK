@@ -73,10 +73,13 @@ FormatsToProcess = @('powershellYK.format.ps1xml')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @(
- 'Get-Yubikey',
  'Connect-Yubikey',
  'Disconnect-Yubikey',
  'Find-Yubikey',
+ 'Get-Yubikey',
+ 'Lock-Yubikey',
+ 'Set-Yubikey',
+ 'Unlock-Yubikey',
  'Connect-YubikeyFIDO2',
  'Get-YubikeyFIDO2Credentials',
  'Connect-YubikeyOATH',
@@ -104,7 +107,8 @@ CmdletsToExport = @(
  'Reset-YubikeyPIV',
  'Set-YubikeyPIV',
  'Confirm-YubikeyAttestion',
- 'ConvertTo-AltSecurity'
+ 'ConvertTo-AltSecurity',
+ 'Get-PowershellYKInfo'
 )
 
 # Variables to export from this module

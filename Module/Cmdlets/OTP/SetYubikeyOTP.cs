@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Security;
 using powershellYK.OTP;
-using powershellYK.support.Validators;
+using powershellYK.support.validators;
 using powershellYK.support.transform;
 using Yubico.Core.Buffers;
 using Yubico.Core.Devices.Hid;

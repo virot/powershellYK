@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security;
 using Yubico.YubiKey.Piv;
-using powershellYK.support.Validators;
+using powershellYK.support.validators;
 
 namespace powershellYK.Cmdlets.Fido
 {
