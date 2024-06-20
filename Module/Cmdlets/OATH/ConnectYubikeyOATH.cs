@@ -14,7 +14,7 @@ namespace powershellYK.Cmdlets.OATH
 
     public class ConnectYubikeyOATHCommand : Cmdlet
     {
-        [ValidateYubikeyPassword(1, 255)]
+        [ValidateYubikeyPassword(0, 255)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Password", ParameterSetName = "Password")]
         public SecureString? Password;
         protected override void BeginProcessing()
@@ -29,14 +29,15 @@ namespace powershellYK.Cmdlets.OATH
         }
         protected override void ProcessRecord()
         {
-            if (Password is not null)
-            {
-                YubiKeyModule._OATHPassword = Password;
-            }
             using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                oathSession.VerifyPassword();
+
+                if (oathSession.IsPasswordProtected && Password is not null && Password.Length >= 1)
+                {
+                    YubiKeyModule._OATHPassword = Password;
+                    oathSession.VerifyPassword();
+                }
             }
         }
     }

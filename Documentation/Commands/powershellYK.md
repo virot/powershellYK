@@ -65,6 +65,9 @@ Gets information about the PIV module and specific slots.
 ### [Import-YubikeyPIVCertificate](Import-YubikeyPIVCertificate.md)
 Import certificate
 
+### [Lock-Yubikey](Lock-Yubikey.md)
+Lock the Yubikey configuration
+
 ### [New-YubikeyOATHAccount](New-YubikeyOATHAccount.md)
 Created a TOTP or HOTP account
 
@@ -92,6 +95,9 @@ Reset the entire Yubikey OATH application.
 ### [Reset-YubikeyPIV](Reset-YubikeyPIV.md)
 Resets the PIV part of your Yubikey
 
+### [Set-Yubikey](Set-Yubikey.md)
+{{ Fill in the Synopsis }}
+
 ### [Set-YubikeyOATHAccount](Set-YubikeyOATHAccount.md)
 Update OATH account
 
@@ -103,4 +109,7 @@ Allows the updating of PIV settings
 
 ### [Switch-YubikeyOTP](Switch-YubikeyOTP.md)
 Switch places for the configuration of the Yubikey OTP
+
+### [Unlock-Yubikey](Unlock-Yubikey.md)
+{{ Fill in the Synopsis }}
 

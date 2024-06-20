@@ -30,8 +30,10 @@ namespace powershellYK.Cmdlets.OTP
         public YubiKeyCapabilities EnableNFCCapabilities { get; set; } = YubiKeyCapabilities.None;
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Disable capabilities to NFC", ParameterSetName = "Update NFC capabilities")]
         public YubiKeyCapabilities DisableNFCCapabilities { get; set; } = YubiKeyCapabilities.None;
-
-
+        [Parameter(Mandatory = true, HelpMessage = "Allows loading/unloading the smartcard by touching the yubikey.", ParameterSetName = "Update Touch Eject flag")]
+        public bool TouchEject;
+        [Parameter(Mandatory = true, HelpMessage = "Automatically eject after the given time. Implies -TouchEject:$True. Value in seconds.", ParameterSetName = "Set automatically eject")]
+        public UInt16 AutoEjectTimeout = 0;
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -58,6 +60,24 @@ namespace powershellYK.Cmdlets.OTP
                 {
                     switch (ParameterSetName)
                     {
+                        case "Set automatically eject":
+                            if (AutoEjectTimeout > 0)
+                            {
+                                YubiKeyModule._yubikey!.SetAutoEjectTimeout(AutoEjectTimeout);
+                                YubiKeyModule._yubikey!.SetDeviceFlags(YubiKeyModule._yubikey!.DeviceFlags | DeviceFlags.TouchEject);
+                                WriteWarning("Yubikey needs to be reinserted.");
+                            }
+                            break;
+                        case "Update Touch Eject flag":
+                            if (TouchEject)
+                            {
+                                YubiKeyModule._yubikey!.SetDeviceFlags(YubiKeyModule._yubikey!.DeviceFlags | DeviceFlags.TouchEject);
+                            }
+                            else
+                            {
+                                YubiKeyModule._yubikey!.SetDeviceFlags(YubiKeyModule._yubikey!.DeviceFlags & ~DeviceFlags.TouchEject);
+                            }
+                            break;
                         case "Replace USB capabilities":
                             if ((UsbCapabilities.HasFlag(YubiKeyCapabilities.Otp) || ShouldProcess("powershellYK management", "Disable")))
                             {

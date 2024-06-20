@@ -12,8 +12,19 @@ Connect the module to the Yubikey
 
 ## SYNTAX
 
+### Connect single Yubikey (Default)
+```
+Connect-Yubikey [<CommonParameters>]
+```
+
+### Connect provided Yubikey
 ```
 Connect-Yubikey [[-YubiKey] <YubiKeyDevice>] [<CommonParameters>]
+```
+
+### Connect Yubikey with Serialnumber
+```
+Connect-Yubikey [-Serialnumber <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,19 +41,34 @@ Try to connect to a single Yubikey, will fail if number of connected Yubikeys ar
 
 ### Example 2
 ```powershell
-PS C:\> Connect-Yubikey -YubiKey (Find-Yubikey -Serialnumber 12345)
+PS C:\> Connect-Yubikey -Serialnumber -Serialnumber 12345
 ```
 
 Connect to a specific Yubikey with serial 12345
 
 ## PARAMETERS
 
+### -Serialnumber
+Connect to Yubikey with Serialnumber
+
+```yaml
+Type: Int32
+Parameter Sets: Connect Yubikey with Serialnumber
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -YubiKey
 Which yubikey to connect to
 
 ```yaml
 Type: YubiKeyDevice
-Parameter Sets: (All)
+Parameter Sets: Connect provided Yubikey
 Aliases:
 
 Required: False

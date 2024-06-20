@@ -19,12 +19,12 @@ Connect-YubikeyPIV -PIN <SecureString> [<CommonParameters>]
 
 ### PIN&Management
 ```
-Connect-YubikeyPIV -ManagementKey <String> -PIN <SecureString> [<CommonParameters>]
+Connect-YubikeyPIV -ManagementKey <PSObject> -PIN <SecureString> [<CommonParameters>]
 ```
 
 ### Management
 ```
-Connect-YubikeyPIV -ManagementKey <String> [<CommonParameters>]
+Connect-YubikeyPIV -ManagementKey <PSObject> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -67,7 +67,7 @@ Connect to PIV module with default Managementkey and a stored pin requested cons
 ManagementKey
 
 ```yaml
-Type: String
+Type: PSObject
 Parameter Sets: PIN&Management, Management
 Aliases:
 

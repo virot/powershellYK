@@ -84,13 +84,19 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyOathPassword:
                     if (YubiKeyModule._OATHPassword is null)
                     {
-                        throw new OATHNotConnectedException("Needed password not set, use Connect-OATH to authorize");
+                        throw new OATHNotConnectedException("Needed password not set, use Connect-YubikeyOATH to authorize");
                     }
                     keyEntryData.SubmitValue(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPassword!))!));
                     break;
 
                 case KeyEntryRequest.AuthenticatePivManagementKey:
                     keyEntryData.SubmitValue(YubiKeyModule._pivManagementKey);
+                    break;
+                case KeyEntryRequest.SetOathPassword:
+                    if (YubiKeyModule._OATHPassword is not null && YubiKeyModule._OATHPassword.Length >= 1)
+                    {
+                        keyEntryData.SubmitValues(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPassword!))!), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPasswordNew!))!));
+                    }
                     break;
             }
 

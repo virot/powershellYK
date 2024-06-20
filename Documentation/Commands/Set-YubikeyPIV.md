@@ -14,33 +14,41 @@ Allows the updating of PIV settings
 
 ### ChangeRetries
 ```
-Set-YubikeyPIV -PinRetries <Byte> -PukRetries <Byte> [<CommonParameters>]
+Set-YubikeyPIV -PinRetries <Byte> -PukRetries <Byte> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ChangePIN
 ```
-Set-YubikeyPIV -PIN <SecureString> -NewPIN <SecureString> [-ChangePIN] [<CommonParameters>]
+Set-YubikeyPIV -PIN <SecureString> -NewPIN <SecureString> [-ChangePIN] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### UnblockPIN
 ```
-Set-YubikeyPIV -NewPIN <SecureString> -PUK <SecureString> [-UnblockPIN] [<CommonParameters>]
+Set-YubikeyPIV -NewPIN <SecureString> -PUK <SecureString> [-UnblockPIN] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### ChangePUK
 ```
-Set-YubikeyPIV -PUK <SecureString> -NewPUK <SecureString> [-ChangePUK] [<CommonParameters>]
+Set-YubikeyPIV -PUK <SecureString> -NewPUK <SecureString> [-ChangePUK] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### ChangeManagement
 ```
-Set-YubikeyPIV -ManagementKey <String> -NewManagementKey <String> -Algorithm <PivAlgorithm>
- -TouchPolicy <PivTouchPolicy> [<CommonParameters>]
+Set-YubikeyPIV -ManagementKey <PSObject> -NewManagementKey <PSObject> -Algorithm <PivAlgorithm>
+ -TouchPolicy <PivTouchPolicy> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### newCHUID
 ```
-Set-YubikeyPIV [-newCHUID] [<CommonParameters>]
+Set-YubikeyPIV [-newCHUID] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### Set Managementkey to PIN protected
+```
+Set-YubikeyPIV [-PINProtectedManagementkey] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -121,7 +129,7 @@ Accept wildcard characters: False
 Current ManagementKey
 
 ```yaml
-Type: String
+Type: PSObject
 Parameter Sets: ChangeManagement
 Aliases:
 
@@ -151,7 +159,7 @@ Accept wildcard characters: False
 New ManagementKey
 
 ```yaml
-Type: String
+Type: PSObject
 Parameter Sets: ChangeManagement
 Aliases:
 
@@ -198,6 +206,21 @@ Current PIN
 ```yaml
 Type: SecureString
 Parameter Sets: ChangePIN
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PINProtectedManagementkey
+PIN protect the Managementkey
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Set Managementkey to PIN protected
 Aliases:
 
 Required: True
@@ -275,6 +298,36 @@ Easy access to UnblockPIN
 Type: SwitchParameter
 Parameter Sets: UnblockPIN
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Confirm
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WhatIf
+Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
 
 Required: False
 Position: Named

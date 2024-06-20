@@ -41,7 +41,8 @@ namespace powershellYK.Cmdlets.Yubikey
                     var yubikeys = YubiKeyDevice.FindAll();
                     if (yubikeys.Count() == 1)
                     {
-                        _yubikey = (YubiKeyDevice)yubikeys.First();
+                       _yubikey = (YubiKeyDevice)yubikeys.First();
+                        WriteDebug($"Found ounly one, using {_yubikey.SerialNumber}");
                     }
                     break;
                 case "Connect Yubikey with Serialnumber":
