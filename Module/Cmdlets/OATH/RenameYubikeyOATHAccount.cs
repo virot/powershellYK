@@ -5,9 +5,9 @@ using Yubico.YubiKey.Otp;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsCommon.Set, "YubikeyOATHAccount")]
+    [Cmdlet(VerbsCommon.Rename, "YubikeyOATHAccount")]
 
-    public class SetYubikeyOATHAccountCommand : Cmdlet
+    public class RenameYubikeyOATHAccountCommand : Cmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Account to remove")]
         [Alias("Credential")]

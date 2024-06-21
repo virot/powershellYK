@@ -5,27 +5,27 @@ online version:
 schema: 2.0.0
 ---
 
-# Set-YubikeyOATHAccount
+# Rename-YubikeyOATHAccount
 
 ## SYNOPSIS
-Update OATH account
+Rename OATH account
 
 ## SYNTAX
 
 ```
-Set-YubikeyOATHAccount -Account <Credential> [-NewAccountName <String>] [-NewIssuer <String>]
+Rename-YubikeyOATHAccount -Account <Credential> [-NewAccountName <String>] [-NewIssuer <String>]
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Update OATH account
+Rename OATH account
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
 PS C:\> $Accounttochange = Get-YubikeyOATHAccount | Where-Object {$_.Issuer -eq 'Yubico Demo'}
-PS C:\> Set-YubikeyOATHAccount -Credential $Accounttochange -NewIssuer "powershellYK Demo"
+PS C:\> Rename-YubikeyOATHAccount -Credential $Accounttochange -NewIssuer "powershellYK Demo"
 ```
 
 Selects and updates the Issuer from 'Yubico Demo' to 'powershellYK Demo' 

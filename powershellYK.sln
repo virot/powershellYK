@@ -5,8 +5,6 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "powershellYK", "Module\powershellYK.csproj", "{31A0A7CD-FE21-417D-9F8A-6F8E31915D10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "powershellYK_loader", "powershellYK_loader\powershellYK_loader.csproj", "{E76BB195-4971-4242-A567-536EBAF680C4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,14 +21,6 @@ Global
 		{31A0A7CD-FE21-417D-9F8A-6F8E31915D10}.Release|Any CPU.Build.0 = Release|Any CPU
 		{31A0A7CD-FE21-417D-9F8A-6F8E31915D10}.Release|x64.ActiveCfg = Release|x64
 		{31A0A7CD-FE21-417D-9F8A-6F8E31915D10}.Release|x64.Build.0 = Release|x64
-		{E76BB195-4971-4242-A567-536EBAF680C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E76BB195-4971-4242-A567-536EBAF680C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E76BB195-4971-4242-A567-536EBAF680C4}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E76BB195-4971-4242-A567-536EBAF680C4}.Debug|x64.Build.0 = Debug|Any CPU
-		{E76BB195-4971-4242-A567-536EBAF680C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E76BB195-4971-4242-A567-536EBAF680C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E76BB195-4971-4242-A567-536EBAF680C4}.Release|x64.ActiveCfg = Release|Any CPU
-		{E76BB195-4971-4242-A567-536EBAF680C4}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

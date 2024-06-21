@@ -83,14 +83,23 @@ Create a new private key
 ### [New-YubikeyPIVSelfSign](New-YubikeyPIVSelfSign.md)
 Create a self signed certificate
 
+### [Protect-YubikeyOATH](Protect-YubikeyOATH.md)
+Set / update password
+
 ### [Remove-YubikeyOATHAccount](Remove-YubikeyOATHAccount.md)
 Removes an account from the Yubikey OATH application
 
 ### [Remove-YubikeyOTP](Remove-YubikeyOTP.md)
 Remove Yubikey OTP slot
 
+### [Rename-YubikeyOATHAccount](Rename-YubikeyOATHAccount.md)
+Rename OATH account
+
 ### [Request-YubikeyOATHCode](Request-YubikeyOATHCode.md)
 Displays TOTP / HOTP codes for Yubikey OATH credentials
+
+### [Request-YubikeyOTPChallange](Request-YubikeyOTPChallange.md)
+Send Challaenge to Yubikey
 
 ### [Reset-YubikeyOATH](Reset-YubikeyOATH.md)
 Reset the entire Yubikey OATH application.
@@ -99,10 +108,7 @@ Reset the entire Yubikey OATH application.
 Resets the PIV part of your Yubikey
 
 ### [Set-Yubikey](Set-Yubikey.md)
-{{ Fill in the Synopsis }}
-
-### [Set-YubikeyOATHAccount](Set-YubikeyOATHAccount.md)
-Update OATH account
+Allows basic Yubikey configuration.
 
 ### [Set-YubikeyOTP](Set-YubikeyOTP.md)
 Configure OTP slots
@@ -115,4 +121,7 @@ Switch places for the configuration of the Yubikey OTP
 
 ### [Unlock-Yubikey](Unlock-Yubikey.md)
 Unlocks the configuration lock on the Yubikey
+
+### [Unprotect-YubikeyOATH](Unprotect-YubikeyOATH.md)
+{{ Fill in the Synopsis }}
 

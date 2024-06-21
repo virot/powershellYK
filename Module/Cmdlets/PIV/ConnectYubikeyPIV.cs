@@ -17,7 +17,7 @@ namespace powershellYK.Cmdlets.PIV
 
     public class ConnectYubikeyPIVCommand : Cmdlet
     {
-        [TransformPivManagementKey()]
+        [TransformHexInput()]
         [ValidatePIVManagementKey()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ManagementKey", ParameterSetName = "PIN&Management")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ManagementKey", ParameterSetName = "Management")]

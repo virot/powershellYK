@@ -12,7 +12,7 @@ Displays TOTP / HOTP codes for Yubikey OATH credentials
 
 ## SYNTAX
 
-### All
+### All (Default)
 ```
 Request-YubikeyOATHCode [-All] [<CommonParameters>]
 ```
@@ -29,7 +29,7 @@ Displays TOTP / HOTP codes for Yubikey OATH credentials
 
 ### Example 1
 ```powershell
-PS C:\> request-YubikeyOATHCode -All
+PS C:\> Request-YubikeyOATHCode
 
                                  Value  validFrom           validUntil
               Name

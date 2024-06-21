@@ -12,16 +12,16 @@ Created a TOTP or HOTP account
 
 ## SYNTAX
 
+### TOTP (Default)
+```
+New-YubikeyOATHAccount [-TOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
+ -Secret <String> -Period <CredentialPeriod> [-Digits <Int32>] [<CommonParameters>]
+```
+
 ### HOTP
 ```
 New-YubikeyOATHAccount [-HOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
  -Secret <String> [-Digits <Int32>] [-Counter] [<CommonParameters>]
-```
-
-### TOTP
-```
-New-YubikeyOATHAccount [-TOTP] -Issuer <String> -Accountname <String> [-Algorithm <HashAlgorithm>]
- -Secret <String> -Period <CredentialPeriod> [-Digits <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION

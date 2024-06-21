@@ -16,8 +16,8 @@ namespace powershellYK.Cmdlets.Other
             Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
             if (loadedAssemblies is not null)
             {
-                Assembly? yubicoAssembly = loadedAssemblies.Where(assembly => assembly.GetName().Name.Equals("Yubico.YubiKey", StringComparison.OrdinalIgnoreCase)).FirstOrDefault(); // Use FirstOrDefault to get the first matching assembly or null if not found.
-                Assembly? automationAssembly = loadedAssemblies.Where(assembly => assembly.GetName().Name.Equals("System.Management.Automation", StringComparison.OrdinalIgnoreCase)).FirstOrDefault(); // Use FirstOrDefault to get the first matching assembly or null if not found.
+                Assembly? yubicoAssembly = loadedAssemblies.Where(assembly => assembly.GetName().Name!.Equals("Yubico.YubiKey", StringComparison.OrdinalIgnoreCase)).FirstOrDefault(); // Use FirstOrDefault to get the first matching assembly or null if not found.
+                Assembly? automationAssembly = loadedAssemblies.Where(assembly => assembly.GetName().Name!.Equals("System.Management.Automation", StringComparison.OrdinalIgnoreCase)).FirstOrDefault(); // Use FirstOrDefault to get the first matching assembly or null if not found.
 
                 WriteObject(new powershellYKInfo(
                     yubicoAssembly is not null ? yubicoAssembly.GetName().Version : null,

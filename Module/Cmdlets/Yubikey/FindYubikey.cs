@@ -32,6 +32,10 @@ namespace powershellYK.Cmdlets.Yubikey
             if (yubiKeys.ToArray().Length == 0)
             {
                 WriteWarning("No yubikeys found, Yubikeys with ONLY FIDO interfaces enabled requires Administrator permissions in Windows");
+                if (Serialnumber is not null)
+                {
+                    throw new Exception("No yubikeys found with the specified serialnumber");
+                }
             }
         }
     }

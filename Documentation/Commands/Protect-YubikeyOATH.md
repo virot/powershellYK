@@ -1,42 +1,41 @@
-﻿---
+---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Unlock-Yubikey
+# Protect-YubikeyOATH
 
 ## SYNOPSIS
-Unlocks the configuration lock on the Yubikey
+Set / update password
 
 ## SYNTAX
 
 ```
-Unlock-Yubikey -LockCode <Byte[]> [<CommonParameters>]
+Protect-YubikeyOATH -UpdatePassword <SecureString> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Allow the Yubikey to be configured once more.
+Set / update the password for the Yubikey OATH application.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> $Lockcode = [byte[]](1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
-PS C:\> Unlock-Yubikey -LockCode $Lockcode
-WARNING: Please remove and reinsert Yubikey
+PS C:\> Protect-YubikeyOATH
+UpdatePassword: ********
 ```
 
-Removes the configuration lock on the Yubikey
+Secures the OATH application
 
 ## PARAMETERS
 
-### -LockCode
-LockCode for Yubikey
+### -UpdatePassword
+Password
 
 ```yaml
-Type: Byte[]
+Type: SecureString
 Parameter Sets: (All)
 Aliases:
 

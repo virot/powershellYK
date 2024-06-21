@@ -46,12 +46,12 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ParameterSetName = "ChangePUK", ValueFromPipeline = false, HelpMessage = "New PUK")]
         public SecureString NewPUK { get; set; } = new SecureString();
 
-        [TransformPivManagementKey()]
+        [TransformHexInput()]
         [ValidatePIVManagementKey()]
         [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "Current ManagementKey")]
         public PSObject ManagementKey { get; set; } = new PSObject();
 
-        [TransformPivManagementKey()]
+        [TransformHexInput()]
         [ValidatePIVManagementKey()]
         [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "New ManagementKey")]
         public PSObject NewManagementKey { get; set; } = new PSObject();

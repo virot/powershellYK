@@ -13,14 +13,10 @@ using System.Net.Security;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsCommon.Set, "YubikeyOATH", DefaultParameterSetName = "Change password")]
+    [Cmdlet(VerbsSecurity.Protect, "YubikeyOATH")]
 
     public class SetYubikeyOATH2Command : PSCmdlet
     {
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Simplify setting password", ParameterSetName = "Change password")]
-        public SwitchParameter SetPassword;
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Remove password requirement", ParameterSetName = "Clear password")]
-        public SwitchParameter ClearPassword;
         [ValidateYubikeyPassword(1, 255)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Password", ParameterSetName = "Change password")]
         public SecureString UpdatePassword = new SecureString();
@@ -43,22 +39,11 @@ namespace powershellYK.Cmdlets.OATH
             {
                 oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                switch (ParameterSetName)
-                {
-                    case "Change password":
-                        oathSession.VerifyPassword();
-                        YubiKeyModule._OATHPasswordNew = UpdatePassword;
-                        oathSession.SetPassword();
-                        YubiKeyModule._OATHPassword = UpdatePassword;
-                        YubiKeyModule._OATHPasswordNew = null;
-                        break;
-                    case "Clear password":
-                        oathSession.UnsetPassword();
-                        YubiKeyModule._OATHPassword = null;
-                        break;
-                    default:
-                        break;
-                }
+                oathSession.VerifyPassword();
+                YubiKeyModule._OATHPasswordNew = UpdatePassword;
+                oathSession.SetPassword();
+                YubiKeyModule._OATHPassword = UpdatePassword;
+                YubiKeyModule._OATHPasswordNew = null;
             }
         }
     }

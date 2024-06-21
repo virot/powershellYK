@@ -13,14 +13,7 @@ namespace powershellYK.support.validators
             {
                 return;
             }
-            else if ((((PSObject)arguments).BaseObject is int) || (((PSObject)arguments).BaseObject is byte))
-            {
-                if ((int)((PSObject)arguments).BaseObject == 1 || (int)((PSObject)arguments).BaseObject == 2)
-                {
-                    return;
-                }
-            }
-            throw new Exception("Invalid Slot");
+            throw new ArgumentException("Invalid formated slot");
         }
     }
 }

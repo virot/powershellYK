@@ -10,7 +10,7 @@ using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsCommon.New, "YubikeyOATHAccount")]
+    [Cmdlet(VerbsCommon.New, "YubikeyOATHAccount", DefaultParameterSetName = "TOTP")]
 
     public class NewYubikeyOATH2AccountCommand : PSCmdlet
     {

@@ -1,4 +1,4 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
@@ -8,7 +8,7 @@ schema: 2.0.0
 # Set-Yubikey
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Allows basic Yubikey configuration.
 
 ## SYNTAX
 
@@ -45,16 +45,17 @@ Set-Yubikey -AutoEjectTimeout <UInt16> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Allows configuration of USB / NFC capabilities and touch eject flag.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Set-Yubikey -UsbCapabilities All
+WARNING: Yubikey will reboot, diconnecting powershellYK.
 ```
 
-{{ Add example description here }}
+Enabled all applications over USB
 
 ## PARAMETERS
 

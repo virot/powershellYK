@@ -54,6 +54,6 @@
   </ItemGroup>
   
   <Target Name="UpdateVersionInTextFile" BeforeTargets="AfterBuild">
-    <Exec Command="pwsh -WorkingDirectory $(OutDir) -Command &quot;Update-ModuleManifest -Path &quot;powershellYK.psd1&quot; -ModuleVersion $(AssemblyVersion)&quot;" />
+    <Exec Command="pwsh -Command &quot;Update-Metadata -Path $(OutDir)powershellYK.psd1 -PropertyName ModuleVersion -Value $(AssemblyVersion)&quot;" />
   </Target>
 </Project>

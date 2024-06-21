@@ -10,11 +10,11 @@ namespace powershellYK.support.transform
         {
             if (inputData is string)
             {
-                if ((string)inputData == "1" || (string)inputData == "ShortPress" || (string)inputData == "Short" || (string)inputData == "[Yubico.YubiKey.Otp.Slot]::ShortPress")
+                if ((string)inputData == "1" || String.Equals((string)inputData, "ShortPress", StringComparison.OrdinalIgnoreCase) || String.Equals((string)inputData, "Short", StringComparison.OrdinalIgnoreCase) || (string)inputData == "[Yubico.YubiKey.Otp.Slot]::ShortPress")
                 {
                     return Yubico.YubiKey.Otp.Slot.ShortPress;
                 }
-                else if ((string)inputData == "2" || (string)inputData == "LongPress" || (string)inputData == "Long" || (string)inputData == "[Yubico.YubiKey.Otp.Slot]::LongPress")
+                else if ((string)inputData == "2" || String.Equals((string)inputData, "LongPress", StringComparison.OrdinalIgnoreCase) || String.Equals((string)inputData, "Long", StringComparison.OrdinalIgnoreCase) || (string)inputData == "[Yubico.YubiKey.Otp.Slot]::LongPress")
                 {
                     return Yubico.YubiKey.Otp.Slot.LongPress;
                 }
@@ -30,11 +30,7 @@ namespace powershellYK.support.transform
                     return Yubico.YubiKey.Otp.Slot.LongPress;
                 }
             }
-            else if (inputData is Slot)
-            {
-                return inputData;
-            }
-            throw new ArgumentException($"Unable to parse slot for input data");
+            return inputData;
         }
     }
 }
