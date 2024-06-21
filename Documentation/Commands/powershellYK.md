@@ -44,6 +44,9 @@ Export certificate from Yubikey PIV
 ### [Find-Yubikey](Find-Yubikey.md)
 Lists all Yubikeys on system
 
+### [Get-powershellYKInfo](Get-powershellYKInfo.md)
+Get module internal information.
+
 ### [Get-Yubikey](Get-Yubikey.md)
 Returns the connected Yubikey
 
@@ -111,5 +114,5 @@ Allows the updating of PIV settings
 Switch places for the configuration of the Yubikey OTP
 
 ### [Unlock-Yubikey](Unlock-Yubikey.md)
-{{ Fill in the Synopsis }}
+Unlocks the configuration lock on the Yubikey
 

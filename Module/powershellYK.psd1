@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = '.\module\powershellYK.dll'
+RootModule = 'powershellYK.dll'
 
 # Version number of this module.
 ModuleVersion = '0.0.12.1'
@@ -48,7 +48,7 @@ PowerShellVersion = '7.0'
 # ClrVersion = ''
 
 # Processor architecture (None, X86, Amd64) required by this module
-ProcessorArchitecture = 'None'
+# ProcessorArchitecture = 'None'
 
 # Modules that must be imported into the global environment prior to importing this module
 # RequiredModules = @()
@@ -63,7 +63,7 @@ ProcessorArchitecture = 'None'
 # TypesToProcess = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
-FormatsToProcess = @('powershellYK.format.ps1xml')
+# FormatsToProcess = @('powershellYK.format.ps1xml')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 # NestedModules = @('.\module\powershellYK_loader.dll')

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
+    <AssemblyVersion>0.0.13.1</AssemblyVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -47,9 +48,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  
   <ItemGroup>
     <Folder Include="Cmdlets\GPG\" />
   </ItemGroup>
   
+  <Target Name="UpdateVersionInTextFile" BeforeTargets="AfterBuild">
+    <Exec Command="pwsh -WorkingDirectory $(OutDir) -Command &quot;Update-ModuleManifest -Path &quot;powershellYK.psd1&quot; -ModuleVersion $(AssemblyVersion)&quot;" />
+  </Target>
 </Project>
