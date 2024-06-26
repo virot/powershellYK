@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 using System.Security;
 using powershellYK.support;
 using System;
+using System.Reflection;
+using System.Reflection.Metadata;
 
 namespace powershellYK
 {
@@ -31,19 +33,15 @@ namespace powershellYK
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                /*string DYLD_LIBRARY_PATH = (System.Environment.GetEnvironmentVariable("DYLD_LIBRARY_PATH") is not null) ? System.Environment.GetEnvironmentVariable("DYLD_LIBRARY_PATH")! : "" ;
-                DYLD_LIBRARY_PATH += ";./runtimes/osx/native";
+                nint handle;
                 if (RuntimeInformation.OSArchitecture == Architecture.Arm64)
                 {
-                    DYLD_LIBRARY_PATH += ";./runtimes/osx-arm64/native";
+                    NativeLibrary.TryLoad(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/runtimes/osx-arm64/native/libYubico.NativeShims.dylib", out handle);
                 }
                 else
                 {
-                    DYLD_LIBRARY_PATH += ";./runtimes/osx-x64/native";
+                    NativeLibrary.TryLoad(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/runtimes/osx-x64/native/libYubico.NativeShims.dylib", out handle);
                 }
-                System.Environment.SetEnvironmentVariable("DYLD_LIBRARY_PATH", DYLD_LIBRARY_PATH,EnvironmentVariableTarget.Process);
-                */
-                NativeLibrary.SetDllImportResolver(typeof(YubiKeyModule).Assembly, MacOS.ResolveDllImport);
             }
         }
     }

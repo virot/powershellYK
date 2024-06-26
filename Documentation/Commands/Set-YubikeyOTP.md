@@ -26,8 +26,8 @@ Set-YubikeyOTP -Slot <PSObject> [-StaticPassword] -Password <SecureString> [-Key
 
 ### Static Generated Password
 ```
-Set-YubikeyOTP -Slot <PSObject> [-StaticPassword] -PasswordLength <Int32> [-KeyboardLayout <KeyboardLayout>]
- [-AppendCarriageReturn] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-YubikeyOTP -Slot <PSObject> [-StaticGeneratedPassword] -PasswordLength <Int32>
+ [-KeyboardLayout <KeyboardLayout>] [-AppendCarriageReturn] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ChallengeResponse
@@ -244,12 +244,27 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -StaticGeneratedPassword
+Allows configuration with all defaults
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Static Generated Password
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -StaticPassword
 Allows configuration with all defaults
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Static Password, Static Generated Password
+Parameter Sets: Static Password
 Aliases:
 
 Required: False
