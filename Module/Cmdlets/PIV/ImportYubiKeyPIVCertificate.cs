@@ -9,6 +9,7 @@ using powershellYK.support;
 using System.Linq.Expressions;
 using Yubico.YubiKey.Sample.PivSampleCode;
 using powershellYK.support.transform;
+using powershellYK.support.validators;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -18,6 +19,7 @@ namespace powershellYK.Cmdlets.PIV
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [TransformPivSlot()]
+        [ValidateX509Certificate2_string()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slotnumber")]
         public byte Slot { get; set; }
 

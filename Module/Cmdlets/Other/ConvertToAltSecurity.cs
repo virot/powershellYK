@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using powershellYK.support;
 using powershellYK.support.transform;
+using powershellYK.support.validators;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Sample.PivSampleCode;
@@ -17,6 +18,7 @@ namespace powershellYK.Cmdlets.Other
     public class ConvertToConvertToAltSecurityCommand : Cmdlet
     {
         [TransformCertificatePath_Certificate()]
+        [ValidateX509Certificate2_string()]
         [Parameter(Mandatory = true, ValueFromPipeline = true, Position = 0, HelpMessage = "Certificate to extract info from")]
         public PSObject? Certificate { get; set; }
         private X509Certificate2? _certificate = null;

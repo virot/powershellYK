@@ -1,4 +1,5 @@
 ﻿using powershellYK.support.transform;
+using powershellYK.support.validators;
 using System.Management.Automation;           // Windows PowerShell namespace.
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -17,11 +18,13 @@ namespace powershellYK.Cmdlets.Other
         public PSObject? CertificateRequest { get; set; }
 
         [TransformCertificatePath_Certificate()]
+        [ValidateX509Certificate2_string()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "AttestionCertificate", ParameterSetName = "requestWithExternalAttestion")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "AttestionCertificate", ParameterSetName = "JustAttestCertificate")]
         public PSObject? AttestionCertificate { get; set; }
 
         [TransformCertificatePath_Certificate()]
+        [ValidateX509Certificate2_string()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "AttestionCertificate", ParameterSetName = "requestWithExternalAttestion")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "IntermediateCertificate", ParameterSetName = "JustAttestCertificate")]
         public PSObject? IntermediateCertificate { get; set; }
