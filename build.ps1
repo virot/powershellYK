@@ -28,7 +28,7 @@ Update-Metadata -Path "$($Directory.fullname)\powershellYK.psd1" -PropertyName M
 Import-Module "$($Directory.fullname)\powershellYK.psd1"
 
 $parameters = @{	
-    Path = '.\Documentation\Commands'
+    Path = '.\Docs\Commands'
     RefreshModulePage = $true
     AlphabeticParamsOrder = $true
     UpdateInputOutput = $true
@@ -38,7 +38,7 @@ $parameters = @{
 }
 Update-MarkdownHelpModule @parameters
 
-New-ExternalHelp -Path '.\Documentation\Commands' -OutputPath "$($Directory.fullname)" -Force
+New-ExternalHelp -Path '.\Docs\Commands' -OutputPath "$($Directory.fullname)" -Force
 
 
 

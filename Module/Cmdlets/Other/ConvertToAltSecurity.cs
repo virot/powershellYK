@@ -1,16 +1,9 @@
-﻿using System.Diagnostics.Eventing.Reader;
-using System.Management.Automation;           // Windows PowerShell namespace.
-using System.Security.Cryptography;
+﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Text.RegularExpressions;
 using powershellYK.support;
 using powershellYK.support.transform;
 using powershellYK.support.validators;
-using Yubico.YubiKey;
-using Yubico.YubiKey.Piv;
-using Yubico.YubiKey.Sample.PivSampleCode;
-using static System.Security.Cryptography.X509Certificates.CertificateRequest;
+
 
 namespace powershellYK.Cmdlets.Other
 {

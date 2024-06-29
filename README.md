@@ -14,8 +14,4 @@ The easiest way to install the module is:
 ## [Feature difference between powershellYK and Yubikey tools](./Docs/Feature_comparison.md)
 
 ## 📖 Usage
-For usage instructions, please refer to online Cmdlets documentation [here](https://github.com/virot/powershellYK/blob/master/Documentation/Commands/powershellYK.md)
-
-
-
-
+For usage instructions, please refer to online Cmdlets documentation [here](./Docs/Commands/powershellYK.md)
