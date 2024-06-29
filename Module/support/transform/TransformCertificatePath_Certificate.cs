@@ -12,7 +12,10 @@ namespace powershellYK.support.transform
 
         public override object Transform(EngineIntrinsics engineIntrinsics, object inputData)
         {
-            
+            if (inputData is PSObject)
+            {
+                inputData = ((PSObject)inputData).BaseObject;
+            }
             if (inputData is string)
             {
                 Regex regex = new Regex(pemFormatRegex, RegexOptions.Singleline);
@@ -64,11 +67,7 @@ namespace powershellYK.support.transform
                     }
                 }
             }
-            else if (inputData is System.Security.Cryptography.X509Certificates.X509Certificate2)
-            {
-                return inputData;
-            }
-            throw new ArgumentException($"Invalid certificate / certificate path");
+            return inputData;
         }
     }
 }

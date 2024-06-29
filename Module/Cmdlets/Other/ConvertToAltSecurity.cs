@@ -1,15 +1,9 @@
-﻿using System.Diagnostics.Eventing.Reader;
-using System.Management.Automation;           // Windows PowerShell namespace.
-using System.Security.Cryptography;
+﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Text.RegularExpressions;
 using powershellYK.support;
 using powershellYK.support.transform;
-using Yubico.YubiKey;
-using Yubico.YubiKey.Piv;
-using Yubico.YubiKey.Sample.PivSampleCode;
-using static System.Security.Cryptography.X509Certificates.CertificateRequest;
+using powershellYK.support.validators;
+
 
 namespace powershellYK.Cmdlets.Other
 {
@@ -17,6 +11,7 @@ namespace powershellYK.Cmdlets.Other
     public class ConvertToConvertToAltSecurityCommand : Cmdlet
     {
         [TransformCertificatePath_Certificate()]
+        [ValidateX509Certificate2_string()]
         [Parameter(Mandatory = true, ValueFromPipeline = true, Position = 0, HelpMessage = "Certificate to extract info from")]
         public PSObject? Certificate { get; set; }
         private X509Certificate2? _certificate = null;

@@ -126,7 +126,6 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
             {
                 dataToSign = PadRsa(dataToSign, hashAlgorithm);
             }
-
             return _pivSession.Sign(_slotNumber, dataToSign);
         }
 
@@ -167,8 +166,9 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
                         InvalidAlgorithmMessage));
             }
 
+
             _ = digester.TransformFinalBlock(data, 0, data.Length);
-            Array.Copy(digester.Hash!, 0, digest, offset, digest.Length);
+            Array.Copy(digester.Hash!, 0, digest, offset, digester.Hash!.Length);
 
             return digest;
         }

@@ -64,35 +64,27 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (!keyExists || ShouldProcess($"Slot 0x{Slot.ToString("X2")}", "New"))
                 {
-                    try
+                    WriteDebug("ProcessRecord in New-YubikeyPIVKey");
+                    PivPublicKey publicKey = pivSession.GenerateKeyPair(Slot, Algorithm, PinPolicy, TouchPolicy);
+                    if (publicKey is not null)
                     {
-                        WriteDebug("ProcessRecord in New-YubikeyPIVKey");
-                        PivPublicKey publicKey = pivSession.GenerateKeyPair(Slot, Algorithm, PinPolicy, TouchPolicy);
-                        if (publicKey is not null)
+                        if (PassThru.IsPresent)
                         {
-                            if (PassThru.IsPresent)
+                            using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
+                            if (publicKey is PivRsaPublicKey)
                             {
-                                using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
-                                if (publicKey is PivRsaPublicKey)
-                                {
-                                    WriteObject((RSA)dotNetPublicKey);
-                                }
-                                else
-                                {
-                                    WriteObject((ECDsa)dotNetPublicKey);
-                                }
+                                WriteObject((RSA)dotNetPublicKey);
+                            }
+                            else
+                            {
+                                WriteObject((ECDsa)dotNetPublicKey);
                             }
                         }
-                        else
-                        {
-                            throw new Exception("Could not create keypair");
-                        }
                     }
-                    catch (Exception e)
+                    else
                     {
-                        throw new Exception("Could not create keypair", e);
+                        throw new Exception("Could not create keypair");
                     }
-
                 }
             }
         }
