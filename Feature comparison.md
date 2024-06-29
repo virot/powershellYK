@@ -50,8 +50,8 @@
 ### PIV
 | Feature | powershellYK | ykman GUI | ykman CLI | yubico-piv-tool |
 | --- | --- | --- | --- | --- |
-| Generate CSR with Attestation | $${\color{green}dasdas}$$| $${\color{red}No}$$ | $${\color{red}No}$$ | $${\color{green}Yes}$$ |
-| Generate Attestation cert | $${\color{green}Yes}$$ | $${\color{red}No}$$ | $${\color{green}Yes}$$ | $${\color{green}Yes}$$ |
+| Generate CSR with Attestation | $${\color{green}New-YubikeyPIVCSR}$$| $${\color{red}No}$$ | $${\color{red}No}$$ | $${\color{green}Yes}$$ |
+| Generate Attestation cert | $${\color{green}Assert-YubikeyPIV}$$ | $${\color{red}No}$$ | $${\color{green}Yes}$$ | $${\color{green}Yes}$$ |
 | Sign certificate request | $${\color{green}Build\-YubikeyPIVSignedCertificate}$$ | $${\color{red}No}$$ | $${\color{red}No}$$ | $${\color{red}No}$$ |
 | Delete keys in slot | $${\color{red}No}$$ | $${\color{green}Yes}$$ | $${\color{green}Yes}$$ | $${\color{green}Yes}$$ |
 
