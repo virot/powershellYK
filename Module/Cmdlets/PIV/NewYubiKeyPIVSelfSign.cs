@@ -53,6 +53,7 @@ namespace powershellYK.Cmdlets.PIV
                 CertificateRequest request;
                 X509SignatureGenerator signer;
                 X500DistinguishedName dn;
+                X509SubjectKeyIdentifierExtension certificateSKI;
 
                 PivPublicKey? publicKey = null;
                 try
@@ -92,6 +93,10 @@ namespace powershellYK.Cmdlets.PIV
                 request.CertificateExtensions.Add(x509BasicConstraintsExtension);
                 request.CertificateExtensions.Add(x509KeyUsageExtension);
 
+                // Add SKI
+                certificateSKI = new X509SubjectKeyIdentifierExtension(new PublicKey(dotNetPublicKey), true);
+                request.CertificateExtensions.Add(certificateSKI);
+
                 DateTimeOffset notBefore = DateTimeOffset.Now;
                 DateTimeOffset notAfter = notBefore.AddYears(10);
                 byte[] serialNumber = new byte[] { 0x01 };
@@ -122,6 +127,7 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (!certExists || ShouldProcess($"Certificate in slot 0x{Slot.ToString("X2")}", "New"))
                 {
+                    WriteDebug($"Importing created certificate into Yubikey slot {Slot.ToString("X2")}");
                     pivSession.ImportCertificate(Slot, selfCert);
                 }
                 WriteDebug("ProcessRecord in New-YubikeyPIVSelfSign");
