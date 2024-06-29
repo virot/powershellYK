@@ -19,11 +19,11 @@ namespace powershellYK.Cmdlets.PIV
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [TransformPivSlot()]
-        [ValidateX509Certificate2_string()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slotnumber")]
         public byte Slot { get; set; }
 
         [TransformCertificatePath_Certificate()]
+        [ValidateX509Certificate2_string()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Certificate to be stored", ParameterSetName = "CertificateOnly")]
         public object? Certificate { get; set; } = null;
 
@@ -113,16 +113,10 @@ namespace powershellYK.Cmdlets.PIV
                             }
                         }
 
-                        try
-                        {
-                            pivSession.ImportCertificate(Slot, _certificate);
-                            WriteDebug("Upload complete");
-                        }
-                        catch (Exception e)
-                        {
-                            throw new Exception("Failed to import certificate", e);
-                        }
+                        pivSession.ImportCertificate(Slot, _certificate);
+                        WriteDebug("Upload complete");
                         break;
+
                     case "KeyOnly":
                         break;
 

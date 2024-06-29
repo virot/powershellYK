@@ -17,6 +17,9 @@ Create attestation certificate
 ### [Block-YubikeyPIV](Block-YubikeyPIV.md)
 Block out PIN or PUK codes
 
+### [Build-YubikeyPIVSignedCertificate](Build-YubikeyPIVSignedCertificate.md)
+Sign a certificate request with a Yubikey
+
 ### [Confirm-YubikeyAttestion](Confirm-YubikeyAttestion.md)
 Confirm Yubikey Attestion
 
@@ -65,7 +68,7 @@ Yubikey OTP Information
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
 Gets information about the PIV module and specific slots.
 
-### [Import-YubikeyPIVCertificate](Import-YubikeyPIVCertificate.md)
+### [Import-YubikeyPIV](Import-YubikeyPIV.md)
 Import certificate
 
 ### [Lock-Yubikey](Lock-Yubikey.md)

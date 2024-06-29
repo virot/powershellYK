@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Import-YubikeyPIVCertificate
+# Import-YubikeyPIV
 
 ## SYNOPSIS
 Import certificate
@@ -13,7 +13,7 @@ Import certificate
 ## SYNTAX
 
 ```
-Import-YubikeyPIVCertificate -Slot <Byte> -Certificate <Object> [<CommonParameters>]
+Import-YubikeyPIV -Slot <Byte> -Certificate <Object> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,7 +23,7 @@ Imports a certicate into the Yubikey
 
 ### Example 1
 ```powershell
-PS C:\> Import-YubikeyPIVCertificate -Slot 0x9a -Path certificate.cer
+PS C:\> Import-YubikeyPIV -Slot 0x9a -Path certificate.cer
 ```
 
 Import certificate.cer into the certificate slot 0x9a

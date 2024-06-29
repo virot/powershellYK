@@ -94,7 +94,7 @@ namespace powershellYK.Cmdlets.PIV
                 request.CertificateExtensions.Add(x509KeyUsageExtension);
 
                 // Add SKI
-                certificateSKI = new X509SubjectKeyIdentifierExtension(new PublicKey(dotNetPublicKey), true);
+                certificateSKI = new X509SubjectKeyIdentifierExtension(new PublicKey(dotNetPublicKey), false);
                 request.CertificateExtensions.Add(certificateSKI);
 
                 DateTimeOffset notBefore = DateTimeOffset.Now;
