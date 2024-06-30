@@ -12,8 +12,27 @@ Import certificate
 
 ## SYNTAX
 
+### CertificateOnly
 ```
-Import-YubikeyPIV -Slot <Byte> -Certificate <Object> [<CommonParameters>]
+Import-YubikeyPIV -Slot <Byte> -Certificate <Object> [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### CertificateAndKey
+```
+Import-YubikeyPIV -Slot <Byte> -Certificate <Object> -PrivateKeyPath <String> [-Password <SecureString>]
+ [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### P12
+```
+Import-YubikeyPIV -Slot <Byte> -P12Path <String> [-Password <SecureString>] [-PinPolicy <PivPinPolicy>]
+ [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### Privatekey
+```
+Import-YubikeyPIV -Slot <Byte> -PrivateKeyPath <String> [-Password <SecureString>] [-PinPolicy <PivPinPolicy>]
+ [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,7 +42,14 @@ Imports a certicate into the Yubikey
 
 ### Example 1
 ```powershell
-PS C:\> Import-YubikeyPIV -Slot 0x9a -Path certificate.cer
+PS C:\> Import-YubikeyPIV -Slot 0x9a -Certificate certificate.cer
+```
+
+Import certificate.cer into the certificate slot 0x9a
+
+### Example 2
+```powershell
+PS C:\> Import-YubikeyPIV -Slot "Digital Signature" -PrivateKeyPath .\ecc_384.pem -Password (Read-Host -AsSecureString "Password")
 ```
 
 Import certificate.cer into the certificate slot 0x9a
@@ -35,7 +61,68 @@ Certificate to be stored
 
 ```yaml
 Type: Object
-Parameter Sets: (All)
+Parameter Sets: CertificateOnly, CertificateAndKey
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -P12Path
+P12 file to be stored
+
+```yaml
+Type: String
+Parameter Sets: P12
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Password
+Private key password
+
+```yaml
+Type: SecureString
+Parameter Sets: CertificateAndKey, P12, Privatekey
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PinPolicy
+PinPolicy
+
+```yaml
+Type: PivPinPolicy
+Parameter Sets: CertificateAndKey, P12, Privatekey
+Aliases:
+Accepted values: Default, Never, None, Once
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PrivateKeyPath
+Private key to be stored
+
+```yaml
+Type: String
+Parameter Sets: CertificateAndKey, Privatekey
 Aliases:
 
 Required: True
@@ -54,6 +141,52 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -TouchPolicy
+TouchPolicy
+
+```yaml
+Type: PivTouchPolicy
+Parameter Sets: CertificateAndKey, P12, Privatekey
+Aliases:
+Accepted values: Default, Never, Always, Cached
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Confirm
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WhatIf
+Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
