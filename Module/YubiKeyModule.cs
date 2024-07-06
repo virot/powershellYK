@@ -19,6 +19,23 @@ namespace powershellYK
         public static SecureString? _OATHPassword;
         public static SecureString? _OATHPasswordNew;
         public static byte[] _pivManagementKey = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
+
+        public static bool ConnectYubikey()
+        {
+            if (YubiKeyModule._yubikey is null)
+            {
+                try
+                {
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    myPowersShellInstance.Invoke();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message, e);
+                }
+            }
+            return true;
+        }
     }
     public class MyModuleAssemblyInitializer: IModuleAssemblyInitializer
     {
@@ -56,7 +73,5 @@ namespace powershellYK
             }
         }
     }
-
-   
 
 }

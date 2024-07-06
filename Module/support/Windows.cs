@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 
 namespace powershellYK.support
 {
@@ -40,6 +41,19 @@ namespace powershellYK.support
                 int errorCode = Marshal.GetLastWin32Error();
             }
             */
+        }
+        public static bool IsRunningAsAdministrator()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                WindowsIdentity identity = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new WindowsPrincipal(identity);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 
