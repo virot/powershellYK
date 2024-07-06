@@ -1,11 +1,11 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Build-YubikeyPIVSignedCertificate
+# Build-YubikeyPIVSignCertificate
 
 ## SYNOPSIS
 Sign a certificate request with a Yubikey
@@ -13,10 +13,10 @@ Sign a certificate request with a Yubikey
 ## SYNTAX
 
 ```
-Build-YubikeyPIVSignedCertificate -CertificateRequest <PSObject> -Slot <Byte>
+Build-YubikeyPIVSignCertificate -CertificateRequest <PSObject> -Slot <Byte>
  [-HashAlgorithm <HashAlgorithmName>] [-OutFile <String>] [-PEMEncoded] [-Subjectname <String>]
  [-NotBefore <DateTimeOffset>] [-NotAfter <DateTimeOffset>] [-SerialNumber <Byte[]>] [-CertificateAuthority]
- [-SubjectAltName <String[]>] [<CommonParameters>]
+ [-SubjectAltName <String[]>] [-KeyUsage <X509KeyUsageFlags>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -26,7 +26,7 @@ Allows the signing of a certificate request with a Yubikey. The certificate requ
 
 ### Example 1
 ```powershell
-PS C:\> Build-YubikeyPIVSignedCertificate -CertificateRequest "C:\temp\input.csr" -Slot 0x9d -Subjectname "CN=Signed site" -SubjectAltName ("DNS siteurl","DNS second.url") -OutFile "C:\temp\server.cer"
+PS C:\> Build-YubikeyPIVSignCertificate -CertificateRequest "C:\temp\input.csr" -Slot 0x9d -Subjectname "CN=Signed site" -SubjectAltName ("DNS siteurl","DNS second.url") -OutFile "C:\temp\server.cer"
 ```
 
 Sign a certificate request with a new Subhectname and alternative names.
@@ -72,6 +72,22 @@ Type: HashAlgorithmName
 Parameter Sets: (All)
 Aliases:
 Accepted values: SHA1, SHA256, SHA384, SHA512
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -KeyUsage
+Key usage options to include
+
+```yaml
+Type: X509KeyUsageFlags
+Parameter Sets: (All)
+Aliases:
+Accepted values: None, EncipherOnly, CrlSign, KeyCertSign, KeyAgreement, DataEncipherment, KeyEncipherment, NonRepudiation, DigitalSignature, DecipherOnly
 
 Required: False
 Position: Named

@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# New-YubikeyPIVCSR
+# Build-YubiKeyPIVCertificateSigningRequest
 
 ## SYNOPSIS
 Creates a CSR for a slot in the Yubikey
@@ -13,8 +13,8 @@ Creates a CSR for a slot in the Yubikey
 ## SYNTAX
 
 ```
-New-YubikeyPIVCSR -Slot <Byte> [-Attestation] [-Subjectname <String>] [-OutFile <String>]
- [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded] [<CommonParameters>]
+Build-YubiKeyPIVCertificateSigningRequest -Slot <Byte> [-Attestation] [-Subjectname <String>]
+ [-OutFile <String>] [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,21 +24,21 @@ Cmdlet that allows the creating of CSR to send to a CA. This allows the configur
 
 ### Example 1
 ```powershell
-PS C:\> $CSR = New-YubikeyPIVCSR -Slot 0x9a -Subjectname 'CN=User,O=Company,C=SE'
+PS C:\> $CSR = Build-YubiKeyPIVCertificateSigningRequest -Slot 0x9a -Subjectname 'CN=User,O=Company,C=SE'
 ```
 
 Would create a CSR with the Subjectname "CN=User,O=Company,C=SE" and store it in the variable $CSR.
 
 ### Example 2
 ```powershell
-PS C:\> New-YubikeyPIVCSR -Slot 0x9a -OutFile "$($env:TEMP)\certificate_request.req"
+PS C:\> Build-YubiKeyPIVCertificateSigningRequest -Slot 0x9a -OutFile "$($env:TEMP)\certificate_request.req"
 ```
 
 Would create a CSR with the default Subjectname and store it as certificate_request.req in the temp folder.
 
 ### Example 3
 ```powershell
-PS C:\> $CSR = New-YubikeyPIVCSR -Slot 0x9a -Attestation
+PS C:\> $CSR = Build-YubiKeyPIVCertificateSigningRequest -Slot 0x9a -Attestation -PEMEncoded
 ```
 
 Would create a CSR with attestation included and store it in the variable $CSR

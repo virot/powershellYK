@@ -100,15 +100,16 @@ CmdletsToExport = @(
  'Set-YubikeyOTP',
  'Assert-YubikeyPIV',
  'Block-YubikeyPIV',
- 'Build-YubikeyPIVSignedCertificate',
+ 'Build-YubiKeyPIVCertificateSigningRequest',
+ 'Build-YubikeyPIVSignCertificate',
  'Connect-YubikeyPIV',
  'Export-YubikeyPIVCertificate',
  'Get-YubikeyPIV',
  'Import-YubikeyPIV',
- 'New-YubikeyPIVCSR',
  'New-YubikeyPIVKey',
  'New-YubikeyPIVSelfSign',
  'Reset-YubikeyPIV',
+ 'Unblock-YubikeyPIV',
  'Set-YubikeyPIV',
  'Confirm-YubikeyAttestion',
  'ConvertTo-AltSecurity',
@@ -119,7 +120,7 @@ CmdletsToExport = @(
 VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = @()
+AliasesToExport = @('New-YubikeyPIVCSR')
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()
