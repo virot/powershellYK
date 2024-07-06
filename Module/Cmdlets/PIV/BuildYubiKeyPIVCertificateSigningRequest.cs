@@ -12,8 +12,9 @@ using powershellYK.support.transform;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommon.New, "YubikeyPIVCSR")]
-    public class NewYubiKeyPIVCSRCommand : Cmdlet
+    [Alias("New-YubikeyPIVCSR")]
+    [Cmdlet(VerbsLifecycle.Build, "YubiKeyPIVCertificateSigningRequest")]
+    public class BuildYubiKeyPIVCertificateSigningRequestCmdlet : Cmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [TransformPivSlot()]

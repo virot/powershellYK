@@ -17,7 +17,10 @@ Create attestation certificate
 ### [Block-YubikeyPIV](Block-YubikeyPIV.md)
 Block out PIN or PUK codes
 
-### [Build-YubikeyPIVSignedCertificate](Build-YubikeyPIVSignedCertificate.md)
+### [Build-YubiKeyPIVCertificateSigningRequest](Build-YubiKeyPIVCertificateSigningRequest.md)
+Creates a CSR for a slot in the Yubikey
+
+### [Build-YubikeyPIVSignCertificate](Build-YubikeyPIVSignCertificate.md)
 Sign a certificate request with a Yubikey
 
 ### [Confirm-YubikeyAttestion](Confirm-YubikeyAttestion.md)
@@ -77,9 +80,6 @@ Lock the Yubikey configuration
 ### [New-YubikeyOATHAccount](New-YubikeyOATHAccount.md)
 Created a TOTP or HOTP account
 
-### [New-YubikeyPIVCSR](New-YubikeyPIVCSR.md)
-Creates a CSR for a slot in the Yubikey
-
 ### [New-YubikeyPIVKey](New-YubikeyPIVKey.md)
 Create a new private key
 
@@ -121,6 +121,9 @@ Allows the updating of PIV settings
 
 ### [Switch-YubikeyOTP](Switch-YubikeyOTP.md)
 Switch places for the configuration of the Yubikey OTP
+
+### [Unblock-YubikeyPIV](Unblock-YubikeyPIV.md)
+Unblock a PIN locked Yubikey PIV
 
 ### [Unlock-Yubikey](Unlock-Yubikey.md)
 Unlocks the configuration lock on the Yubikey

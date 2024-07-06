@@ -13,7 +13,7 @@ using System.Net;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsLifecycle.Build, "YubikeyPIVSignedCertificate")]
+    [Cmdlet(VerbsLifecycle.Build, "YubikeyPIVSignCertificate")]
     public class BuildYubikeySignedCertificateCommand : Cmdlet
     {
         [TransformCertificateRequest_Path()]
@@ -45,7 +45,8 @@ namespace powershellYK.Cmdlets.PIV
         public SwitchParameter CertificateAuthority { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "SubjectAlternativeNames for the certificate")]
         public string[] SubjectAltName { get; set; } = new string[] { };
-
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Key usage options to include")]
+        public X509KeyUsageFlags KeyUsage { get; set; } = X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment;
 
 
         private CertificateRequest? _request;
@@ -119,7 +120,7 @@ namespace powershellYK.Cmdlets.PIV
                 else
                 {
                     _request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, true));
-                    _request.CertificateExtensions.Add(new X509KeyUsageExtension((X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment), true));
+                    _request.CertificateExtensions.Add(new X509KeyUsageExtension(KeyUsage, true));
                     _request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection { new Oid("1.3.6.1.5.5.7.3.1"), new Oid("1.3.6.1.5.5.7.3.2"), new Oid("1.3.6.1.4.1.311.20.2.2") }, false));
                 }
 
