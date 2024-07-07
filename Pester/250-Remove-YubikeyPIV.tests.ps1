@@ -10,7 +10,7 @@ Describe "Remove-YubikeyPIV" -Tag @("Remove-YubikeyPIV","Yubikey5.7")  {
 	{Get-YubikeyPIV -Slot 0x9a} | Should -Not -Throw
     }
     It -Name "Verify removal" -Test {
-        {NRemove-YubikeyPIVKey -Slot "PIV Authentication" -Confirm:$false} | Should -Not -Throw
+        {Remove-YubikeyPIVKey -Slot "PIV Authentication" -Confirm:$false} | Should -Not -Throw
 	{Get-YubikeyPIV -Slot 0x9a} | Should -Throw
     }
 }

@@ -109,7 +109,7 @@ CmdletsToExport = @(
  'Move-YubikeyPIV',
  'New-YubikeyPIVKey',
  'New-YubikeyPIVSelfSign',
- 'Remove-YubikeyPIV',
+ 'Remove-YubikeyPIVKey',
  'Reset-YubikeyPIV',
  'Unblock-YubikeyPIV',
  'Set-YubikeyPIV',

@@ -10,8 +10,8 @@ using powershellYK.support.validators;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommon.Remove, "YubikeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
-    public class RemoveYubiKeyPIVCmdlet : Cmdlet
+    [Cmdlet(VerbsCommon.Remove, "YubikeyPIVKey", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    public class RemoveYubiKeyPIVKeyCmdlet : Cmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [TransformPivSlot()]
@@ -28,7 +28,7 @@ namespace powershellYK.Cmdlets.PIV
             {
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                if (ShouldProcess($"Key in slot {Slot}", "Remove"))
+                if (ShouldProcess($"Key in slot 0x{Slot.ToString("X2")}", "Remove"))
                 {
                     pivSession.DeleteKey(Slot);
                 }

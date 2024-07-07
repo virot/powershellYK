@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Remove-YubikeyPIV
+# Remove-YubikeyPIVKey
 
 ## SYNOPSIS
 Remove a key from a Yubikey PIV slot
@@ -13,7 +13,7 @@ Remove a key from a Yubikey PIV slot
 ## SYNTAX
 
 ```
-Remove-YubikeyPIV -Slot <Byte> [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-YubikeyPIVKey -Slot <Byte> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION

@@ -98,7 +98,7 @@ Removes an account from the Yubikey OATH application
 ### [Remove-YubikeyOTP](Remove-YubikeyOTP.md)
 Remove Yubikey OTP slot
 
-### [Remove-YubikeyPIV](Remove-YubikeyPIV.md)
+### [Remove-YubikeyPIVKey](Remove-YubikeyPIVKey.md)
 Remove a key from a Yubikey PIV slot
 
 ### [Rename-YubikeyOATHAccount](Rename-YubikeyOATHAccount.md)
