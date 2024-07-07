@@ -6,6 +6,7 @@ using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Sample.PivSampleCode;
 using powershellYK.support.transform;
 using System.Collections.ObjectModel;
+using powershellYK.support.validators;
 
 namespace powershellYK.Cmdlets.PIV
 {
@@ -14,6 +15,7 @@ namespace powershellYK.Cmdlets.PIV
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [TransformPivSlot()]
+        [ValidateYubikeyPIVSlot(DontAllowAttestion = true)]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to create a new key for")]
         public byte Slot { get; set; }
 
