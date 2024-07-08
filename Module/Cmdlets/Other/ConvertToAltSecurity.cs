@@ -55,13 +55,24 @@ namespace powershellYK.Cmdlets.Other
                 }
 
 
+                // Generate the correct Serialnumber. Needs to be in little endian format.
+                string? serialNumber;
+                try
+                {
+                    serialNumber = $"X509:<I>{_certificate.Issuer}<SR>{HexConverter.ByteArrayToString(_certificate.GetSerialNumber())}";
+                }
+                catch
+                {
+                    serialNumber = null;
+                }
+
                 AlternativeIdentites alternativeIdentites = new AlternativeIdentites
                 (
                     sshkey,
                     $"X509:<I>{_certificate.Issuer}<S>{_certificate.Subject}",
                     $"X509:<S>{_certificate.Subject}",
                     "", //alternativeIdentites.X509RFC822 = $"X509:<I>{}";
-                    $"X509:<I>{_certificate.Issuer}<SR>{_certificate.SerialNumber}",
+                    serialNumber,
                     $"X509:<SKI>{((X509SubjectKeyIdentifierExtension)stringSKI!).SubjectKeyIdentifier}",
                     $"X509:<SHA1-PUKEY>{_certificate.Thumbprint}"
                 );
