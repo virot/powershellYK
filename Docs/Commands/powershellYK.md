@@ -77,6 +77,9 @@ Import certificate
 ### [Lock-Yubikey](Lock-Yubikey.md)
 Lock the Yubikey configuration
 
+### [Move-YubikeyPIV](Move-YubikeyPIV.md)
+Move a key from one slot to another
+
 ### [New-YubikeyOATHAccount](New-YubikeyOATHAccount.md)
 Created a TOTP or HOTP account
 
@@ -94,6 +97,9 @@ Removes an account from the Yubikey OATH application
 
 ### [Remove-YubikeyOTP](Remove-YubikeyOTP.md)
 Remove Yubikey OTP slot
+
+### [Remove-YubikeyPIVKey](Remove-YubikeyPIVKey.md)
+Remove a key from a Yubikey PIV slot
 
 ### [Rename-YubikeyOATHAccount](Rename-YubikeyOATHAccount.md)
 Rename OATH account

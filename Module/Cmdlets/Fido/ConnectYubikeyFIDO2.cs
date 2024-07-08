@@ -31,8 +31,7 @@ namespace powershellYK.Cmdlets.Fido
                 }
             }
 #if WINDOWS
-            PermisionsStuff permisionsStuff = new PermisionsStuff();
-            if (PermisionsStuff.IsRunningAsAdministrator() == false)
+            if (Windows.IsRunningAsAdministrator() == false)
             {
                 throw new Exception("You need to run this command as an administrator");
             }

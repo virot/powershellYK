@@ -5,54 +5,39 @@ online version:
 schema: 2.0.0
 ---
 
-# New-YubikeyPIVKey
+# Move-YubikeyPIV
 
 ## SYNOPSIS
-Create a new private key
+Move a key from one slot to another
 
 ## SYNTAX
 
 ```
-New-YubikeyPIVKey [-Slot] <Byte> [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-PassThru]
- [-WhatIf] [-Confirm] -Algorithm <PivAlgorithm> [<CommonParameters>]
+Move-YubikeyPIV -SourceSlot <Byte> -DestinationSlot <Byte> [-MigrateCertificate] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This cmdlet will create a new key, this can be done with either RSA or ECC keys.
+This command will move a key from one slot to another. This is useful if you want to change the slot a key is in.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm EccP384
+PS C:\> Move-YubikeyPIVKey -SourceSlot "Digital Signature" -DestinationSlot "Card Authentication"
 ```
 
-Creates a new Elliptic curve P-384 key in slot 0x9a.
-
-### Example 2
-```powershell
-PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm RSA2048 -PinPolicy Never
-```
-
-Create a RSA2048 in slot 0x9a with a PIN policy of never.
-
-### Example 3
-```powershell
-PS C:\> New-YubikeyPIVKey -Slot 0x9a -Algorithm EccP384 -TouchPolicy Cached
-```
-
-Create a RSA2048 in slot 0x9a with a touch policy of cached
+That command would move the key in the Digital Signature slot to the Card Authentication slot.
 
 ## PARAMETERS
 
-### -Algorithm
-Algoritm
+### -DestinationSlot
+What slot to move a key to
 
 ```yaml
-Type: PivAlgorithm
+Type: Byte
 Parameter Sets: (All)
 Aliases:
-Accepted values: Rsa1024, Rsa2048, EccP256, EccP384
 
 Required: True
 Position: Named
@@ -61,8 +46,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -PassThru
-Returns an object that represents the item with which you're working. By default, this cmdlet doesn't generate any output.
+### -MigrateCertificate
+Move the certificate along
 
 ```yaml
 Type: SwitchParameter
@@ -76,24 +61,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -PinPolicy
-PinPolicy
-
-```yaml
-Type: PivPinPolicy
-Parameter Sets: (All)
-Aliases:
-Accepted values: Default, Never, None, Once
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Slot
-What slot to create a new key for
+### -SourceSlot
+What slot to move a key from
 
 ```yaml
 Type: Byte
@@ -101,22 +70,6 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 0
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -TouchPolicy
-TouchPolicy
-
-```yaml
-Type: PivTouchPolicy
-Parameter Sets: (All)
-Aliases:
-Accepted values: Default, Never, Always, Cached
-
-Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
