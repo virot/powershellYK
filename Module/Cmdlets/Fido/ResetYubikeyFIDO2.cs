@@ -1,24 +1,16 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
+using powershellYK.FIDO2;
 using powershellYK.support;
-using System.Data.Common;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Security;
-using Yubico.YubiKey.Piv;
-using powershellYK.support.validators;
+using Yubico.YubiKey.Fido2.Commands;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommunications.Connect, "YubikeyFIDO2")]
+    [Cmdlet(VerbsCommon.Reset, "YubikeyFIDO2")]
 
-    public class ConnectYubikeyFIDO2Command : Cmdlet
+    public class ResetYubikeyFIDO2Cmdlet : Cmdlet
     {
-        [ValidateYubikeyPIN(4, 63)]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN")]
-        public SecureString PIN { get; set; } = new SecureString();
-
         protected override void BeginProcessing()
         {
             {
@@ -30,23 +22,22 @@ namespace powershellYK.Cmdlets.Fido
                     WriteDebug($"Successfully connected");
                 }
             }
-#if WINDOWS
             if (Windows.IsRunningAsAdministrator() == false)
             {
                 throw new Exception("You need to run this command as an administrator");
             }
-#endif //WINDOWS
         }
+
         protected override void ProcessRecord()
         {
-            if (PIN is not null)
-            {
-                YubiKeyModule._fido2PIN = PIN;
-            }
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                fido2Session.VerifyPin();
+                ResetCommand resetCommand = new Yubico.YubiKey.Fido2.Commands.ResetCommand();
+                ResetResponse reply = fido2Session.Connection.SendCommand(resetCommand);
+                if (reply.Status != ResponseStatus.Success)
+                {
+                    WriteWarning($"Failed to reset FIDO2 credentials: {reply.Status}, Yubikey needs to be inserted within the last 5 seconds.");
+                }
             }
         }
     }

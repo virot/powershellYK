@@ -56,6 +56,9 @@ Get module internal information.
 ### [Get-Yubikey](Get-Yubikey.md)
 Returns the connected Yubikey
 
+### [Get-YubikeyFIDO2](Get-YubikeyFIDO2.md)
+Get FIDO2 information from Yubikey
+
 ### [Get-YubikeyFIDO2Credentials](Get-YubikeyFIDO2Credentials.md)
 Read the FIDO2 discoverable credentials
 
@@ -110,6 +113,9 @@ Displays TOTP / HOTP codes for Yubikey OATH credentials
 ### [Request-YubikeyOTPChallange](Request-YubikeyOTPChallange.md)
 Send Challaenge to Yubikey
 
+### [Reset-YubikeyFIDO2](Reset-YubikeyFIDO2.md)
+Reset a Yubikey FIDO2 device to factory settings.
+
 ### [Reset-YubikeyOATH](Reset-YubikeyOATH.md)
 Reset the entire Yubikey OATH application.
 
@@ -118,6 +124,9 @@ Resets the PIV part of your Yubikey
 
 ### [Set-Yubikey](Set-Yubikey.md)
 Allows basic Yubikey configuration.
+
+### [Set-YubikeyFIDO2](Set-YubikeyFIDO2.md)
+Allows settings FIDO2 options.
 
 ### [Set-YubikeyOTP](Set-YubikeyOTP.md)
 Configure OTP slots

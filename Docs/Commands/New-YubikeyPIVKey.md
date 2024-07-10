@@ -52,7 +52,7 @@ Algoritm
 Type: PivAlgorithm
 Parameter Sets: (All)
 Aliases:
-Accepted values: Rsa1024, Rsa2048, EccP256, EccP384
+Accepted values: Rsa1024, Rsa2048, Rsa3072, Rsa4096, EccP256, EccP384
 
 Required: True
 Position: Named

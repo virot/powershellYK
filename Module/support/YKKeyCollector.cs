@@ -98,6 +98,15 @@ namespace powershellYK
                         keyEntryData.SubmitValues(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPassword!))!), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPasswordNew!))!));
                     }
                     break;
+                case KeyEntryRequest.ChangePivPin:
+                    throw new NotImplementedException("Change PIV PIN is not yet implemented");
+                    break;
+                case KeyEntryRequest.SetFido2Pin:
+                    keyEntryData.SubmitValue(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PINNew!))!));
+                    break;
+                case KeyEntryRequest.ChangeFido2Pin:
+                    keyEntryData.SubmitValues(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PIN!))!), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PINNew!))!));
+                    break;
             }
 
             return true;
