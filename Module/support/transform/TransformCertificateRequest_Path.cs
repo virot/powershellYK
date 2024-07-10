@@ -13,6 +13,10 @@ namespace powershellYK.support.transform
 
         public override object Transform(EngineIntrinsics engineIntrinsics, object inputData)
         {
+            if (inputData is PSObject)
+            {
+                inputData = ((PSObject)inputData).BaseObject;
+            }
                 if (inputData is string)
                 {
                     Regex regex = new Regex(pemFormatRegex, RegexOptions.Singleline);
@@ -46,7 +50,7 @@ namespace powershellYK.support.transform
                     return CertificateRequest.LoadSigningRequest((byte[])(inputData), HashAlgorithmName.SHA256, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
                 }
 
-            throw new ArgumentException($"Unable to parse slot for input data");
+            throw new ArgumentException($"Unable to parse CertificateRequest from data.");
         }
     }
 }

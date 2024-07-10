@@ -12,8 +12,14 @@ Generate the alt security security identities for a certificate
 
 ## SYNTAX
 
+### From Certificate (Default)
 ```
 ConvertTo-AltSecurity [-Certificate] <PSObject> [<CommonParameters>]
+```
+
+### From CertificateRequest
+```
+ConvertTo-AltSecurity -CertificateRequest <PSObject> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -46,13 +52,28 @@ Certificate to extract info from
 
 ```yaml
 Type: PSObject
-Parameter Sets: (All)
+Parameter Sets: From Certificate
 Aliases:
 
 Required: True
 Position: 0
 Default value: None
 Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
+### -CertificateRequest
+Certificate request
+
+```yaml
+Type: PSObject
+Parameter Sets: From CertificateRequest
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
