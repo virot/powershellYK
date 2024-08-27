@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0</TargetFrameworks>
-    <AssemblyVersion>0.0.15.1</AssemblyVersion>
+    <AssemblyVersion>0.0.15.2</AssemblyVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -36,7 +36,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Management.Automation" Version="7.4.3" />
+    <PackageReference Include="System.Management.Automation" Version="7.4.5" />
     <PackageReference Include="Yubico.YubiKey" Version="1.11.0" />
   </ItemGroup>
 

@@ -16,7 +16,7 @@ namespace powershellYK.Cmdlets.Yubikey
 
         {
             WriteDebug("ProcessRecord in Get-Yubikey");
-            var yubiKeys = YubiKeyDevice.FindAll();
+            IEnumerable<IYubiKeyDevice> yubiKeys = YubiKeyDevice.FindAll();
 
             if (Serialnumber is not null)
             {
