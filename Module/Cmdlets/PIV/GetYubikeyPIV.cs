@@ -112,7 +112,8 @@ namespace powershellYK.Cmdlets.PIV
                         PukRetries = puk_retry,
                         CHUID = BitConverter.ToString(chuid.GuidValue.Span.ToArray()),
                         SlotsWithPrivateKeys = certificateLocationsArray,
-                        PinVerified = pivSession.PinVerified,
+                        //PinVerified = pivSession.PinVerified, // This was false even after a successful pin verification
+                        PinVerified = (YubiKeyModule._pivPIN is not null),
                         ManagementkeyPIN = pivSession.GetPinOnlyMode(),
                         SupportedAlgorithms = supportedAlgorithms,
                     };
