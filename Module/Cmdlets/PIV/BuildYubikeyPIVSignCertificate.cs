@@ -47,6 +47,8 @@ namespace powershellYK.Cmdlets.PIV
         public string[] SubjectAltName { get; set; } = new string[] { };
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Key usage options to include")]
         public X509KeyUsageFlags KeyUsage { get; set; } = X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment;
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "AIA URL to include in signed certificates")]
+        public string? AIAUrl { get; set; }
 
 
         private CertificateRequest? _request;
@@ -91,7 +93,7 @@ namespace powershellYK.Cmdlets.PIV
                 }
                 catch           
                 {
-                    throw new Exception($"Unable to retrive certificate to sign");
+                    throw new Exception($"No certificate that can sign in slot 0x{Slot.ToString("X2")}, does there exist a certificate?");
                 }
 
 
@@ -134,6 +136,18 @@ namespace powershellYK.Cmdlets.PIV
                     _request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(_request.PublicKey, false));
                 }
 
+                // Add AKI
+                WriteDebug("Extract the SKI of the certificateCA");
+                X509AuthorityKeyIdentifierExtension AKI = X509AuthorityKeyIdentifierExtension.CreateFromCertificate(certificateCA, true, false);
+                _request.CertificateExtensions.Add(AKI);
+
+                // Add AIA link if supplied
+                if (AIAUrl is not null)
+                {
+                    IEnumerable<String> AIAstring = new List<string> { AIAUrl };
+                    _request.CertificateExtensions.Add(new X509AuthorityInformationAccessExtension(null, AIAstring, false));
+                }
+                
                 // Add SAN / SubjectAltName
                 if (SubjectAltName.Length > 0)
                 {
