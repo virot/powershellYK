@@ -22,7 +22,7 @@ namespace powershellYK.Cmdlets.PIV
         //[Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Algoritm")]
         //public String Algorithm { get; set; }
 
-        [ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
+        //[ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy")]
         public PivPinPolicy PinPolicy { get; set; } = PivPinPolicy.Default;
 
