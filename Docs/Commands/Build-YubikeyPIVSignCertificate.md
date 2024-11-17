@@ -16,7 +16,7 @@ Sign a certificate request with a Yubikey
 Build-YubikeyPIVSignCertificate -CertificateRequest <PSObject> -Slot <Byte>
  [-HashAlgorithm <HashAlgorithmName>] [-OutFile <String>] [-PEMEncoded] [-Subjectname <String>]
  [-NotBefore <DateTimeOffset>] [-NotAfter <DateTimeOffset>] [-SerialNumber <Byte[]>] [-CertificateAuthority]
- [-SubjectAltName <String[]>] [-KeyUsage <X509KeyUsageFlags>] [<CommonParameters>]
+ [-SubjectAltName <String[]>] [-KeyUsage <X509KeyUsageFlags>] [-AIAUrl <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -33,6 +33,21 @@ Sign a certificate request with a new Subhectname and alternative names.
 The certificate will contain the Subjectname "CN=Signed site" and the alternative names "siteurl" and "second.url".
 
 ## PARAMETERS
+
+### -AIAUrl
+AIA URL to include in signed certificates
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -CertificateAuthority
 Make this a CA certificate

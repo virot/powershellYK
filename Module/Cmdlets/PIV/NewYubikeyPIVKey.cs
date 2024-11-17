@@ -22,7 +22,7 @@ namespace powershellYK.Cmdlets.PIV
         //[Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Algoritm")]
         //public String Algorithm { get; set; }
 
-        [ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
+        //[ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy")]
         public PivPinPolicy PinPolicy { get; set; } = PivPinPolicy.Default;
 
@@ -37,17 +37,30 @@ namespace powershellYK.Cmdlets.PIV
         {
             //Add the Algorithm parameter
             var availableAlgorithms = new List<String>();
-            YubiKeyModule.ConnectYubikey();
-            if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa1024)) { availableAlgorithms.Add("Rsa1024"); };
-            if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa2048)) { availableAlgorithms.Add("Rsa2048"); };
-            if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa3072)) { availableAlgorithms.Add("Rsa3072"); };
-            if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa4096)) { availableAlgorithms.Add("Rsa4096"); };
-            if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { availableAlgorithms.Add("EccP256"); };
-            if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { availableAlgorithms.Add("EccP384"); };
+            try { YubiKeyModule.ConnectYubikey(); } catch { }
+            if (YubiKeyModule._yubikey is not null)
+            {
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa1024)) { availableAlgorithms.Add("Rsa1024"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa2048)) { availableAlgorithms.Add("Rsa2048"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa3072)) { availableAlgorithms.Add("Rsa3072"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa4096)) { availableAlgorithms.Add("Rsa4096"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { availableAlgorithms.Add("EccP256"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { availableAlgorithms.Add("EccP384"); };
+            }
+            else
+            {
+                //if no yubikey is attatched, then just list all that we know of.
+                availableAlgorithms.Add("Rsa1024");
+                availableAlgorithms.Add("Rsa2048");
+                availableAlgorithms.Add("Rsa3072");
+                availableAlgorithms.Add("Rsa4096");
+                availableAlgorithms.Add("EccP256");
+                availableAlgorithms.Add("EccP384");
+            }
             var runtimeDefinedParameterDictionary = new RuntimeDefinedParameterDictionary();
 
             var algorithmCollection = new Collection<Attribute>() {
-                new ParameterAttribute() { Mandatory = true, HelpMessage = "What algorithm to use", ParameterSetName = "__AllParameterSets", ValueFromPipeline = false },
+                new ParameterAttribute() { Mandatory = true, HelpMessage = "What algorithm to use, dependent on yubikey firmware.", ParameterSetName = "__AllParameterSets", ValueFromPipeline = false },
                 new ValidateSetAttribute((availableAlgorithms).ToArray())};
             var runtimeDefinedAlgorithms = new RuntimeDefinedParameter("Algorithm", typeof(PivAlgorithm), algorithmCollection);
             runtimeDefinedParameterDictionary.Add("Algorithm", runtimeDefinedAlgorithms);

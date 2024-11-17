@@ -37,6 +37,15 @@ namespace powershellYK
             }
             return true;
         }
+
+        public static void clearPassword()
+        {
+            _pivPIN = null;
+            _fido2PIN = null;
+            _fido2PINNew = null;
+            _OATHPassword = null;
+            _OATHPasswordNew = null;
+        }
     }
     public class MyModuleAssemblyInitializer: IModuleAssemblyInitializer
     {

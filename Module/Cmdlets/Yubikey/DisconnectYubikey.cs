@@ -9,6 +9,7 @@ namespace powershellYK.Cmdlets.Yubikey
         protected override void BeginProcessing()
         {
             YubiKeyModule._yubikey = null;
+            YubiKeyModule.clearPassword();
         }
     }
 }

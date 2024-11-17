@@ -30,6 +30,9 @@ namespace powershellYK.Cmdlets.PIV
 
         [Parameter(Mandatory = true, ParameterSetName = "ChangeRetries", ValueFromPipeline = false, HelpMessage = "Change number of PUK retries")]
         public byte? PukRetries { get; set; }
+        [Parameter(Mandatory = false, ParameterSetName = "ChangeRetries", ValueFromPipeline = false, HelpMessage = "Keep PUK unlocked", DontShow = true)]
+        public SwitchParameter KeepPukUnlocked { get; set; }
+
 
         [Parameter(Mandatory = true, ParameterSetName = "ChangePIN", ValueFromPipeline = false, HelpMessage = "Current PIN")]
         public SecureString PIN { get; set; } = new SecureString();
@@ -101,8 +104,8 @@ namespace powershellYK.Cmdlets.PIV
                     case "ChangeRetries":
                         // powershellYK does more than the SDK here, it also blocks the PUK if 
                         pivSession.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
-                        //WriteWarning("PIN and PUK codes reset to default, remember to change.");
-                        if (pivSession.GetPinOnlyMode().HasFlag(PivPinOnlyMode.PinProtected))
+                        // Yubikey disables the PUK if the Management key is PIN protected, we do the same if not KeepPUKUnlocked is set
+                        if (pivSession.GetPinOnlyMode().HasFlag(PivPinOnlyMode.PinProtected) && ! (KeepPukUnlocked.IsPresent))
                         {
                             WriteDebug("Management key is PIN Protected, Blocking PUK");
                             retriesLeft = 1;

@@ -44,6 +44,9 @@ Generate the alt security security identities for a certificate
 ### [Disconnect-Yubikey](Disconnect-Yubikey.md)
 Disconnects the Yubikey
 
+### [Enable-YubikeyFIDO2EnterpriseAttestation](Enable-YubikeyFIDO2EnterpriseAttestation.md)
+Enables the Enterprise Attestion feature on the YubiKey FIDO2 device.
+
 ### [Export-YubikeyPIVCertificate](Export-YubikeyPIVCertificate.md)
 Export certificate from Yubikey PIV
 

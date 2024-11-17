@@ -83,6 +83,15 @@ namespace powershellYK.Cmdlets.PIV
                         }
                     }
 
+                    List<string> supportedAlgorithms = new List<string>();
+
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa1024)) { supportedAlgorithms.Add("Rsa1024"); };
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa2048)) { supportedAlgorithms.Add("Rsa2048"); };
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa3072)) { supportedAlgorithms.Add("Rsa3072"); };
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa4096)) { supportedAlgorithms.Add("Rsa4096"); };
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { supportedAlgorithms.Add("EccP256"); };
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { supportedAlgorithms.Add("EccP384"); };
+
                     byte[] certificateLocationsArray = certificateLocations.ToArray();
 
                     CardholderUniqueId chuid;
@@ -103,7 +112,10 @@ namespace powershellYK.Cmdlets.PIV
                         PukRetries = puk_retry,
                         CHUID = BitConverter.ToString(chuid.GuidValue.Span.ToArray()),
                         SlotsWithPrivateKeys = certificateLocationsArray,
+                        //PinVerified = pivSession.PinVerified, // This was false even after a successful pin verification
+                        PinVerified = (YubiKeyModule._pivPIN is not null),
                         ManagementkeyPIN = pivSession.GetPinOnlyMode(),
+                        SupportedAlgorithms = supportedAlgorithms,
                     };
 
                     WriteObject(customObject);
