@@ -46,13 +46,13 @@ Create a RSA2048 in slot 0x9a with a touch policy of cached
 ## PARAMETERS
 
 ### -Algorithm
-Algoritm
+What algorithm to use
 
 ```yaml
 Type: PivAlgorithm
 Parameter Sets: (All)
 Aliases:
-Accepted values: Rsa1024, Rsa2048, EccP256, EccP384
+Accepted values: Rsa1024, Rsa2048, Rsa3072, Rsa4096, EccP256, EccP384
 
 Required: True
 Position: Named
@@ -83,7 +83,7 @@ PinPolicy
 Type: PivPinPolicy
 Parameter Sets: (All)
 Aliases:
-Accepted values: Default, Never, None, Once
+Accepted values: None, Never, Once, Always, MatchOnce, MatchAlways, Default
 
 Required: False
 Position: Named
