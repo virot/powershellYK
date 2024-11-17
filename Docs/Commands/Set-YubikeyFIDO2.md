@@ -1,4 +1,4 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
@@ -12,11 +12,6 @@ Allows settings FIDO2 options.
 
 ## SYNTAX
 
-### Set new PIN
-```
-Set-YubikeyFIDO2 -NewPIN <SecureString> [-SetPIN] [<CommonParameters>]
-```
-
 ### Set PIN minimum length
 ```
 Set-YubikeyFIDO2 -MinimumPINLength <Int32> [<CommonParameters>]
@@ -27,8 +22,13 @@ Set-YubikeyFIDO2 -MinimumPINLength <Int32> [<CommonParameters>]
 Set-YubikeyFIDO2 -MinimumPINRelyingParty <String> [<CommonParameters>]
 ```
 
+### Set PIN
+```
+Set-YubikeyFIDO2 [-SetPIN] [-OldPIN <SecureString>] -NewPIN <SecureString> [<CommonParameters>]
+```
+
 ## DESCRIPTION
-{{ Fill in the Description }}
+Allows the setting of PIN code and minimum PIN length.
 
 ## EXAMPLES
 
@@ -99,10 +99,25 @@ New PIN
 
 ```yaml
 Type: SecureString
-Parameter Sets: Set new PIN
+Parameter Sets: Set PIN
 Aliases:
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -OldPIN
+Old PIN, required to change the PIN code.
+
+```yaml
+Type: SecureString
+Parameter Sets: Set PIN
+Aliases:
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -114,7 +129,7 @@ Easy access to Set new PIN
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Set new PIN
+Parameter Sets: Set PIN
 Aliases:
 
 Required: False
