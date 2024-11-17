@@ -25,15 +25,17 @@ namespace powershellYK
                 switch (keyEntryData.Request)
                 {
                     default:
-                        throw new Exception("Unknown request.");
-                        //return false;
+                        throw new Exception("Unknown request. (Update YKKeyCollector)");
 
                     case KeyEntryRequest.AuthenticatePivManagementKey:
                         throw new Exception("Incorrect Management Key.");
-                    //return false;
 
                     case KeyEntryRequest.VerifyOathPassword:
                         throw new Exception("Incorrect Password.");
+
+                    case KeyEntryRequest.ChangeFido2Pin:
+                        throw new Exception("Failed to change FIDO2 PIN.");
+
                     case KeyEntryRequest.VerifyFido2Pin:
                     case KeyEntryRequest.VerifyPivPin:
                         if (!(keyEntryData.RetriesRemaining is null))

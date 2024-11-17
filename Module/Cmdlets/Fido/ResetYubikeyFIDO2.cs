@@ -4,10 +4,11 @@ using Yubico.YubiKey.Fido2;
 using powershellYK.FIDO2;
 using powershellYK.support;
 using Yubico.YubiKey.Fido2.Commands;
+using powershellYK.Exceptions;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommon.Reset, "YubikeyFIDO2")]
+    [Cmdlet(VerbsCommon.Reset, "YubikeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
 
     public class ResetYubikeyFIDO2Cmdlet : Cmdlet
     {
@@ -30,13 +31,29 @@ namespace powershellYK.Cmdlets.Fido
 
         protected override void ProcessRecord()
         {
-            using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
+            if (ShouldProcess("Yubikey FIDO2", "Reset"))
             {
-                ResetCommand resetCommand = new Yubico.YubiKey.Fido2.Commands.ResetCommand();
-                ResetResponse reply = fido2Session.Connection.SendCommand(resetCommand);
-                if (reply.Status != ResponseStatus.Success)
+                using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
-                    WriteWarning($"Failed to reset FIDO2 credentials: {reply.Status}, Yubikey needs to be inserted within the last 5 seconds.");
+                    ResetCommand resetCommand = new Yubico.YubiKey.Fido2.Commands.ResetCommand();
+                    WriteWarning("Please touch the Yubikey to allow the reset.");
+                    ResetResponse reply = fido2Session.Connection.SendCommand(resetCommand);
+                    switch (reply.Status)
+                    {
+                        default:
+                            throw new Exception("Unknown status. (Update ResetYubikeyFIDO2Cmdlet)");
+
+                        case ResponseStatus.Failed:
+                            throw new Exception("Please touch the Yubikey to allow the reset.");
+
+                        case ResponseStatus.ConditionsNotSatisfied:
+                            throw new Exception($"Failed to reset, Yubikey needs to be inserted within the last 5 seconds.");
+
+                        case ResponseStatus.Success:
+                            break;
+                    }
+                    WriteWarning("Restart FIDO2 Application by removing and reinserting the Yubikey.");
+                    YubiKeyModule._fido2PIN = null;
                 }
             }
         }
