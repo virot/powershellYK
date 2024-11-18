@@ -9,11 +9,15 @@ namespace powershellYK.OATH.Code
 {
     public class TOTP
     {
+        [Hidden]
         public string Issuer { get; }
+        [Hidden]
         public string AccountName { get; }
+        public string Name { get { return $"{Issuer}:{AccountName}"; } }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidUntil { get; }
         public string Value { get; }
+
 
         public TOTP(string issuer, string accountName, DateTimeOffset? validFrom, DateTimeOffset? validUntil, string value)
         {
@@ -26,10 +30,14 @@ namespace powershellYK.OATH.Code
     }
     public class HOTP
     {
+        [Hidden]
         public string Issuer { get; }
+        [Hidden]
         public string AccountName { get; }
+        public string Name { get { return $"{Issuer}:{AccountName}"; } }
         public string Value { get; }
 
+        
         public HOTP(string issuer, string accountName, string value)
         {
             Issuer = issuer;

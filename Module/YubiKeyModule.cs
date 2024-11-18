@@ -6,6 +6,8 @@ using powershellYK.support;
 using System;
 using System.Reflection;
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
+using Yubico.YubiKey.Fido2;
 
 namespace powershellYK
 {
@@ -20,6 +22,33 @@ namespace powershellYK
         public static SecureString? _OATHPassword;
         public static SecureString? _OATHPasswordNew;
         public static byte[] _pivManagementKey = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
+
+        public static void setPIVPIN(SecureString PIN)
+        {
+            // In BIO mode, the PIV PIN is the same as the FIDO2 PIN
+            if (new List<FormFactor> { FormFactor.UsbABiometricKeychain, FormFactor.UsbCBiometricKeychain }.Contains(((YubiKeyDevice)YubiKeyModule._yubikey!).FormFactor))
+            {
+                _pivPIN = PIN;
+                _fido2PIN = PIN;
+            }
+            else
+            {
+                _pivPIN = PIN;
+            }
+        }
+        public static void setFIDO2PIN(SecureString PIN)
+        {
+            // In BIO mode, the PIV PIN is the same as the FIDO2 PIN
+            if (new List<FormFactor> { FormFactor.UsbABiometricKeychain, FormFactor.UsbCBiometricKeychain }.Contains(((YubiKeyDevice)YubiKeyModule._yubikey!).FormFactor))
+            {
+                _pivPIN = PIN;
+                _fido2PIN = PIN;
+            }
+            else
+            {
+                _fido2PIN = PIN;
+            }
+        }
 
         public static bool ConnectYubikey()
         {

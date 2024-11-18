@@ -130,16 +130,15 @@ namespace powershellYK.Cmdlets.PIV
 
                         try { certificate = pivSession.GetCertificate((byte)Slot); } catch { }
 
-                        SlotInfo returnSlot = new SlotInfo
-                        {
-                            Slot = slotData.Slot,
-                            Algorithm = slotData.Algorithm,
-                            KeyStatus = slotData.KeyStatus,
-                            PinPolicy = slotData.PinPolicy,
-                            TouchPolicy = slotData.TouchPolicy,
-                            Certificate = certificate,
-                            PublicKey = dotNetPublicKey,
-                        };
+                        SlotInfo returnSlot = new SlotInfo(
+                            slotData.Slot,
+                            slotData.KeyStatus,
+                            slotData.Algorithm,
+                            slotData.PinPolicy,
+                            slotData.TouchPolicy,
+                            certificate,
+                            dotNetPublicKey
+                            );
                         WriteObject(returnSlot);
 
                     }

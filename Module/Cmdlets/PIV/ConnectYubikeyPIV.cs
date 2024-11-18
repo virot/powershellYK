@@ -51,7 +51,7 @@ namespace powershellYK.Cmdlets.PIV
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
                 if (PIN is not null)
                 {
-                    YubiKeyModule._pivPIN = PIN;
+                    YubiKeyModule.setPIVPIN(PIN);
                     pivSession.VerifyPin();
                 }
                 if (ManagementKey is not null)
