@@ -117,6 +117,10 @@ CmdletsToExport = @(
  'Reset-YubikeyPIV',
  'Unblock-YubikeyPIV',
  'Set-YubikeyPIV',
+ 'Get-YubikeyUVFingerprint',
+ 'Register-YubikeyUVFingerprint',
+ 'Remove-YubikeyUVFingerprint',
+ 'Rename-YubikeyUVFingerprint',
  'Confirm-YubikeyAttestion',
  'ConvertTo-AltSecurity',
  'Get-PowershellYKInfo'

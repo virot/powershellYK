@@ -77,6 +77,9 @@ Yubikey OTP Information
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
 Gets information about the PIV module and specific slots.
 
+### [Get-YubikeyUVFingerprint](Get-YubikeyUVFingerprint.md)
+List current installed fingerprints on a Yubikey Bio.
+
 ### [Import-YubikeyPIV](Import-YubikeyPIV.md)
 Import certificate
 
@@ -98,6 +101,9 @@ Create a self signed certificate
 ### [Protect-YubikeyOATH](Protect-YubikeyOATH.md)
 Set / update password
 
+### [Register-YubikeyUVFingerprint](Register-YubikeyUVFingerprint.md)
+Register a new fingerprint on the yubikey Bio.
+
 ### [Remove-YubikeyOATHAccount](Remove-YubikeyOATHAccount.md)
 Removes an account from the Yubikey OATH application
 
@@ -107,8 +113,14 @@ Remove Yubikey OTP slot
 ### [Remove-YubikeyPIVKey](Remove-YubikeyPIVKey.md)
 Remove a key from a Yubikey PIV slot
 
+### [Remove-YubikeyUVFingerprint](Remove-YubikeyUVFingerprint.md)
+{{ Fill in the Synopsis }}
+
 ### [Rename-YubikeyOATHAccount](Rename-YubikeyOATHAccount.md)
 Rename OATH account
+
+### [Rename-YubikeyUVFingerprint](Rename-YubikeyUVFingerprint.md)
+Changes the friendlyname of a fingerprint on the yubikey Bio.
 
 ### [Request-YubikeyOATHCode](Request-YubikeyOATHCode.md)
 Displays TOTP / HOTP codes for Yubikey OATH credentials
