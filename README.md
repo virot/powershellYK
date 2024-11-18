@@ -4,7 +4,7 @@ PowershellYK is thirdparty powershell module using the official Yubikey .NET SDK
 
 
 ## 💾 Installation
-The powershellYK module is available from the [PowershellGallery](https://www.powershellgallery.com/packages/powershellYK).
+The powershellYK module is available from the [Powershell Gallery](https://www.powershellgallery.com/packages/powershellYK).
 The easiest way to install the module is:
 
 1. Open PowerShell
