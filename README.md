@@ -10,7 +10,7 @@ _The easiest way to install the module is:_
 2. Execute the following command: ```Install-Module powershellYK```
 3. Press ```Y``` when prompted to proceed with installation.
 
-## Feature coverage
+## 📊 Feature coverage
 For a detailed comparison of **PowerShellYK**'s features with other YubiKey management tools, please refer to [this](./Docs/Feature_comparison.md) resource.
 
 ## 📖 Usage
