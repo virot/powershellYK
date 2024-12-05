@@ -1,7 +1,5 @@
 # powershellYK
-
-PowershellYK is thirdparty powershell module using the official Yubikey .NET SDK to allow management of Yubikeys from Powershell. This module does not depend on any installation of other Yubico tools.
-
+PowerShellYK is a third-party PowerShell module built on the official YubiKey .NET SDK. It enables seamless management of YubiKeys directly from PowerShell _without_ requiring any additional Yubico tools or software installations.
 
 ## 💾 Installation
 The powershellYK module is available from the [Powershell Gallery](https://www.powershellgallery.com/packages/powershellYK).    
@@ -11,7 +9,8 @@ The easiest way to install the module is:
 2. Execute the following command: ```Install-Module powershellYK```
 3. Press ```Y``` when prompted to proceed with installation.
 
-## [Feature difference between powershellYK and Yubikey tools](./Docs/Feature_comparison.md)
+## Feature coverage
+For a detailed comparison of **PowerShellYK**'s features with other YubiKey management tools, please refer to the [Feature Comparison](./Docs/Feature_comparison.md) document.
 
 ## 📖 Usage
 For usage instructions, please refer to online Cmdlets documentation [here](./Docs/Commands/powershellYK.md)
