@@ -36,7 +36,7 @@ namespace powershellYK.Cmdlets.Fido
                 using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
                     ResetCommand resetCommand = new Yubico.YubiKey.Fido2.Commands.ResetCommand();
-                    WriteWarning("Please touch the Yubikey to allow the reset.");
+                    WriteWarning("Please touch the YubiKey to allow the reset.");
                     ResetResponse reply = fido2Session.Connection.SendCommand(resetCommand);
                     switch (reply.Status)
                     {
@@ -44,15 +44,15 @@ namespace powershellYK.Cmdlets.Fido
                             throw new Exception("Unknown status. (Update ResetYubikeyFIDO2Cmdlet)");
 
                         case ResponseStatus.Failed:
-                            throw new Exception("Please touch the Yubikey to allow the reset.");
+                            throw new Exception("Please touch the YubiKey to allow the reset.");
 
                         case ResponseStatus.ConditionsNotSatisfied:
-                            throw new Exception($"Failed to reset, Yubikey needs to be inserted within the last 5 seconds.");
+                            throw new Exception($"Failed to reset, YubiKey needs to be inserted within the last 5 seconds.");
 
                         case ResponseStatus.Success:
                             break;
                     }
-                    WriteWarning("Restart FIDO2 Application by removing and reinserting the Yubikey.");
+                    WriteWarning("Restart FIDO2 Application by removing and reinserting the YubiKey.");
                     YubiKeyModule._fido2PIN = null;
                 }
             }
