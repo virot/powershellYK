@@ -123,6 +123,27 @@ namespace powershellYK.Cmdlets.Fido
                             throw new Exception("Changing minimum PIN not possible with this YubiKey hardware.");
                         }
                         break;
+                        
+                    // Set force PIN change will expire the PIN on initial use forcing the user to set a new PIN.
+                    case "Set force PIN change":
+                        // Check if the YubiKey supports the feature.
+                        if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.setMinPINLength) == OptionValue.True)
+                        {
+                            // Use TrySetPinConfig to enable Force PIN Change.
+                            bool? forceChangePin = true;
+                            if (!fido2Session.TrySetPinConfig(null, null, forceChangePin))
+                            {
+                                // Throw an exception if applying the setting fails.
+                                throw new InvalidOperationException("Failed to enforce PIN change.");
+                            }
+                        }
+                        else
+                        {
+                            // Throw an exception if the hardware does not support the feature.
+                            throw new NotSupportedException("Forcing PIN change is not supported by this YubiKey hardware.");
+                        }
+                        break;
+                        
                     case "Set PIN":
 
                         if (this.MyInvocation.BoundParameters.ContainsKey("OldPIN"))
