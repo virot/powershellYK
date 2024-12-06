@@ -109,14 +109,14 @@ namespace powershellYK.Cmdlets.Fido
 
                             if (!fido2Session.TrySetPinConfig(MinimumPINLength, null, null))
                             {
-                                throw new Exception("Failed to change the minimum PIN length..");
+                                throw new Exception("Failed to change the minimum PIN length.");
                             }
                             // Do it once more to force PIN change.
                             fido2Session.TrySetPinConfig(null, null, null);
                         }
                         else
                         {
-                            throw new Exception("Changing minimum PIN not possible with this yubikey hardware.");
+                            throw new Exception("Changing minimum PIN not possible with this YubiKey hardware.");
                         }
                         break;
                     case "Set PIN":
