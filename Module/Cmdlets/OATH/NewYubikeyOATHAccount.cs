@@ -26,7 +26,7 @@ namespace powershellYK.Cmdlets.OATH
         public string Issuer { get; set; } = "";
 
         [ValidateLength(1, 64)]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Accountname")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Account name")]
         public string Accountname { get; set; } = "";
 
         [ValidateSet("SHA1", "SHA256", "SHA512", IgnoreCase = true)]
@@ -52,10 +52,10 @@ namespace powershellYK.Cmdlets.OATH
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 myPowersShellInstance.Invoke();
-                WriteDebug($"Successfully connected");
+                WriteDebug($"Successfully connected.");
             }
         }
 
