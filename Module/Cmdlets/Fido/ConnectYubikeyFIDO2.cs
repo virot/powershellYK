@@ -27,7 +27,7 @@ namespace powershellYK.Cmdlets.Fido
                     WriteDebug("No Yubikey selected, calling Connect-Yubikey");
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected.");
+                    WriteDebug($"Successfully connected");
                 }
             }
 #if WINDOWS
