@@ -27,7 +27,7 @@ namespace powershellYK.Cmdlets.OTP
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected.");
+                    WriteDebug($"Successfully connected");
                 }
                 catch (Exception e)
                 {
