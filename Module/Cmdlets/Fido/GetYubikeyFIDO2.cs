@@ -16,15 +16,15 @@ namespace powershellYK.Cmdlets.Fido
             {
                 if (YubiKeyModule._yubikey is null)
                 {
-                    WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                    WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
             }
             if (Windows.IsRunningAsAdministrator() == false)
             {
-                throw new Exception("You need to run this command as an administrator");
+                throw new Exception("You need to run this command as an administrator.");
             }
         }
 
