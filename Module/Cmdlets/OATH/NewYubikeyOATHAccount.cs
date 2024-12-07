@@ -55,7 +55,7 @@ namespace powershellYK.Cmdlets.OATH
                 WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 myPowersShellInstance.Invoke();
-                WriteDebug($"Successfully connected.");
+                WriteDebug($"Successfully connected");
             }
         }
 
