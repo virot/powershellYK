@@ -25,7 +25,7 @@ namespace powershellYK.Cmdlets.OTP
         [TransformHexInput()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Phrase")]
         public PSObject? Phrase;
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Use YubicoOTP over HMAC-SHA1")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Use YubiOTP over HMAC-SHA1")]
         public Boolean YubikeyOTP = false;
 
 
@@ -33,12 +33,12 @@ namespace powershellYK.Cmdlets.OTP
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
