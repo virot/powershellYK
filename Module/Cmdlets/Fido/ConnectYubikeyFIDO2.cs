@@ -33,7 +33,7 @@ namespace powershellYK.Cmdlets.Fido
 #if WINDOWS
             if (Windows.IsRunningAsAdministrator() == false)
             {
-                throw new Exception("You need to run this command as an administrator.");
+                throw new Exception("You need to run this command as an administrator");
             }
 #endif //WINDOWS
         }
