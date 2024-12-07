@@ -28,14 +28,14 @@ namespace powershellYK.Cmdlets.OTP
         public SwitchParameter StaticGeneratedPassword { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows for Challenge-Response configuration with all defaults", ParameterSetName = "ChallengeResponse")]
         public SwitchParameter ChallengeResponse { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Public ID, defaults to the serialnumber", ParameterSetName = "Yubico OTP")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Public ID, defaults to the serial number", ParameterSetName = "Yubico OTP")]
         public byte[]? PublicID { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Private ID, defaults to random 6 bytes", ParameterSetName = "Yubico OTP")]
         public byte[]? PrivateID { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret key, defaults to random 16 bytes", ParameterSetName = "Yubico OTP")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret key, defaults to random 20 bytes", ParameterSetName = "ChallengeResponse")]
         public byte[]? SecretKey { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Upload to Yubicloud", ParameterSetName = "Yubico OTP")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Upload to YubiCloud", ParameterSetName = "Yubico OTP")]
         public SwitchParameter Upload{ get; set; }
         [ValidateYubikeyPassword(1,38)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Static password that will be set", ParameterSetName = "Static Password")]
@@ -65,7 +65,7 @@ namespace powershellYK.Cmdlets.OTP
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
@@ -133,8 +133,8 @@ namespace powershellYK.Cmdlets.OTP
                             if (Upload.IsPresent)
                             {
                                 // https://github.com/Yubico/yubikey-manager/blob/fbdae2bc12ba0451bcfc62372bc9191c10ecad0c/ykman/otp.py#L95
-                                // TODO: Implement Upload to Yubicloud
-                                WriteWarning("Upload to Yubicloud is not implemented yet");
+                                // TODO: Implement Upload to YubiCloud
+                                WriteWarning("Upload to YubiCloud is not implemented yet");
                             }
                             break;
 
