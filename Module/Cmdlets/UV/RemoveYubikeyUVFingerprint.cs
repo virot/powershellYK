@@ -49,7 +49,7 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (fingerprint is not null)
                 {
-                    if (ShouldProcess("This will remove the Fingerprint from the Yubikey", "This will remove the Fingerprint from the Yubikey", "Remove Fingerprint?"))
+                    if (ShouldProcess("This will remove the Fingerprint from the Yubikey", "This will remove the Fingerprint from the YubiKey", "Remove Fingerprint?"))
                     {
                         session.TryRemoveBioTemplate(fingerprint.TemplateId);
                     }
