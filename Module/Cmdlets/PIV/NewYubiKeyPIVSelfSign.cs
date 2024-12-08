@@ -29,7 +29,7 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
@@ -66,7 +66,7 @@ namespace powershellYK.Cmdlets.PIV
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Failed to get public key for slot 0x{Slot.ToString("X2")}, does there exist a key?", e);
+                    throw new Exception($"Failed to get public key for slot 0x{Slot.ToString("X2")}, does the key exist?", e);
                 }
 
 
@@ -82,7 +82,7 @@ namespace powershellYK.Cmdlets.PIV
                     {
                         PivAlgorithm.EccP256 => HashAlgorithmName.SHA256,
                         PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,
-                        _ => throw new Exception("Unknown PublicKey algorithm")
+                        _ => throw new Exception("Unknown public Key algorithm")
                     };
                     WriteDebug($"Using Hash based on ECC size: {HashAlgorithm.ToString()}");
                     request = new CertificateRequest(Subjectname, (ECDsa)dotNetPublicKey, HashAlgorithm);
@@ -127,7 +127,7 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (!certExists || ShouldProcess($"Certificate in slot 0x{Slot.ToString("X2")}", "New"))
                 {
-                    WriteDebug($"Importing created certificate into Yubikey slot {Slot.ToString("X2")}");
+                    WriteDebug($"Importing created certificate into YubiKey slot {Slot.ToString("X2")}");
                     pivSession.ImportCertificate(Slot, selfCert);
                 }
                 WriteDebug("ProcessRecord in New-YubikeyPIVSelfSign");
