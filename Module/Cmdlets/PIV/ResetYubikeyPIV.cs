@@ -18,7 +18,7 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
@@ -35,7 +35,7 @@ namespace powershellYK.Cmdlets.PIV
         {
 
             WriteDebug("ProcessRecord in Reset-YubikeyPIV");
-            if (ShouldProcess("Yubikey PIV", "Reset"))
+            if (ShouldProcess("YubiKey PIV", "Reset"))
             {
                 using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
