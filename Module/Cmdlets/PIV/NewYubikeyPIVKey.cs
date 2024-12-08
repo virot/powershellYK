@@ -60,7 +60,7 @@ namespace powershellYK.Cmdlets.PIV
             var runtimeDefinedParameterDictionary = new RuntimeDefinedParameterDictionary();
 
             var algorithmCollection = new Collection<Attribute>() {
-                new ParameterAttribute() { Mandatory = true, HelpMessage = "What algorithm to use, dependent on yubikey firmware.", ParameterSetName = "__AllParameterSets", ValueFromPipeline = false },
+                new ParameterAttribute() { Mandatory = true, HelpMessage = "What algorithm to use, dependent on YubiKey firmware.", ParameterSetName = "__AllParameterSets", ValueFromPipeline = false },
                 new ValidateSetAttribute((availableAlgorithms).ToArray())};
             var runtimeDefinedAlgorithms = new RuntimeDefinedParameter("Algorithm", typeof(PivAlgorithm), algorithmCollection);
             runtimeDefinedParameterDictionary.Add("Algorithm", runtimeDefinedAlgorithms);
