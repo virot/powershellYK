@@ -39,7 +39,7 @@ namespace powershellYK.Cmdlets.PIV
                 }
                 else
                 {
-                    WriteWarning("Yubikey does not support reading fingerprints.");
+                    WriteWarning("YubiKey does not support reading fingerprints.");
                 }
             }
         }
