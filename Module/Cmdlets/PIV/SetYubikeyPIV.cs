@@ -78,7 +78,7 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
@@ -200,12 +200,12 @@ namespace powershellYK.Cmdlets.PIV
                             }
                             else
                             {
-                                throw new Exception("Failed to change ManagementKey");
+                                throw new Exception("Failed to change Management key");
                             }
                         }
                         catch (Exception e)
                         {
-                            throw new Exception("Failed to change ManagementKey", e);
+                            throw new Exception("Failed to change Management key", e);
                         }
                         finally
                         {
