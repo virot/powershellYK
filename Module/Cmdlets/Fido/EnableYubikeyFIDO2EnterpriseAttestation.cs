@@ -18,7 +18,7 @@ namespace powershellYK.Cmdlets.Fido
             {
                 if (YubiKeyModule._yubikey is null)
                 {
-                    WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                    WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
                     WriteDebug($"Successfully connected");
@@ -40,7 +40,7 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     throw new Exception("Enterprise attestation not supported by this YubiKey.");
                 }
-                if (ShouldProcess("Enterprise attestion cannot be disabled without resetting fido2 application", "Enterprise attestion cannot be disabled without resetting fido2 application", "Disable not possible"))
+                if (ShouldProcess("Enterprise attestion cannot be disabled without resetting the FIDO2 applet.", "Enterprise attestion cannot be disabled without resetting the FIDO2 applet.", "Disable not possible."))
                 {
                     fido2Session.TryEnableEnterpriseAttestation();
                 }

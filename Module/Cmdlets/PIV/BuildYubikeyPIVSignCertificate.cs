@@ -57,7 +57,7 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
@@ -97,7 +97,7 @@ namespace powershellYK.Cmdlets.PIV
                 }
 
 
-                // If we want to replace the SubjectName we need to crete a new CertificateReqest and sign that one instead.
+                // If we want to replace the SubjectName we need to create a new CertificateReqest and sign that one instead.
 
                 if (Subjectname is null)
                 {

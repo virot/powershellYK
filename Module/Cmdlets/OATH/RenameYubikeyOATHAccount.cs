@@ -12,7 +12,7 @@ namespace powershellYK.Cmdlets.OATH
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Account to remove")]
         [Alias("Credential")]
         public Credential? Account { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "New AccountName")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "New Account name")]
         public string? NewAccountName { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "New Issuer")]
         public string? NewIssuer { get; set; }
@@ -21,7 +21,7 @@ namespace powershellYK.Cmdlets.OATH
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 myPowersShellInstance.Invoke();
                 WriteDebug($"Successfully connected");
