@@ -17,6 +17,11 @@ Allows settings FIDO2 options.
 Set-YubikeyFIDO2 -MinimumPINLength <Int32> [<CommonParameters>]
 ```
 
+### Set force PIN change
+```
+Set-YubikeyFIDO2 -ForcePINChange <Boolean> [<CommonParameters>]
+```
+
 ### Send MinimumPIN to RelyingParty
 ```
 Set-YubikeyFIDO2 -MinimumPINRelyingParty <String> [<CommonParameters>]
@@ -63,6 +68,21 @@ NewPIN: ******
 To change the PIN code make sure to connect to the Yubikey first.
 
 ## PARAMETERS
+
+### -ForcePINChange
+Enable or disable the forceChangePin flag.
+
+```yaml
+Type: Boolean
+Parameter Sets: Set force PIN change
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -MinimumPINLength
 Set the minimum length of the PIN
