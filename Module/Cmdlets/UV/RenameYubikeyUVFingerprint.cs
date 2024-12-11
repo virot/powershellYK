@@ -22,7 +22,7 @@ namespace powershellYK.Cmdlets.PIV
         public String? ID;
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "New friendly name", ParameterSetName = "Rename using ID")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "New friendly name", ParameterSetName = "Rename using Name")]
-        public String NewName;
+        public String? NewName;
 
         protected override void BeginProcessing()
         {
@@ -52,7 +52,7 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (fingerprint is not null)
                 {
-                    session.SetBioTemplateFriendlyName(fingerprint.TemplateId, NewName);
+                    session.SetBioTemplateFriendlyName(fingerprint.TemplateId, NewName!);
                 }
                 else
                 {

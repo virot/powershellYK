@@ -27,8 +27,14 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN", ParameterSetName = "PIN")]
         public SecureString? PIN;
 
+        private SynchronizationContext? _syncContext;
+
         protected override void BeginProcessing()
         {
+            _syncContext = SynchronizationContext.Current;
+
+            WriteObject(_syncContext);
+
             if (YubiKeyModule._yubikey is null)
             {
                 WriteDebug("No Yubikey selected, calling Connect-Yubikey");
@@ -43,6 +49,7 @@ namespace powershellYK.Cmdlets.PIV
                     throw new Exception(e.Message, e);
                 }
             }
+
         }
         protected override void ProcessRecord()
         {
@@ -60,6 +67,11 @@ namespace powershellYK.Cmdlets.PIV
                     pivSession.AuthenticateManagementKey();
                 }
             }
+        }
+
+        protected override void EndProcessing()
+        {
+           
         }
     }
 }

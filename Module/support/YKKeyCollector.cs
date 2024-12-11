@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,7 +67,16 @@ namespace powershellYK
                 case KeyEntryRequest.Release:
                     break;
 
+                case KeyEntryRequest.EnrollFingerprint:
+                    PowerShell.Create(YubiKeyModule._runspace).AddScript($"Write-Warning 'Yubikey requires enroll'").Invoke();
+                    return false;
+
+                case KeyEntryRequest.TouchRequest:
+                    PowerShell.Create(Runspace.DefaultRunspace).AddScript($"Write-Warning 'Yubikey requires touch'").Invoke();
+                    return false;
+
                 case KeyEntryRequest.VerifyPivPin:
+                    PowerShell.Create(Runspace.DefaultRunspace).AddScript($"Write-Warning 'Yubikey Verifying PIN'").Invoke();
                     if (YubiKeyModule._pivPIN is null)
                     {
                         throw new PIVNotConnectedException("Needed PIN not set, use Connect-YubikeyPIV to authorize");

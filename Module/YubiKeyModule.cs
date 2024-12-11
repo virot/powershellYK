@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using Yubico.YubiKey.Fido2;
+using System.Management.Automation.Runspaces;
 
 namespace powershellYK
 {
@@ -21,6 +22,9 @@ namespace powershellYK
         public static SecureString? _fido2PINNew;
         public static SecureString? _OATHPassword;
         public static SecureString? _OATHPasswordNew;
+
+        public static Runspace _runspace = Runspace.DefaultRunspace;
+
         public static byte[] _pivManagementKey = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
 
         public static void setPIVPIN(SecureString PIN)

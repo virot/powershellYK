@@ -1,13 +1,8 @@
 ﻿using System.Management.Automation;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
-using System.Security.Cryptography;
-using powershellYK.support;
-using powershellYK.support.transform;
 using Yubico.YubiKey.Fido2.Commands;
-using Yubico.YubiKey.Piv;
+using powershellYK.UserValidation;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -28,10 +23,9 @@ namespace powershellYK.Cmdlets.PIV
             using (var session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-
                 TemplateInfo fingerprint = session.EnrollFingerprint(Name,null);
+                WriteObject(new Fingerprint(fingerprint.TemplateId, fingerprint.FriendlyName));
 
-                WriteObject(fingerprint);
             }
         }
 
