@@ -39,12 +39,22 @@ namespace powershellYK.Cmdlets.Fido
         }
         protected override void ProcessRecord()
         {
-            if (PIN is not null)
-            {
-                YubiKeyModule._fido2PIN = PIN;
-            }
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
+                if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.clientPin) == OptionValue.False)
+                {
+                    WriteObject("Client PIN is not set");
+                    return;
+                }
+                else if (fido2Session.AuthenticatorInfo.ForcePinChange == true)
+                {
+                    WriteWarning("YubiKey requires PIN change to continue, see Set-YubikeyFIDO2 -SetPIN ");
+                    return;
+                }
+                if (PIN is not null)
+                {
+                    YubiKeyModule._fido2PIN = PIN;
+                }
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
                 fido2Session.VerifyPin();
             }
