@@ -24,6 +24,10 @@ namespace powershellYK.Cmdlets.Fido
         public int? MinimumPINLength { get; set; }
         [ValidateLength(4, 63)]
         [Parameter(Mandatory = true, ParameterSetName = "Send MinimumPIN to RelyingParty", ValueFromPipeline = false, HelpMessage = "To which RelyingParty should minimum PIN be sent")]
+
+        [Parameter(Mandatory = true, ParameterSetName = "Set Restricted NFC", HelpMessage = "Enable Restricted NFC")]
+        public bool SetIsNfcRestricted { get; set; }
+
         public string? MinimumPINRelyingParty { get; set; }
 
         public object GetDynamicParameters()
@@ -119,6 +123,31 @@ namespace powershellYK.Cmdlets.Fido
                             throw new Exception("Changing minimum PIN not possible with this YubiKey hardware.");
                         }
                         break;
+
+                    case "Set Restricted NFC":
+                        // Connect to the first available YubiKey.
+                        var yubiKey = YubiKeyDevice.FindByTransport(Transport.All).First();
+
+                        try
+                        {
+                            // Attempt to set restricted NFC.
+                            yubiKey.SetIsNfcRestricted(true);
+
+                            // Display a success message (this is the same message as in ykman).
+                            Console.WriteLine("YubiKey NFC disabled. It will be re-enabled automatically the next time it is connected to USB power.");
+                        }
+                        catch (NotSupportedException)
+                        {
+                            // Throw an exception if applying the setting fails.
+                            throw new Exception("Restricting NFC is not supported on this YubiKey.");
+                        }
+                        catch (Exception)
+                        {
+                            // Handle other errors.
+                            throw new Exception($"Failed to restrict NFC.");
+                        }
+                        break;
+
                     case "Set PIN":
 
                         if (this.MyInvocation.BoundParameters.ContainsKey("OldPIN"))
