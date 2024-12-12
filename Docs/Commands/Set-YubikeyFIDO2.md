@@ -19,7 +19,7 @@ Set-YubikeyFIDO2 -MinimumPINLength <Int32> [<CommonParameters>]
 
 ### Set force PIN change
 ```
-Set-YubikeyFIDO2 -ForcePINChange <Boolean> [<CommonParameters>]
+Set-YubikeyFIDO2 [-ForcePINChange] [<CommonParameters>]
 ```
 
 ### Send MinimumPIN to RelyingParty
@@ -73,7 +73,7 @@ To change the PIN code make sure to connect to the Yubikey first.
 Enable or disable the forceChangePin flag.
 
 ```yaml
-Type: Boolean
+Type: SwitchParameter
 Parameter Sets: Set force PIN change
 Aliases:
 
@@ -137,7 +137,7 @@ Type: SecureString
 Parameter Sets: Set PIN
 Aliases:
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False

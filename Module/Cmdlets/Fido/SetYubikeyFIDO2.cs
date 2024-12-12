@@ -24,7 +24,7 @@ namespace powershellYK.Cmdlets.Fido
         public int? MinimumPINLength { get; set; }
 
         [Parameter(Mandatory = true, ParameterSetName = "Set force PIN change", HelpMessage = "Enable or disable the forceChangePin flag.")]
-        public bool ForcePINChange { get; set; }
+        public SwitchParameter ForcePINChange { get; set; }
         
         [ValidateLength(4, 63)]
         [Parameter(Mandatory = true, ParameterSetName = "Send MinimumPIN to RelyingParty", ValueFromPipeline = false, HelpMessage = "To which RelyingParty should minimum PIN be sent")]
