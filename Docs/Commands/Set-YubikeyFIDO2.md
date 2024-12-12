@@ -137,7 +137,7 @@ Type: SecureString
 Parameter Sets: Set PIN
 Aliases:
 
-Required: True
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
