@@ -118,15 +118,16 @@ namespace powershellYK.Cmdlets.OTP
                             break;
 
                         case "Set Restricted NFC":
-                            // Check if the switch is present
-                            if (SecureTransportMode.IsPresent)
+                            if (YubiKeyModule._yubikey!.HasFeature(YubiKeyFeature.ManagementNfcRestricted) == false)
                             {
-                                var yubiKey = YubiKeyDevice.FindByTransport(Transport.All).First();
-
+                                throw new Exception("Restricting NFC is not supported in this YubiKey firmware version.");
+                            }
+                            else
+                            {
                                 try
                                 {
                                     // Attempt to set restricted NFC
-                                    yubiKey.SetIsNfcRestricted(true);
+                                    YubiKeyModule._yubikey!.SetIsNfcRestricted(true);
 
                                     Console.WriteLine("YubiKey NFC now disabled. NFC will be re-enabled automatically the next time the YubiKey is connected to USB power.");
                                 }
