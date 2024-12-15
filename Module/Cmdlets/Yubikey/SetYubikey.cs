@@ -34,6 +34,10 @@ namespace powershellYK.Cmdlets.OTP
         public bool TouchEject;
         [Parameter(Mandatory = true, HelpMessage = "Automatically eject after the given time. Implies -TouchEject:$True. Value in seconds.", ParameterSetName = "Set automatically eject")]
         public UInt16 AutoEjectTimeout = 0;
+
+        [Parameter(Mandatory = true, ParameterSetName = "Set Restricted NFC", HelpMessage = "Enable Restricted NFC / Secure Transport Mode")]
+        public SwitchParameter SecureTransportMode { get; set; }
+
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -110,6 +114,30 @@ namespace powershellYK.Cmdlets.OTP
                                 requestedNFCCapabilities &= ~DisableNFCCapabilities;
                                 YubiKeyModule._yubikey!.SetEnabledNfcCapabilities(requestedNFCCapabilities);
                                 WriteWarning("Yubikey will reboot, diconnecting powershellYK.");
+                            }
+                            break;
+
+                        case "Set Restricted NFC":
+                            // Check if the switch is present
+                            if (SecureTransportMode.IsPresent)
+                            {
+                                var yubiKey = YubiKeyDevice.FindByTransport(Transport.All).First();
+
+                                try
+                                {
+                                    // Attempt to set restricted NFC
+                                    yubiKey.SetIsNfcRestricted(true);
+
+                                    Console.WriteLine("YubiKey NFC now disabled. NFC will be re-enabled automatically the next time the YubiKey is connected to USB power.");
+                                }
+                                catch (NotSupportedException)
+                                {
+                                    throw new Exception("Restricting NFC is not supported in this YubiKey firmware version.");
+                                }
+                                catch (Exception)
+                                {
+                                    throw new Exception("Failed to restrict NFC.");
+                                }
                             }
                             break;
                         default:
