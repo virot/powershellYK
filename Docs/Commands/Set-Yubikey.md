@@ -34,6 +34,11 @@ Set-Yubikey [-EnableNFCCapabilities <YubiKeyCapabilities>] [-DisableNFCCapabilit
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+### Set Restricted NFC
+```
+Set-Yubikey [-SecureTransportMode] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
 ### Update Touch Eject flag
 ```
 Set-Yubikey -TouchEject <Boolean> [-WhatIf] [-Confirm] [<CommonParameters>]
@@ -148,6 +153,21 @@ Type: YubiKeyCapabilities
 Parameter Sets: Replace NFC capabilities
 Aliases:
 Accepted values: None, Otp, FidoU2f, Ccid, OpenPgp, Piv, Oath, YubiHsmAuth, Fido2, All
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SecureTransportMode
+Enable Restricted NFC / Secure Transport Mode
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Set Restricted NFC
+Aliases:
 
 Required: True
 Position: Named
