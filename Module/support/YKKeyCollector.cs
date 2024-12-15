@@ -68,7 +68,7 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyPivPin:
                     if (YubiKeyModule._pivPIN is null)
                     {
-                        throw new PIVNotConnectedException("Needed PIN not set, use Connect-YubikeyPIV to authorize");
+                        throw new PIVNotConnectedException("PIN is required before issuing command, use 'Connect-YubikeyPIV' to authenticate.");
                     }
                     currentValue = System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._pivPIN!))!);
                     keyEntryData.SubmitValue(currentValue);
@@ -77,7 +77,7 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyFido2Pin:
                     if (YubiKeyModule._fido2PIN is null)
                     {
-                        throw new FIDO2NotConnectedException("Needed PIN not set, use Connect-YubikeyFIDO2 to authorize");
+                        throw new FIDO2NotConnectedException("PIN is required before issuing command, use 'Connect-YubikeyFIDO2' to authenticate.");
                     }
                     currentValue = System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PIN!))!);
                     keyEntryData.SubmitValue(currentValue);
@@ -86,7 +86,7 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyOathPassword:
                     if (YubiKeyModule._OATHPassword is null)
                     {
-                        throw new OATHNotConnectedException("Needed password not set, use Connect-YubikeyOATH to authorize");
+                        throw new OATHNotConnectedException("Password is required before issuing command, use 'Connect-YubikeyOATH' to authenticate.");
                     }
                     keyEntryData.SubmitValue(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPassword!))!));
                     break;
