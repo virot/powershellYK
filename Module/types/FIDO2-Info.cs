@@ -6,6 +6,7 @@ using Yubico.YubiKey.Fido2;
 using Yubico.YubiKey.Fido2.PinProtocols;
 using Yubico.YubiKey.Fido2.Cose;
 using powershellYK.support;
+using Yubico.YubiKey;
 
 namespace powershellYK.FIDO2
 {
@@ -29,6 +30,7 @@ namespace powershellYK.FIDO2
                 return new Guid(tempArray);
             }
         }
+        public string PrettyName {get;}
         public IReadOnlyList<string> Versions { get { return AuthenticatorInfo.Versions; } }
         public IReadOnlyList<string>? Extensions { get { return AuthenticatorInfo.Extensions; } }
         public IReadOnlyDictionary<string, bool>? Options { get { return AuthenticatorInfo.Options; } }
@@ -50,13 +52,14 @@ namespace powershellYK.FIDO2
         public int? RemainingDiscoverableCredentials { get { return AuthenticatorInfo.RemainingDiscoverableCredentials; } }
         public IReadOnlyList<long>? VendorPrototypeConfigCommands { get { return AuthenticatorInfo.VendorPrototypeConfigCommands; } }
 
-        public Information(AuthenticatorInfo authenticatorInfo)
+        public Information(AuthenticatorInfo authenticatorInfo, YubiKeyDevice yubiKey)
         {
             this.AuthenticatorInfo = authenticatorInfo;
             if (authenticatorInfo.FirmwareVersion is not null)
             {
                 this.FirmwareVersion = HexConverter.IntToVersion((int)authenticatorInfo.FirmwareVersion);
             }
+            this.PrettyName = PowershellYKText.FriendlyName(yubiKey);
         }
 
     }

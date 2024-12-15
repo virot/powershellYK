@@ -35,7 +35,7 @@ namespace powershellYK.Cmdlets.Fido
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
                 AuthenticatorInfo info = fido2Session.AuthenticatorInfo;
-                WriteObject(new Information(info));
+                WriteObject(new Information(authenticatorInfo: info, yubiKey: (YubiKeyDevice)YubiKeyModule._yubikey!)) ;
 
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
+using powershellYK.YubiKey;
 
 namespace powershellYK.Cmdlets.Yubikey
 {
@@ -20,7 +21,15 @@ namespace powershellYK.Cmdlets.Yubikey
                     new Exception("None or multiple YubiKeys found");
                 }
             }
-            WriteObject(YubiKeyModule._yubikey);
+            else
+            {
+                var yubiKey = YubiKeyDevice.FindAll().Where(yk => yk.SerialNumber == YubiKeyModule._yubikey.SerialNumber).First();
+                if (yubiKey is not null)
+                {
+                    YubiKeyModule._yubikey = (YubiKeyDevice)yubiKey;
+                }
+            }
+            WriteObject(new YubikeyInformation(YubiKeyModule._yubikey!));
         }
     }
 }
