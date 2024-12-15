@@ -40,5 +40,19 @@ namespace powershellYK.support
                 // If there's an odd number of bytes, the last byte remains unchanged
             }
         }
+
+        public static Version IntToVersion(int version)
+        {
+            byte[] versionBytes = new byte[] { (byte)(version >> 16), (byte)(version >> 8), (byte)version };
+            return ByteArrayToVersion(versionBytes);
+        }
+        public static Version ByteArrayToVersion(byte[] bytes)
+        {
+            if (bytes.Length != 3)
+            {
+                throw new ArgumentException("Version must be 3 bytes long");
+            }
+            return new Version(bytes[0], bytes[1], bytes[2]);
+        }
     }
 }
