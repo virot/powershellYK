@@ -42,7 +42,7 @@
 
   <ItemGroup>
     <None Update="powershellYK.format.ps1xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="powershellYK.psd1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
