@@ -15,7 +15,7 @@ namespace powershellYK.Cmdlets.PIV
     [Cmdlet(VerbsLifecycle.Register, "YubikeyUVFingerprint")]
     public class RegisterYubikeyUVFingerprintCmdlet : Cmdlet
     {
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Name of finger to register")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Name of the finger to register")]
         public String? Name;
 
         protected override void BeginProcessing()

@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-YubikeyUVFingerprint
 
 ## SYNOPSIS
-List current installed fingerprints on a Yubikey Bio.
+List current installed fingerprints on a YubiKey Bio.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Get-YubikeyUVFingerprint [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-List current installed fingerprints on a Yubikey Bio.
+List current installed fingerprints on a YubiKey Bio.
 
 ## EXAMPLES
 

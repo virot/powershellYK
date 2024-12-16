@@ -8,7 +8,7 @@ schema: 2.0.0
 # Find-Yubikey
 
 ## SYNOPSIS
-Lists all Yubikeys on system
+Lists all YubiKeys on system
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Find-Yubikey [-OnlyOne] [-Serialnumber <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-List all Yubikeys on the system
+List all YubiKeys on system
 
 ## EXAMPLES
 

@@ -6,9 +6,9 @@ namespace powershellYK.Cmdlets.Yubikey
     [Cmdlet(VerbsCommon.Find, "Yubikey")]
     public class FindYubikeyCommand : Cmdlet
     {
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only one Yubikey")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only one YubiKey")]
         public SwitchParameter OnlyOne { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only yubikey with serialnumber")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only YubiKey with Serial Number")]
         public int? Serialnumber { get; set; }
 
         protected override void BeginProcessing()
@@ -31,10 +31,10 @@ namespace powershellYK.Cmdlets.Yubikey
 
             if (yubiKeys.ToArray().Length == 0)
             {
-                WriteWarning("No yubikeys found, Yubikeys with ONLY FIDO interfaces enabled requires Administrator permissions in Windows");
+                WriteWarning("No YubiKeys found, FIDO-only YubiKeys requires Administrator permissions in Windows (elevate if needed)");
                 if (Serialnumber is not null)
                 {
-                    throw new Exception("No yubikeys found with the specified serialnumber");
+                    throw new Exception("No YubiKeys found with the specified serial number");
                 }
             }
         }

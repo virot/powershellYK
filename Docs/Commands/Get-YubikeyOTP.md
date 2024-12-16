@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-YubikeyOTP
 
 ## SYNOPSIS
-Yubikey OTP Information
+YubiKey OTP Information
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Get-YubikeyOTP [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Command to retrive information about the Yubikey OTP configuration. As the Yubikey OTP does not allow information about what the slots are confgured to contain, this is not listed.
+Command to retrive information about the YubiKey OTP configuration. As the Yubikey OTP does not allow information about what the slots are confgured to contain, this is not listed.
 
 ## EXAMPLES
 

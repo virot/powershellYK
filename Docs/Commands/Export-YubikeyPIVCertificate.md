@@ -8,7 +8,7 @@ schema: 2.0.0
 # Export-YubikeyPIVCertificate
 
 ## SYNOPSIS
-Export certificate from Yubikey PIV
+Export certificate from YubiKey PIV
 
 ## SYNTAX
 
@@ -24,7 +24,7 @@ Export-YubikeyPIVCertificate [-AttestationIntermediateCertificate] [-OutFile <St
 ```
 
 ## DESCRIPTION
-Export certificates from Yubikey
+Export certificates from YubiKey
 
 ## EXAMPLES
 

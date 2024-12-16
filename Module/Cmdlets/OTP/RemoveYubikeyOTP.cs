@@ -14,7 +14,7 @@ namespace powershellYK.Cmdlets.OTP
         [TransformOTPSlot()]
         [ValidateOTPSlot()]
         [ArgumentCompletions("ShortPress", "LongPress")]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey OTP Slot", ParameterSetName = "Remove")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "YubiOTP Slot", ParameterSetName = "Remove")]
         public PSObject? Slot { get; set; }
         private Slot _slot { get; set; }
 
@@ -22,7 +22,7 @@ namespace powershellYK.Cmdlets.OTP
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");

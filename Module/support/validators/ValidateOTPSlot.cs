@@ -13,7 +13,7 @@ namespace powershellYK.support.validators
             {
                 return;
             }
-            throw new ArgumentException("Invalid formated slot");
+            throw new ArgumentException("Invalid formatted slot");
         }
     }
 }

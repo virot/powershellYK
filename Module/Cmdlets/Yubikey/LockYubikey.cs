@@ -13,7 +13,7 @@ namespace powershellYK.Cmdlets.OTP
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
@@ -37,7 +37,7 @@ namespace powershellYK.Cmdlets.OTP
                     {
                         YubiKeyModule._yubikey!.LockConfiguration(LockCode);
                         YubiKeyModule._yubikey = null;
-                        WriteWarning("Please remove and reinsert Yubikey");
+                        WriteWarning("Please remove and reinsert the YubiKey");
                     }
                     else
                     {

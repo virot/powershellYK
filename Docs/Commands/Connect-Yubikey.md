@@ -8,7 +8,7 @@ schema: 2.0.0
 # Connect-Yubikey
 
 ## SYNOPSIS
-Connect the module to the Yubikey
+Connect the module to the YubiKey.
 
 ## SYNTAX
 
@@ -28,7 +28,7 @@ Connect-Yubikey [-Serialnumber <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-The `Connect-Yubikey` cmdlet allows the module connect to a yubikey. The command allows specific Yubikey to be connected.
+The `Connect-Yubikey` cmdlet allows the module connect to a YubiKey. The command allows specific YubiKey to be connected.
 
 ## EXAMPLES
 
@@ -37,19 +37,19 @@ The `Connect-Yubikey` cmdlet allows the module connect to a yubikey. The command
 PS C:\> Connect-Yubikey
 ```
 
-Try to connect to a single Yubikey, will fail if number of connected Yubikeys aren't one.
+Try to connect to a single YubiKey, will fail if number of connected YubiKeys aren't one.
 
 ### Example 2
 ```powershell
 PS C:\> Connect-Yubikey -Serialnumber -Serialnumber 12345
 ```
 
-Connect to a specific Yubikey with serial 12345
+Connect to a specific YubiKey with serial 12345
 
 ## PARAMETERS
 
 ### -Serialnumber
-Connect to Yubikey with Serialnumber
+Connect to YubiKey with Serialnumber
 
 ```yaml
 Type: Int32
@@ -64,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -YubiKey
-Which yubikey to connect to
+Which YubiKey to connect to
 
 ```yaml
 Type: YubiKeyDevice

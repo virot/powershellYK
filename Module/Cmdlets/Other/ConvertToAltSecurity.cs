@@ -113,7 +113,7 @@ namespace powershellYK.Cmdlets.Other
                     }
                     else
                     {
-                        throw new Exception("Unknown publickey format");
+                        throw new Exception("Unknown public key format");
                     }
 
                     X509Extension stringSKI = new X509SubjectKeyIdentifierExtension(_certificateRequest.PublicKey, false);

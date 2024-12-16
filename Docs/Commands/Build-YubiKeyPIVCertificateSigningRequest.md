@@ -8,7 +8,7 @@ schema: 2.0.0
 # Build-YubiKeyPIVCertificateSigningRequest
 
 ## SYNOPSIS
-Creates a CSR for a slot in the Yubikey
+Creates a CSR for a slot in the YubiKey.
 
 ## SYNTAX
 

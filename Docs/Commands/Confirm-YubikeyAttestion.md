@@ -8,7 +8,7 @@ schema: 2.0.0
 # Confirm-YubikeyAttestion
 
 ## SYNOPSIS
-Confirm Yubikey Attestion
+Confirm YubiKey Attestion.
 
 ## SYNTAX
 
@@ -30,7 +30,7 @@ Confirm-YubikeyAttestion -AttestionCertificate <PSObject> -IntermediateCertifica
 ```
 
 ## DESCRIPTION
-This cmdlet allows for verification of the attestion of Yubikeys. This can be used both to verify the attestion certificate and Certificate Request with and without built in attestion.
+This cmdlet allows for verification of the attestion of YubiKeys. This can be used both to verify the attestion certificate and Certificate Request with and without built in attestion.
 
 ## EXAMPLES
 
@@ -111,7 +111,7 @@ Accept wildcard characters: False
 ```
 
 ### -IntermediateCertificate
-The intermediate certificate is signed by Yubico and unique in each Yubikey. If the intermediate attestion certificate isn't include in the Certificate Request, please provide it here. The acceptable values for this parameter are:
+The intermediate certificate is signed by Yubico and unique in each YubiKey. If the intermediate attestion certificate isn't include in the Certificate Request, please provide it here. The acceptable values for this parameter are:
 - A file path
 - A PEM string
 - X509Certificate2

@@ -8,7 +8,7 @@ schema: 2.0.0
 # Build-YubikeyPIVSignCertificate
 
 ## SYNOPSIS
-Sign a certificate request with a Yubikey
+Sign a certificate request with a YubiKey.
 
 ## SYNTAX
 
@@ -20,7 +20,7 @@ Build-YubikeyPIVSignCertificate -CertificateRequest <PSObject> -Slot <Byte>
 ```
 
 ## DESCRIPTION
-Allows the signing of a certificate request with a Yubikey. The certificate request must be in the form of a CSR in PEM format with the following properties:
+Allows the signing of a certificate request with a YubiKey. The certificate request must be in the form of a CSR in PEM format with the following properties:
 
 ## EXAMPLES
 

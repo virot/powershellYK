@@ -22,7 +22,7 @@ namespace powershellYK.Cmdlets.PIV
         public byte Slot { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Include attestion certificate in CSR")]
         public SwitchParameter Attestation { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subjectname of certificate")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subject name of certificate")]
 
         public string Subjectname { get; set; } = "CN=SubjectName to be supplied by Server,O=Fake";
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Save CSR as file")]

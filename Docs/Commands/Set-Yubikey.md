@@ -8,7 +8,7 @@ schema: 2.0.0
 # Set-Yubikey
 
 ## SYNOPSIS
-Allows basic Yubikey configuration.
+Allows basic YubiKey configuration.
 
 ## SYNTAX
 
@@ -50,7 +50,7 @@ Set-Yubikey -AutoEjectTimeout <UInt16> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Allows configuration of USB / NFC capabilities and touch eject flag.
+Allows configuration of USB / NFC capabilities and the touch eject flag.
 
 ## EXAMPLES
 
@@ -60,7 +60,7 @@ PS C:\> Set-Yubikey -UsbCapabilities All
 WARNING: Yubikey will reboot, diconnecting powershellYK.
 ```
 
-Enabled all applications over USB
+Enables all applications over USB.
 
 ## PARAMETERS
 
@@ -82,7 +82,9 @@ Accept wildcard characters: False
 ```
 
 ### -DisableNFCCapabilities
-Disable capabilities to NFC
+Disable select capabilities over NFC. The command can be used to improve
+user experience by _disabling__ YubiKey features that are not in use. 
+For example, an organization may want to disable OTP/OATH if only FIDO or PIV is used.
 
 ```yaml
 Type: YubiKeyCapabilities
@@ -98,7 +100,9 @@ Accept wildcard characters: False
 ```
 
 ### -DisableUsbCapabilities
-Disable capabilities to USB
+Disable select capabilities over USB.  The command can be used to improve
+user experience by _disabling__ YubiKey features that are not in use. 
+For example, an organization may want to disable OTP/OATH if only FIDO or PIV is used.
 
 ```yaml
 Type: YubiKeyCapabilities
@@ -114,7 +118,8 @@ Accept wildcard characters: False
 ```
 
 ### -EnableNFCCapabilities
-Enable capabilities to NFC
+Enable select capabilities over NFC. If a needed feature has been turned off,
+the command can be used to (re)enable the feature over NFC.
 
 ```yaml
 Type: YubiKeyCapabilities
@@ -130,7 +135,8 @@ Accept wildcard characters: False
 ```
 
 ### -EnableUsbCapabilities
-Enabled capabilities to USB
+Enable select capabilities over USB. If a needed feature has been turned off,
+the command can be used to (re)enable the feature over USB.
 
 ```yaml
 Type: YubiKeyCapabilities
@@ -146,7 +152,7 @@ Accept wildcard characters: False
 ```
 
 ### -NFCCapabilities
-Replace current NFC capabilities with.
+Replace current NFC capabilities with selected capabilities.
 
 ```yaml
 Type: YubiKeyCapabilities
@@ -162,7 +168,9 @@ Accept wildcard characters: False
 ```
 
 ### -SecureTransportMode
-Enable Restricted NFC / Secure Transport Mode
+Enable Restricted NFC as supported by YubiKeys with firmware `5.7` or later.
+When set, the YubiKey will limit access to capabilites over NFC until USB powered. 
+This feature is typically toggled when _shipping__ YubiKeys in tamper-evident packaging.
 
 ```yaml
 Type: SwitchParameter
@@ -177,7 +185,7 @@ Accept wildcard characters: False
 ```
 
 ### -TouchEject
-Allows loading/unloading the smartcard by touching the yubikey.
+Allows loading/unloading the smartcard by touching the YubiKey.
 
 ```yaml
 Type: Boolean
@@ -192,7 +200,7 @@ Accept wildcard characters: False
 ```
 
 ### -UsbCapabilities
-Replace current USB capabilities with.
+Replace current USB capabilities with with selected capabilities.
 
 ```yaml
 Type: YubiKeyCapabilities
