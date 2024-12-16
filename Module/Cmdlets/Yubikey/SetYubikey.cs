@@ -19,18 +19,18 @@ namespace powershellYK.Cmdlets.OTP
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Replace current USB capabilities with.", ParameterSetName = "Replace USB capabilities")]
         public YubiKeyCapabilities UsbCapabilities { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Enabled capabilities to USB", ParameterSetName = "Update USB capabilities")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Enable capabilities over USB", ParameterSetName = "Update USB capabilities")]
         public YubiKeyCapabilities EnableUsbCapabilities { get; set; } = YubiKeyCapabilities.None;
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Disable capabilities to USB", ParameterSetName = "Update USB capabilities")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Disable capabilities over USB", ParameterSetName = "Update USB capabilities")]
         public YubiKeyCapabilities DisableUsbCapabilities { get; set; } = YubiKeyCapabilities.None;
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Replace current NFC capabilities with.", ParameterSetName = "Replace NFC capabilities")]
         public YubiKeyCapabilities? NFCCapabilities { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Enable capabilities to NFC", ParameterSetName = "Update NFC capabilities")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Enable capabilities over NFC", ParameterSetName = "Update NFC capabilities")]
         public YubiKeyCapabilities EnableNFCCapabilities { get; set; } = YubiKeyCapabilities.None;
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Disable capabilities to NFC", ParameterSetName = "Update NFC capabilities")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Disable capabilities over NFC", ParameterSetName = "Update NFC capabilities")]
         public YubiKeyCapabilities DisableNFCCapabilities { get; set; } = YubiKeyCapabilities.None;
-        [Parameter(Mandatory = true, HelpMessage = "Allows loading/unloading the smartcard by touching the yubikey.", ParameterSetName = "Update Touch Eject flag")]
+        [Parameter(Mandatory = true, HelpMessage = "Allows loading/unloading the smartcard by touching the YubiKey.", ParameterSetName = "Update Touch Eject flag")]
         public bool TouchEject;
         [Parameter(Mandatory = true, HelpMessage = "Automatically eject after the given time. Implies -TouchEject:$True. Value in seconds.", ParameterSetName = "Set automatically eject")]
         public UInt16 AutoEjectTimeout = 0;
@@ -42,7 +42,7 @@ namespace powershellYK.Cmdlets.OTP
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
@@ -69,7 +69,7 @@ namespace powershellYK.Cmdlets.OTP
                             {
                                 YubiKeyModule._yubikey!.SetAutoEjectTimeout(AutoEjectTimeout);
                                 YubiKeyModule._yubikey!.SetDeviceFlags(YubiKeyModule._yubikey!.DeviceFlags | DeviceFlags.TouchEject);
-                                WriteWarning("Yubikey needs to be reinserted.");
+                                WriteWarning("YubiKey needs to be reinserted.");
                             }
                             break;
                         case "Update Touch Eject flag":
@@ -86,7 +86,7 @@ namespace powershellYK.Cmdlets.OTP
                             if ((UsbCapabilities.HasFlag(YubiKeyCapabilities.Otp) || ShouldProcess("powershellYK management", "Disable")))
                             {
                                 YubiKeyModule._yubikey!.SetEnabledUsbCapabilities((YubiKeyCapabilities)UsbCapabilities);
-                                WriteWarning("Yubikey will reboot, diconnecting powershellYK.");
+                                WriteWarning("YubiKey will reboot, diconnecting powershellYK.");
                             }
                             break;
                         case "Update USB capabilities":
@@ -98,13 +98,13 @@ namespace powershellYK.Cmdlets.OTP
                                 if ((requestedUSBCapabilities.HasFlag(YubiKeyCapabilities.Otp) || ShouldProcess("powershellYK management", "Disable")))
                                 {
                                     YubiKeyModule._yubikey!.SetEnabledUsbCapabilities(requestedUSBCapabilities);
-                                    WriteWarning("Yubikey will reboot, diconnecting powershellYK.");
+                                    WriteWarning("YubiKey will reboot, diconnecting powershellYK.");
                                 }
                             }
                             break;
                         case "Replace NFC capabilities":
                             YubiKeyModule._yubikey!.SetEnabledUsbCapabilities((YubiKeyCapabilities)UsbCapabilities);
-                            WriteWarning("Yubikey will reboot, diconnecting powershellYK.");
+                            WriteWarning("YubiKey will reboot, diconnecting powershellYK.");
                             break;
                         case "Update NFC capabilities":
                             if (EnableNFCCapabilities != YubiKeyCapabilities.None || DisableNFCCapabilities != YubiKeyCapabilities.None)
@@ -113,7 +113,7 @@ namespace powershellYK.Cmdlets.OTP
                                 requestedNFCCapabilities |= EnableNFCCapabilities;
                                 requestedNFCCapabilities &= ~DisableNFCCapabilities;
                                 YubiKeyModule._yubikey!.SetEnabledNfcCapabilities(requestedNFCCapabilities);
-                                WriteWarning("Yubikey will reboot, diconnecting powershellYK.");
+                                WriteWarning("YubiKey will reboot, diconnecting powershellYK.");
                             }
                             break;
 

@@ -33,7 +33,7 @@ namespace powershellYK.Cmdlets.PIV
         public SwitchParameter PEMEncoded { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Custom SKI for debugging", DontShow = true)]
         public string? SKI { get; set; } = null;
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subjectname of certificate")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subject name of certificate")]
         public string? Subjectname { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Certificate to be valid from")]
         public DateTimeOffset NotBefore { get; set; } = DateTimeOffset.Now;

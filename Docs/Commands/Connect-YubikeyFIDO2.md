@@ -8,7 +8,7 @@ schema: 2.0.0
 # Connect-YubikeyFIDO2
 
 ## SYNOPSIS
-Connect to the FIDO2 session
+Connect to the FIDO2 session.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Connect-YubikeyFIDO2 -PIN <SecureString> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Allows FIDO2 commands to be sent to the Yubikey
+Allows FIDO2 commands to be sent to the YubiKey
 Must be run as Administrator
 
 ## EXAMPLES

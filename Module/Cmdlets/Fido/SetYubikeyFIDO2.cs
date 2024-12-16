@@ -23,7 +23,7 @@ namespace powershellYK.Cmdlets.Fido
         [Parameter(Mandatory = true, ParameterSetName = "Set PIN minimum length", ValueFromPipeline = false, HelpMessage = "Set the minimum length of the PIN")]
         public int? MinimumPINLength { get; set; }
 
-        [Parameter(Mandatory = true, ParameterSetName = "Set force PIN change", HelpMessage = "Enable or disable the forceChangePin flag.")]
+        [Parameter(Mandatory = true, ParameterSetName = "Set force PIN change", HelpMessage = "Enable or disable the forceChangePin flag")]
         public SwitchParameter ForcePINChange { get; set; }
         
         [ValidateLength(4, 63)]
@@ -94,7 +94,7 @@ namespace powershellYK.Cmdlets.Fido
             }
             if (Windows.IsRunningAsAdministrator() == false)
             {
-                throw new Exception("You need to run this command as an administrator");
+                throw new Exception("FIDO access on Windows requires running as Administrator.");
             }
         }
 
@@ -120,7 +120,7 @@ namespace powershellYK.Cmdlets.Fido
                         }
                         else
                         {
-                            throw new Exception("Changing minimum PIN not possible with this YubiKey hardware.");
+                            throw new Exception("Changing minimum PIN is not supported in this YubiKey firmware version.");
                         }
                         break;
                         
@@ -140,7 +140,7 @@ namespace powershellYK.Cmdlets.Fido
                         else
                         {
                             // Throw an exception if the hardware does not support the feature.
-                            throw new NotSupportedException("Forcing PIN change is not supported by this YubiKey hardware.");
+                            throw new NotSupportedException("Forcing PIN change is not supported in this YubiKey firmware version.");
                         }
                         break;
                         

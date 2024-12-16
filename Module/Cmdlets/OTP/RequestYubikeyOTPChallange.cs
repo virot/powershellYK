@@ -20,7 +20,7 @@ namespace powershellYK.Cmdlets.OTP
         [TransformOTPSlot()]
         [ValidateOTPSlot()]
         [ArgumentCompletions("ShortPress", "LongPress")]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey OTP Slot")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "YubiOTP Slot")]
         public PSObject? Slot;
         [TransformHexInput()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Phrase")]

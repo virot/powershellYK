@@ -28,12 +28,12 @@ namespace powershellYK.Cmdlets.OTP
         public SwitchParameter StaticGeneratedPassword { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows for Challenge-Response configuration with all defaults", ParameterSetName = "ChallengeResponse")]
         public SwitchParameter ChallengeResponse { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Public ID, defaults to the serial number", ParameterSetName = "Yubico OTP")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Public ID, defaults to YubiKey serial number", ParameterSetName = "Yubico OTP")]
         public byte[]? PublicID { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Private ID, defaults to random 6 bytes", ParameterSetName = "Yubico OTP")]
         public byte[]? PrivateID { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret key, defaults to random 16 bytes", ParameterSetName = "Yubico OTP")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret key, defaults to random 20 bytes", ParameterSetName = "ChallengeResponse")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret Key, defaults to random 16 bytes", ParameterSetName = "Yubico OTP")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret Key, defaults to random 20 bytes", ParameterSetName = "ChallengeResponse")]
         public byte[]? SecretKey { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Upload to YubiCloud", ParameterSetName = "Yubico OTP")]
         public SwitchParameter Upload{ get; set; }
@@ -43,14 +43,14 @@ namespace powershellYK.Cmdlets.OTP
         [ValidateRange(1, 38)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Static password that will be set", ParameterSetName = "Static Generated Password")]
         public int PasswordLength { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Keyboard to be used", ParameterSetName = "Static Password")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Keyboard to be used", ParameterSetName = "Static Generated Password")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Keyboard layout to be used", ParameterSetName = "Static Password")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Keyboard layout to be used", ParameterSetName = "Static Generated Password")]
         public KeyboardLayout KeyboardLayout { get; set; } = KeyboardLayout.ModHex;
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return ", ParameterSetName = "Static Password")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return ", ParameterSetName = "Static Generated Password")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter)", ParameterSetName = "Static Password")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter)", ParameterSetName = "Static Generated Password")]
         public SwitchParameter AppendCarriageReturn { get; set; }
 
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Algorithm for challange response", ParameterSetName = "ChallengeResponse")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Algorithm for Challange-Response", ParameterSetName = "ChallengeResponse")]
         public ChallengeResponseAlgorithm Algorithm { get; set; } = ChallengeResponseAlgorithm.HmacSha1;
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Require Touch", ParameterSetName = "ChallengeResponse")]
@@ -134,7 +134,7 @@ namespace powershellYK.Cmdlets.OTP
                             {
                                 // https://github.com/Yubico/yubikey-manager/blob/fbdae2bc12ba0451bcfc62372bc9191c10ecad0c/ykman/otp.py#L95
                                 // TODO: Implement Upload to YubiCloud
-                                WriteWarning("Upload to YubiCloud is not implemented yet");
+                                WriteWarning("Upload to YubiCloud is not implemented yet!");
                             }
                             break;
 

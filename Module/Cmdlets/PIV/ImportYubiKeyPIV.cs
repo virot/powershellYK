@@ -50,9 +50,9 @@ namespace powershellYK.Cmdlets.PIV
         public PivPinPolicy PinPolicy { get; set; } = PivPinPolicy.Default;
 
         [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "TouchPolicy", ParameterSetName = "Privatekey")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "TouchPolicy", ParameterSetName = "CertificateAndKey")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "TouchPolicy", ParameterSetName = "P12")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Touch policy", ParameterSetName = "Privatekey")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Touch policy", ParameterSetName = "CertificateAndKey")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Touch policy", ParameterSetName = "P12")]
         public PivTouchPolicy TouchPolicy { get; set; } = PivTouchPolicy.Default;
 
 
@@ -144,7 +144,7 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     else if (pemContent.Contains("BEGIN EC PRIVATE KEY"))
                     {
-                        WriteDebug("Trying to read encrypted ECDsa key");
+                        WriteDebug("Trying to read encrypted ECDSA key");
                         ECDsa newECDsaPrivateKey = ECDsa.Create();
                         newECDsaPrivateKey.ImportFromEncryptedPem(pemContent.ToCharArray(), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!))!));
                         int keySize = newECDsaPrivateKey.KeySize / 8;
@@ -181,7 +181,7 @@ namespace powershellYK.Cmdlets.PIV
                         catch { }
                         try
                         {
-                            WriteDebug("Trying to read unencrypted ECDsa key");
+                            WriteDebug("Trying to read unencrypted ECDSA key");
                             ECDsa newECDsaPrivateKey = ECDsa.Create();
                             newECDsaPrivateKey.ImportFromPem(pemContent.ToCharArray());
                             int keySize = newECDsaPrivateKey.KeySize / 8;
@@ -246,7 +246,7 @@ namespace powershellYK.Cmdlets.PIV
                     else if ((_newcertificate.PublicKey.Oid.FriendlyName == "RSA" && publicKey is PivEccPublicKey) ||
                         (_newcertificate.PublicKey.Oid.FriendlyName == "ECC" && publicKey is PivRsaPublicKey))
                     {
-                        throw new Exception("Private key does match certificate type. RSA / ECDsa");
+                        throw new Exception("Private key does match certificate type. RSA / ECDSA");
                     }
                     else if (publicKey is PivRsaPublicKey)
                     {
@@ -272,7 +272,7 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     else
                     {
-                        WriteDebug("Verifying that the ECDsa key matches the public key");
+                        WriteDebug("Verifying that the ECDSA key matches the public key");
                         using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
                         ECDsa certificatePublicKey = _newcertificate.GetECDsaPublicKey()!;
                         if (certificatePublicKey.ExportParameters(false).Q.X!.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.X!) &&

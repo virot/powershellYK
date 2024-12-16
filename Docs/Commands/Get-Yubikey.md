@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-Yubikey
 
 ## SYNOPSIS
-Returns the connected Yubikey
+Returns the connected YubiKey
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Get-Yubikey [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This command will return information about the currently connected Yubikey
+This command will return information about the currently connected YubiKey
 
 ## EXAMPLES
 

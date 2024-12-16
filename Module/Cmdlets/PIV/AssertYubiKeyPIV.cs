@@ -22,7 +22,7 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "DisplayOnScreen")]
         public byte Slot { get; set; }
 
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Location of attestation certificate", ParameterSetName = "ExportToFile")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Location of the attestation certificate", ParameterSetName = "ExportToFile")]
         public string? OutFile { get; set; } = null;
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Encode output as PEM", ParameterSetName = "DisplayOnScreen")]

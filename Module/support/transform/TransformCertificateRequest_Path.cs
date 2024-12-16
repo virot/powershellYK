@@ -50,7 +50,7 @@ namespace powershellYK.support.transform
                     return CertificateRequest.LoadSigningRequest((byte[])(inputData), HashAlgorithmName.SHA256, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
                 }
 
-            throw new ArgumentException($"Unable to parse CertificateRequest from data.");
+            throw new ArgumentException($"Unable to parse certificate request from data.");
         }
     }
 }

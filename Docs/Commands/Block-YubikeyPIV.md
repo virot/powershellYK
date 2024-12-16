@@ -28,7 +28,7 @@ Block-YubikeyPIV [-PUK] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Allows you to block the PIN and/or PUK for Yubikey PIV
+Allows you to block the PIN and/or PUK for YubiKey PIV
 
 ## EXAMPLES
 
