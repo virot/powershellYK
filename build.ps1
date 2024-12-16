@@ -17,8 +17,11 @@ dotnet publish module --nologo --framework 'net8.0' --output "$($Directory.fulln
 #Remove-Item -Recurse "$($Directory.fullname)\module\runtimes\unix*"
 
 
-& "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe" sign /sha1 "8079DD82969461B1B7A8769B26262726AA0F6D89" /fd SHA256 /t http://timestamp.sectigo.com "$($Directory.fullname)\powershellYK.format.ps1xml"
+# Only Windows Powershell use format.ps1xml
+#& "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe" sign /sha1 "8079DD82969461B1B7A8769B26262726AA0F6D89" /fd SHA256 /t http://timestamp.sectigo.com "$($Directory.fullname)\powershellYK.format.ps1xml"
 & "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe" sign /sha1 "8079DD82969461B1B7A8769B26262726AA0F6D89" /fd SHA256 /t http://timestamp.sectigo.com "$($Directory.fullname)\powershellYK.dll"
+
+Read-Host -Prompt "Press Enter to continue"
 
 #Get-Item "$($Directory.fullname)\powershellYK.psd1" -PipelineVariable ItemFile |ForEach {(Get-Content $ItemFile).Replace('RootModule = ''powershellYK.dll''','RootModule = ''.\module\powershellYK.dll''', [System.StringComparison]::InvariantCultureIgnoreCase) | Set-Content -Path $ItemFile }
 #Update-ModuleManifest -Path "$($Directory.fullname)\powershellYK.psd1" -ModuleVersion (GI .\release\module\powershellYK.dll).VersionInfo.FileVersion.toString()
@@ -36,6 +39,7 @@ $parameters = @{
     LogPath = '\temp\platyps.log'
     Encoding = [System.Text.Encoding]::UTF8
 }
+Update-MarkdownHelpModule @parameters
 Update-MarkdownHelpModule @parameters
 
 New-ExternalHelp -Path '.\Docs\Commands' -OutputPath "$($Directory.fullname)" -Force
