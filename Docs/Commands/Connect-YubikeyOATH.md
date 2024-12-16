@@ -8,7 +8,7 @@ schema: 2.0.0
 # Connect-YubikeyOATH
 
 ## SYNOPSIS
-Connect to the OATH part of the connected Yubikey.
+Connect to the OATH part of the connected YubiKey.
 
 ## SYNTAX
 
@@ -26,7 +26,7 @@ Connect-YubikeyOATH -Password <SecureString> [<CommonParameters>]
 PS C:\> Connect-YubikeyOATH
 ```
 
-Connect to the OATH part of the connected Yubikey.
+Connect to the OATH part of the connected YubiKey.
 
 ## PARAMETERS
 

@@ -14,7 +14,7 @@ namespace powershellYK.support.validators
             {
                 return;
             }
-            throw new ArgumentException($"Password code must be between {MinLength} and {MaxLength}.");
+            throw new ArgumentException($"Password or passphrase must be between {MinLength} and {MaxLength}.");
         }
         public ValidateYubikeyPassword(int minLength, int maxLength)
         {

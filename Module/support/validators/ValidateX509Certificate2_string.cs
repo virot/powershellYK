@@ -19,9 +19,9 @@ namespace powershellYK.support.validators
                 {
                     return;
                 }
-                throw new ArgumentException($"Incorrect type '{((PSObject)arguments).BaseObject.GetType()}', should be X509Certificate2 or string");
+                throw new ArgumentException($"Incorrect type '{((PSObject)arguments).BaseObject.GetType()}', should be: X509Certificate2 or string");
             }
-            throw new ArgumentException($"Incorrect type '{arguments.GetType()}', should be X509Certificate2 or string");
+            throw new ArgumentException($"Incorrect type '{arguments.GetType()}', should be: X509Certificate2 or string");
         }
     }
 

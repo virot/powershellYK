@@ -8,7 +8,7 @@ schema: 2.0.0
 # Reset-YubikeyFIDO2
 
 ## SYNOPSIS
-Reset a Yubikey FIDO2 device to factory settings.
+Resets the YubiKey FIDO2 applet to factory settings.
 
 ## SYNTAX
 
@@ -17,8 +17,8 @@ Reset-YubikeyFIDO2 [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Resets a Yubikey FIDO2 device to factory settings. This will remove all stored credentials and reset the device to factory settings.
-This REQUIRES the yubikey to be inserted at a maximum 5 seconds before running this command.
+Resets the YubiKey FIDO2 applet to factory settings. This will remove all stored credentials and reset the applet to factory settings.
+This REQUIRES the YubiKey to be (re)inserted at a maximum `5` seconds _before_ running the command.
 
 ## EXAMPLES
 
@@ -27,7 +27,7 @@ This REQUIRES the yubikey to be inserted at a maximum 5 seconds before running t
 PS C:\> Reset-YubikeyFIDO2
 ```
 
-Resets the Yubikey FIDO2 device to factory settings.
+Resets the YubiKey FIDO2 applet to factory settings.
 
 ## PARAMETERS
 

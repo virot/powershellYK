@@ -16,18 +16,18 @@ namespace powershellYK.Cmdlets.PIV
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [TransformPivSlot()]
         [ValidateYubikeyPIVSlot(DontAllowAttestion = true)]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to create a new key for")]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to create a new key in")]
         public byte Slot { get; set; }
 
         //[Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Algoritm")]
         //public String Algorithm { get; set; }
 
         //[ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Pin policy")]
         public PivPinPolicy PinPolicy { get; set; } = PivPinPolicy.Default;
 
         [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "TouchPolicy")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Touch policy")]
         public PivTouchPolicy TouchPolicy { get; set; } = PivTouchPolicy.Default;
 
         [Parameter(Mandatory = false, HelpMessage = "Returns an object that represents the item with which you're working. By default, this cmdlet doesn't generate any output.")]

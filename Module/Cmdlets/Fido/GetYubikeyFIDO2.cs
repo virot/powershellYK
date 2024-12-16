@@ -24,7 +24,7 @@ namespace powershellYK.Cmdlets.Fido
             }
             if (Windows.IsRunningAsAdministrator() == false)
             {
-                throw new Exception("You need to run this command as an administrator");
+                throw new Exception("FIDO access on Windows requires running as Administrator.");
             }
         }
 

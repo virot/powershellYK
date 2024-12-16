@@ -17,18 +17,18 @@ namespace powershellYK.Cmdlets.PIV
     public class SetYubikeyPIVCommand : PSCmdlet
     {
 
-        [Parameter(Mandatory = false, ParameterSetName = "ChangePIN", ValueFromPipeline = false, HelpMessage = "Easy access to ChangePIN")]
+        [Parameter(Mandatory = false, ParameterSetName = "ChangePIN", ValueFromPipeline = false, HelpMessage = "Change the PIN")]
         public SwitchParameter ChangePIN;
-        [Parameter(Mandatory = false, ParameterSetName = "ChangePUK", ValueFromPipeline = false, HelpMessage = "Easy access to ChangePUK")]
+        [Parameter(Mandatory = false, ParameterSetName = "ChangePUK", ValueFromPipeline = false, HelpMessage = "Change the PUK (PIN Unblocking Key)")]
         public SwitchParameter ChangePUK;
-        [Parameter(Mandatory = false, ParameterSetName = "UnblockPIN", ValueFromPipeline = false, HelpMessage = "Easy access to UnblockPIN")]
+        [Parameter(Mandatory = false, ParameterSetName = "UnblockPIN", ValueFromPipeline = false, HelpMessage = "Unblock the PIN")]
         public SwitchParameter UnblockPIN;
 
 
-        [Parameter(Mandatory = true, ParameterSetName = "ChangeRetries", ValueFromPipeline = false, HelpMessage = "Change number of PIN retries")]
+        [Parameter(Mandatory = true, ParameterSetName = "ChangeRetries", ValueFromPipeline = false, HelpMessage = "Change the number of PIN retries")]
         public byte? PinRetries { get; set; }
 
-        [Parameter(Mandatory = true, ParameterSetName = "ChangeRetries", ValueFromPipeline = false, HelpMessage = "Change number of PUK retries")]
+        [Parameter(Mandatory = true, ParameterSetName = "ChangeRetries", ValueFromPipeline = false, HelpMessage = "Change the number of PUK retries")]
         public byte? PukRetries { get; set; }
         [Parameter(Mandatory = false, ParameterSetName = "ChangeRetries", ValueFromPipeline = false, HelpMessage = "Keep PUK unlocked", DontShow = true)]
         public SwitchParameter KeepPukUnlocked { get; set; }
@@ -51,12 +51,12 @@ namespace powershellYK.Cmdlets.PIV
 
         [TransformHexInput()]
         [ValidatePIVManagementKey()]
-        [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "Current ManagementKey")]
+        [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "Current Management Key")]
         public PSObject ManagementKey { get; set; } = new PSObject();
 
         [TransformHexInput()]
         [ValidatePIVManagementKey()]
-        [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "New ManagementKey")]
+        [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "New Management Key")]
         public PSObject NewManagementKey { get; set; } = new PSObject();
 
         [ValidateSet("TripleDES", "AES128", "AES192", "AES256", IgnoreCase = true)]
@@ -64,12 +64,12 @@ namespace powershellYK.Cmdlets.PIV
         public PivAlgorithm Algorithm { get; set; } = PivAlgorithm.TripleDes;
 
         [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]
-        [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "TouchPolicy")]
+        [Parameter(Mandatory = true, ParameterSetName = "ChangeManagement", ValueFromPipeline = false, HelpMessage = "Touch policy")]
         public PivTouchPolicy TouchPolicy { get; set; } = PivTouchPolicy.Default;
 
         [Parameter(Mandatory = true, ParameterSetName = "newCHUID", ValueFromPipeline = false, HelpMessage = "Generate new CHUID")]
         public SwitchParameter newCHUID { get; set; }
-        [Parameter(Mandatory = true, ParameterSetName = "Set Managementkey to PIN protected", ValueFromPipeline = false, HelpMessage = "PIN protect the Managementkey")]
+        [Parameter(Mandatory = true, ParameterSetName = "Set Managementkey to PIN protected", ValueFromPipeline = false, HelpMessage = "PIN protect the Management Key")]
         public SwitchParameter PINProtectedManagementkey { get; set; }
 
 
@@ -104,14 +104,14 @@ namespace powershellYK.Cmdlets.PIV
                     case "ChangeRetries":
                         if (new List<FormFactor>{ FormFactor.UsbABiometricKeychain, FormFactor.UsbCBiometricKeychain }.Contains(((YubiKeyDevice)YubiKeyModule._yubikey!).FormFactor))
                         {
-                            throw new Exception("Biometric Yubikeys does not support changing the number of retries");
+                            throw new Exception("Biometric YubiKeys does not support changing the number of PIN retries");
                         }
                         // powershellYK does more than the SDK here, it also blocks the PUK if the Management key is PIN protected.
                         pivSession.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
                         // Yubikey disables the PUK if the Management key is PIN protected, we do the same if not KeepPUKUnlocked is set
                         if (pivSession.GetPinOnlyMode().HasFlag(PivPinOnlyMode.PinProtected) && ! (KeepPukUnlocked.IsPresent))
                         {
-                            WriteDebug("Management key is PIN Protected, Blocking PUK");
+                            WriteDebug("Management Key is PIN protected, Blocking PUK");
                             retriesLeft = 1;
                             while (retriesLeft > 0)
                             {
@@ -124,12 +124,12 @@ namespace powershellYK.Cmdlets.PIV
                             }
                             else
                             {
-                                WriteWarning("PIN not set, remember to change.");
+                                WriteWarning("PIN not set, remember to set it!");
                             }
                         }
                         else
                         {
-                            WriteWarning("PIN and PUK codes reset to default, remember to change.");
+                            WriteWarning("PIN and PUK codes reset to default, remember to change them!");
                         }
                         break;
                     case "ChangePIN":
@@ -200,12 +200,12 @@ namespace powershellYK.Cmdlets.PIV
                             }
                             else
                             {
-                                throw new Exception("Failed to change Management key");
+                                throw new Exception("Failed to change Management Key");
                             }
                         }
                         catch (Exception e)
                         {
-                            throw new Exception("Failed to change Management key", e);
+                            throw new Exception("Failed to change Management Key", e);
                         }
                         finally
                         {

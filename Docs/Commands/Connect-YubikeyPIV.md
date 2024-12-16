@@ -28,7 +28,7 @@ Connect-YubikeyPIV -ManagementKey <PSObject> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Connects the PIV module for the currently connected Yubikey, with PIN and Managementkey as needed
+Connects the PIV module for the currently connected YubiKey, with PIN and Management Key as needed
 
 ## EXAMPLES
 
@@ -42,7 +42,7 @@ Supply values for the following parameters:
 PIN: ******
 ```
 
-Connect to PIV module with default ManagmentKey
+Connect to PIV module with default Managment Key
 
 ### Example 2
 ```powershell
@@ -51,7 +51,7 @@ PIN: ******
 PS C:\> Connect-YubikeyPIV -PIN $PIN
 ```
 
-Connect to PIV module with default Managementkey and a stored pin requested from the commandline
+Connect to PIV module with default Management key and a stored pin requested from the command line
 
 ### Example 3
 ```powershell
@@ -59,7 +59,7 @@ PS C:\> $PIN = ConvertTo-SecureString -String "123456" -AsPlainText -Force
 PS C:\> Connect-YubikeyPIV -PIN $PIN
 ```
 
-Connect to PIV module with default Managementkey and a stored pin requested constructed from code
+Connect to PIV module with default Managementkey and a stored PIN requested constructed from code
 
 ## PARAMETERS
 

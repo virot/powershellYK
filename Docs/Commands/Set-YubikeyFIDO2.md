@@ -64,13 +64,13 @@ Supply values for the following parameters:
 (Type !? for Help.)
 NewPIN: ******
 ```
-
-To change the PIN code make sure to connect to the Yubikey first.
+**NOTE**: The setting requires PIN be provided first using the `Connect-YubikeyFIDO2` command.
 
 ## PARAMETERS
 
 ### -ForcePINChange
-Enable or disable the forceChangePin flag.
+Enable the **_forceChangePin__** flag as supported by YubiKeys with firmware `5.7` or later.
+When set, the feature will force the user to change the FIDO2 applet PIN on first use.
 
 ```yaml
 Type: SwitchParameter
@@ -83,9 +83,17 @@ Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
+## EXAMPLES
+
+### Example
+```powershell
+PS C:\> Set-YubikeyFIDO2 -ForcePINChange
+```
+**NOTE**: The setting requires PIN be provided first using the `Connect-YubikeyFIDO2` command.
 
 ### -MinimumPINLength
-Set the minimum length of the PIN
+Set the _minimum_ length of the PIN as supported by YubiKeys with firmware `5.7` or later.
+When set, any PIN selected by the user must equal to or longer than the enforced value.
 
 ```yaml
 Type: Int32

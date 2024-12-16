@@ -52,7 +52,7 @@ Accept wildcard characters: False
 ```
 
 ### -PEMEncoded
-Encode output as PEM
+Encode output as PEM.
 
 ```yaml
 Type: SwitchParameter
@@ -67,7 +67,7 @@ Accept wildcard characters: False
 ```
 
 ### -Slot
-Yubikey PIV Slot
+YubiKey PIV Slot.
 
 ```yaml
 Type: Byte

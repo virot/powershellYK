@@ -19,8 +19,8 @@ namespace powershellYK.Cmdlets.PIV
     {
         [TransformHexInput()]
         [ValidatePIVManagementKey()]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ManagementKey", ParameterSetName = "PIN&Management")]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ManagementKey", ParameterSetName = "Management")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Management Key", ParameterSetName = "PIN&Management")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Management Key", ParameterSetName = "Management")]
         public PSObject? ManagementKey;
         [ValidateYubikeyPIN(6, 8)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIN", ParameterSetName = "PIN&Management")]

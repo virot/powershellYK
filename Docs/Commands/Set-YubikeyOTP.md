@@ -37,7 +37,12 @@ Set-YubikeyOTP -Slot <PSObject> [-ChallengeResponse] [-SecretKey <Byte[]>]
 ```
 
 ## DESCRIPTION
-Allows the configuration of the Yubikey OTP slots. The Yubikey OTP slots can be configured with a static password, a HOTP code, Challange Response or a Yubico OTP configuration.
+Allows the configuration of the YubiKey OTP slots (2). The YubiKey OTP slots can be configured with: 
+
+- Static password (or a split password), 
+- HOTP (OATH) secret for One Time Passwords (OTPs), 
+- Challange-Response (YubiOTP or HMAC-SHA1 format)
+- YubiOTP (Yubico OTP)
 
 ## EXAMPLES
 
@@ -46,7 +51,7 @@ Allows the configuration of the Yubikey OTP slots. The Yubikey OTP slots can be 
 PS C:\> Set-YubikeyOTP -Slot 1 -StaticPassword -PasswordLength 16 -AppendCarriageReturn
 ```
 
-Created a static password with a length of 16 characters and appends a carriage return.
+Creates a static password with a length of 16 characters and appends a carriage return (Enter).
 
 ### Example 2
 ```powershell
@@ -54,7 +59,7 @@ PS C:\> Set-YubikeyOTP -Slot 1 -StaticPassword -KeyboardLayout sv_SE -Password (
 Password: ******
 ```
 
-Creates a statick password for a Swedish keyboard layout.
+Creates a static password using the Swedish keyboard layout.
 
 ### Example 3
 ```powershell
@@ -65,7 +70,7 @@ SecretKeyByte         SecretKey
 {164, 239, 163, 131…} A4EFA38352F551FF4E1711322BDD1D952CF659DF
 ```
 
-Generate a new Challenge Response Secret Key. The ke will be printed after it is stored.
+Generates a new Challenge-Response Secret Key. The key will be printed after it is stored.
 
 ### Example 4
 ```powershell
@@ -73,12 +78,12 @@ PS C:\> $OldKey = [powershellYK.support.HexConverter]::StringToByteArray('A4EFA3
 PS C:\> Set-YubikeyOTP -Slot 1 -ChallengeResponse -SecretKey $OldKey
 ```
 
-Generate a new Challenge Response Secret Key. The ke will be printed after it is stored.
+Generate a new Challenge-Response Secret Key. The key will be printed after it is stored.
 
 ## PARAMETERS
 
 ### -Algorithm
-Algorithm for challange response
+Algorithm for Challange-Response.
 
 ```yaml
 Type: ChallengeResponseAlgorithm
@@ -94,7 +99,9 @@ Accept wildcard characters: False
 ```
 
 ### -AppendCarriageReturn
-Append carriage return
+Append carriage return (Enter). This parameter can improve user experience
+and login performance by effectively submitting the credential on the input
+field and "pressing Enter" on behalf of the user.
 
 ```yaml
 Type: SwitchParameter
@@ -109,7 +116,7 @@ Accept wildcard characters: False
 ```
 
 ### -ChallengeResponse
-Allows for Challenge-Response configuration with all defaults
+Allows for Challenge-Response configuration with all defaults.
 
 ```yaml
 Type: SwitchParameter
@@ -124,7 +131,7 @@ Accept wildcard characters: False
 ```
 
 ### -KeyboardLayout
-Keyboard to be used
+Keyboard layout to be used.
 
 ```yaml
 Type: KeyboardLayout
@@ -140,7 +147,7 @@ Accept wildcard characters: False
 ```
 
 ### -Password
-Static password that will be set
+Static password that will be set.
 
 ```yaml
 Type: SecureString
@@ -155,7 +162,7 @@ Accept wildcard characters: False
 ```
 
 ### -PasswordLength
-Static password that will be set
+Length of static password that will be set.
 
 ```yaml
 Type: Int32
@@ -170,7 +177,7 @@ Accept wildcard characters: False
 ```
 
 ### -PrivateID
-Sets the Private ID, defaults to random 6 bytes
+Sets the Private ID, defaults to random 6 bytes.
 
 ```yaml
 Type: Byte[]
@@ -185,7 +192,7 @@ Accept wildcard characters: False
 ```
 
 ### -PublicID
-Sets the Public ID, defaults to the serialnumber
+Sets the Public ID, defaults to the YubiKey serial number.
 
 ```yaml
 Type: Byte[]
@@ -200,7 +207,7 @@ Accept wildcard characters: False
 ```
 
 ### -RequireTouch
-Require Touch
+Require Touch.
 
 ```yaml
 Type: SwitchParameter
@@ -215,7 +222,7 @@ Accept wildcard characters: False
 ```
 
 ### -SecretKey
-Sets the Secret key, defaults to random 16 bytes
+Sets the Secret Key, defaults to random 16 bytes.
 
 ```yaml
 Type: Byte[]
@@ -230,7 +237,7 @@ Accept wildcard characters: False
 ```
 
 ### -Slot
-Yubikey OTP Slot
+Yubikey OTP Slot.
 
 ```yaml
 Type: PSObject
@@ -245,7 +252,7 @@ Accept wildcard characters: False
 ```
 
 ### -StaticGeneratedPassword
-Allows configuration with all defaults
+Allows configuration with all defaults.
 
 ```yaml
 Type: SwitchParameter
@@ -260,7 +267,7 @@ Accept wildcard characters: False
 ```
 
 ### -StaticPassword
-Allows configuration with all defaults
+Allows configuration with all defaults.
 
 ```yaml
 Type: SwitchParameter
@@ -275,7 +282,7 @@ Accept wildcard characters: False
 ```
 
 ### -Upload
-Upload to Yubicloud
+Upload to YubiCloud.
 
 ```yaml
 Type: SwitchParameter
@@ -290,7 +297,7 @@ Accept wildcard characters: False
 ```
 
 ### -YubicoOTP
-Allows configuration with all defaults
+Allows configuration with all defaults.
 
 ```yaml
 Type: SwitchParameter

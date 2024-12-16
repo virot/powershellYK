@@ -11,7 +11,7 @@ namespace powershellYK.Cmdlets.PIV
     public class ResetYubikeyPIVCommand : Cmdlet
     {
 
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Force reset")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Force reset of the PIV applet")]
         public SwitchParameter Force { get; set; } = false;
 
         protected override void BeginProcessing()
