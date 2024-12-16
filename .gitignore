@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Module/powershellYK.csproj
+/.gitignore
+/Module/powershellYK.csproj
+/Module/powershellYK.csproj
