@@ -1,4 +1,4 @@
----
+ï»¿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-YubikeyFIDO2
 
 ## SYNOPSIS
-Get FIDO2 information from Yubikey
+Get FIDO2 information from YubiKey
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Get-YubikeyFIDO2 [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Lists information about the FIDO2 capabilities of a Yubikey.
+Lists information about the FIDO2 capabilities of a YubiKey.
 For instance minimum PIN length
 
 ## EXAMPLES
@@ -27,9 +27,9 @@ For instance minimum PIN length
 PS C:\> Get-YubikeyFIDO2
 
 Versions                         : {U2F_V2, FIDO_2_0, FIDO_2_1_PRE, FIDO_2_1}
-Extensions                       : {credProtect, hmac-secret, largeBlobKey, credBlob…}
+Extensions                       : {credProtect, hmac-secret, largeBlobKey, credBlobâ€¦}
 Aaguid                           : System.ReadOnlyMemory<Byte>[16]
-Options                          : {[rk, True], [up, True], [plat, False], [alwaysUv, False]…}
+Options                          : {[rk, True], [up, True], [plat, False], [alwaysUv, False]â€¦}
 MaximumMessageSize               : 1280
 PinUvAuthProtocols               : {ProtocolTwo, ProtocolOne}
 MaximumCredentialCountInList     : 8

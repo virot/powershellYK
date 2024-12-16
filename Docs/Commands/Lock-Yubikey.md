@@ -8,7 +8,7 @@ schema: 2.0.0
 # Lock-Yubikey
 
 ## SYNOPSIS
-Lock the Yubikey configuration
+Lock the YubiKey configuration
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Lock-Yubikey -LockCode <Byte[]> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Locks the Yubikey behind a 16 byte lock code. This lock code is required to unlock the Yubikey configuration.
+Locks the YubiKey behind a 16 byte lock code. This lock code is required to unlock the Yubikey configuration.
 
 ## EXAMPLES
 
