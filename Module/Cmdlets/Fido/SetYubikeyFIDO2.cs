@@ -83,6 +83,9 @@ namespace powershellYK.Cmdlets.Fido
 
         protected override void BeginProcessing()
         {
+            // If we are setting the PIN, make sure we have a YubiKey connected.
+            // Otherwise make sure we have a FIDO2 session authenticated.
+            if (ParameterSetName == "Set PIN")
             {
                 if (YubiKeyModule._yubikey is null)
                 {
@@ -92,6 +95,21 @@ namespace powershellYK.Cmdlets.Fido
                     WriteDebug($"Successfully connected");
                 }
             }
+            else
+            {
+                // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
+                if (YubiKeyModule._fido2PIN is null)
+                {
+                    WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2");
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2").Invoke();
+                    if (YubiKeyModule._fido2PIN is null)
+                    {
+                        throw new Exception("Connect-YubikeyFIDO2 failed to connect FIDO2 application.");
+                    }
+                }
+            }
+
+            // Check if running as Administrator
             if (Windows.IsRunningAsAdministrator() == false)
             {
                 throw new Exception("FIDO access on Windows requires running as Administrator.");
