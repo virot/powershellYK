@@ -1,5 +1,6 @@
 ﻿using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
+using powershellYK.YubiKey;
 
 namespace powershellYK.Cmdlets.Yubikey
 {
@@ -10,17 +11,30 @@ namespace powershellYK.Cmdlets.Yubikey
         {
             if (YubiKeyModule._yubikey is null)
             {
-                var yubiKeys = YubiKeyDevice.FindAll();
-                if (yubiKeys.Count() == 1)
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                try
                 {
-                    YubiKeyModule._yubikey = (YubiKeyDevice)yubiKeys.First();
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    myPowersShellInstance.Invoke();
+                    WriteDebug($"Successfully connected");
                 }
-                else
+                catch (Exception e)
                 {
-                    new Exception("None or multiple YubiKeys found");
+                    throw new Exception(e.Message, e);
                 }
             }
-            WriteObject(YubiKeyModule._yubikey);
+        }
+        protected override void ProcessRecord()
+        {
+            try
+            {
+                WriteObject(new YubikeyInformation(yubiKey: (YubiKeyDevice)YubiKeyDevice.FindAll().Where(yk => yk.SerialNumber == YubiKeyModule._yubikey!.SerialNumber).First()));
+            }
+            catch (System.InvalidOperationException e)
+            {
+                WriteWarning("No yubikeys found, Yubikeys with ONLY FIDO interfaces enabled requires Administrator permissions in Windows");
+                throw new Exception(e.Message, e);
+            }
         }
     }
 }
