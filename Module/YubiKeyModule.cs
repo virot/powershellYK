@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using Yubico.YubiKey.Fido2;
+using Yubico.Core.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace powershellYK
 {
@@ -99,6 +101,10 @@ namespace powershellYK
                     NativeLibrary.TryLoad(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/runtimes/osx-x64/native/libYubico.NativeShims.dylib", out handle);
                 }
             }
+
+            // Disable the Yubico SDK logging
+            // This can be reenabled by **Enable-PowershellYKLogging**
+            Log.ConfigureLoggerFactory(builder => builder.ClearProviders());
         }
     }
 

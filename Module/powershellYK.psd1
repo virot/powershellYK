@@ -123,6 +123,7 @@ CmdletsToExport = @(
  'Rename-YubikeyUVFingerprint',
  'Confirm-YubikeyAttestion',
  'ConvertTo-AltSecurity',
+ 'Enable-PowershellYKSDKLogging',
  'Get-PowershellYKInfo'
 )
 
