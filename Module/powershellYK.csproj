@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Management.Automation" Version="7.4.6" />
-    <PackageReference Include="Yubico.YubiKey" Version="1.11.0" />
+    <PackageReference Include="Yubico.YubiKey" Version="1.12.1" />
   </ItemGroup>
 
   <ItemGroup>
