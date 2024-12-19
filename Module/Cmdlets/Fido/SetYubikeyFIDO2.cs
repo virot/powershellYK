@@ -25,7 +25,7 @@ namespace powershellYK.Cmdlets.Fido
 
         [Parameter(Mandatory = true, ParameterSetName = "Set force PIN change", HelpMessage = "Enable or disable the forceChangePin flag")]
         public SwitchParameter ForcePINChange { get; set; }
-        
+
         [ValidateLength(4, 63)]
         [Parameter(Mandatory = true, ParameterSetName = "Send MinimumPIN to RelyingParty", ValueFromPipeline = false, HelpMessage = "To which RelyingParty should minimum PIN be sent")]
         public string? MinimumPINRelyingParty { get; set; }
@@ -42,7 +42,8 @@ namespace powershellYK.Cmdlets.Fido
                     // if no minimum pin length is set, then set it to 63.
                     int minPinLength = fido2Session.AuthenticatorInfo.MinimumPinLength ?? 4;
                     // Verify that the yubikey FIDO2 has a PIN already set. If there is a PIN set then make sure we get the old PIN.
-                    if (fido2Session.AuthenticatorInfo.Options!.Any(x => x.Key == AuthenticatorOptions.clientPin && x.Value == true) && (YubiKeyModule._fido2PIN is null)) {
+                    if (fido2Session.AuthenticatorInfo.Options!.Any(x => x.Key == AuthenticatorOptions.clientPin && x.Value == true) && (YubiKeyModule._fido2PIN is null))
+                    {
                         oldPIN = new Collection<Attribute>() {
                             new ParameterAttribute() { Mandatory = true, HelpMessage = "Old PIN, required to change the PIN code.", ParameterSetName = "Set PIN", ValueFromPipeline = false},
                             new ValidateYubikeyPIN(4, 63)
@@ -83,6 +84,9 @@ namespace powershellYK.Cmdlets.Fido
 
         protected override void BeginProcessing()
         {
+            // If we are setting the PIN, make sure we have a YubiKey connected.
+            // Otherwise make sure we have a FIDO2 session authenticated.
+            if (ParameterSetName == "Set PIN")
             {
                 if (YubiKeyModule._yubikey is null)
                 {
@@ -92,6 +96,21 @@ namespace powershellYK.Cmdlets.Fido
                     WriteDebug($"Successfully connected");
                 }
             }
+            else
+            {
+                // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
+                if (YubiKeyModule._fido2PIN is null)
+                {
+                    WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2");
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2").Invoke();
+                    if (YubiKeyModule._fido2PIN is null)
+                    {
+                        throw new Exception("Connect-YubikeyFIDO2 failed to connect FIDO2 application.");
+                    }
+                }
+            }
+
+            // Check if running as Administrator
             if (Windows.IsRunningAsAdministrator() == false)
             {
                 throw new Exception("FIDO access on Windows requires running as Administrator.");
@@ -123,7 +142,7 @@ namespace powershellYK.Cmdlets.Fido
                             throw new Exception("Changing minimum PIN is not supported in this YubiKey firmware version.");
                         }
                         break;
-                        
+
                     // Set force PIN change will expire the PIN on initial use forcing the user to set a new PIN.
                     case "Set force PIN change":
                         // Check if the YubiKey supports the feature.
@@ -143,7 +162,7 @@ namespace powershellYK.Cmdlets.Fido
                             throw new NotSupportedException("Forcing PIN change is not supported in this YubiKey firmware version.");
                         }
                         break;
-                        
+
                     case "Set PIN":
 
                         if (this.MyInvocation.BoundParameters.ContainsKey("OldPIN"))

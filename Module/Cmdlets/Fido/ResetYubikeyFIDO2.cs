@@ -17,14 +17,18 @@ namespace powershellYK.Cmdlets.Fido
 
         protected override void BeginProcessing()
         {
-            if (YubiKeyModule._yubikey is null)
+            // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
+            if (YubiKeyModule._fido2PIN is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
-                myPowersShellInstance.Invoke();
-                WriteDebug("Successfully connected");
+                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2").Invoke();
+                if (YubiKeyModule._fido2PIN is null)
+                {
+                    throw new Exception("Connect-YubikeyFIDO2 failed to connect FIDO2 application.");
+                }
             }
 
+            // Check if running as Administrator
             if (Windows.IsRunningAsAdministrator() == false)
             {
                 throw new Exception("FIDO access on Windows requires running as Administrator.");
@@ -42,7 +46,7 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     // Use a stopwatch to make sure we wont get stuck in an infinite loop.
                     Stopwatch stopwatch = new Stopwatch();
-                   
+
                     // Register event handlers for remove and (re)insert
                     yubiKeyDeviceListener.Removed += YubiKeyRemoved;
                     yubiKeyDeviceListener.Arrived += YubiKeyArrived;
@@ -59,7 +63,7 @@ namespace powershellYK.Cmdlets.Fido
                             throw new Exception("YubiKey was not removed within 10 seconds. Reset aborted.");
                         }
                     }
-                    
+
                     // Wait for the YubiKey to be reinserted
                     // If the YubiKey is not removed within 10 seconds, the reset will be aborted
                     stopwatch.Restart();
@@ -100,7 +104,7 @@ namespace powershellYK.Cmdlets.Fido
                         case ResponseStatus.Success:
                             break;
                     }
-                    
+
                     YubiKeyModule._fido2PIN = null;
                 }
             }

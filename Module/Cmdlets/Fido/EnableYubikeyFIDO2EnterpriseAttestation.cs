@@ -15,15 +15,19 @@ namespace powershellYK.Cmdlets.Fido
     {
         protected override void BeginProcessing()
         {
+            // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
+            if (YubiKeyModule._fido2PIN is null)
             {
-                if (YubiKeyModule._yubikey is null)
+                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2").Invoke();
+                if (YubiKeyModule._fido2PIN is null)
                 {
-                    WriteDebug("No YubiKey selected, calling Connect-Yubikey");
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
-                    myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    throw new Exception("Connect-YubikeyFIDO2 failed to connect FIDO2 application.");
                 }
             }
+
+
+            // Check if running as Administrator
             if (Windows.IsRunningAsAdministrator() == false)
             {
                 throw new Exception("FIDO access on Windows requires running as Administrator.");
@@ -36,7 +40,7 @@ namespace powershellYK.Cmdlets.Fido
             {
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
                 fido2Session.AuthenticatorInfo.Options!.Any(v => v.Key.Contains(AuthenticatorOptions.ep));
-                if (! (fido2Session.AuthenticatorInfo.Options!.Any(v => v.Key.Contains(AuthenticatorOptions.ep))) || fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.ep) == OptionValue.False)
+                if (!(fido2Session.AuthenticatorInfo.Options!.Any(v => v.Key.Contains(AuthenticatorOptions.ep))) || fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.ep) == OptionValue.False)
                 {
                     throw new Exception("Enterprise attestation not supported by this YubiKey.");
                 }
