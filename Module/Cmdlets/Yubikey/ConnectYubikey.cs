@@ -1,4 +1,5 @@
 ﻿using powershellYK.Cmdlets.Other;
+using powershellYK.support;
 using System.Diagnostics;
 using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
@@ -55,6 +56,7 @@ namespace powershellYK.Cmdlets.Yubikey
             if (_yubikey is not null)
             {
                 YubiKeyModule._yubikey = _yubikey;
+                Console.WriteLine($"Connected to {PowershellYKText.FriendlyName(_yubikey)} with serial: {_yubikey.SerialNumber}");
             }
             else
             {
