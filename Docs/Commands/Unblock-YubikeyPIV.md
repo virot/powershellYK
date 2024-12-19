@@ -8,7 +8,7 @@ schema: 2.0.0
 # Unblock-YubikeyPIV
 
 ## SYNOPSIS
-Unblock a PIN locked Yubikey PIV
+Unblock a PIN locked YubiKey PIV.
 
 ## SYNTAX
 

@@ -8,7 +8,7 @@ schema: 2.0.0
 # Reset-YubikeyFIDO2
 
 ## SYNOPSIS
-Resets the YubiKey FIDO2 applet to factory settings.
+Reset a YubiKey FIDO2 device to factory settings.
 
 ## SYNTAX
 

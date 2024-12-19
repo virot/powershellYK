@@ -8,7 +8,7 @@ schema: 2.0.0
 # Rename-YubikeyUVFingerprint
 
 ## SYNOPSIS
-Changes the friendlyname of a fingerprint on the yubikey Bio.
+Changes the friendlyname of a fingerprint on the YubiKey Bio.
 
 ## SYNTAX
 

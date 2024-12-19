@@ -18,19 +18,19 @@ Create attestation certificate
 Block out PIN or PUK codes
 
 ### [Build-YubiKeyPIVCertificateSigningRequest](Build-YubiKeyPIVCertificateSigningRequest.md)
-Creates a CSR for a slot in the YubiKey
+Creates a CSR for a slot in the YubiKey.
 
 ### [Build-YubikeyPIVSignCertificate](Build-YubikeyPIVSignCertificate.md)
-Sign a certificate request with a YubiKey
+Sign a certificate request with a YubiKey.
 
 ### [Confirm-YubikeyAttestion](Confirm-YubikeyAttestion.md)
-Confirm YubiKey Attestion
+Confirm YubiKey Attestion.
 
 ### [Connect-Yubikey](Connect-Yubikey.md)
-Connect the module to the YubiKey
+Connect the module to the YubiKey.
 
 ### [Connect-YubikeyFIDO2](Connect-YubikeyFIDO2.md)
-Connect to the FIDO2 session
+Connect to the FIDO2 session.
 
 ### [Connect-YubikeyOATH](Connect-YubikeyOATH.md)
 Connect to the OATH part of the connected YubiKey.
@@ -43,6 +43,9 @@ Generate the alt security security identities for a certificate
 
 ### [Disconnect-Yubikey](Disconnect-Yubikey.md)
 Disconnects the YubiKey
+
+### [Enable-powershellYKSDKLogging](Enable-powershellYKSDKLogging.md)
+Enables logging from the Yubico SDK.
 
 ### [Enable-YubikeyFIDO2EnterpriseAttestation](Enable-YubikeyFIDO2EnterpriseAttestation.md)
 Enables the Enterprise Attestion feature on the YubiKey FIDO2 device.
@@ -105,13 +108,13 @@ Set / update password
 Register a new fingerprint on the YubiKey Bio.
 
 ### [Remove-YubikeyOATHAccount](Remove-YubikeyOATHAccount.md)
-Removes an account from the YubiKey OATH application
+Removes an account from the YubiKey OATH application.
 
 ### [Remove-YubikeyOTP](Remove-YubikeyOTP.md)
-Remove YubiKey OTP slot
+Remove YubiKey OTP slot.
 
 ### [Remove-YubikeyPIVKey](Remove-YubikeyPIVKey.md)
-Remove a key from a YubiKey PIV slot
+Remove a key from a YubiKey PIV slot.
 
 ### [Remove-YubikeyUVFingerprint](Remove-YubikeyUVFingerprint.md)
 {{ Fill in the Synopsis }}
@@ -123,10 +126,10 @@ Rename OATH account
 Changes the friendlyname of a fingerprint on the YubiKey Bio.
 
 ### [Request-YubikeyOATHCode](Request-YubikeyOATHCode.md)
-Displays TOTP / HOTP codes for YubiKey OATH credentials
+Displays TOTP / HOTP codes for YubiKey OATH credentials.
 
 ### [Request-YubikeyOTPChallange](Request-YubikeyOTPChallange.md)
-Send Challaenge to YubiKey
+Send Challaenge to YubiKey.
 
 ### [Reset-YubikeyFIDO2](Reset-YubikeyFIDO2.md)
 Reset a YubiKey FIDO2 device to factory settings.
@@ -135,7 +138,7 @@ Reset a YubiKey FIDO2 device to factory settings.
 Reset the entire YubiKey OATH application.
 
 ### [Reset-YubikeyPIV](Reset-YubikeyPIV.md)
-Resets the PIV part of your YubiKey
+Resets the PIV part of your YubiKey.
 
 ### [Set-Yubikey](Set-Yubikey.md)
 Allows basic YubiKey configuration.
@@ -153,13 +156,13 @@ Configure OTP slots
 Allows the updating of PIV settings
 
 ### [Switch-YubikeyOTP](Switch-YubikeyOTP.md)
-Switch places for the configuration of the YubiKey OTP
+Switch places for the configuration of the YubiKey OTP.
 
 ### [Unblock-YubikeyPIV](Unblock-YubikeyPIV.md)
-Unblock a PIN locked YubiKey PIV
+Unblock a PIN locked YubiKey PIV.
 
 ### [Unlock-Yubikey](Unlock-Yubikey.md)
-Unlocks the configuration lock on the YubiKey
+Unlocks the configuration lock on the YubiKey.
 
 ### [Unprotect-YubikeyOATH](Unprotect-YubikeyOATH.md)
 {{ Fill in the Synopsis }}

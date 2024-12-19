@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-YubikeyOATHAccount
 
 ## SYNOPSIS
-Removes an account from the Yubikey OATH application
+Removes an account from the YubiKey OATH application.
 
 ## SYNTAX
 

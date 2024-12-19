@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-YubikeyPIVKey
 
 ## SYNOPSIS
-Remove a key from a Yubikey PIV slot
+Remove a key from a YubiKey PIV slot.
 
 ## SYNTAX
 

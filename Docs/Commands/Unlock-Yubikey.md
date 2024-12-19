@@ -8,7 +8,7 @@ schema: 2.0.0
 # Unlock-Yubikey
 
 ## SYNOPSIS
-Unlocks the configuration lock on the Yubikey
+Unlocks the configuration lock on the YubiKey.
 
 ## SYNTAX
 

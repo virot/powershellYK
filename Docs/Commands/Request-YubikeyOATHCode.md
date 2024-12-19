@@ -8,7 +8,7 @@ schema: 2.0.0
 # Request-YubikeyOATHCode
 
 ## SYNOPSIS
-Displays TOTP / HOTP codes for Yubikey OATH credentials
+Displays TOTP / HOTP codes for YubiKey OATH credentials.
 
 ## SYNTAX
 
