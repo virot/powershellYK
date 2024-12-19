@@ -46,7 +46,7 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     // Use a stopwatch to make sure we wont get stuck in an infinite loop.
                     Stopwatch stopwatch = new Stopwatch();
-                   
+
                     // Register event handlers for remove and (re)insert
                     yubiKeyDeviceListener.Removed += YubiKeyRemoved;
                     yubiKeyDeviceListener.Arrived += YubiKeyArrived;
@@ -63,7 +63,7 @@ namespace powershellYK.Cmdlets.Fido
                             throw new Exception("YubiKey was not removed within 10 seconds. Reset aborted.");
                         }
                     }
-                    
+
                     // Wait for the YubiKey to be reinserted
                     // If the YubiKey is not removed within 10 seconds, the reset will be aborted
                     stopwatch.Restart();
@@ -104,7 +104,7 @@ namespace powershellYK.Cmdlets.Fido
                         case ResponseStatus.Success:
                             break;
                     }
-                    
+
                     YubiKeyModule._fido2PIN = null;
                 }
             }

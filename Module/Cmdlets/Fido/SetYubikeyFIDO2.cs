@@ -25,7 +25,7 @@ namespace powershellYK.Cmdlets.Fido
 
         [Parameter(Mandatory = true, ParameterSetName = "Set force PIN change", HelpMessage = "Enable or disable the forceChangePin flag")]
         public SwitchParameter ForcePINChange { get; set; }
-        
+
         [ValidateLength(4, 63)]
         [Parameter(Mandatory = true, ParameterSetName = "Send MinimumPIN to RelyingParty", ValueFromPipeline = false, HelpMessage = "To which RelyingParty should minimum PIN be sent")]
         public string? MinimumPINRelyingParty { get; set; }
@@ -42,7 +42,8 @@ namespace powershellYK.Cmdlets.Fido
                     // if no minimum pin length is set, then set it to 63.
                     int minPinLength = fido2Session.AuthenticatorInfo.MinimumPinLength ?? 4;
                     // Verify that the yubikey FIDO2 has a PIN already set. If there is a PIN set then make sure we get the old PIN.
-                    if (fido2Session.AuthenticatorInfo.Options!.Any(x => x.Key == AuthenticatorOptions.clientPin && x.Value == true) && (YubiKeyModule._fido2PIN is null)) {
+                    if (fido2Session.AuthenticatorInfo.Options!.Any(x => x.Key == AuthenticatorOptions.clientPin && x.Value == true) && (YubiKeyModule._fido2PIN is null))
+                    {
                         oldPIN = new Collection<Attribute>() {
                             new ParameterAttribute() { Mandatory = true, HelpMessage = "Old PIN, required to change the PIN code.", ParameterSetName = "Set PIN", ValueFromPipeline = false},
                             new ValidateYubikeyPIN(4, 63)
@@ -141,7 +142,7 @@ namespace powershellYK.Cmdlets.Fido
                             throw new Exception("Changing minimum PIN is not supported in this YubiKey firmware version.");
                         }
                         break;
-                        
+
                     // Set force PIN change will expire the PIN on initial use forcing the user to set a new PIN.
                     case "Set force PIN change":
                         // Check if the YubiKey supports the feature.
@@ -161,7 +162,7 @@ namespace powershellYK.Cmdlets.Fido
                             throw new NotSupportedException("Forcing PIN change is not supported in this YubiKey firmware version.");
                         }
                         break;
-                        
+
                     case "Set PIN":
 
                         if (this.MyInvocation.BoundParameters.ContainsKey("OldPIN"))

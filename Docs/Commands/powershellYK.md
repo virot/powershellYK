@@ -143,6 +143,9 @@ Allows basic YubiKey configuration.
 ### [Set-YubikeyFIDO2](Set-YubikeyFIDO2.md)
 Allows settings FIDO2 options.
 
+### [Set-YubikeyFIDO2PIN](Set-YubikeyFIDO2PIN.md)
+Set the PIN for the FIDO2 application on the YubiKey.
+
 ### [Set-YubikeyOTP](Set-YubikeyOTP.md)
 Configure OTP slots
 
