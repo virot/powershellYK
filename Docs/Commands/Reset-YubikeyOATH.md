@@ -8,7 +8,7 @@ schema: 2.0.0
 # Reset-YubikeyOATH
 
 ## SYNOPSIS
-Reset the entire Yubikey OATH application.
+Reset the entire YubiKey OATH application.
 
 ## SYNTAX
 

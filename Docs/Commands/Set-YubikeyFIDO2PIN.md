@@ -1,4 +1,4 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:

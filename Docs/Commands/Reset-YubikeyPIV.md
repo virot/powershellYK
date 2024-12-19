@@ -8,7 +8,7 @@ schema: 2.0.0
 # Reset-YubikeyPIV
 
 ## SYNOPSIS
-Resets the PIV part of your Yubikey
+Resets the PIV part of your YubiKey.
 
 ## SYNTAX
 

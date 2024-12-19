@@ -8,7 +8,7 @@ schema: 2.0.0
 # Request-YubikeyOTPChallange
 
 ## SYNOPSIS
-Send Challaenge to Yubikey
+Send Challaenge to YubiKey.
 
 ## SYNTAX
 

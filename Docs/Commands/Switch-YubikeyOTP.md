@@ -8,7 +8,7 @@ schema: 2.0.0
 # Switch-YubikeyOTP
 
 ## SYNOPSIS
-Switch places for the configuration of the Yubikey OTP
+Switch places for the configuration of the YubiKey OTP.
 
 ## SYNTAX
 

@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-YubikeyOTP
 
 ## SYNOPSIS
-Remove Yubikey OTP slot
+Remove YubiKey OTP slot.
 
 ## SYNTAX
 

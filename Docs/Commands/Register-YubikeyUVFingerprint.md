@@ -8,7 +8,7 @@ schema: 2.0.0
 # Register-YubikeyUVFingerprint
 
 ## SYNOPSIS
-Register a new fingerprint on the yubikey Bio.
+Register a new fingerprint on the YubiKey Bio.
 
 ## SYNTAX
 
