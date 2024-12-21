@@ -23,6 +23,11 @@ namespace powershellYK.Cmdlets.PIV
             {
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
+                if (!((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivMoveOrDeleteKey))
+                {
+                    throw new Exception("YubiKey version does not support removing keys");
+                }
+
                 if (ShouldProcess($"Key in slot {Slot}", "Remove"))
                 {
                     pivSession.DeleteKey(Slot);
