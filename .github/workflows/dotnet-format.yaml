@@ -1,0 +1,30 @@
+# dotnet-format.yaml
+name: dotnet Format
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.x.x' # Specify the .NET version you're using
+
+    - name: Run dotnet format
+      run: dotnet format --check
+      continue-on-error: false
+
+    - name: Check for uncommitted changes
+      run: |
+        if [[ $(git status --porcelain) ]]; then
+          echo "There are uncommitted changes after running dotnet format."
+          exit 1
+        fi
