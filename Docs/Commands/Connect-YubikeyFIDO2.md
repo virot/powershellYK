@@ -13,7 +13,7 @@ Connect to the FIDO2 session.
 ## SYNTAX
 
 ```
-Connect-YubikeyFIDO2 -PIN <SecureString> [<CommonParameters>]
+Connect-YubikeyFIDO2 [-PIN <SecureString>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -61,7 +61,7 @@ Type: SecureString
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

@@ -31,7 +31,7 @@ namespace powershellYK.Cmdlets.PIV
                     List<Fingerprint> fingerprints = new List<Fingerprint>();
                     // powershellYK.UserValidation
                     //IReadOnlyList<TemplateInfo> bio = 
-                    foreach(var enrollment in session.EnumerateBioEnrollments().ToArray())
+                    foreach (var enrollment in session.EnumerateBioEnrollments().ToArray())
                     {
                         fingerprints.Add(new Fingerprint(enrollment.TemplateId, enrollment.FriendlyName));
                     }

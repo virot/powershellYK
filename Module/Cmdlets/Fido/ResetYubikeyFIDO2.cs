@@ -77,7 +77,7 @@ namespace powershellYK.Cmdlets.Fido
                 // is this needed, we are disposing the listener?
                 yubiKeyDeviceListener.Removed -= YubiKeyRemoved;
                 yubiKeyDeviceListener.Arrived -= YubiKeyArrived;
-            
+
                 // Proceed with the reset after the YubiKey is (re)inserted
                 using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {

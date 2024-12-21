@@ -3,7 +3,7 @@ using System.Security;
 using Yubico.YubiKey.Otp;
 
 namespace powershellYK.support.validators
-{ 
+{
     public class ValidateYubikeyPIN : ValidateArgumentsAttribute
     {
         public int MinLength { get; }

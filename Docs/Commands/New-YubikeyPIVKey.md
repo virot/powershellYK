@@ -13,7 +13,7 @@ Create a new private key
 ## SYNTAX
 
 ```
-New-YubikeyPIVKey [-Slot] <Byte> [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-PassThru]
+New-YubikeyPIVKey [-Slot] <PIVSlot> [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-PassThru]
  [-WhatIf] [-Confirm] -Algorithm <PivAlgorithm> [<CommonParameters>]
 ```
 
@@ -96,7 +96,7 @@ Accept wildcard characters: False
 What slot to create a new key for
 
 ```yaml
-Type: Byte
+Type: PIVSlot
 Parameter Sets: (All)
 Aliases:
 

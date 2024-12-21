@@ -23,7 +23,7 @@ namespace powershellYK
         public static SecureString? _fido2PINNew;
         public static SecureString? _OATHPassword;
         public static SecureString? _OATHPasswordNew;
-        public static byte[] _pivManagementKey = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
+        public static byte[] _pivManagementKey = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
 
         public static void setPIVPIN(SecureString PIN)
         {
@@ -78,7 +78,7 @@ namespace powershellYK
             _OATHPasswordNew = null;
         }
     }
-    public class MyModuleAssemblyInitializer: IModuleAssemblyInitializer
+    public class MyModuleAssemblyInitializer : IModuleAssemblyInitializer
     {
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr AddDllDirectory(string NewDirectory);
@@ -108,7 +108,7 @@ namespace powershellYK
         }
     }
 
-    public class MyModuleAssemblyCleanup: IModuleAssemblyCleanup
+    public class MyModuleAssemblyCleanup : IModuleAssemblyCleanup
     {
         public void OnRemove(PSModuleInfo psModuleInfo)
         {

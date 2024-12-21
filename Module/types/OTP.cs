@@ -42,7 +42,7 @@ namespace powershellYK.OTP
             this.PrivateIDByte = PrivateID;
             this.PrivateID = HexConverter.ByteArrayToString(this.PrivateIDByte);
             this.SecretKeyByte = SecretKey;
-            this.SecretKey= HexConverter.ByteArrayToString(this.SecretKeyByte);
+            this.SecretKey = HexConverter.ByteArrayToString(this.SecretKeyByte);
             this.onboardUrl = onboardUrl;
         }
     }

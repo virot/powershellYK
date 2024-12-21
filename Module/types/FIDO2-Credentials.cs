@@ -11,7 +11,7 @@ namespace powershellYK.FIDO2
         public string? Site { get; set; }
         public string? Name { get; set; }
         public string? DisplayName { get; set; }
-//        public CredentialId? CredentialID { get; set; }
+        //        public CredentialId? CredentialID { get; set; }
 
     }
 }

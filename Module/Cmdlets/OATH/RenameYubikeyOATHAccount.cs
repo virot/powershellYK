@@ -34,7 +34,7 @@ namespace powershellYK.Cmdlets.OATH
             {
                 oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
                 oathSession.RenameCredential(Account!, NewIssuer != null ? NewIssuer : Account!.Issuer, NewAccountName != null ? NewAccountName : Account!.AccountName!);
-                }
+            }
         }
     }
 }

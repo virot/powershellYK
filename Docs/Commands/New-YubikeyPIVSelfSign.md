@@ -13,7 +13,7 @@ Create a self signed certificate
 ## SYNTAX
 
 ```
-New-YubikeyPIVSelfSign -Slot <Byte> [-Subjectname <String>] [-HashAlgorithm <HashAlgorithmName>] [-WhatIf]
+New-YubikeyPIVSelfSign -Slot <PIVSlot> [-Subjectname <String>] [-HashAlgorithm <HashAlgorithmName>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
@@ -51,7 +51,7 @@ Accept wildcard characters: False
 Sign a self signed cert for slot
 
 ```yaml
-Type: Byte
+Type: PIVSlot
 Parameter Sets: (All)
 Aliases:
 

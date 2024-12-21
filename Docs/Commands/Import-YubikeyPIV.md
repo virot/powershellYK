@@ -14,25 +14,25 @@ Import certificate
 
 ### CertificateOnly
 ```
-Import-YubikeyPIV -Slot <Byte> -Certificate <Object> [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-YubikeyPIV -Slot <PIVSlot> -Certificate <Object> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### CertificateAndKey
 ```
-Import-YubikeyPIV -Slot <Byte> -Certificate <Object> -PrivateKeyPath <String> [-Password <SecureString>]
+Import-YubikeyPIV -Slot <PIVSlot> -Certificate <Object> -PrivateKeyPath <String> [-Password <SecureString>]
  [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### P12
 ```
-Import-YubikeyPIV -Slot <Byte> -P12Path <String> [-Password <SecureString>] [-PinPolicy <PivPinPolicy>]
+Import-YubikeyPIV -Slot <PIVSlot> -P12Path <String> [-Password <SecureString>] [-PinPolicy <PivPinPolicy>]
  [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Privatekey
 ```
-Import-YubikeyPIV -Slot <Byte> -PrivateKeyPath <String> [-Password <SecureString>] [-PinPolicy <PivPinPolicy>]
- [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-YubikeyPIV -Slot <PIVSlot> -PrivateKeyPath <String> [-Password <SecureString>]
+ [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -136,7 +136,7 @@ Accept wildcard characters: False
 Slotnumber
 
 ```yaml
-Type: Byte
+Type: PIVSlot
 Parameter Sets: (All)
 Aliases:
 

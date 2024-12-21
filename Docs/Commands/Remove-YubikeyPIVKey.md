@@ -13,7 +13,7 @@ Remove a key from a YubiKey PIV slot.
 ## SYNTAX
 
 ```
-Remove-YubikeyPIVKey -Slot <Byte> [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-YubikeyPIVKey -Slot <PIVSlot> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -34,7 +34,7 @@ This command will remove the key from the PIV Authentication (0x9a) slot on the 
 What slot to move a key from
 
 ```yaml
-Type: Byte
+Type: PIVSlot
 Parameter Sets: (All)
 Aliases:
 

@@ -18,7 +18,7 @@ namespace powershellYK.support
                 bool isPINComplexity = yubiKeyDevice.IsPinComplexityEnabled;
                 bool isPIV = yubiKeyDevice.AvailableUsbCapabilities.HasFlag(YubiKeyCapabilities.Piv) || yubiKeyDevice.AvailableNfcCapabilities.HasFlag(YubiKeyCapabilities.Piv);
                 bool isBio = yubiKeyDevice.FormFactor is FormFactor.UsbABiometricKeychain || yubiKeyDevice.FormFactor is FormFactor.UsbCBiometricKeychain;
-                bool isFIDO = yubiKeyDevice.AvailableUsbCapabilities.HasFlag(YubiKeyCapabilities.Fido2) || yubiKeyDevice.AvailableNfcCapabilities.HasFlag(YubiKeyCapabilities.Fido2) || yubiKeyDevice.AvailableUsbCapabilities.HasFlag(YubiKeyCapabilities.FidoU2f) || yubiKeyDevice.AvailableNfcCapabilities.HasFlag(YubiKeyCapabilities.FidoU2f) ;
+                bool isFIDO = yubiKeyDevice.AvailableUsbCapabilities.HasFlag(YubiKeyCapabilities.Fido2) || yubiKeyDevice.AvailableNfcCapabilities.HasFlag(YubiKeyCapabilities.Fido2) || yubiKeyDevice.AvailableUsbCapabilities.HasFlag(YubiKeyCapabilities.FidoU2f) || yubiKeyDevice.AvailableNfcCapabilities.HasFlag(YubiKeyCapabilities.FidoU2f);
                 FormFactor formFactor = yubiKeyDevice.FormFactor;
 
                 // Use the information to generate a friendly name

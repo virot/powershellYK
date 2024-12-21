@@ -13,7 +13,9 @@ namespace powershellYK.FIDO2
     {
         [Hidden]
         public AuthenticatorInfo AuthenticatorInfo { get; }
-        public Guid? AAGuid { get
+        public Guid? AAGuid
+        {
+            get
             {
                 if (AuthenticatorInfo.Aaguid.Length != 16)
                 {

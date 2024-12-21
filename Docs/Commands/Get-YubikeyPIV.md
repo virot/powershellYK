@@ -13,7 +13,7 @@ Gets information about the PIV module and specific slots.
 ## SYNTAX
 
 ```
-Get-YubikeyPIV [-Slot <Byte>] [<CommonParameters>]
+Get-YubikeyPIV [-Slot <PIVSlot>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -58,7 +58,7 @@ Displays information about the PIV slot and any contained certificate
 Retrive a info from specific slot
 
 ```yaml
-Type: Byte
+Type: PIVSlot
 Parameter Sets: (All)
 Aliases:
 

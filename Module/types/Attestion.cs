@@ -9,15 +9,31 @@ namespace powershellYK
 {
     public class Attestion
     {
-        public bool? AttestionValidated { get; set; }
-        public uint? SerialNumber { get; set; }
-        public FirmwareVersion? FirmwareVersion { get; set; }
-        public PivPinPolicy? PinPolicy { get; set; }
-        public PivTouchPolicy? TouchPolicy { get; set; }
-        public FormFactor? FormFactor { get; set; }
-        public PIVSlot Slot { get; set; }
-        public bool? isFIPSSeries { get; set; } = false;
-        public bool? isCSPNSeries { get; set; } = false;
-        public bool? AttestionMatchesCSR { get; set; } = null;
+        public bool? AttestionValidated { get; }
+        public uint? SerialNumber { get; }
+        public FirmwareVersion? FirmwareVersion { get; }
+        public PivPinPolicy? PinPolicy { get; }
+        public PivTouchPolicy? TouchPolicy { get; }
+        public FormFactor? FormFactor { get; }
+        public PIVSlot? Slot { get; }
+        public PivAlgorithm? Algorithm { get; }
+        public bool? isFIPSSeries { get; } = false;
+        public bool? isCSPNSeries { get; } = false;
+        public bool? AttestionMatchesCSR { get; } = null;
+
+        public Attestion(bool attestionValidated = false, uint? serialnumber = null, FirmwareVersion? firmwareVersion = null, PivPinPolicy? pivPinPolicy = null, PivTouchPolicy? pivTouchPolicy = null, FormFactor? formFactor = null, PIVSlot? pivSlot = null, PivAlgorithm? pivAlgorithm = null, bool? isFIPSSeries = null, bool? isCSPNSeries = null, bool? AttestionMatchesCSR = null)
+        {
+            AttestionValidated = attestionValidated;
+            this.SerialNumber = serialnumber;
+            this.FirmwareVersion = firmwareVersion;
+            this.PinPolicy = pivPinPolicy;
+            this.TouchPolicy = pivTouchPolicy;
+            this.FormFactor = formFactor;
+            this.Slot = pivSlot;
+            this.Algorithm = pivAlgorithm;
+            this.isFIPSSeries = isFIPSSeries;
+            this.isCSPNSeries = isCSPNSeries;
+            this.AttestionMatchesCSR = AttestionMatchesCSR;
+        }
     }
 }

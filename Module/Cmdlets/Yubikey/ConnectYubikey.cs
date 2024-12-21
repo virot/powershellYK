@@ -42,7 +42,7 @@ namespace powershellYK.Cmdlets.Yubikey
                     var yubikeys = YubiKeyDevice.FindAll();
                     if (yubikeys.Count() == 1)
                     {
-                       _yubikey = (YubiKeyDevice)yubikeys.First();
+                        _yubikey = (YubiKeyDevice)yubikeys.First();
                         WriteDebug($"Found only one device, using {_yubikey.SerialNumber}");
                     }
                     break;

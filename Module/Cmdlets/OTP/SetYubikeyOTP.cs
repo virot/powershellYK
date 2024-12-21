@@ -17,7 +17,7 @@ namespace powershellYK.Cmdlets.OTP
     {
         [TransformOTPSlot()]
         [ValidateOTPSlot()]
-        [ArgumentCompletions("ShortPress","LongPress")]
+        [ArgumentCompletions("ShortPress", "LongPress")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey OTP Slot")]
         public PSObject? Slot { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows configuration with all defaults", ParameterSetName = "Yubico OTP")]
@@ -36,8 +36,8 @@ namespace powershellYK.Cmdlets.OTP
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Sets the Secret Key, defaults to random 20 bytes", ParameterSetName = "ChallengeResponse")]
         public byte[]? SecretKey { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Upload to YubiCloud", ParameterSetName = "Yubico OTP")]
-        public SwitchParameter Upload{ get; set; }
-        [ValidateYubikeyPassword(1,38)]
+        public SwitchParameter Upload { get; set; }
+        [ValidateYubikeyPassword(1, 38)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Static password that will be set", ParameterSetName = "Static Password")]
         public SecureString? Password { get; set; }
         [ValidateRange(1, 38)]
@@ -163,7 +163,7 @@ namespace powershellYK.Cmdlets.OTP
                             Memory<byte> _CRsecretKey = new Memory<byte>(new byte[20]);
                             ConfigureChallengeResponse configureCR = otpSession.ConfigureChallengeResponse(_slot);
                             if (SecretKey is null)
-                            { 
+                            {
                                 configureCR = configureCR.GenerateKey(_CRsecretKey);
                             }
                             else
