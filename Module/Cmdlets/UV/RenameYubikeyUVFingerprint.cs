@@ -18,11 +18,13 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Friendly name of fingerprint to rename", ParameterSetName = "Rename using Name")]
         public String? Name;
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ID of fingerprint to rename", ParameterSetName = "Rename using ID")]
-        [ValidateLength(4,4)]
+        [ValidateLength(4, 4)]
         public String? ID;
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "New friendly name", ParameterSetName = "Rename using ID")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "New friendly name", ParameterSetName = "Rename using Name")]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public String NewName;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         protected override void BeginProcessing()
         {
@@ -46,7 +48,7 @@ namespace powershellYK.Cmdlets.PIV
                         fingerprint = session.EnumerateBioEnrollments().Where(x => HexConverter.ByteArrayToString(x.TemplateId.ToArray()).ToLower() == ID!.ToLower()).FirstOrDefault();
                         break;
 
-                     default:
+                    default:
                         throw new Exception("Invalid ParameterSetName");
                 };
 

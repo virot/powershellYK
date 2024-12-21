@@ -7,9 +7,7 @@ namespace powershellYK.PIV
 {
     public class SlotInfo
     {
-        [Hidden]
-        public int SlotID { get; private set; }
-        public string Slot { get { return $"0x{this.SlotID.ToString("X")}"; }}
+        public PIVSlot Slot { get; private set; }
         public PivKeyStatus? KeyStatus { get; private set; }
         public PivAlgorithm? Algorithm { get; private set; }
         public PivPinPolicy? PinPolicy { get; private set; }
@@ -26,7 +24,7 @@ namespace powershellYK.PIV
             X509Certificate2? Certificate,
             AsymmetricAlgorithm? PublicKey)
         {
-            this.SlotID = Slot;
+            this.Slot = Slot;
             this.KeyStatus = KeyStatus;
             this.Algorithm = Algorithm;
             this.PinPolicy = PinPolicy;

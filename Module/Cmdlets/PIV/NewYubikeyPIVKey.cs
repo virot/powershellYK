@@ -1,12 +1,11 @@
 ﻿using System.Management.Automation;
-using System.Management.Automation.Host;
 using System.Security.Cryptography;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Sample.PivSampleCode;
-using powershellYK.support.transform;
 using System.Collections.ObjectModel;
 using powershellYK.support.validators;
+using powershellYK.PIV;
 
 namespace powershellYK.Cmdlets.PIV
 {
@@ -14,13 +13,9 @@ namespace powershellYK.Cmdlets.PIV
     public class NewYubiKeyPIVKeyCommand : PSCmdlet, IDynamicParameters
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [TransformPivSlot()]
         [ValidateYubikeyPIVSlot(DontAllowAttestion = true)]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to create a new key in")]
-        public byte Slot { get; set; }
-
-        //[Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Algoritm")]
-        //public String Algorithm { get; set; }
+        public PIVSlot Slot { get; set; }
 
         //[ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Pin policy")]
@@ -84,7 +79,7 @@ namespace powershellYK.Cmdlets.PIV
                 }
                 catch { }
 
-                if (!keyExists || ShouldProcess($"Slot 0x{Slot.ToString("X2")}", "New"))
+                if (!keyExists || ShouldProcess($"Slot {Slot}", "New"))
                 {
                     WriteDebug("ProcessRecord in New-YubikeyPIVKey");
                     PivPublicKey publicKey = pivSession.GenerateKeyPair(Slot, (PivAlgorithm)this.MyInvocation.BoundParameters["Algorithm"], PinPolicy, TouchPolicy);

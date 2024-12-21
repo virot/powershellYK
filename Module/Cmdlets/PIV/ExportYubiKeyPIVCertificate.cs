@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey;
-using powershellYK.support.transform;
+using powershellYK.PIV;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -12,9 +12,8 @@ namespace powershellYK.Cmdlets.PIV
     public class ExportYubiKeyPIVCertificateCommand : Cmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [TransformPivSlot()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slot to extract", ParameterSetName = "Slot")]
-        public byte Slot { get; set; }
+        public PIVSlot Slot { get; set; }
         [Alias("AttestationCertificate")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Export Attestation certificate", ParameterSetName = "AttestationCertificate")]
         public SwitchParameter AttestationIntermediateCertificate { get; set; }
@@ -62,7 +61,7 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     catch (Exception e)
                     {
-                        throw new Exception($"Failed to get certificate for slot 0x{Slot.ToString("X2")}", e);
+                        throw new Exception($"Failed to get certificate for slot {Slot}", e);
                     }
                 }
 
