@@ -52,7 +52,7 @@ namespace powershellYK.support
         }
         public static string SSHIdentifier(ECDsa publicKey, string description = "")
         {
-    
+
             ECParameters publicKeyParam = publicKey.ExportParameters(false);
             string? keyType = null;
             switch (publicKeyParam.Curve.Oid.FriendlyName)
@@ -78,7 +78,7 @@ namespace powershellYK.support
             byte[] curveByteLength = BitConverter.GetBytes(curveBytes.Length);
             byte[] publicKeyValueQX = publicKeyParam.Q.X!;
             byte[] publicKeyValueQY = publicKeyParam.Q.Y!;
-            byte[] publicKeyLength = BitConverter.GetBytes(publicKeyValueQX.Length+ publicKeyValueQY.Length);
+            byte[] publicKeyLength = BitConverter.GetBytes(publicKeyValueQX.Length + publicKeyValueQY.Length);
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(lengthBytes);

@@ -33,7 +33,7 @@ namespace powershellYK.Cmdlets.OTP
                 // Can be used for Yubikeys 5 and later.
                 if (YubiKeyModule._yubikey!.FirmwareVersion.Major >= 5)
                 {
-                    if (!LockCode.SequenceEqual(new byte[] { 0, 0, 0, 0 , 0, 0, 0, 0 , 0, 0, 0, 0 , 0, 0, 0, 0 }))
+                    if (!LockCode.SequenceEqual(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }))
                     {
                         YubiKeyModule._yubikey!.LockConfiguration(LockCode);
                         YubiKeyModule._yubikey = null;

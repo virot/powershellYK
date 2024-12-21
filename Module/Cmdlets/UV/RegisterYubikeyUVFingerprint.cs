@@ -29,7 +29,7 @@ namespace powershellYK.Cmdlets.PIV
             {
                 session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                TemplateInfo fingerprint = session.EnrollFingerprint(Name,null);
+                TemplateInfo fingerprint = session.EnrollFingerprint(Name, null);
 
                 WriteObject(fingerprint);
             }

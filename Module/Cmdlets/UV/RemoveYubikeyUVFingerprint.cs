@@ -18,7 +18,7 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Name of finger to remove", ParameterSetName = "Remove using Name")]
         public String? Name;
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ID of finger to remove", ParameterSetName = "Remove using ID")]
-        [ValidateLength(4,4)]
+        [ValidateLength(4, 4)]
         public String? ID;
 
         protected override void BeginProcessing()
@@ -43,7 +43,7 @@ namespace powershellYK.Cmdlets.PIV
                         fingerprint = session.EnumerateBioEnrollments().Where(x => HexConverter.ByteArrayToString(x.TemplateId.ToArray()).ToLower() == ID!.ToLower()).FirstOrDefault();
                         break;
 
-                     default:
+                    default:
                         throw new Exception("Invalid ParameterSetName");
                 };
 

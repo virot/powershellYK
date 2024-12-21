@@ -18,7 +18,7 @@ namespace powershellYK.support
             }
             return bytes;
         }
-        
+
         public static string ByteArrayToString(byte[] bytes)
         {
             return BitConverter.ToString(bytes).Replace("-", "");

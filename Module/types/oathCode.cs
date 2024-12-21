@@ -37,7 +37,7 @@ namespace powershellYK.OATH.Code
         public string Name { get { return $"{Issuer}:{AccountName}"; } }
         public string Value { get; }
 
-        
+
         public HOTP(string issuer, string accountName, string value)
         {
             Issuer = issuer;

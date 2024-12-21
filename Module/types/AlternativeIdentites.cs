@@ -12,8 +12,8 @@ namespace powershellYK
         public string? X509IssuerSubject { get; }
         public string? X509SubjectOnly { get; }
         public string? X509RFC822 { get; }
-        public string? X509IssuerSerialNumber { get;}
-        public string? X509SKI { get; } 
+        public string? X509IssuerSerialNumber { get; }
+        public string? X509SKI { get; }
         public string? X509SHA1PublicKey { get; }
 
 

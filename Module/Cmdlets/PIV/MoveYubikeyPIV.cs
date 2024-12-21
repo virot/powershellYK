@@ -34,7 +34,7 @@ namespace powershellYK.Cmdlets.PIV
             {
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                if (! ((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivMoveOrDeleteKey))
+                if (!((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivMoveOrDeleteKey))
                 {
                     throw new Exception("YubiKey version does not support moving keys");
                 }

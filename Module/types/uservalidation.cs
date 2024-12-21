@@ -11,7 +11,7 @@ namespace powershellYK.UserValidation
     {
         [Hidden]
         public ReadOnlyMemory<Byte> TemplateID { get; }
-        public string ID { get { return BitConverter.ToString(this.TemplateID.ToArray()).Replace("-",""); } }
+        public string ID { get { return BitConverter.ToString(this.TemplateID.ToArray()).Replace("-", ""); } }
         public string Name { get; }
 
         public Fingerprint(ReadOnlyMemory<Byte> templateID, string? friendlyName)

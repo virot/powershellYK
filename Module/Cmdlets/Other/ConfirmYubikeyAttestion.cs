@@ -80,7 +80,8 @@ namespace powershellYK.Cmdlets.Other
                 }
             }
 
-            if (AttestionCertificate is not null) {
+            if (AttestionCertificate is not null)
+            {
                 if (AttestionCertificate.BaseObject is X509Certificate2)
                 {
                     WriteDebug("AttestionCertificate is X509Certificate2");
@@ -157,7 +158,8 @@ namespace powershellYK.Cmdlets.Other
             string slotPattern = @"CN=YubiKey PIV Attestation (?<slot>[0-9A-Fa-f]{2})";
             Regex slotRegex = new Regex(slotPattern);
             Match slotMatch = slotRegex.Match(_AttestionCertificate.Subject);
-            if (slotMatch.Success) {
+            if (slotMatch.Success)
+            {
                 returnObject.Slot = byte.Parse(slotMatch.Groups["slot"].Value, System.Globalization.NumberStyles.HexNumber);
             }
             else

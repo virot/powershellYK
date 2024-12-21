@@ -14,7 +14,7 @@ namespace powershellYK.Cmdlets.OATH
 
     public class NewYubikeyOATH2AccountCommand : PSCmdlet
     {
-        
+
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Type of OATH", ParameterSetName = "HOTP")]
         public SwitchParameter HOTP { get; set; }

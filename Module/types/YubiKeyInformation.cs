@@ -14,7 +14,7 @@ namespace powershellYK.YubiKey
     {
         [Hidden]
         public YubiKeyDevice YubiKeyDevice { get; }
-        public string PrettyName {get;}
+        public string PrettyName { get; }
         public YubiKeyCapabilities AvailableUsbCapabilities { get { return YubiKeyDevice.AvailableUsbCapabilities; } }
         public YubiKeyCapabilities EnabledUsbCapabilities { get { return YubiKeyDevice.EnabledUsbCapabilities; } }
         public YubiKeyCapabilities AvailableNfcCapabilities { get { return YubiKeyDevice.AvailableNfcCapabilities; } }
