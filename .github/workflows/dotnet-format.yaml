@@ -19,7 +19,7 @@ jobs:
         dotnet-version: '8.x.x' # Specify the .NET version you're using
 
     - name: Run dotnet format
-      run: dotnet format --check
+      run: dotnet format --check ./Module/powershellYK.csproj
       continue-on-error: false
 
     - name: Check for uncommitted changes
