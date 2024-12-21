@@ -1,14 +1,11 @@
 ﻿using System.Management.Automation;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
-using Yubico.YubiKey.Piv.Commands;
 using System.Security.Cryptography;
-using powershellYK.support;
 using Yubico.YubiKey.Sample.PivSampleCode;
 using powershellYK.support.transform;
-using System.Net;
+using powershellYK.PIV;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -20,9 +17,8 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Certificate request")]
         public PSObject? CertificateRequest { get; set; }
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [TransformPivSlot()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slot to sign certificate with")]
-        public byte Slot { get; set; }
+        public PIVSlot Slot { get; set; }
         [ValidateSet("SHA1", "SHA256", "SHA384", "SHA512", IgnoreCase = true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "HashAlgoritm")]
         public HashAlgorithmName HashAlgorithm { get; set; } = HashAlgorithmName.SHA256;
@@ -88,12 +84,12 @@ namespace powershellYK.Cmdlets.PIV
                     certificateCA = pivSession.GetCertificate(Slot);
                     if (certificateCA.PublicKey is null)
                     {
-                        throw new Exception($"No certificate that can sign in slot 0x{Slot.ToString("X2")}, does there exist a certificate?");
+                        throw new Exception($"No certificate that can sign in slot {Slot}, does there exist a certificate?");
                     }
                 }
-                catch           
+                catch
                 {
-                    throw new Exception($"No certificate that can sign in slot 0x{Slot.ToString("X2")}, does there exist a certificate?");
+                    throw new Exception($"No certificate that can sign in slot {Slot}, does there exist a certificate?");
                 }
 
 
@@ -112,7 +108,7 @@ namespace powershellYK.Cmdlets.PIV
                     else
                     {
                         _request = new CertificateRequest(Subjectname, ((CertificateRequest)CertificateRequest!.BaseObject).PublicKey.GetECDsaPublicKey()!, HashAlgorithm);
-                    }                    
+                    }
                 }
 
                 if (CertificateAuthority.IsPresent)
@@ -147,7 +143,7 @@ namespace powershellYK.Cmdlets.PIV
                     IEnumerable<String> AIAstring = new List<string> { AIAUrl };
                     _request.CertificateExtensions.Add(new X509AuthorityInformationAccessExtension(null, AIAstring, false));
                 }
-                
+
                 // Add SAN / SubjectAltName
                 if (SubjectAltName.Length > 0)
                 {

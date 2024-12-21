@@ -1,17 +1,14 @@
 ﻿using System.Management.Automation;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
-using Yubico.YubiKey.Piv.Commands;
 using System.Security.Cryptography;
-using powershellYK.support;
-using System.Linq.Expressions;
 using Yubico.YubiKey.Sample.PivSampleCode;
 using powershellYK.support.transform;
 using powershellYK.support.validators;
 using System.Security;
 using System.Runtime.InteropServices;
+using powershellYK.PIV;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -20,9 +17,8 @@ namespace powershellYK.Cmdlets.PIV
     public class ImportYubiKeyPIVCommand : PSCmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [TransformPivSlot()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slotnumber")]
-        public byte Slot { get; set; }
+        public PIVSlot Slot { get; set; }
 
         [TransformCertificatePath_Certificate()]
         [ValidateX509Certificate2_string()]
@@ -205,7 +201,7 @@ namespace powershellYK.Cmdlets.PIV
             {
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                
+
                 // If we get a new private key, check and install
                 if (_newPrivateKey is not null)
                 {
@@ -216,7 +212,7 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     catch
                     { }
-                    if (pivMestadata is null || pivMestadata.Algorithm == PivAlgorithm.None || ShouldProcess($"Private key into 0x{Slot.ToString("X2")}", "Import"))
+                    if (pivMestadata is null || pivMestadata.Algorithm == PivAlgorithm.None || ShouldProcess($"Private key into {Slot}", "Import"))
                     {
                         pivSession.ImportPrivateKey(Slot, _newPrivateKey, PinPolicy, TouchPolicy);
                     }
@@ -226,7 +222,8 @@ namespace powershellYK.Cmdlets.PIV
                 if (_newcertificate is not null)
                 {
                     PivPublicKey? publicKey = null;
-                    try {
+                    try
+                    {
                         publicKey = pivSession.GetMetadata(Slot).PublicKey;
                     }
                     catch { }
@@ -237,7 +234,7 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     catch { }
                     WriteDebug($"Proceeding with import of thumbprint {_newcertificate.Thumbprint}");
-                    
+
                     // Check that the certificate matches the public key in the slot
                     if (publicKey is null)
                     {
@@ -285,9 +282,9 @@ namespace powershellYK.Cmdlets.PIV
                             throw new Exception("Public key does not match certificate key");
                         }
                     }
-                    
+
                     // If we have a certificate in the slot, check if we should overwrite it
-                    if (slotCertificate is null || ShouldProcess($"Certificate into 0x{Slot.ToString("X2")}", "Import"))
+                    if (slotCertificate is null || ShouldProcess($"Certificate into {Slot}", "Import"))
                     {
                         pivSession.ImportCertificate(Slot, _newcertificate);
                     }

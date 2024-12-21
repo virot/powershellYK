@@ -102,14 +102,14 @@ namespace powershellYK.Cmdlets.PIV
                 switch (ParameterSetName)
                 {
                     case "ChangeRetries":
-                        if (new List<FormFactor>{ FormFactor.UsbABiometricKeychain, FormFactor.UsbCBiometricKeychain }.Contains(((YubiKeyDevice)YubiKeyModule._yubikey!).FormFactor))
+                        if (new List<FormFactor> { FormFactor.UsbABiometricKeychain, FormFactor.UsbCBiometricKeychain }.Contains(((YubiKeyDevice)YubiKeyModule._yubikey!).FormFactor))
                         {
                             throw new Exception("Biometric YubiKeys does not support changing the number of PIN retries");
                         }
                         // powershellYK does more than the SDK here, it also blocks the PUK if the Management key is PIN protected.
                         pivSession.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
                         // Yubikey disables the PUK if the Management key is PIN protected, we do the same if not KeepPUKUnlocked is set
-                        if (pivSession.GetPinOnlyMode().HasFlag(PivPinOnlyMode.PinProtected) && ! (KeepPukUnlocked.IsPresent))
+                        if (pivSession.GetPinOnlyMode().HasFlag(PivPinOnlyMode.PinProtected) && !(KeepPukUnlocked.IsPresent))
                         {
                             WriteDebug("Management Key is PIN protected, Blocking PUK");
                             retriesLeft = 1;

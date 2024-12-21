@@ -1,13 +1,9 @@
 ﻿using System.Management.Automation;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
-using Yubico.YubiKey.Piv.Commands;
 using System.Security.Cryptography;
-using powershellYK.support;
-using Yubico.YubiKey.Sample.PivSampleCode;
-using powershellYK.support.transform;
+using powershellYK.PIV;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -16,11 +12,10 @@ namespace powershellYK.Cmdlets.PIV
     public class AssertYubiKeyPIVCommand : PSCmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [TransformPivSlot()]
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "ExportToFile")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "DisplayOnScreen")]
-        public byte Slot { get; set; }
+        public PIVSlot Slot { get; set; }
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Location of the attestation certificate", ParameterSetName = "ExportToFile")]
         public string? OutFile { get; set; } = null;
@@ -52,6 +47,11 @@ namespace powershellYK.Cmdlets.PIV
             using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                WriteDebug($"Asserting Attestation for slot {Slot}");
+                if (pivSession.GetMetadata(Slot).KeyStatus != PivKeyStatus.Generated)
+                {
+                    throw new NotSupportedException("Can only assert generated keys.");
+                }
                 X509Certificate2 slotAttestationCertificate = pivSession.CreateAttestationStatement(Slot);
                 byte[] slotAttestationCertificateBytes = slotAttestationCertificate.Export(X509ContentType.Cert);
                 string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
