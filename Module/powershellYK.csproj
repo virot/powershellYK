@@ -48,8 +48,20 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  
-  <Target Name="UpdateVersionInTextFile" BeforeTargets="AfterBuild">
-    <Exec Command="pwsh -Command &quot;Update-Metadata -Path $(OutDir)powershellYK.psd1 -PropertyName ModuleVersion -Value $(AssemblyVersion)&quot;" />
+
+  <Target Name="UpdateTextFile">
+    <!-- Read the file content -->
+    <ReadLinesFromFile File="$(OutDir)powershellYK.psd1">
+      <Output TaskParameter="Lines" ItemName="FileLines" />
+    </ReadLinesFromFile>
+    <!-- Update the lines -->
+    <ItemGroup>
+      <UpdatedLines Include="@(FileLines->'%(Identity)')">
+        <Transformed> $([System.Text.RegularExpressions.Regex]::Replace(%(Identity), '0.0.0.0', '$(AssemblyVersion)')) </Transformed>
+      </UpdatedLines>
+    </ItemGroup>
+    <!-- Write the updated content back to the file -->
+    <WriteLinesToFile File="$(OutDir)powershellYK.psd1" Lines="@(UpdatedLines->'%(Transformed)')" Overwrite="true" />
   </Target>
+  
 </Project>
