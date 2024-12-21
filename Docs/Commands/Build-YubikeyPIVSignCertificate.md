@@ -13,7 +13,7 @@ Sign a certificate request with a YubiKey.
 ## SYNTAX
 
 ```
-Build-YubikeyPIVSignCertificate -CertificateRequest <PSObject> -Slot <Byte>
+Build-YubikeyPIVSignCertificate -CertificateRequest <PSObject> -Slot <PIVSlot>
  [-HashAlgorithm <HashAlgorithmName>] [-OutFile <String>] [-PEMEncoded] [-Subjectname <String>]
  [-NotBefore <DateTimeOffset>] [-NotAfter <DateTimeOffset>] [-SerialNumber <Byte[]>] [-CertificateAuthority]
  [-SubjectAltName <String[]>] [-KeyUsage <X509KeyUsageFlags>] [-AIAUrl <String>] [<CommonParameters>]
@@ -190,7 +190,7 @@ Accept wildcard characters: False
 Slot to sign certificate with
 
 ```yaml
-Type: Byte
+Type: PIVSlot
 Parameter Sets: (All)
 Aliases:
 

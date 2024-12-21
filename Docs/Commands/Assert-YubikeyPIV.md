@@ -14,12 +14,12 @@ Create attestation certificate
 
 ### ExportToFile
 ```
-Assert-YubikeyPIV -Slot <Byte> -OutFile <String> [<CommonParameters>]
+Assert-YubikeyPIV -Slot <PIVSlot> -OutFile <String> [<CommonParameters>]
 ```
 
 ### DisplayOnScreen
 ```
-Assert-YubikeyPIV -Slot <Byte> [-PEMEncoded] [<CommonParameters>]
+Assert-YubikeyPIV -Slot <PIVSlot> [-PEMEncoded] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -70,7 +70,7 @@ Accept wildcard characters: False
 YubiKey PIV Slot.
 
 ```yaml
-Type: Byte
+Type: PIVSlot
 Parameter Sets: (All)
 Aliases:
 

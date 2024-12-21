@@ -14,7 +14,7 @@ Export certificate from YubiKey PIV
 
 ### Slot
 ```
-Export-YubikeyPIVCertificate -Slot <Byte> [-OutFile <String>] [-PEMEncoded] [<CommonParameters>]
+Export-YubikeyPIVCertificate -Slot <PIVSlot> [-OutFile <String>] [-PEMEncoded] [<CommonParameters>]
 ```
 
 ### AttestationCertificate
@@ -100,7 +100,7 @@ Accept wildcard characters: False
 Slot to extract
 
 ```yaml
-Type: Byte
+Type: PIVSlot
 Parameter Sets: Slot
 Aliases:
 

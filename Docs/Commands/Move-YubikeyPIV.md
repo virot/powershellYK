@@ -13,7 +13,7 @@ Move a key from one slot to another
 ## SYNTAX
 
 ```
-Move-YubikeyPIV -SourceSlot <Byte> -DestinationSlot <Byte> [-MigrateCertificate] [-WhatIf] [-Confirm]
+Move-YubikeyPIV -SourceSlot <PIVSlot> -DestinationSlot <PIVSlot> [-MigrateCertificate] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -35,7 +35,7 @@ That command would move the key in the Digital Signature slot to the Card Authen
 What slot to move a key to
 
 ```yaml
-Type: Byte
+Type: PIVSlot
 Parameter Sets: (All)
 Aliases:
 
@@ -65,7 +65,7 @@ Accept wildcard characters: False
 What slot to move a key from
 
 ```yaml
-Type: Byte
+Type: PIVSlot
 Parameter Sets: (All)
 Aliases:
 
