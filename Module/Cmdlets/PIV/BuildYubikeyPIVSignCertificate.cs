@@ -53,12 +53,12 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {

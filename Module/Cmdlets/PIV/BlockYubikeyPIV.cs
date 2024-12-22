@@ -23,12 +23,12 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
@@ -58,7 +58,7 @@ namespace powershellYK.Cmdlets.PIV
                     {
                         if (e.Message != "There are no retries remaining for a PIN, PUK, or other authentication element.")
                         {
-                            throw new Exception("Failed to block PUK", e);
+                            throw new Exception("Failed to block PUK!", e);
                         }
                     }
                 }
@@ -80,7 +80,7 @@ namespace powershellYK.Cmdlets.PIV
                     {
                         if (e.Message != "There are no retries remaining for a PIN, PUK, or other authentication element.")
                         {
-                            throw new Exception("Failed to block PUK", e);
+                            throw new Exception("Failed to block PUK!", e);
                         }
                     }
                 }

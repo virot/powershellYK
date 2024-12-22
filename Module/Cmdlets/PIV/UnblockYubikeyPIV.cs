@@ -28,12 +28,12 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
@@ -55,12 +55,12 @@ namespace powershellYK.Cmdlets.PIV
 , System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN))!)
 , out retriesLeft) == false)
                     {
-                        throw new Exception("Incorrect PUK provided");
+                        throw new Exception("Incorrect PUK provided.");
                     }
                 }
                 catch (Exception e)
                 {
-                    throw new Exception("Failed to reset PIN", e);
+                    throw new Exception("Failed to reset PIN!", e);
                 }
                 finally
                 {

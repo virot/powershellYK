@@ -16,10 +16,10 @@ namespace powershellYK.Cmdlets.OATH
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 myPowersShellInstance.Invoke();
-                WriteDebug($"Successfully connected");
+                WriteDebug($"Successfully connected.");
             }
         }
 

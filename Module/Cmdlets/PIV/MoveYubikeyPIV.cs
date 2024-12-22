@@ -28,7 +28,7 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (SourceSlot == DestinationSlot)
             {
-                throw new ArgumentException("Source and destination slot cannot be the same");
+                throw new ArgumentException("Source and destination slot cannot be the same.");
             }
             using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
@@ -36,7 +36,7 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (!((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivMoveOrDeleteKey))
                 {
-                    throw new Exception("YubiKey version does not support moving keys");
+                    throw new Exception("YubiKey version does not support moving keys.");
                 }
 
                 X509Certificate2? slotCert = null;
@@ -45,7 +45,7 @@ namespace powershellYK.Cmdlets.PIV
                 {
                     try
                     {
-                        WriteDebug("MigrateCertificate is requested, getting certificate from source slot");
+                        WriteDebug("MigrateCertificate is requested, getting certificate from source slot...");
                         slotCert = pivSession.GetCertificate(SourceSlot);
                     }
                     catch { }
@@ -56,7 +56,7 @@ namespace powershellYK.Cmdlets.PIV
                 {
                     if (slotCert is X509Certificate2)
                     {
-                        WriteDebug("MigrateCertificate is requested, trying to import certificate");
+                        WriteDebug("MigrateCertificate is requested, trying to import certificate...");
                         pivSession.ImportCertificate(DestinationSlot, slotCert);
                     }
                 }

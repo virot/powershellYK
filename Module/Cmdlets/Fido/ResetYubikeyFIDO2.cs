@@ -25,10 +25,10 @@ namespace powershellYK.Cmdlets.Fido
 
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 myPowersShellInstance.Invoke();
-                WriteDebug($"Successfully connected");
+                WriteDebug($"Successfully connected.");
             }
         }
 
@@ -102,6 +102,7 @@ namespace powershellYK.Cmdlets.Fido
                     }
 
                     YubiKeyModule._fido2PIN = null;
+                    WriteObject("YubiKey FIDO applet successfully reset.");
                 }
             }
         }

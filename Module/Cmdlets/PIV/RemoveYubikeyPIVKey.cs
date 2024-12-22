@@ -25,7 +25,7 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (!((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivMoveOrDeleteKey))
                 {
-                    throw new Exception("YubiKey version does not support removing keys");
+                    throw new Exception("YubiKey version does not support removing keys.");
                 }
 
                 if (ShouldProcess($"Key in slot {Slot}", "Remove"))

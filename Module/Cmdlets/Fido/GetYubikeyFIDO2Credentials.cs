@@ -16,11 +16,11 @@ namespace powershellYK.Cmdlets.Fido
             // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
             if (YubiKeyModule._fido2PIN is null)
             {
-                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2");
+                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2").Invoke();
                 if (YubiKeyModule._fido2PIN is null)
                 {
-                    throw new Exception("Connect-YubikeyFIDO2 failed to connect FIDO2 application.");
+                    throw new Exception("Connect-YubikeyFIDO2 failed to connect to the FIDO2 applet!");
                 }
             }
 
@@ -38,9 +38,24 @@ namespace powershellYK.Cmdlets.Fido
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
                 var RelyingParties = fido2Session.EnumerateRelyingParties();
+
+                if (!RelyingParties.Any()) // Check if there are no relying parties
+                {
+                    WriteObject("No credentials found on the YubiKey.");
+                    return;
+                }
+
+                bool credentialsFound = false; // Track if any credentials are found
+
                 foreach (RelyingParty RelyingParty in RelyingParties)
                 {
                     var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
+
+                    if (relayCredentials.Any()) // Check if this relying party has credentials
+                    {
+                        credentialsFound = true;
+                    }
+
                     foreach (CredentialUserInfo user in relayCredentials)
                     {
                         Credentials credentials = new Credentials
@@ -52,7 +67,13 @@ namespace powershellYK.Cmdlets.Fido
                         WriteObject(credentials);
                     }
                 }
+
+                if (!credentialsFound)
+                {
+                    WriteObject("No FIDO2 credentials found on the YubiKey.");
+                }
             }
         }
+
     }
 }

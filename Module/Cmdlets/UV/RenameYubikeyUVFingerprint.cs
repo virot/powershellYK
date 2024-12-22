@@ -58,7 +58,7 @@ namespace powershellYK.Cmdlets.PIV
                 }
                 else
                 {
-                    throw new Exception("No fingerprint found");
+                    throw new Exception("No fingerprint found.");
                 }
             }
         }
