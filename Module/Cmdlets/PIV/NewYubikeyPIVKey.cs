@@ -100,7 +100,7 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     else
                     {
-                        throw new Exception("Could not create keypair");
+                        throw new Exception("Could not create keypair!");
                     }
                 }
             }
