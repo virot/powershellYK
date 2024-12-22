@@ -41,7 +41,7 @@ namespace powershellYK.Cmdlets.Fido
                     }
 
                     newPIN = new Collection<Attribute>() {
-                        new ParameterAttribute() { Mandatory = true, HelpMessage = "New PIN code to set for the FIDO2 module.", ParameterSetName = "Set PIN", ValueFromPipeline = false},
+                        new ParameterAttribute() { Mandatory = true, HelpMessage = "New PIN code to set for the FIDO applet.", ParameterSetName = "Set PIN", ValueFromPipeline = false},
                         new ValidateYubikeyPIN(minPinLength, 63)
                     };
                 }
@@ -53,7 +53,7 @@ namespace powershellYK.Cmdlets.Fido
                     new ValidateYubikeyPIN(4, 63)
                 };
                 newPIN = new Collection<Attribute>() {
-                    new ParameterAttribute() { Mandatory = true, HelpMessage = "New PIN code to set for the FIDO2 module.", ParameterSetName = "Set PIN", ValueFromPipeline = false},
+                    new ParameterAttribute() { Mandatory = true, HelpMessage = "New PIN code to set for the FIDO applet.", ParameterSetName = "Set PIN", ValueFromPipeline = false},
                     new ValidateYubikeyPIN(4, 63)
                 };
             }
@@ -90,14 +90,15 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.clientPin) == OptionValue.False)
                     {
-                        WriteDebug("No FIDO2 PIN set, setting new PIN");
+                        WriteDebug("No FIDO2 PIN set, setting new PIN...");
                         fido2Session.SetPin();
                     }
                     else
                     {
-                        WriteDebug("FIDO2 PIN set, changing PIN");
+                        WriteDebug("FIDO2 PIN set, changing PIN...");
                         fido2Session.ChangePin();
                     }
+                    WriteObject("FIDO PIN updated.");
                 }
                 catch (Exception e)
                 {
