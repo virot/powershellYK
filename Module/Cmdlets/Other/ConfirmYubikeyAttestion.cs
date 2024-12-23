@@ -48,6 +48,7 @@ namespace powershellYK.Cmdlets.Other
         private bool? _out_isCSPNSeries = null;
         private bool? _out_AttestionMatchesCSR = null;
         private PivAlgorithm? _out_Algorithm;
+        private string? _out_AttestionDataLocation = null;
         protected override void BeginProcessing()
         {
         }
@@ -107,16 +108,38 @@ namespace powershellYK.Cmdlets.Other
             }
             else
             {
-                extensioncsr = _CertificateRequest!.CertificateExtensions
-                    .Cast<X509Extension>()
-                    .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.11");
-                if (extensioncsr is not null)
+                // If the certificateRequest contains the attestion certificate, extract it.
+                // Due to yubico-piv-tool not storing it in the correct place, we need to check both places.
+                // https://docs.yubico.com/hardware/oid/oid-piv-arc.html
+                if (_CertificateRequest!.CertificateExtensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.11"))
                 {
-                    _AttestionCertificate = new X509Certificate2(extensioncsr.RawData);
+                    extensioncsr = _CertificateRequest!.CertificateExtensions
+                        .Cast<X509Extension>()
+                        .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.11");
+                    _out_AttestionDataLocation = "1.3.6.1.4.1.41482.3.11";
+                    if (extensioncsr is not null)
+                    {
+                        _AttestionCertificate = new X509Certificate2(extensioncsr.RawData);
+                    }
+                    else
+                    {
+                        throw new Exception("Attestion Certificate is missing");
+                    }
                 }
-                else
+                else if (_CertificateRequest!.CertificateExtensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.1"))
                 {
-                    throw new Exception("Attestion Certificate is missing");
+                    extensioncsr = _CertificateRequest!.CertificateExtensions
+                        .Cast<X509Extension>()
+                        .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.1");
+                    _out_AttestionDataLocation = "1.3.6.1.4.1.41482.3.1";
+                    if (extensioncsr is not null)
+                    {
+                        _AttestionCertificate = new X509Certificate2(extensioncsr.RawData);
+                    }
+                    else
+                    {
+                        throw new Exception("Attestion Certificate is missing");
+                    }
                 }
             }
 
@@ -280,7 +303,7 @@ namespace powershellYK.Cmdlets.Other
                     _out_Algorithm = PivAlgorithm.None;
                 }
 
-                Attestion returnObject = new Attestion(true, _out_SerialNumber, _out_FirmwareVersion, _out_PinPolicy, _out_TouchPolicy, _out_FormFactor, _out_Slot, _out_Algorithm, _out_isFIPSSeries, _out_isCSPNSeries, _out_AttestionMatchesCSR);
+                Attestion returnObject = new Attestion(true, _out_SerialNumber, _out_FirmwareVersion, _out_PinPolicy, _out_TouchPolicy, _out_FormFactor, _out_Slot, _out_Algorithm, _out_isFIPSSeries, _out_isCSPNSeries, AttestionMatchesCSR: _out_AttestionMatchesCSR, attestionDataLocation: _out_AttestionDataLocation);
 
                 WriteObject(returnObject);
             }
