@@ -13,7 +13,7 @@ Remove YubiKey OTP slot.
 ## SYNTAX
 
 ```
-Remove-YubikeyOTP -Slot <PSObject> [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-YubikeyOTP -Slot <Slot> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -42,9 +42,10 @@ Removes the OTP configuration from slot 1 (Short press)
 Yubikey OTP Slot
 
 ```yaml
-Type: PSObject
+Type: Slot
 Parameter Sets: (All)
 Aliases:
+Accepted values: None, ShortPress, LongPress
 
 Required: True
 Position: Named

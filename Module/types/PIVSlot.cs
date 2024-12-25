@@ -1,7 +1,4 @@
-﻿using powershellYK.support;
-using System.Management.Automation;
-using System.Security.Cryptography.X509Certificates;
-using Yubico.YubiKey.Piv;
+﻿using Yubico.YubiKey.Piv;
 
 namespace powershellYK.PIV
 {
@@ -171,7 +168,7 @@ namespace powershellYK.PIV
             return slot.Value;
         }
 
-        public static implicit operator int(PIVSlot slot)
+        public static implicit operator int(PIVSlot slot) 
         {
             return slot.Value;
         }
