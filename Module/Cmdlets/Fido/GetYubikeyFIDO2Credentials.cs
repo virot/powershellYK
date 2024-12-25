@@ -48,6 +48,7 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     foreach (RelyingParty RelyingParty in RelyingParties)
                     {
+                        WriteDebug($"Enumerating credentials for {RelyingParty.Id}.");
                         var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
 
                         foreach (CredentialUserInfo user in relayCredentials)
@@ -57,6 +58,7 @@ namespace powershellYK.Cmdlets.Fido
                                 Site = RelyingParty.Id,
                                 Name = user.User.Name,
                                 DisplayName = user.User.DisplayName,
+                                coseKey = user.CredentialPublicKey, 
                             };
                             WriteObject(credentials);
                         }
