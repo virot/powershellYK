@@ -58,7 +58,7 @@ namespace powershellYK.Cmdlets.Fido
                                 Site = RelyingParty.Id,
                                 Name = user.User.Name,
                                 DisplayName = user.User.DisplayName,
-                                coseKey = user.CredentialPublicKey, 
+                                coseKey = user.CredentialPublicKey,
                             };
                             WriteObject(credentials);
                         }

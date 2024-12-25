@@ -43,8 +43,10 @@ namespace powershellYK.support
                 }
                 if (family == 5)
                 {
-                    if (isSky) {
-                        switch (formFactor) {
+                    if (isSky)
+                    {
+                        switch (formFactor)
+                        {
                             case FormFactor.UsbAKeychain:
                                 return "Security Key A by Yubico";
                             case FormFactor.UsbCKeychain:
