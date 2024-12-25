@@ -48,8 +48,17 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     foreach (RelyingParty RelyingParty in RelyingParties)
                     {
-                        var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
-
+                        WriteDebug($"Enumerating credentials for {RelyingParty.Id}.");
+                        IReadOnlyList<CredentialUserInfo> relayCredentials;
+                        try
+                        {
+                            relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
+                        }
+                        catch (NotSupportedException e)
+                        {
+                            WriteWarning($"Failed to enumerate credentials for {RelyingParty.Id}: {e.Message}, SDK might not support algorithm.");
+                            continue;
+                        }
                         foreach (CredentialUserInfo user in relayCredentials)
                         {
                             Credentials credentials = new Credentials
@@ -57,6 +66,7 @@ namespace powershellYK.Cmdlets.Fido
                                 Site = RelyingParty.Id,
                                 Name = user.User.Name,
                                 DisplayName = user.User.DisplayName,
+                                coseKey = user.CredentialPublicKey,
                             };
                             WriteObject(credentials);
                         }
