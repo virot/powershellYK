@@ -131,7 +131,7 @@ namespace powershellYK.Cmdlets.Fido
                             // Code to set minimum PIN length here.
 
                             if (!fido2Session.TrySetPinConfig(MinimumPINLength, null, null))
-                                                            {
+                            {
                                 throw new Exception("Failed to change the minimum PIN length.");
                             }
                             // Do it once more to force PIN change.

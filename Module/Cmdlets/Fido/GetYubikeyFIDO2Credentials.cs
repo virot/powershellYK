@@ -41,36 +41,26 @@ namespace powershellYK.Cmdlets.Fido
 
                 if (!RelyingParties.Any()) // Check if there are no relying parties
                 {
-                    WriteObject("No credentials found on the YubiKey.");
+                    WriteWarning("No credentials found on the YubiKey.");
                     return;
                 }
-
-                bool credentialsFound = false; // Track if any credentials are found
-
-                foreach (RelyingParty RelyingParty in RelyingParties)
+                else
                 {
-                    var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
-
-                    if (relayCredentials.Any()) // Check if this relying party has credentials
+                    foreach (RelyingParty RelyingParty in RelyingParties)
                     {
-                        credentialsFound = true;
-                    }
+                        var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
 
-                    foreach (CredentialUserInfo user in relayCredentials)
-                    {
-                        Credentials credentials = new Credentials
+                        foreach (CredentialUserInfo user in relayCredentials)
                         {
-                            Site = RelyingParty.Id,
-                            Name = user.User.Name,
-                            DisplayName = user.User.DisplayName,
-                        };
-                        WriteObject(credentials);
+                            Credentials credentials = new Credentials
+                            {
+                                Site = RelyingParty.Id,
+                                Name = user.User.Name,
+                                DisplayName = user.User.DisplayName,
+                            };
+                            WriteObject(credentials);
+                        }
                     }
-                }
-
-                if (!credentialsFound)
-                {
-                    WriteObject("No FIDO2 credentials found on the YubiKey.");
                 }
             }
         }

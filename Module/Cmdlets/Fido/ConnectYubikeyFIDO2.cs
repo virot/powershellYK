@@ -98,7 +98,7 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.clientPin) == OptionValue.False)
                     {
-                        WriteObject("Client PIN is not set.");
+                        WriteWarning("Client PIN is not set.");
                         return;
                     }
                     else if (fido2Session.AuthenticatorInfo.ForcePinChange == true)

@@ -56,7 +56,7 @@ namespace powershellYK.Cmdlets.Yubikey
             if (_yubikey is not null)
             {
                 YubiKeyModule._yubikey = _yubikey;
-                WriteObject($"Connected to {PowershellYKText.FriendlyName(_yubikey)} with serial: {_yubikey.SerialNumber}.");
+                WriteInformation($"Connected to {PowershellYKText.FriendlyName(_yubikey)} with serial: {_yubikey.SerialNumber}.", new string[] { "YubiKey" });
             }
             else
             {
