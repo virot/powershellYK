@@ -15,11 +15,8 @@ namespace powershellYK.Cmdlets.OTP
     [Cmdlet(VerbsCommon.Set, "YubikeyOTP", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class SetYubikeyOTPCommand : PSCmdlet
     {
-        [TransformOTPSlot()]
-        [ValidateOTPSlot()]
-        [ArgumentCompletions("ShortPress", "LongPress")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey OTP Slot")]
-        public PSObject? Slot { get; set; }
+        public Slot Slot { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows configuration with all defaults", ParameterSetName = "Yubico OTP")]
         public SwitchParameter YubicoOTP { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows configuration with all defaults", ParameterSetName = "Static Password")]
@@ -56,11 +53,6 @@ namespace powershellYK.Cmdlets.OTP
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Require Touch", ParameterSetName = "ChallengeResponse")]
         public SwitchParameter RequireTouch { get; set; }
 
-
-        private Slot _slot { get; set; }
-
-
-
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -82,12 +74,8 @@ namespace powershellYK.Cmdlets.OTP
         {
             using (var otpSession = new OtpSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                if (Slot!.BaseObject is Slot)
-                {
-                    _slot = (Slot)Slot.BaseObject;
-                }
                 WriteDebug($"Working with {ParameterSetName}");
-                if ((_slot == Yubico.YubiKey.Otp.Slot.ShortPress && !otpSession.IsShortPressConfigured) || (_slot == Yubico.YubiKey.Otp.Slot.LongPress && !otpSession.IsLongPressConfigured) || ShouldProcess($"Yubikey OTP {_slot}", "Set"))
+                if ((Slot == Yubico.YubiKey.Otp.Slot.ShortPress && !otpSession.IsShortPressConfigured) || (Slot == Yubico.YubiKey.Otp.Slot.LongPress && !otpSession.IsLongPressConfigured) || ShouldProcess($"Yubikey OTP {Slot}", "Set"))
                 {
                     switch (ParameterSetName)
                     {
@@ -95,7 +83,7 @@ namespace powershellYK.Cmdlets.OTP
                             Memory<byte> _publicID = new Memory<byte>(new byte[6]);
                             Memory<byte> _privateID = new Memory<byte>(new byte[6]);
                             Memory<byte> _secretKey = new Memory<byte>(new byte[16]);
-                            ConfigureYubicoOtp configureyubicoOtp = otpSession.ConfigureYubicoOtp(_slot);
+                            ConfigureYubicoOtp configureyubicoOtp = otpSession.ConfigureYubicoOtp(Slot);
                             int? serial = YubiKeyModule._yubikey!.SerialNumber;
                             if (PublicID is null)
                             {
@@ -139,7 +127,7 @@ namespace powershellYK.Cmdlets.OTP
                             break;
 
                         case "Static Password":
-                            ConfigureStaticPassword staticpassword = otpSession.ConfigureStaticPassword(_slot);
+                            ConfigureStaticPassword staticpassword = otpSession.ConfigureStaticPassword(Slot);
                             staticpassword = staticpassword.WithKeyboard(KeyboardLayout);
                             staticpassword = staticpassword.SetPassword((Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!))!).AsMemory());
                             if (AppendCarriageReturn.IsPresent)
@@ -149,7 +137,7 @@ namespace powershellYK.Cmdlets.OTP
                             staticpassword.Execute();
                             break;
                         case "Static Generated Password":
-                            ConfigureStaticPassword staticgenpassword = otpSession.ConfigureStaticPassword(_slot);
+                            ConfigureStaticPassword staticgenpassword = otpSession.ConfigureStaticPassword(Slot);
                             Memory<char> generatedPassword = new Memory<char>(new char[PasswordLength]);
                             staticgenpassword = staticgenpassword.WithKeyboard(KeyboardLayout);
                             staticgenpassword = staticgenpassword.GeneratePassword(generatedPassword);
@@ -161,7 +149,7 @@ namespace powershellYK.Cmdlets.OTP
                             break;
                         case "ChallengeResponse":
                             Memory<byte> _CRsecretKey = new Memory<byte>(new byte[20]);
-                            ConfigureChallengeResponse configureCR = otpSession.ConfigureChallengeResponse(_slot);
+                            ConfigureChallengeResponse configureCR = otpSession.ConfigureChallengeResponse(Slot);
                             if (SecretKey is null)
                             {
                                 configureCR = configureCR.GenerateKey(_CRsecretKey);
