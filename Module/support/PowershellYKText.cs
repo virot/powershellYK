@@ -43,8 +43,18 @@ namespace powershellYK.support
                 }
                 if (family == 5)
                 {
+                    if (isSky) {
+                        switch (formFactor) {
+                            case FormFactor.UsbAKeychain:
+                                return "Security Key A by Yubico";
+                            case FormFactor.UsbCKeychain:
+                                return "Security Key C by Yubico";
+                            default:
+                                return "Security Key by Yubico";
+                        }
+                    }
                     // YubiKey Bio
-                    if (isBio)
+                    else if (isBio)
                     {
                         if (isPIV) // Multi-Protocol Edition (AKA "MPE")
                         {
