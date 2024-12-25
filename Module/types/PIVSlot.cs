@@ -168,7 +168,7 @@ namespace powershellYK.PIV
             return slot.Value;
         }
 
-        public static implicit operator int(PIVSlot slot) 
+        public static implicit operator int(PIVSlot slot)
         {
             return slot.Value;
         }
