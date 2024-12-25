@@ -57,21 +57,30 @@ namespace powershellYK.Cmdlets.PIV
                 CertificateRequest request;
                 X509SignatureGenerator signer;
 
-
+                // get the metadata catch if fails                
+                PivMetadata? metadata = null;
                 PivPublicKey? publicKey = null;
                 try
                 {
-                    publicKey = pivSession.GetMetadata(Slot).PublicKey;
-                    if (publicKey is null)
-                    {
-                        throw new Exception("Public key is null.");
-                    }
+                    metadata = pivSession.GetMetadata(Slot);
+                    publicKey = metadata.PublicKey;
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Failed to get public key for slot {Slot}, does there exist a key?", e);
+                    throw new Exception($"Failed to get metadata for slot {Slot}.", e);
                 }
 
+                if (publicKey is null)
+                {
+                    throw new Exception($"Failed to get public key for slot {Slot}, does there exist a key?");
+                }
+                if (Attestation.IsPresent)
+                {
+                    if (metadata.KeyStatus != PivKeyStatus.Generated)
+                    {
+                        throw new InvalidOperationException($"Private key must be generated on YubiKey for attested certificate requests. {Slot} is {metadata.KeyStatus}.");
+                    }
+                }
 
 
                 using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);

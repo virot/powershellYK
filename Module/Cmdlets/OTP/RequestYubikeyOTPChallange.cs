@@ -17,11 +17,8 @@ namespace powershellYK.Cmdlets.OTP
     [Cmdlet(VerbsLifecycle.Request, "YubikeyOTPChallange")]
     public class RequestYubikeyOTPChallangeCommand : Cmdlet
     {
-        [TransformOTPSlot()]
-        [ValidateOTPSlot()]
-        [ArgumentCompletions("ShortPress", "LongPress")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "YubiOTP Slot")]
-        public PSObject? Slot;
+        public Slot Slot;
         [TransformHexInput()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Phrase")]
         public PSObject? Phrase;
@@ -50,7 +47,7 @@ namespace powershellYK.Cmdlets.OTP
         {
             using (var otpSession = new OtpSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                CalculateChallengeResponse challange = otpSession.CalculateChallengeResponse((Slot)Slot!.BaseObject);
+                CalculateChallengeResponse challange = otpSession.CalculateChallengeResponse(Slot);
                 challange = challange.UseChallenge((byte[])Phrase!.BaseObject);
                 challange.UseYubiOtp(YubikeyOTP);
                 WriteObject(HexConverter.ByteArrayToString(challange.GetDataBytes().ToArray()));
