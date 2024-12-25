@@ -11,12 +11,12 @@ namespace powershellYK.Cmdlets.Yubikey
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
@@ -32,7 +32,7 @@ namespace powershellYK.Cmdlets.Yubikey
             }
             catch (System.InvalidOperationException e)
             {
-                WriteWarning("No yubikeys found, Yubikeys with ONLY FIDO interfaces enabled requires Administrator permissions in Windows");
+                WriteWarning("No YubiKeys found, FIDO-only YubiKeys on Windows requires running as Administrator.");
                 throw new Exception(e.Message, e);
             }
         }

@@ -31,10 +31,10 @@ namespace powershellYK.Cmdlets.Yubikey
 
             if (yubiKeys.ToArray().Length == 0)
             {
-                WriteWarning("No YubiKeys found, FIDO-only YubiKeys requires Administrator permissions in Windows (elevate if needed)");
+                WriteWarning("No YubiKeys found, FIDO-only YubiKeys on Windows requires running as Administrator.");
                 if (Serialnumber is not null)
                 {
-                    throw new Exception("No YubiKeys found with the specified serial number");
+                    throw new Exception("No YubiKey found with the specified serial number.");
                 }
             }
         }

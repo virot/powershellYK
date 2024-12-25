@@ -16,11 +16,11 @@ namespace powershellYK.Cmdlets.Fido
             // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
             if (YubiKeyModule._fido2PIN is null)
             {
-                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2");
+                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2").Invoke();
                 if (YubiKeyModule._fido2PIN is null)
                 {
-                    throw new Exception("Connect-YubikeyFIDO2 failed to connect FIDO2 application.");
+                    throw new Exception("Connect-YubikeyFIDO2 failed to connect to the FIDO2 applet!");
                 }
             }
 
@@ -38,21 +38,32 @@ namespace powershellYK.Cmdlets.Fido
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
                 var RelyingParties = fido2Session.EnumerateRelyingParties();
-                foreach (RelyingParty RelyingParty in RelyingParties)
+
+                if (!RelyingParties.Any()) // Check if there are no relying parties
                 {
-                    var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
-                    foreach (CredentialUserInfo user in relayCredentials)
+                    WriteWarning("No credentials found on the YubiKey.");
+                    return;
+                }
+                else
+                {
+                    foreach (RelyingParty RelyingParty in RelyingParties)
                     {
-                        Credentials credentials = new Credentials
+                        var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
+
+                        foreach (CredentialUserInfo user in relayCredentials)
                         {
-                            Site = RelyingParty.Id,
-                            Name = user.User.Name,
-                            DisplayName = user.User.DisplayName,
-                        };
-                        WriteObject(credentials);
+                            Credentials credentials = new Credentials
+                            {
+                                Site = RelyingParty.Id,
+                                Name = user.User.Name,
+                                DisplayName = user.User.DisplayName,
+                            };
+                            WriteObject(credentials);
+                        }
                     }
                 }
             }
         }
+
     }
 }

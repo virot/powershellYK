@@ -66,7 +66,7 @@ namespace powershellYK.Cmdlets.Fido
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 myPowersShellInstance.Invoke();
                 WriteDebug($"Successfully connected");
@@ -75,8 +75,8 @@ namespace powershellYK.Cmdlets.Fido
             // Check if Connect-YubikeyFIDO2 was called without a PIN (only possible with Yubikey that doesnt have a PIN configured)
             if (this.MyInvocation.BoundParameters.ContainsKey("PIN") == false)
             {
-                WriteWarning("FIDO2 has no PIN, please set PIN before continuing.");
-                WriteDebug("FIDO2 has no PIN, invokating Set-YubikeyFIDO2 -SetPIN");
+                WriteWarning("FIDO2 has no PIN, please set PIN before continuing:");
+                WriteDebug("FIDO2 has no PIN, invokating Set-YubikeyFIDO2 -SetPIN...");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Set-YubikeyFIDO2").AddParameter("SetPIN");
                 myPowersShellInstance.Invoke();
             }
@@ -98,12 +98,12 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.clientPin) == OptionValue.False)
                     {
-                        WriteObject("Client PIN is not set");
+                        WriteWarning("Client PIN is not set.");
                         return;
                     }
                     else if (fido2Session.AuthenticatorInfo.ForcePinChange == true)
                     {
-                        WriteWarning("YubiKey requires PIN change to continue, see Set-YubikeyFIDO2 -SetPIN ");
+                        WriteWarning("YubiKey requires PIN change to continue, see Set-YubikeyFIDO2 -SetPIN.");
                         return;
                     }
                     if (this.MyInvocation.BoundParameters["PIN"] is not null)

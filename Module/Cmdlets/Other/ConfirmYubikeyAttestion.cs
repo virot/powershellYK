@@ -167,7 +167,7 @@ namespace powershellYK.Cmdlets.Other
                 }
                 else
                 {
-                    throw new Exception("Intermediate Certificate is missing");
+                    throw new Exception("Intermediate Certificate is missing!");
                 }
 
             }
@@ -175,7 +175,7 @@ namespace powershellYK.Cmdlets.Other
             if (_AttestionCertificate is null || _IntermediateCertificate is null)
             {
                 // Is this still needed??
-                throw new Exception("Attestion Certificate or Intermediate Certificate is missing");
+                throw new Exception("Attestion Certificate or Intermediate Certificate is missing!");
             }
 
             // Check the entire chain up to Yubico's root CA
@@ -211,22 +211,22 @@ namespace powershellYK.Cmdlets.Other
                     switch (extension.Oid!.Value)
                     {
                         case "1.3.6.1.4.1.41482.3.3": // Firmware version
-                            WriteDebug("Extracting Firmware version");
+                            WriteDebug("Extracting Firmware version...");
                             _out_FirmwareVersion = new FirmwareVersion(extension.RawData[0], extension.RawData[1], extension.RawData[2]);
                             break;
                         case "1.3.6.1.4.1.41482.3.7": // Serial number
-                            WriteDebug("Extracting Serial number");
+                            WriteDebug("Extracting Serial number...");
                             byte[] tempSerialBytes = extension.RawData;
                             Array.Reverse(tempSerialBytes);
                             _out_SerialNumber = BitConverter.ToUInt32(tempSerialBytes, 0);
                             break;
                         case "1.3.6.1.4.1.41482.3.8": // Pin / Touch Policies
-                            WriteDebug("Extracting Pin / Touch Policies");
+                            WriteDebug("Extracting Pin / Touch Policies...");
                             _out_PinPolicy = (PivPinPolicy)extension.RawData[0];
                             _out_TouchPolicy = (PivTouchPolicy)extension.RawData[1];
                             break;
                         case "1.3.6.1.4.1.41482.3.9": // Form factor
-                            WriteDebug("Extracting Form factor");
+                            WriteDebug("Extracting Form factor...");
                             _out_FormFactor = (FormFactor)(extension.RawData[0] & (byte)0x7F);
                             break;
                     }

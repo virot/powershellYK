@@ -86,7 +86,7 @@ namespace powershellYK.Cmdlets.OTP
                             if ((UsbCapabilities.HasFlag(YubiKeyCapabilities.Otp) || ShouldProcess("powershellYK management", "Disable")))
                             {
                                 YubiKeyModule._yubikey!.SetEnabledUsbCapabilities((YubiKeyCapabilities)UsbCapabilities);
-                                WriteWarning("YubiKey will reboot, diconnecting powershellYK.");
+                                WriteWarning("YubiKey will reboot, diconnecting powershellYK!");
                             }
                             break;
                         case "Update USB capabilities":
@@ -98,13 +98,13 @@ namespace powershellYK.Cmdlets.OTP
                                 if ((requestedUSBCapabilities.HasFlag(YubiKeyCapabilities.Otp) || ShouldProcess("powershellYK management", "Disable")))
                                 {
                                     YubiKeyModule._yubikey!.SetEnabledUsbCapabilities(requestedUSBCapabilities);
-                                    WriteWarning("YubiKey will reboot, diconnecting powershellYK.");
+                                    WriteWarning("YubiKey will reboot, diconnecting powershellYK!");
                                 }
                             }
                             break;
                         case "Replace NFC capabilities":
                             YubiKeyModule._yubikey!.SetEnabledUsbCapabilities((YubiKeyCapabilities)UsbCapabilities);
-                            WriteWarning("YubiKey will reboot, diconnecting powershellYK.");
+                            WriteWarning("YubiKey will reboot, diconnecting powershellYK!");
                             break;
                         case "Update NFC capabilities":
                             if (EnableNFCCapabilities != YubiKeyCapabilities.None || DisableNFCCapabilities != YubiKeyCapabilities.None)
@@ -113,7 +113,7 @@ namespace powershellYK.Cmdlets.OTP
                                 requestedNFCCapabilities |= EnableNFCCapabilities;
                                 requestedNFCCapabilities &= ~DisableNFCCapabilities;
                                 YubiKeyModule._yubikey!.SetEnabledNfcCapabilities(requestedNFCCapabilities);
-                                WriteWarning("YubiKey will reboot, diconnecting powershellYK.");
+                                WriteWarning("YubiKey will reboot, diconnecting powershellYK!");
                             }
                             break;
 
@@ -129,7 +129,7 @@ namespace powershellYK.Cmdlets.OTP
                                     // Attempt to set restricted NFC
                                     YubiKeyModule._yubikey!.SetIsNfcRestricted(true);
 
-                                    Console.WriteLine("YubiKey NFC now disabled. NFC will be re-enabled automatically the next time the YubiKey is connected to USB power.");
+                                    WriteObject("YubiKey NFC now disabled. NFC will be re-enabled automatically the next time the YubiKey is connected to USB power.");
                                 }
                                 catch (NotSupportedException)
                                 {
@@ -152,7 +152,7 @@ namespace powershellYK.Cmdlets.OTP
             }
             else
             {
-                throw new Exception("Configuration is locked, See Unlock-Yubikey");
+                throw new Exception("Configuration is locked, See Unlock-Yubikey!");
             }
         }
 

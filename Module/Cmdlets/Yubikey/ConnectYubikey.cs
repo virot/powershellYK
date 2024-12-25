@@ -43,11 +43,11 @@ namespace powershellYK.Cmdlets.Yubikey
                     if (yubikeys.Count() == 1)
                     {
                         _yubikey = (YubiKeyDevice)yubikeys.First();
-                        WriteDebug($"Found only one device, using {_yubikey.SerialNumber}");
+                        WriteDebug($"Found only one device, using {_yubikey.SerialNumber}.");
                     }
                     break;
                 case "Connect Yubikey with Serialnumber":
-                    WriteDebug($"Looking for YubiKey with serial: {Serialnumber}");
+                    WriteDebug($"Looking for YubiKey with serial: {Serialnumber}.");
                     _yubikey = (YubiKeyDevice)YubiKeyDevice.FindAll().Where(x => x.SerialNumber == Serialnumber).First();
                     break;
                 default:
@@ -56,11 +56,11 @@ namespace powershellYK.Cmdlets.Yubikey
             if (_yubikey is not null)
             {
                 YubiKeyModule._yubikey = _yubikey;
-                Console.WriteLine($"Connected to {PowershellYKText.FriendlyName(_yubikey)} with serial: {_yubikey.SerialNumber}");
+                WriteInformation($"Connected to {PowershellYKText.FriendlyName(_yubikey)} with serial: {_yubikey.SerialNumber}.", new string[] { "YubiKey" });
             }
             else
             {
-                throw new Exception("None or multiple YubiKeys found, Use Connect-Yubikey to specify which Yubikey to use");
+                throw new Exception("None or multiple YubiKeys found, Use Connect-Yubikey to specify which Yubikey to use.");
             }
         }
     }

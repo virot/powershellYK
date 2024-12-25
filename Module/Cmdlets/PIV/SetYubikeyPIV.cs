@@ -78,12 +78,12 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
@@ -104,14 +104,14 @@ namespace powershellYK.Cmdlets.PIV
                     case "ChangeRetries":
                         if (new List<FormFactor> { FormFactor.UsbABiometricKeychain, FormFactor.UsbCBiometricKeychain }.Contains(((YubiKeyDevice)YubiKeyModule._yubikey!).FormFactor))
                         {
-                            throw new Exception("Biometric YubiKeys does not support changing the number of PIN retries");
+                            throw new Exception("Biometric YubiKeys does not support changing the number of PIN retries.");
                         }
                         // powershellYK does more than the SDK here, it also blocks the PUK if the Management key is PIN protected.
                         pivSession.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
                         // Yubikey disables the PUK if the Management key is PIN protected, we do the same if not KeepPUKUnlocked is set
                         if (pivSession.GetPinOnlyMode().HasFlag(PivPinOnlyMode.PinProtected) && !(KeepPukUnlocked.IsPresent))
                         {
-                            WriteDebug("Management Key is PIN protected, Blocking PUK");
+                            WriteDebug("Management Key is PIN protected, Blocking PUK...");
                             retriesLeft = 1;
                             while (retriesLeft > 0)
                             {
@@ -119,7 +119,7 @@ namespace powershellYK.Cmdlets.PIV
                             }
                             if (YubiKeyModule._pivPIN is not null && YubiKeyModule._pivPIN.Length > 0 && Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._pivPIN!)) != "123456")
                             {
-                                WriteDebug("Trying to revert PIN");
+                                WriteDebug("Trying to revert PIN...");
                                 pivSession.TryChangePin(System.Text.Encoding.UTF8.GetBytes("123456"), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._pivPIN!))!), out retriesLeft);
                             }
                             else
@@ -143,12 +143,12 @@ namespace powershellYK.Cmdlets.PIV
                             }
                             else
                             {
-                                throw new Exception("Incorrect PIN provided");
+                                throw new Exception("Incorrect PIN provided.");
                             }
                         }
                         catch (Exception e)
                         {
-                            throw new Exception("Failed to change PIN", e);
+                            throw new Exception("Failed to change PIN.", e);
                         }
                         finally
                         {
@@ -160,7 +160,7 @@ namespace powershellYK.Cmdlets.PIV
                             if (pivSession.TryChangePuk(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PUK))!), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPUK))!)
     , out retriesLeft) == false)
                             {
-                                throw new Exception("Incorrect PUK provided");
+                                throw new Exception("Incorrect PUK provided.");
                             }
                         }
                         catch (Exception e)
@@ -196,7 +196,7 @@ namespace powershellYK.Cmdlets.PIV
                         {
                             if (pivSession.TryChangeManagementKey(ManagementKeyarray, NewManagementKeyarray, (PivTouchPolicy)TouchPolicy, (PivAlgorithm)Algorithm))
                             {
-                                WriteDebug("ManagementKey changed");
+                                WriteDebug("Management Key changed");
                             }
                             else
                             {
