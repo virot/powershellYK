@@ -3,7 +3,14 @@ name: main
 
 on:
   pull_request:
+    branches:
+      - main
+      - master
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+      - master
 
 jobs:
   lint:
