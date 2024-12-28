@@ -55,6 +55,7 @@ jobs:
 
   pester-windows:
     runs-on: windows-latest
+    needs: build
 
     steps:
     - name: Checkout repository
