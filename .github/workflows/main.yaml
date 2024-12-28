@@ -67,9 +67,6 @@ jobs:
         name: build-output
         path: release
 
-    - name: Display structure of downloaded files
-      run: Get-ChildItem -Recurse .
-
     - name: Run Pester Tests
       shell: pwsh
       run: |
@@ -93,9 +90,6 @@ jobs:
         name: build-output
         path: release
 
-    - name: Display structure of downloaded files
-      run: pwd
-      
     - name: Run Pester Tests
       shell: pwsh
       run: |
