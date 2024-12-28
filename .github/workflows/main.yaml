@@ -1,5 +1,5 @@
-# dotnet-format.yaml
-name: dotnet Format
+# main.yaml
+name: main
 
 on:
   pull_request:
@@ -28,3 +28,26 @@ jobs:
           echo "There are uncommitted changes after running dotnet format."
           exit 1
         fi
+
+   - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore -c Release
+
+    - name: Test
+      run: dotnet test --no-restore
+
+    - name: Set up PowerShell 7
+      uses: actions/setup-pwsh@v2
+      with:
+        pwsh-version: '7.x'
+
+    - name: Run Pester Tests
+      shell: pwsh
+      run: |
+        # Import the module
+        Import-Module .\Module\bin\module\Release\net8.0\powershellYK.psd1
+
+        # Run Pester tests
+        IInvoke-Pester -TagFilter 'Without-Yubikey' -Output Detailed

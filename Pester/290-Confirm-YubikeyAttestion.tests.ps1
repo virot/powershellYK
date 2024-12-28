@@ -1,7 +1,7 @@
 BeforeAll -Scriptblock {
 }
 
-Describe "Confirm-YubikeyAttestion requestWithBuiltinAttestion" -Tag "Dry" {
+Describe "Confirm-YubikeyAttestion requestWithBuiltinAttestion" -Tag "Without-YubiKey" {
     BeforeEach -Scriptblock {
         #Get-Variable pest*|Remove-Variable
     }
