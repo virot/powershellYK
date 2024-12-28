@@ -74,7 +74,7 @@ jobs:
       shell: pwsh
       run: |
         # Import the module from the downloaded build output
-        Import-Module release\powershellYK.psd1
+        Import-Module .\release\powershellYK.psd1
 
         # Run Pester tests
         Invoke-Pester -Tag "Without-Yubikey" -Output Detailed
@@ -94,13 +94,13 @@ jobs:
         path: release
 
     - name: Display structure of downloaded files
-      run: ls -R .
-
+      run: pwd
+      
     - name: Run Pester Tests
       shell: pwsh
       run: |
         # Import the module from the downloaded build output
-        Import-Module release/powershellYK.psd1
+        Import-Module ./release/powershellYK.psd1
 
         # Run Pester tests
         Invoke-Pester -Tag "Without-Yubikey" -Output Detailed
