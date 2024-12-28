@@ -67,7 +67,10 @@ jobs:
         name: build-output
         path: release
 
-    - name: Windows-Pester
+    - name: Display structure of downloaded files
+      run: Get-ChildItem -Recurse .
+
+    - name: Run Pester Tests
       shell: pwsh
       run: |
         # Import the module from the downloaded build output
@@ -90,7 +93,10 @@ jobs:
         name: build-output
         path: release
 
-    - name: Windows-Pester
+    - name: Display structure of downloaded files
+      run: ls -R .
+
+    - name: Run Pester Tests
       shell: pwsh
       run: |
         # Import the module from the downloaded build output
