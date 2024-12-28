@@ -28,3 +28,16 @@ jobs:
           echo "There are uncommitted changes after running dotnet format."
           exit 1
         fi
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore -c Release
+
+    - name: Test
+      run: dotnet test --no-restore
