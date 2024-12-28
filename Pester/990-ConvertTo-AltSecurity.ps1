@@ -1,7 +1,7 @@
 BeforeAll -Scriptblock {
 }
 
-Describe "ConvertTo-AltSecurity" -Tag @("Dry",'CertificateTransform','CertificateValidate') {
+Describe "ConvertTo-AltSecurity" -Tag @("Without-Yubikey") {
     BeforeEach -Scriptblock {
         $pest_return = $Null
     }
