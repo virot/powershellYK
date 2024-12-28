@@ -15,7 +15,7 @@ Describe "Confirm-YubikeyAttestion requestWithBuiltinAttestion" -Tag "Without-Yu
     }
 
     It -Name "Verify 'Confirm-YubikeyAttestion -CertificateRequest _fullfile_' works, Non-Windows" -Skip:($IsWindows) -Test {
-        $pest_return = Confirm-YubikeyAttestion -CertificateRequest "$PSScriptRoot\TestData\piv_attestion_certificaterequest_with_attestion.req"
+        $pest_return = Confirm-YubikeyAttestion -CertificateRequest "$PSScriptRoot/TestData/piv_attestion_certificaterequest_with_attestion.req"
         $pest_return | Should -BeOfType powershellYK.Attestion
         $pest_return.Slot | Should -Be 0x9a
         $pest_return.AttestionValidated | Should -Be $True
@@ -23,7 +23,7 @@ Describe "Confirm-YubikeyAttestion requestWithBuiltinAttestion" -Tag "Without-Yu
     }
 
     It -Name "Verify 'Confirm-YubikeyAttestion -CertificateRequest _shortfile_' works, Windows" -Skip:(!$IsWindows) -Test {
-        $pest_return = Confirm-YubikeyAttestion -CertificateRequest ".\Pester\TestData\piv_attestion_certificaterequest_with_attestion.req"
+        $pest_return = Confirm-YubikeyAttestion -CertificateRequest "$PSScriptRoot\Pester\TestData\piv_attestion_certificaterequest_with_attestion.req"
         $pest_return | Should -BeOfType powershellYK.Attestion
         $pest_return.Slot | Should -Be 0x9a
         $pest_return.AttestionValidated | Should -Be $True
@@ -31,7 +31,7 @@ Describe "Confirm-YubikeyAttestion requestWithBuiltinAttestion" -Tag "Without-Yu
     }
 
     It -Name "Verify 'Confirm-YubikeyAttestion -CertificateRequest _shortfile_' works, Non-Windows" -Skip:($IsWindows) -Test {
-        $pest_return = Confirm-YubikeyAttestion -CertificateRequest ".\Pester\TestData\piv_attestion_certificaterequest_with_attestion.req"
+        $pest_return = Confirm-YubikeyAttestion -CertificateRequest "$PSScriptRoot/Pester/TestData/piv_attestion_certificaterequest_with_attestion.req"
         $pest_return | Should -BeOfType powershellYK.Attestion
         $pest_return.Slot | Should -Be 0x9a
         $pest_return.AttestionValidated | Should -Be $True
