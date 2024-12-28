@@ -1,4 +1,4 @@
-﻿using powershellYK.support.transform;
+using powershellYK.support.transform;
 using powershellYK.support.validators;
 using System.Management.Automation;           // Windows PowerShell namespace.
 using System.Security.Cryptography;
@@ -162,7 +162,7 @@ namespace powershellYK.Cmdlets.Other
             {
                 if (CertificateIncludingAttestion is not null && CertificateIncludingAttestion.BaseObject is X509Certificate2)
                 {
-                     _CertificateIncludingAttestion = (X509Certificate2)CertificateIncludingAttestion.BaseObject;
+                    _CertificateIncludingAttestion = (X509Certificate2)CertificateIncludingAttestion.BaseObject;
 
 
                     if (_CertificateIncludingAttestion.Extensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.1"))
@@ -316,7 +316,7 @@ namespace powershellYK.Cmdlets.Other
                 {
                     _out_AttestionMatchesCSR = _AttestionCertificate.PublicKey.EncodedKeyValue.RawData.SequenceEqual(_CertificateRequest.PublicKey.EncodedKeyValue.RawData);
                 }
-                else if(ParameterSetName == "CertificateIncludingAttestion" && _CertificateIncludingAttestion is not null)
+                else if (ParameterSetName == "CertificateIncludingAttestion" && _CertificateIncludingAttestion is not null)
                 {
                     _out_AttestionMatchesCSR = _AttestionCertificate.PublicKey.EncodedKeyValue.RawData.SequenceEqual(_CertificateIncludingAttestion.PublicKey.EncodedKeyValue.RawData);
                 }
