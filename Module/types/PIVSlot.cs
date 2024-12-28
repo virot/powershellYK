@@ -1,7 +1,4 @@
-﻿using powershellYK.support;
-using System.Management.Automation;
-using System.Security.Cryptography.X509Certificates;
-using Yubico.YubiKey.Piv;
+﻿using Yubico.YubiKey.Piv;
 
 namespace powershellYK.PIV
 {

@@ -14,25 +14,25 @@ Configure OTP slots
 
 ### Yubico OTP
 ```
-Set-YubikeyOTP -Slot <PSObject> [-YubicoOTP] [-PublicID <Byte[]>] [-PrivateID <Byte[]>] [-SecretKey <Byte[]>]
+Set-YubikeyOTP -Slot <Slot> [-YubicoOTP] [-PublicID <Byte[]>] [-PrivateID <Byte[]>] [-SecretKey <Byte[]>]
  [-Upload] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Static Password
 ```
-Set-YubikeyOTP -Slot <PSObject> [-StaticPassword] -Password <SecureString> [-KeyboardLayout <KeyboardLayout>]
+Set-YubikeyOTP -Slot <Slot> [-StaticPassword] -Password <SecureString> [-KeyboardLayout <KeyboardLayout>]
  [-AppendCarriageReturn] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Static Generated Password
 ```
-Set-YubikeyOTP -Slot <PSObject> [-StaticGeneratedPassword] -PasswordLength <Int32>
+Set-YubikeyOTP -Slot <Slot> [-StaticGeneratedPassword] -PasswordLength <Int32>
  [-KeyboardLayout <KeyboardLayout>] [-AppendCarriageReturn] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ChallengeResponse
 ```
-Set-YubikeyOTP -Slot <PSObject> [-ChallengeResponse] [-SecretKey <Byte[]>]
+Set-YubikeyOTP -Slot <Slot> [-ChallengeResponse] [-SecretKey <Byte[]>]
  [-Algorithm <ChallengeResponseAlgorithm>] [-RequireTouch] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -240,9 +240,10 @@ Accept wildcard characters: False
 Yubikey OTP Slot.
 
 ```yaml
-Type: PSObject
+Type: Slot
 Parameter Sets: (All)
 Aliases:
+Accepted values: None, ShortPress, LongPress
 
 Required: True
 Position: Named

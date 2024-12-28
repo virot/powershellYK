@@ -10,6 +10,7 @@ namespace powershellYK.Cmdlets.Yubikey
         {
             YubiKeyModule._yubikey = null;
             YubiKeyModule.clearPassword();
+            WriteInformation("Disconnected from YubiKey.", new string[] { "YubiKey" });
         }
     }
 }

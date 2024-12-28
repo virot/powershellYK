@@ -37,20 +37,20 @@ namespace powershellYK.Cmdlets.Other
                 if (_certificate is not null)
                 {
                     string sshkey = "";
-                    WriteDebug("Certificate successfully loaded");
+                    WriteDebug("Certificate successfully loaded.");
                     if (_certificate.PublicKey.Oid.FriendlyName == "RSA")
                     {
-                        WriteDebug("Certificate public key is of type RSA");
+                        WriteDebug("Certificate public key is of type RSA.");
                         sshkey = GenerateIdentifier.SSHIdentifier(_certificate.PublicKey.GetRSAPublicKey()!, _certificate.Subject);
                     }
                     else if (_certificate.PublicKey.Oid.FriendlyName == "ECC")
                     {
-                        WriteDebug("Certificate public key is of type ECC");
+                        WriteDebug("Certificate public key is of type ECC.");
                         sshkey = GenerateIdentifier.SSHIdentifier(_certificate.PublicKey.GetECDsaPublicKey()!, _certificate.Subject);
                     }
                     else
                     {
-                        throw new Exception("Unknown publickey format");
+                        throw new Exception("Unknown public key format!");
                     }
 
                     //Extract the Subject Key Identifier / 2.5.29.14
@@ -103,17 +103,17 @@ namespace powershellYK.Cmdlets.Other
                     string sshkey = "";
                     if (_certificateRequest.PublicKey.Oid.FriendlyName == "RSA")
                     {
-                        WriteDebug("Certificate public key is of type RSA");
+                        WriteDebug("Certificate public key is of type RSA.");
                         sshkey = GenerateIdentifier.SSHIdentifier(_certificateRequest.PublicKey.GetRSAPublicKey()!, "");
                     }
                     else if (_certificateRequest.PublicKey.Oid.FriendlyName == "ECC")
                     {
-                        WriteDebug("Certificate public key is of type ECC");
+                        WriteDebug("Certificate public key is of type ECC.");
                         sshkey = GenerateIdentifier.SSHIdentifier(_certificateRequest.PublicKey.GetECDsaPublicKey()!, "");
                     }
                     else
                     {
-                        throw new Exception("Unknown public key format");
+                        throw new Exception("Unknown public key format!");
                     }
 
                     X509Extension stringSKI = new X509SubjectKeyIdentifierExtension(_certificateRequest.PublicKey, false);

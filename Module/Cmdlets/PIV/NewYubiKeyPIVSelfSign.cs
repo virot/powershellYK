@@ -26,12 +26,12 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
@@ -58,7 +58,7 @@ namespace powershellYK.Cmdlets.PIV
                     publicKey = pivSession.GetMetadata(Slot).PublicKey;
                     if (publicKey is null)
                     {
-                        throw new Exception("Public key is null");
+                        throw new Exception("Public key is null!");
                     }
                 }
                 catch (Exception e)

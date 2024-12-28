@@ -1,4 +1,4 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
@@ -13,7 +13,7 @@ Send Challaenge to YubiKey.
 ## SYNTAX
 
 ```
-Request-YubikeyOTPChallange -Slot <PSObject> -Phrase <PSObject> [-YubikeyOTP <Boolean>] [<CommonParameters>]
+Request-YubikeyOTPChallange -Slot <Slot> -Phrase <PSObject> [-YubikeyOTP <Boolean>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -59,9 +59,10 @@ Accept wildcard characters: False
 Yubikey OTP Slot
 
 ```yaml
-Type: PSObject
+Type: Slot
 Parameter Sets: (All)
 Aliases:
+Accepted values: None, ShortPress, LongPress
 
 Required: True
 Position: Named

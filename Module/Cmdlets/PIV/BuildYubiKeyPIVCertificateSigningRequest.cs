@@ -35,12 +35,12 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
@@ -64,7 +64,6 @@ namespace powershellYK.Cmdlets.PIV
                 {
                     metadata = pivSession.GetMetadata(Slot);
                     publicKey = metadata.PublicKey;
-
                 }
                 catch (Exception e)
                 {
@@ -96,7 +95,7 @@ namespace powershellYK.Cmdlets.PIV
                     {
                         PivAlgorithm.EccP256 => HashAlgorithmName.SHA256,
                         PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,
-                        _ => throw new Exception("Unknown PublicKey algorithm")
+                        _ => throw new Exception("Unknown Public key algorithm")
                     };
                     WriteDebug($"Using Hash based on ECC size: {HashAlgorithm.ToString()}");
                     request = new CertificateRequest(Subjectname, (ECDsa)dotNetPublicKey, HashAlgorithm);

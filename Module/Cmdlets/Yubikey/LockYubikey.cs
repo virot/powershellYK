@@ -13,12 +13,12 @@ namespace powershellYK.Cmdlets.OTP
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
@@ -37,17 +37,17 @@ namespace powershellYK.Cmdlets.OTP
                     {
                         YubiKeyModule._yubikey!.LockConfiguration(LockCode);
                         YubiKeyModule._yubikey = null;
-                        WriteWarning("Please remove and reinsert the YubiKey");
+                        WriteWarning("Remove and re-insert the YubiKey to set lock code...");
                     }
                     else
                     {
-                        throw new ArgumentException("Lock code cannot be all zeros");
+                        throw new ArgumentException("Lock code cannot be all zeros!");
                     }
                 }
             }
             else
             {
-                WriteDebug("Yubikey already locked.");
+                WriteDebug("Yubikey already locked!");
             }
         }
 
