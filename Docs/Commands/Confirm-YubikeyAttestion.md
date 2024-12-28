@@ -29,6 +29,11 @@ Confirm-YubikeyAttestion -AttestionCertificate <PSObject> -IntermediateCertifica
  [<CommonParameters>]
 ```
 
+### CertificateIncludingAttestion
+```
+Confirm-YubikeyAttestion -CertificateIncludingAttestion <PSObject> [<CommonParameters>]
+```
+
 ## DESCRIPTION
 This cmdlet allows for verification of the attestion of YubiKeys. This can be used both to verify the attestion certificate and Certificate Request with and without built in attestion.
 
@@ -83,6 +88,21 @@ If the attestion certificate isn't include in the Certificate Request, please pr
 ```yaml
 Type: PSObject
 Parameter Sets: requestWithExternalAttestion, JustAttestCertificate
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CertificateIncludingAttestion
+CertificateIncludingAttestion
+
+```yaml
+Type: PSObject
+Parameter Sets: CertificateIncludingAttestion
 Aliases:
 
 Required: True
