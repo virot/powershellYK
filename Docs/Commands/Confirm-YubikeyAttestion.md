@@ -77,6 +77,25 @@ AttestionMatchesCSR :
 Verify the certificate request created by exported attestion and intermediate attestion certificates.
 Since this did not include a Certificate Request, *AttestionMatchesCSR* is null.
 
+### Example 3
+```powershell
+PS C:\> Confirm-YubikeyAttestion -CertificateRequest csr.pem -AttestionCertificate attestation.pem -IntermediateCertificate intermediate.pem
+
+AttestionValidated  : True
+SerialNumber        : 29167224
+FirmwareVersion     : 5.7.1
+PinPolicy           : Once
+TouchPolicy         : Never
+FormFactor          : UsbCKeychain
+Slot                : 0x9A
+Algorithm           : Rsa2048
+isFIPSSeries        : False
+isCSPNSeries        : False
+AttestionMatchesCSR : True
+
+Validate the certificate signing request (CSR) created _outside_ of **powershellYK**.
+All three files should be provided as PEM files by the requesting party.
+
 ## PARAMETERS
 
 ### -AttestionCertificate
