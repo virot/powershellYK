@@ -151,8 +151,11 @@ namespace powershellYK.Cmdlets.Fido
                         {
                             // Use TrySetPinConfig to enable Force PIN Change.
                             bool? forceChangePin = true;
-                            if (!fido2Session.TrySetPinConfig(null, null, forceChangePin))
+                            if (fido2Session.TrySetPinConfig(null, null, forceChangePin))
+                            {
                                 WriteObject("Force PIN change set.");
+                            }
+                            else
                             {
                                 // Throw an exception if applying the setting fails.
                                 throw new InvalidOperationException("Failed to enforce PIN change.");
