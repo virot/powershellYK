@@ -29,6 +29,10 @@ namespace powershellYK.Cmdlets.Yubikey
             {
                 WriteDebug("Disconnecting from previous YubiKey");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Disconnect-Yubikey");
+                if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                {
+                    myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                }
                 myPowersShellInstance.Invoke();
             }
 
@@ -48,7 +52,15 @@ namespace powershellYK.Cmdlets.Yubikey
                     break;
                 case "Connect Yubikey with Serialnumber":
                     WriteDebug($"Looking for YubiKey with serial: {Serialnumber}.");
-                    _yubikey = (YubiKeyDevice)YubiKeyDevice.FindAll().Where(x => x.SerialNumber == Serialnumber).First();
+                    IYubiKeyDevice tempYubiKey;
+                    if (YubiKeyDevice.TryGetYubiKey((int)Serialnumber!, out tempYubiKey))
+                    {
+                        _yubikey = (YubiKeyDevice)tempYubiKey;
+                    }
+                    else
+                    {
+                        throw new Exception($"The specific YubiKey ({Serialnumber}) was not found.");
+                    }
                     break;
                 default:
                     throw new Exception("Invalid ParameterSetName");

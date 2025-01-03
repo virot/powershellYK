@@ -68,6 +68,10 @@ namespace powershellYK.Cmdlets.Fido
             {
                 WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                {
+                    myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                }
                 myPowersShellInstance.Invoke();
                 WriteDebug($"Successfully connected");
             }
@@ -78,6 +82,10 @@ namespace powershellYK.Cmdlets.Fido
                 WriteWarning("FIDO2 has no PIN, please set PIN before continuing:");
                 WriteDebug("FIDO2 has no PIN, invokating Set-YubikeyFIDO2 -SetPIN...");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Set-YubikeyFIDO2").AddParameter("SetPIN");
+                if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                {
+                    myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                }
                 myPowersShellInstance.Invoke();
             }
 

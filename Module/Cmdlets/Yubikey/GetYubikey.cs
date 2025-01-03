@@ -5,7 +5,7 @@ using powershellYK.YubiKey;
 namespace powershellYK.Cmdlets.Yubikey
 {
     [Cmdlet(VerbsCommon.Get, "Yubikey")]
-    public class GetYubikeyCommand : Cmdlet
+    public class GetYubikeyCommand : PSCmdlet
     {
         protected override void BeginProcessing()
         {
@@ -15,6 +15,10 @@ namespace powershellYK.Cmdlets.Yubikey
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                    {
+                        myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                    }
                     myPowersShellInstance.Invoke();
                     WriteDebug($"Successfully connected.");
                 }

@@ -32,8 +32,6 @@ namespace powershellYK.Cmdlets.Fido
 
         public object GetDynamicParameters()
         {
-            try { YubiKeyModule.ConnectYubikey(); } catch { }
-
             Collection<Attribute> oldPIN, newPIN;
             if (YubiKeyModule._yubikey is not null)
             {
@@ -92,6 +90,10 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     WriteDebug("No Yubikey selected, calling Connect-Yubikey...");
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                    {
+                        myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                    }
                     myPowersShellInstance.Invoke();
                     WriteDebug($"Successfully connected.");
                 }
@@ -102,7 +104,12 @@ namespace powershellYK.Cmdlets.Fido
                 if (YubiKeyModule._fido2PIN is null)
                 {
                     WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2").Invoke();
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2");
+                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                    {
+                        myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                    }
+                    myPowersShellInstance.Invoke();
                     if (YubiKeyModule._fido2PIN is null)
                     {
                         throw new Exception("Connect-YubikeyFIDO2 failed to connect to the FIDO2 applet!");

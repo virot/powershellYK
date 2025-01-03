@@ -15,8 +15,6 @@ namespace powershellYK.Cmdlets.Fido
     {
         public object GetDynamicParameters()
         {
-            try { YubiKeyModule.ConnectYubikey(); } catch { }
-
             Collection<Attribute> oldPIN, newPIN;
             if (YubiKeyModule._yubikey is not null)
             {
@@ -72,6 +70,18 @@ namespace powershellYK.Cmdlets.Fido
             {
                 throw new Exception("FIDO access on Windows requires running as Administrator.");
             }
+
+            if (YubiKeyModule._yubikey is null)
+            {
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                {
+                    myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                }
+                myPowersShellInstance.Invoke();
+                WriteDebug($"Successfully connected");
+            }
+
         }
 
         protected override void ProcessRecord()

@@ -10,7 +10,7 @@ using System.Diagnostics;
 namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommon.Reset, "YubikeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
-    public class ResetYubikeyFIDO2Cmdlet : Cmdlet
+    public class ResetYubikeyFIDO2Cmdlet : PSCmdlet
     {
         private bool _yubiKeyRemoved = false;
         private bool _yubiKeyArrived = false;
@@ -27,6 +27,10 @@ namespace powershellYK.Cmdlets.Fido
             {
                 WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                {
+                    myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                }
                 myPowersShellInstance.Invoke();
                 WriteDebug($"Successfully connected.");
             }

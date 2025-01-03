@@ -5,7 +5,7 @@ using Yubico.YubiKey.Management.Commands;
 namespace powershellYK.Cmdlets.OTP
 {
     [Cmdlet(VerbsCommon.Lock, "Yubikey")]
-    public class LockYubikeyCommand : Cmdlet
+    public class LockYubikeyCommand : PSCmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "LockCode for Yubikey")]
         public byte[] LockCode { get; set; } = new byte[16];
@@ -17,6 +17,10 @@ namespace powershellYK.Cmdlets.OTP
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                    {
+                        myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                    }
                     myPowersShellInstance.Invoke();
                     WriteDebug($"Successfully connected.");
                 }
