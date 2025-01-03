@@ -102,7 +102,7 @@ namespace powershellYK
                     break;
                 case KeyEntryRequest.ChangePivPin:
                     throw new NotImplementedException("Change PIV PIN is not yet implemented");
-                    break;
+                    //break;
                 case KeyEntryRequest.SetFido2Pin:
                     keyEntryData.SubmitValue(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PINNew!))!));
                     break;
