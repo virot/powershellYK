@@ -11,7 +11,7 @@ namespace powershellYK.Cmdlets.PIV
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [ValidateYubikeyPIVSlot(DontAllowAttestion = true)]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to move a key from")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to remove a key from")]
         public PIVSlot Slot { get; set; }
         protected override void BeginProcessing()
         {

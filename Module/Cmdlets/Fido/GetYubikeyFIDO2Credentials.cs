@@ -7,7 +7,8 @@ using powershellYK.support;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommon.Get, "YubikeyFIDO2Credentials")]
+    [Alias("Get-YubikeyFIDO2Credentials")]
+    [Cmdlet(VerbsCommon.Get, "YubikeyFIDO2Credential")]
 
     public class GetYubikeyFIDO2CredentialsCommand : PSCmdlet
     {
@@ -41,44 +42,26 @@ namespace powershellYK.Cmdlets.Fido
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                var relyingParties = fido2Session.EnumerateRelyingParties();
 
-                var RelyingParties = fido2Session.EnumerateRelyingParties();
-
-                if (!RelyingParties.Any()) // Check if there are no relying parties
+                if (!relyingParties.Any()) // Check if there are no relying parties
                 {
                     WriteWarning("No credentials found on the YubiKey.");
                     return;
                 }
                 else
                 {
-                    foreach (RelyingParty RelyingParty in RelyingParties)
+                    foreach (RelyingParty relyingParty in relyingParties)
                     {
-                        WriteDebug($"Enumerating credentials for {RelyingParty.Id}.");
-                        IReadOnlyList<CredentialUserInfo> relayCredentials;
-                        try
-                        {
-                            relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
-                        }
-                        catch (NotSupportedException e)
-                        {
-                            WriteWarning($"Failed to enumerate credentials for {RelyingParty.Id}: {e.Message}, SDK might not support algorithm.");
-                            continue;
-                        }
+                        var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(relyingParty);
                         foreach (CredentialUserInfo user in relayCredentials)
                         {
-                            Credentials credentials = new Credentials
-                            {
-                                Site = RelyingParty.Id,
-                                Name = user.User.Name,
-                                DisplayName = user.User.DisplayName,
-                                coseKey = user.CredentialPublicKey,
-                            };
-                            WriteObject(credentials);
+                            Credential credential = new Credential(RPId: relyingParty.Id, UserName: user.User.Name, DisplayName: user.User.DisplayName, CredentialID: user.CredentialId);
+                            WriteObject(credential);
                         }
                     }
                 }
             }
         }
-
     }
 }

@@ -13,22 +13,18 @@ namespace powershellYK.Cmdlets.Fido
     {
         protected override void BeginProcessing()
         {
-            // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
-            if (YubiKeyModule._fido2PIN is null)
+            // Get-YubiKeyFIDO2, does not require authentication, so just make sure we have a YubiKey connected.
+            if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                 if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
                 {
                     myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
                 }
                 myPowersShellInstance.Invoke();
-                if (YubiKeyModule._fido2PIN is null)
-                {
-                    throw new Exception("Connect-YubikeyFIDO2 failed to the FIDO2 applet!");
-                }
+                WriteDebug($"Successfully connected");
             }
-
 
             // Check if running as Administrator
             if (Windows.IsRunningAsAdministrator() == false)
@@ -41,7 +37,6 @@ namespace powershellYK.Cmdlets.Fido
         {
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
                 AuthenticatorInfo info = fido2Session.AuthenticatorInfo;
                 WriteObject(new Information(info));
