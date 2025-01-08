@@ -106,7 +106,7 @@ namespace powershellYK.Cmdlets.Fido
                     }
 
                     YubiKeyModule._fido2PIN = null;
-                    WriteObject("YubiKey FIDO applet successfully reset.");
+                    WriteInformation("YubiKey FIDO applet successfully reset.", new string[] { "FIDO2", "Info" });
                 }
             }
         }

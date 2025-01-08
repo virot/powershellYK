@@ -108,7 +108,7 @@ namespace powershellYK.Cmdlets.Fido
                         WriteDebug("FIDO2 PIN set, changing PIN...");
                         fido2Session.ChangePin();
                     }
-                    WriteObject("FIDO PIN updated.");
+                    WriteInformation("FIDO PIN updated.", new string[] { "FIDO2", "Info" });
                 }
                 catch (Exception e)
                 {
