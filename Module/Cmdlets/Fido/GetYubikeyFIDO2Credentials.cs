@@ -9,18 +9,23 @@ namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommon.Get, "YubikeyFIDO2Credentials")]
 
-    public class GetYubikeyFIDO2CredentialsCommand : Cmdlet
+    public class GetYubikeyFIDO2CredentialsCommand : PSCmdlet
     {
         protected override void BeginProcessing()
         {
             // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
             if (YubiKeyModule._fido2PIN is null)
             {
-                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2");
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2").Invoke();
+                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2");
+                if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                {
+                    myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                }
+                myPowersShellInstance.Invoke();
                 if (YubiKeyModule._fido2PIN is null)
                 {
-                    throw new Exception("Connect-YubikeyFIDO2 failed to connect FIDO2 application.");
+                    throw new Exception("Connect-YubikeyFIDO2 failed to connect to the FIDO2 applet!");
                 }
             }
 
@@ -36,31 +41,34 @@ namespace powershellYK.Cmdlets.Fido
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-
                 var relyingParties = fido2Session.EnumerateRelyingParties();
-                foreach (RelyingParty relyingParty in relyingParties)
+
+                if (!RelyingParties.Any()) // Check if there are no relying parties
                 {
-                    var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(relyingParty);
-                    foreach (CredentialUserInfo user in relayCredentials)
+                    WriteWarning("No credentials found on the YubiKey.");
+                    return;
+                }
+                else
+                {
+                    foreach (RelyingParty relyingParty in relyingParties)
                     {
-                        byte[] credentialIdBytes = user.CredentialId.Id.ToArray();
-
-                        string credentialIdBase64 = Convert.ToBase64String(credentialIdBytes);
-
-                        Credentials credentials = new Credentials
+                        var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(relyingParty);
+                        foreach (CredentialUserInfo user in relayCredentials)
                         {
-                            CredentialID = credentialIdBase64, // TODO: too long for display purposes?
-                            RPId = relyingParty.Id,
-                            UserName = user.User.Name,
-                            DisplayName = user.User.DisplayName
-                        };
-
-                        WriteObject(credentials);
+                            byte[] credentialIdBytes = user.CredentialId.Id.ToArray();
+                            string credentialIdBase64 = Convert.ToBase64String(credentialIdBytes);
+                            Credentials credentials = new Credentials
+                            {
+                                CredentialID = credentialIdBase64, // TODO: too long for display purposes?
+                                RPId = relyingParty.Id,
+                                UserName = user.User.Name,
+                                DisplayName = user.User.DisplayName
+                            };
+                            WriteObject(credentials);
+                        }
                     }
                 }
             }
         }
-
-
     }
 }

@@ -32,8 +32,6 @@ namespace powershellYK.Cmdlets.Fido
 
         public object GetDynamicParameters()
         {
-            try { YubiKeyModule.ConnectYubikey(); } catch { }
-
             Collection<Attribute> oldPIN, newPIN;
             if (YubiKeyModule._yubikey is not null)
             {
@@ -90,10 +88,14 @@ namespace powershellYK.Cmdlets.Fido
             {
                 if (YubiKeyModule._yubikey is null)
                 {
-                    WriteDebug("No Yubikey selected, calling Connect-Yubikey");
+                    WriteDebug("No Yubikey selected, calling Connect-Yubikey...");
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                    {
+                        myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                    }
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
             }
             else
@@ -101,11 +103,16 @@ namespace powershellYK.Cmdlets.Fido
                 // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
                 if (YubiKeyModule._fido2PIN is null)
                 {
-                    WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2");
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2").Invoke();
+                    WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
+                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2");
+                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                    {
+                        myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                    }
+                    myPowersShellInstance.Invoke();
                     if (YubiKeyModule._fido2PIN is null)
                     {
-                        throw new Exception("Connect-YubikeyFIDO2 failed to connect FIDO2 application.");
+                        throw new Exception("Connect-YubikeyFIDO2 failed to connect to the FIDO2 applet!");
                     }
                 }
             }
@@ -128,7 +135,7 @@ namespace powershellYK.Cmdlets.Fido
                     case "Set PIN minimum length":
                         if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.setMinPINLength) == OptionValue.True)
                         {
-                            // Code to increase min PIN length here.
+                            // Code to set minimum PIN length here.
 
                             if (!fido2Session.TrySetPinConfig(MinimumPINLength, null, null))
                             {
@@ -136,6 +143,7 @@ namespace powershellYK.Cmdlets.Fido
                             }
                             // Do it once more to force PIN change.
                             fido2Session.TrySetPinConfig(null, null, null);
+                            WriteObject("Minimum PIN length set.");
                         }
                         else
                         {
@@ -150,7 +158,11 @@ namespace powershellYK.Cmdlets.Fido
                         {
                             // Use TrySetPinConfig to enable Force PIN Change.
                             bool? forceChangePin = true;
-                            if (!fido2Session.TrySetPinConfig(null, null, forceChangePin))
+                            if (fido2Session.TrySetPinConfig(null, null, forceChangePin))
+                            {
+                                WriteObject("Force PIN change set.");
+                            }
+                            else
                             {
                                 // Throw an exception if applying the setting fails.
                                 throw new InvalidOperationException("Failed to enforce PIN change.");
@@ -175,12 +187,12 @@ namespace powershellYK.Cmdlets.Fido
                         {
                             if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.clientPin) == OptionValue.False)
                             {
-                                WriteDebug("No FIDO2 PIN set, setting new PIN");
+                                WriteDebug("No FIDO PIN set, setting new PIN...");
                                 fido2Session.SetPin();
                             }
                             else
                             {
-                                WriteDebug("FIDO2 PIN set, changing PIN");
+                                WriteDebug("FIDO2 PIN set, changing PIN...");
                                 fido2Session.ChangePin();
                             }
                         }
@@ -194,6 +206,8 @@ namespace powershellYK.Cmdlets.Fido
                             YubiKeyModule._fido2PINNew = null;
                         }
                         YubiKeyModule._fido2PIN = (SecureString)this.MyInvocation.BoundParameters["NewPIN"];
+                        WriteObject("FIDO PIN updated.");
+
                         break;
                     case "Send MinimumPIN to RelyingParty":
                         var rpidList = new List<string>(1);

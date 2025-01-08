@@ -1,0 +1,107 @@
+# main.yaml
+name: main
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.x.x' # Specify the .NET version you're using
+
+    - name: Run dotnet format
+      run: dotnet format Module/powershellYK.csproj
+      continue-on-error: false
+
+    - name: Check for uncommitted changes
+      run: |
+        if [[ $(git status --porcelain) ]]; then
+          echo "There are uncommitted changes after running dotnet format."
+          exit 1
+        fi
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.x.x' # Specify the .NET version you're using
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore -c Release Module/powershellYK.csproj --output release
+
+    - name: Save Build Output
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-output
+        path: release/
+
+  pester-windows:
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Download Build Output
+      uses: actions/download-artifact@v4
+      with:
+        name: build-output
+        path: release
+
+    - name: Run Pester Tests
+      shell: pwsh
+      run: |
+        # Import the module from the downloaded build output
+        Import-Module .\release\powershellYK.psd1
+
+        # Run Pester tests
+        Invoke-Pester -Tag "Without-Yubikey" -Output Detailed
+
+  pester-macos:
+    runs-on: macos-latest
+    needs: build
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Download Build Output
+      uses: actions/download-artifact@v4
+      with:
+        name: build-output
+        path: release
+
+    - name: Run Pester Tests
+      shell: pwsh
+      run: |
+        # Import the module from the downloaded build output
+        Import-Module ./release/powershellYK.psd1
+
+        # Run Pester tests
+        Invoke-Pester -Tag "Without-Yubikey" -Output Detailed

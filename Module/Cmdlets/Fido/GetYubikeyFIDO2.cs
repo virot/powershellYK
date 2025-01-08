@@ -9,18 +9,23 @@ namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommon.Get, "YubikeyFIDO2")]
 
-    public class GetYubikeyFIDO2Cmdlet : Cmdlet
+    public class GetYubikeyFIDO2Cmdlet : PSCmdlet
     {
         protected override void BeginProcessing()
         {
             // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
             if (YubiKeyModule._fido2PIN is null)
             {
-                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2");
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2").Invoke();
+                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2");
+                if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                {
+                    myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                }
+                myPowersShellInstance.Invoke();
                 if (YubiKeyModule._fido2PIN is null)
                 {
-                    throw new Exception("Connect-YubikeyFIDO2 failed to connect FIDO2 application.");
+                    throw new Exception("Connect-YubikeyFIDO2 failed to the FIDO2 applet!");
                 }
             }
 

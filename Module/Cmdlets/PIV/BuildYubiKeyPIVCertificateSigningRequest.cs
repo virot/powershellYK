@@ -35,12 +35,12 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
@@ -57,21 +57,30 @@ namespace powershellYK.Cmdlets.PIV
                 CertificateRequest request;
                 X509SignatureGenerator signer;
 
-
+                // get the metadata catch if fails                
+                PivMetadata? metadata = null;
                 PivPublicKey? publicKey = null;
                 try
                 {
-                    publicKey = pivSession.GetMetadata(Slot).PublicKey;
-                    if (publicKey is null)
-                    {
-                        throw new Exception("Public key is null");
-                    }
+                    metadata = pivSession.GetMetadata(Slot);
+                    publicKey = metadata.PublicKey;
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Failed to get public key for slot {Slot}, does there exist a key?", e);
+                    throw new Exception($"Failed to get metadata for slot {Slot}.", e);
                 }
 
+                if (publicKey is null)
+                {
+                    throw new Exception($"Failed to get public key for slot {Slot}, does there exist a key?");
+                }
+                if (Attestation.IsPresent)
+                {
+                    if (metadata.KeyStatus != PivKeyStatus.Generated)
+                    {
+                        throw new InvalidOperationException($"Private key must be generated on YubiKey for attested certificate requests. {Slot} is {metadata.KeyStatus}.");
+                    }
+                }
 
 
                 using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
@@ -86,7 +95,7 @@ namespace powershellYK.Cmdlets.PIV
                     {
                         PivAlgorithm.EccP256 => HashAlgorithmName.SHA256,
                         PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,
-                        _ => throw new Exception("Unknown PublicKey algorithm")
+                        _ => throw new Exception("Unknown Public key algorithm")
                     };
                     WriteDebug($"Using Hash based on ECC size: {HashAlgorithm.ToString()}");
                     request = new CertificateRequest(Subjectname, (ECDsa)dotNetPublicKey, HashAlgorithm);

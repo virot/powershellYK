@@ -29,6 +29,10 @@ namespace powershellYK.Cmdlets.Yubikey
             {
                 WriteDebug("Disconnecting from previous YubiKey");
                 var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Disconnect-Yubikey");
+                if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                {
+                    myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                }
                 myPowersShellInstance.Invoke();
             }
 
@@ -43,12 +47,20 @@ namespace powershellYK.Cmdlets.Yubikey
                     if (yubikeys.Count() == 1)
                     {
                         _yubikey = (YubiKeyDevice)yubikeys.First();
-                        WriteDebug($"Found only one device, using {_yubikey.SerialNumber}");
+                        WriteDebug($"Found only one device, using {_yubikey.SerialNumber.ToString() ?? "N/A"}.");
                     }
                     break;
                 case "Connect Yubikey with Serialnumber":
-                    WriteDebug($"Looking for YubiKey with serial: {Serialnumber}");
-                    _yubikey = (YubiKeyDevice)YubiKeyDevice.FindAll().Where(x => x.SerialNumber == Serialnumber).First();
+                    WriteDebug($"Looking for YubiKey with serial: {Serialnumber}.");
+                    IYubiKeyDevice tempYubiKey;
+                    if (YubiKeyDevice.TryGetYubiKey((int)Serialnumber!, out tempYubiKey))
+                    {
+                        _yubikey = (YubiKeyDevice)tempYubiKey;
+                    }
+                    else
+                    {
+                        throw new Exception($"The specific YubiKey ({Serialnumber}) was not found.");
+                    }
                     break;
                 default:
                     throw new Exception("Invalid ParameterSetName");
@@ -56,11 +68,18 @@ namespace powershellYK.Cmdlets.Yubikey
             if (_yubikey is not null)
             {
                 YubiKeyModule._yubikey = _yubikey;
-                Console.WriteLine($"Connected to {PowershellYKText.FriendlyName(_yubikey)} with serial: {_yubikey.SerialNumber}");
+                if (_yubikey.SerialNumber is not null)
+                {
+                    WriteInformation($"Connected to {PowershellYKText.FriendlyName(_yubikey)} with serial: {_yubikey.SerialNumber}.", new string[] { "YubiKey" });
+                }
+                else
+                {
+                    WriteInformation($"Connected to {PowershellYKText.FriendlyName(_yubikey)} with serial: N/A.", new string[] { "YubiKey" });
+                }
             }
             else
             {
-                throw new Exception("None or multiple YubiKeys found, Use Connect-Yubikey to specify which Yubikey to use");
+                throw new Exception("None or multiple YubiKeys found, Use Connect-Yubikey to specify which Yubikey to use.");
             }
         }
     }

@@ -11,7 +11,7 @@ using Yubico.YubiKey.Sample.PivSampleCode;
 namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.Get, "YubikeyPIV")]
-    public class GetYubikeyPIVCommand : Cmdlet
+    public class GetYubikeyPIVCommand : PSCmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Retrive a info from specific slot")]
@@ -21,12 +21,16 @@ namespace powershellYK.Cmdlets.PIV
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                    {
+                        myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                    }
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {

@@ -4,7 +4,7 @@ using System.Linq;
 namespace powershellYK.Cmdlets.OTP
 {
     [Cmdlet(VerbsCommon.Unlock, "Yubikey")]
-    public class UnlockYubikeyCommand : Cmdlet
+    public class UnlockYubikeyCommand : PSCmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Lock Code for YubiKey")]
         public byte[] LockCode { get; set; } = new byte[16];
@@ -12,12 +12,16 @@ namespace powershellYK.Cmdlets.OTP
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                    {
+                        myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                    }
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
@@ -33,7 +37,7 @@ namespace powershellYK.Cmdlets.OTP
                 if (YubiKeyModule._yubikey!.FirmwareVersion.Major >= 5)
                 {
                     YubiKeyModule._yubikey!.UnlockConfiguration(LockCode);
-                    WriteWarning("Please remove and reinsert the YubiKey");
+                    WriteWarning("Remove and re-insert the YubiKey to undo the lock code...");
                 }
             }
         }

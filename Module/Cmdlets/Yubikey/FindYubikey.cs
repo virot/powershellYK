@@ -16,25 +16,32 @@ namespace powershellYK.Cmdlets.Yubikey
 
         {
             WriteDebug("ProcessRecord in Get-Yubikey");
-            IEnumerable<IYubiKeyDevice> yubiKeys = YubiKeyDevice.FindAll();
 
             if (Serialnumber is not null)
             {
                 //Filter out the yubikeys that does not match the serialnumber
-                yubiKeys = yubiKeys.Where(yubiKeys => yubiKeys.SerialNumber == Serialnumber);
-            }
-
-            foreach (var yubiKey in yubiKeys)
-            {
-                WriteObject((YubiKeyDevice)yubiKey);
-            }
-
-            if (yubiKeys.ToArray().Length == 0)
-            {
-                WriteWarning("No YubiKeys found, FIDO-only YubiKeys requires Administrator permissions in Windows (elevate if needed)");
-                if (Serialnumber is not null)
+                IYubiKeyDevice yubiKey;
+                if (YubiKeyDevice.TryGetYubiKey((int)Serialnumber, out yubiKey))
                 {
-                    throw new Exception("No YubiKeys found with the specified serial number");
+                    WriteObject((YubiKeyDevice)yubiKey);
+                }
+                else
+                {
+                    throw new Exception($"The specific YubiKey ({Serialnumber}) was not found.");
+                }
+            }
+            else
+            {
+                IEnumerable<IYubiKeyDevice> yubiKeys = YubiKeyDevice.FindAll();
+
+                foreach (var yubiKey in yubiKeys)
+                {
+                    WriteObject((YubiKeyDevice)yubiKey);
+                }
+
+                if (yubiKeys.ToArray().Length == 0)
+                {
+                    WriteWarning("No YubiKeys found, FIDO-only YubiKeys on Windows requires running as Administrator.");
                 }
             }
         }

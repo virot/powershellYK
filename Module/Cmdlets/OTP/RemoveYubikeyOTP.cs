@@ -11,23 +11,20 @@ namespace powershellYK.Cmdlets.OTP
     [Cmdlet(VerbsCommon.Remove, "YubikeyOTP", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class RemoveYubikeyOTPCommand : Cmdlet
     {
-        [TransformOTPSlot()]
-        [ValidateOTPSlot()]
-        [ArgumentCompletions("ShortPress", "LongPress")]
+        //[ValidateOTPSlot()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "YubiOTP Slot", ParameterSetName = "Remove")]
-        public PSObject? Slot { get; set; }
-        private Slot _slot { get; set; }
+        public Slot Slot { get; set; }
 
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey");
+                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected");
+                    WriteDebug($"Successfully connected.");
                 }
                 catch (Exception e)
                 {
@@ -37,16 +34,18 @@ namespace powershellYK.Cmdlets.OTP
         }
         protected override void ProcessRecord()
         {
-            // Set an internal Slot variable to work with.
-            if (Slot!.BaseObject is Slot)
-            {
-                _slot = (Slot)Slot.BaseObject;
-            }
-            if (ShouldProcess($"Yubikey OTP {_slot}", "Set"))
+            if (ShouldProcess($"This will remove the OTP configuration in slot {Slot.ToString("d")} ({Slot}). Proceed?", $"This will remove the OTP configuration in slot {Slot.ToString("d")} ({Slot}). Proceed?", "Warning"))
             {
                 using (var otpSession = new OtpSession((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
-                    otpSession.DeleteSlot(_slot);
+                    // Check if the slot is configured, if not, Write Warning and continue
+                    if ((Slot == Slot.ShortPress && !otpSession.IsShortPressConfigured) || (Slot == Slot.LongPress && !otpSession.IsLongPressConfigured))
+                    {
+                        WriteWarning($"Slot {Slot.ToString("d")} ({Slot}) is not configured.");
+                        return;
+                    }
+                    var deleteSlot = otpSession.DeleteSlotConfiguration(Slot);
+                    deleteSlot.Execute();
                 }
             }
         }
