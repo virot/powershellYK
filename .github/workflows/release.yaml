@@ -32,6 +32,12 @@ jobs:
            Write-Host $xml.Project.PropertyGroup[0].AssemblyVersion 
            $xml.Save("./Module/powershellYK.csproj")
          '
+
+    - name: Install platyPS
+      run: |
+         pwsh -Command '
+           Install-PSResource -Name platyPS -TrustRepository:$true
+         '
          
     - name: Build
       run: dotnet build --no-restore -c Release Module/powershellYK.csproj --output release
@@ -39,6 +45,12 @@ jobs:
     - name: Replace version in the module file
       run: |
           sed -i "s/ModuleVersion.*/ModuleVersion = '${{ github.event.release.tag_name }}'/" release/powershellYK.psd1
+
+    - name: Build MAML XML Help
+      run: |
+         pwsh -Command '
+           New-ExternalHelp -Path './Docs/Commands' -OutputPath ./release -Force
+         '
 
     - name: Zip release folder
       working-directory: release
