@@ -37,22 +37,30 @@ namespace powershellYK.Cmdlets.Fido
             {
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                var RelyingParties = fido2Session.EnumerateRelyingParties();
-                foreach (RelyingParty RelyingParty in RelyingParties)
+                var relyingParties = fido2Session.EnumerateRelyingParties();
+                foreach (RelyingParty relyingParty in relyingParties)
                 {
-                    var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(RelyingParty);
+                    var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(relyingParty);
                     foreach (CredentialUserInfo user in relayCredentials)
                     {
+                        byte[] credentialIdBytes = user.CredentialId.Id.ToArray();
+
+                        string credentialIdBase64 = Convert.ToBase64String(credentialIdBytes);
+
                         Credentials credentials = new Credentials
                         {
-                            Site = RelyingParty.Id,
-                            Name = user.User.Name,
-                            DisplayName = user.User.DisplayName,
+                            CredentialID = credentialIdBase64, // TODO: too long for display purposes?
+                            RPId = relyingParty.Id,
+                            UserName = user.User.Name,
+                            DisplayName = user.User.DisplayName
                         };
+
                         WriteObject(credentials);
                     }
                 }
             }
         }
+
+
     }
 }

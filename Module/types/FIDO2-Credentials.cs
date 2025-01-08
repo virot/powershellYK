@@ -8,10 +8,10 @@ namespace powershellYK.FIDO2
 {
     public class Credentials
     {
-        public string? Site { get; set; }
-        public string? Name { get; set; }
+        public string? CredentialID { get; set; }
+        public string? RPId { get; set; }
+        public string? UserName { get; set; }
         public string? DisplayName { get; set; }
-        //        public CredentialId? CredentialID { get; set; }
 
     }
 }
