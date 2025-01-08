@@ -133,7 +133,7 @@ namespace powershellYK.Cmdlets.OTP
                                     // Attempt to set restricted NFC
                                     YubiKeyModule._yubikey!.SetIsNfcRestricted(true);
 
-                                    WriteObject("YubiKey NFC now disabled. NFC will be re-enabled automatically the next time the YubiKey is connected to USB power.");
+                                    WriteInformation("YubiKey NFC temporarily disabled.", new string[] { "YubiKey", "Info" });
                                 }
                                 catch (NotSupportedException)
                                 {

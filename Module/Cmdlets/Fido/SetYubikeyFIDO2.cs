@@ -143,7 +143,7 @@ namespace powershellYK.Cmdlets.Fido
                             }
                             // Do it once more to force PIN change.
                             fido2Session.TrySetPinConfig(null, null, null);
-                            WriteObject("Minimum PIN length set.");
+                            WriteInformation("Minimum PIN length set.", new string[] { "FIDO2", "Info" }); ;
                         }
                         else
                         {
@@ -160,7 +160,7 @@ namespace powershellYK.Cmdlets.Fido
                             bool? forceChangePin = true;
                             if (fido2Session.TrySetPinConfig(null, null, forceChangePin))
                             {
-                                WriteObject("Force PIN change set.");
+                                WriteInformation("Force PIN Change set.", new string[] { "FIDO2", "Info" }); ;
                             }
                             else
                             {
@@ -206,7 +206,8 @@ namespace powershellYK.Cmdlets.Fido
                             YubiKeyModule._fido2PINNew = null;
                         }
                         YubiKeyModule._fido2PIN = (SecureString)this.MyInvocation.BoundParameters["NewPIN"];
-                        WriteObject("FIDO PIN updated.");
+                        WriteWarning("Changing FIDO2 PIN using Set-YubiKeyFIDO2 has been depricated, use Set-YubiKeyFIDO2PIN instead.");
+                        WriteInformation("FIDO PIN updated.", new string[] { "FIDO2", "Info" });
 
                         break;
                     case "Send MinimumPIN to RelyingParty":
