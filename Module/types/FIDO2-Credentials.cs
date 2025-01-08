@@ -13,11 +13,13 @@ namespace powershellYK.FIDO2
         public string? DisplayName { get; private set; }
         public string? UserName { get; private set; }
         public string? RPId { get; private set; }
-        public string? CredID { get
+        public string? CredID
+        {
+            get
             {
                 byte[] credentialIdBytes = CredentialID.Id.ToArray();
 
-                string credentialIdBase64 = Convert.ToBase64String(credentialIdBytes); 
+                string credentialIdBase64 = Convert.ToBase64String(credentialIdBytes);
                 return credentialIdBase64;
             }
         }
@@ -35,4 +37,3 @@ namespace powershellYK.FIDO2
         }
     }
 }
-    
