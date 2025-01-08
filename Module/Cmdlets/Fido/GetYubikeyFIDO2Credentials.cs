@@ -7,7 +7,8 @@ using powershellYK.support;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommon.Get, "YubikeyFIDO2Credentials")]
+    [Alias("Get-YubikeyFIDO2Credentials")]
+    [Cmdlet(VerbsCommon.Get, "YubikeyFIDO2Credential")]
 
     public class GetYubikeyFIDO2CredentialsCommand : PSCmdlet
     {
@@ -43,7 +44,7 @@ namespace powershellYK.Cmdlets.Fido
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
                 var relyingParties = fido2Session.EnumerateRelyingParties();
 
-                if (!RelyingParties.Any()) // Check if there are no relying parties
+                if (!relyingParties.Any()) // Check if there are no relying parties
                 {
                     WriteWarning("No credentials found on the YubiKey.");
                     return;
@@ -55,16 +56,8 @@ namespace powershellYK.Cmdlets.Fido
                         var relayCredentials = fido2Session.EnumerateCredentialsForRelyingParty(relyingParty);
                         foreach (CredentialUserInfo user in relayCredentials)
                         {
-                            byte[] credentialIdBytes = user.CredentialId.Id.ToArray();
-                            string credentialIdBase64 = Convert.ToBase64String(credentialIdBytes);
-                            Credentials credentials = new Credentials
-                            {
-                                CredentialID = credentialIdBase64, // TODO: too long for display purposes?
-                                RPId = relyingParty.Id,
-                                UserName = user.User.Name,
-                                DisplayName = user.User.DisplayName
-                            };
-                            WriteObject(credentials);
+                            Credential credential = new Credential(RPId: relyingParty.Id, UserName: user.User.Name, DisplayName: user.User.DisplayName, CredentialID: user.CredentialId);
+                            WriteObject(credential);
                         }
                     }
                 }

@@ -77,6 +77,7 @@ namespace powershellYK.Cmdlets.Fido
             }
 
             // Check if Connect-YubikeyFIDO2 was called without a PIN (only possible with Yubikey that doesnt have a PIN configured)
+            /*
             if (this.MyInvocation.BoundParameters.ContainsKey("PIN") == false)
             {
                 WriteWarning("FIDO2 has no PIN, please set PIN before continuing:");
@@ -88,6 +89,7 @@ namespace powershellYK.Cmdlets.Fido
                 }
                 myPowersShellInstance.Invoke();
             }
+            */
 
 
 #if WINDOWS
@@ -106,12 +108,12 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.clientPin) == OptionValue.False)
                     {
-                        WriteWarning("Client PIN is not set.");
+                        WriteWarning("Client PIN is not set, see Set-YubiKeyFIDO2PIN.");
                         return;
                     }
                     else if (fido2Session.AuthenticatorInfo.ForcePinChange == true)
                     {
-                        WriteWarning("YubiKey requires PIN change to continue, see Set-YubikeyFIDO2 -SetPIN.");
+                        WriteWarning("YubiKey requires PIN change to continue, see Set-YubiKeyFIDO2PIN.");
                         return;
                     }
                     if (this.MyInvocation.BoundParameters["PIN"] is not null)
