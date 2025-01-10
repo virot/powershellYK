@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommon.Set, "YubikeyFIDO2PIN")]
+    [Cmdlet(VerbsCommon.Set, "YubiKeyFIDO2PIN")]
 
     public class SetYubikeyFIDO2PINCmdlet : PSCmdlet, IDynamicParameters
     {

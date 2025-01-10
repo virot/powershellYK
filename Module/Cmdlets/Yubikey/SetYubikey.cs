@@ -13,7 +13,7 @@ using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.OTP
 {
-    [Cmdlet(VerbsCommon.Set, "Yubikey", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Set, "YubiKey", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class SetYubikeyCommand : PSCmdlet
     {
 

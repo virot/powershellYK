@@ -9,7 +9,7 @@ using powershellYK.support.validators;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsLifecycle.Enable, "YubikeyFIDO2EnterpriseAttestation", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsLifecycle.Enable, "YubiKeyFIDO2EnterpriseAttestation", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
 
     public class EnableYubikeyFIDO2CmdletEnterpriseAttestation : PSCmdlet
     {

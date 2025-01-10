@@ -13,7 +13,7 @@ using powershellYK.PIV;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsData.Import, "YubikeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsData.Import, "YubiKeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class ImportYubiKeyPIVCommand : PSCmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]

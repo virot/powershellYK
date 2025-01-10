@@ -3,7 +3,7 @@ using Yubico.YubiKey;
 
 namespace powershellYK.Cmdlets.Yubikey
 {
-    [Cmdlet(VerbsCommon.Find, "Yubikey")]
+    [Cmdlet(VerbsCommon.Find, "YubiKey")]
     public class FindYubikeyCommand : Cmdlet
     {
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only one YubiKey")]

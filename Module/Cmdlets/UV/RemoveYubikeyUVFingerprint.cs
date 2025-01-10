@@ -12,7 +12,7 @@ using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommon.Remove, "YubikeyUVFingerprint", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Remove, "YubiKeyUVFingerprint", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class RemoveYubikeyUVFingerprintCmdlet : PSCmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Name of finger to remove", ParameterSetName = "Remove using Name")]

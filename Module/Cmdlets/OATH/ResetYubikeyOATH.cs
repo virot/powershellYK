@@ -10,7 +10,7 @@ using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsCommon.Reset, "YubikeyOATH", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Reset, "YubiKeyOATH", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
 
     public class ResetYubikeyOATH2Command : Cmdlet
     {

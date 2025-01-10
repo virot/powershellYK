@@ -11,7 +11,7 @@ using powershellYK.UserValidation;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommon.Get, "YubikeyUVFingerprint")]
+    [Cmdlet(VerbsCommon.Get, "YubiKeyUVFingerprint")]
     public class GetYubikeyUVFingerprintCmdlet : Cmdlet
     {
 

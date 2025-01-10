@@ -14,7 +14,7 @@ using Yubico.YubiKey.Sample.PivSampleCode;
 
 namespace powershellYK.Cmdlets.OTP
 {
-    [Cmdlet(VerbsLifecycle.Request, "YubikeyOTPChallange")]
+    [Cmdlet(VerbsLifecycle.Request, "YubiKeyOTPChallange")]
     public class RequestYubikeyOTPChallangeCommand : Cmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "YubiOTP Slot")]

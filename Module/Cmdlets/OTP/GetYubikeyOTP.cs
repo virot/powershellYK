@@ -10,7 +10,7 @@ using Yubico.YubiKey.Sample.PivSampleCode;
 
 namespace powershellYK.Cmdlets.OTP
 {
-    [Cmdlet(VerbsCommon.Get, "YubikeyOTP")]
+    [Cmdlet(VerbsCommon.Get, "YubiKeyOTP")]
     public class GetYubikeyOTPCommand : Cmdlet
     {
         protected override void BeginProcessing()

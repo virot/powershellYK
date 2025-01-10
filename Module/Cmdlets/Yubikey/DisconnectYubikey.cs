@@ -4,7 +4,7 @@ using Yubico.YubiKey;
 
 namespace powershellYK.Cmdlets.Yubikey
 {
-    [Cmdlet(VerbsCommunications.Disconnect, "Yubikey")]
+    [Cmdlet(VerbsCommunications.Disconnect, "YubiKey")]
     public class DisconnectYubikeyCommand : Cmdlet
     {
         protected override void BeginProcessing()

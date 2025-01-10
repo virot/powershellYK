@@ -6,7 +6,7 @@ using Yubico.YubiKey.Piv.Commands;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommon.Reset, "YubikeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Reset, "YubiKeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     [OutputType(typeof(bool))]
     public class ResetYubikeyPIVCommand : Cmdlet
     {

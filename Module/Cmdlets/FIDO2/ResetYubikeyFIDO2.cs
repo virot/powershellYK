@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommon.Reset, "YubikeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Reset, "YubiKeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class ResetYubikeyFIDO2Cmdlet : PSCmdlet
     {
         private bool _yubiKeyRemoved = false;

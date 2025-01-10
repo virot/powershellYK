@@ -7,7 +7,7 @@ using powershellYK.PIV;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommon.Move, "YubikeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Move, "YubiKeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class MoveYubiKeyPIVCmdlet : Cmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]

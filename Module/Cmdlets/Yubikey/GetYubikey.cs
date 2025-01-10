@@ -4,7 +4,7 @@ using powershellYK.YubiKey;
 
 namespace powershellYK.Cmdlets.Yubikey
 {
-    [Cmdlet(VerbsCommon.Get, "Yubikey")]
+    [Cmdlet(VerbsCommon.Get, "YubiKey")]
     public class GetYubikeyCommand : PSCmdlet
     {
         protected override void BeginProcessing()

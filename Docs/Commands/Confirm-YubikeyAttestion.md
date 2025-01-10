@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Confirm-YubikeyAttestion
+# Confirm-YubiKeyAttestion
 
 ## SYNOPSIS
 Confirm YubiKey Attestion.
@@ -14,24 +14,24 @@ Confirm YubiKey Attestion.
 
 ### requestWithExternalAttestion
 ```
-Confirm-YubikeyAttestion -CertificateRequest <PSObject> -AttestionCertificate <PSObject>
+Confirm-YubiKeyAttestion -CertificateRequest <PSObject> -AttestionCertificate <PSObject>
  -IntermediateCertificate <PSObject> [<CommonParameters>]
 ```
 
 ### requestWithBuiltinAttestion
 ```
-Confirm-YubikeyAttestion -CertificateRequest <PSObject> [<CommonParameters>]
+Confirm-YubiKeyAttestion -CertificateRequest <PSObject> [<CommonParameters>]
 ```
 
 ### JustAttestCertificate
 ```
-Confirm-YubikeyAttestion -AttestionCertificate <PSObject> -IntermediateCertificate <PSObject>
+Confirm-YubiKeyAttestion -AttestionCertificate <PSObject> -IntermediateCertificate <PSObject>
  [<CommonParameters>]
 ```
 
 ### CertificateIncludingAttestion
 ```
-Confirm-YubikeyAttestion -CertificateIncludingAttestion <PSObject> [<CommonParameters>]
+Confirm-YubiKeyAttestion -CertificateIncludingAttestion <PSObject> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -78,7 +78,7 @@ Verify the certificate request created by exported attestion and intermediate at
 Since this did not include a Certificate Request, *AttestionMatchesCSR* is null.
 
 ### Example 3
- ```powershell
+```powershell
 PS C:\> Confirm-YubikeyAttestion -CertificateRequest csr.pem -AttestionCertificate attestation.pem -IntermediateCertificate intermediate.pem
 
 AttestionValidated  : True

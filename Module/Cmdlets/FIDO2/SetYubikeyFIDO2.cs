@@ -12,7 +12,7 @@ using Microsoft.VisualBasic;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommon.Set, "YubikeyFIDO2")]
+    [Cmdlet(VerbsCommon.Set, "YubiKeyFIDO2")]
 
     public class SetYubikeyFIDO2Cmdlet : PSCmdlet, IDynamicParameters
     {

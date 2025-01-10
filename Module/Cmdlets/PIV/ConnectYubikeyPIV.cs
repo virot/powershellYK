@@ -13,7 +13,7 @@ using powershellYK.support.transform;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommunications.Connect, "YubikeyPIV", DefaultParameterSetName = "PIN")]
+    [Cmdlet(VerbsCommunications.Connect, "YubiKeyPIV", DefaultParameterSetName = "PIN")]
 
     public class ConnectYubikeyPIVCommand : Cmdlet
     {

@@ -13,7 +13,7 @@ using System.Net.Security;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsSecurity.Unprotect, "YubikeyOATH")]
+    [Cmdlet(VerbsSecurity.Unprotect, "YubiKeyOATH")]
 
     public class UnprotectYubikeyOATH2Command : PSCmdlet
     {
