@@ -15,11 +15,11 @@ namespace powershellYK.support.transform
             if (inputData is string)
             {
                 // fix relative paths
-                if (! Path.IsPathFullyQualified(inputData?.ToString() ?? ""))
+                if (!Path.IsPathFullyQualified(inputData?.ToString() ?? ""))
                 {
                     var sessionState = engineIntrinsics.SessionState;
                     return Path.Combine(sessionState.Path.CurrentFileSystemLocation.ToString(), inputData?.ToString() ?? "");
-                }                
+                }
             }
             return inputData!;
         }
