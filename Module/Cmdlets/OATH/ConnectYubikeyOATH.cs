@@ -10,7 +10,7 @@ using System.Security;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsCommunications.Connect, "YubikeyOATH", DefaultParameterSetName = "Password")]
+    [Cmdlet(VerbsCommunications.Connect, "YubiKeyOATH", DefaultParameterSetName = "Password")]
 
     public class ConnectYubikeyOATHCommand : Cmdlet
     {

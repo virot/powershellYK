@@ -5,7 +5,7 @@ using Yubico.YubiKey.Otp;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsCommon.Remove, "YubikeyOATHAccount", ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Remove, "YubiKeyOATHAccount", ConfirmImpact = ConfirmImpact.High)]
 
     public class RemoveYubikeyOATHAccountCommand : Cmdlet
     {

@@ -4,11 +4,12 @@ using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey;
 using powershellYK.PIV;
+using powershellYK.support.transform;
 
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsData.Export, "YubikeyPIVCertificate")]
+    [Cmdlet(VerbsData.Export, "YubiKeyPIVCertificate")]
     public class ExportYubiKeyPIVCertificateCommand : Cmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
@@ -17,7 +18,7 @@ namespace powershellYK.Cmdlets.PIV
         [Alias("AttestationCertificate")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Export Attestation certificate", ParameterSetName = "AttestationCertificate")]
         public SwitchParameter AttestationIntermediateCertificate { get; set; }
-
+        [TransformPath()]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Output file")]
         public string? OutFile { get; set; } = null;
 
@@ -70,6 +71,7 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (OutFile is not null)
                 {
+                    WriteCommandDetail($"Writing certificate to {OutFile}");
                     File.WriteAllText(OutFile, pemData);
                 }
                 else

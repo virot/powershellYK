@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Set-YubikeyFIDO2
+# Set-YubiKeyFIDO2
 
 ## SYNOPSIS
 Allows settings FIDO2 options.
@@ -14,22 +14,22 @@ Allows settings FIDO2 options.
 
 ### Set PIN minimum length
 ```
-Set-YubikeyFIDO2 -MinimumPINLength <Int32> [<CommonParameters>]
+Set-YubiKeyFIDO2 -MinimumPINLength <Int32> [<CommonParameters>]
 ```
 
 ### Set force PIN change
 ```
-Set-YubikeyFIDO2 [-ForcePINChange] [<CommonParameters>]
+Set-YubiKeyFIDO2 [-ForcePINChange] [<CommonParameters>]
 ```
 
 ### Send MinimumPIN to RelyingParty
 ```
-Set-YubikeyFIDO2 -MinimumPINRelyingParty <String> [<CommonParameters>]
+Set-YubiKeyFIDO2 -MinimumPINRelyingParty <String> [<CommonParameters>]
 ```
 
 ### Set PIN
 ```
-Set-YubikeyFIDO2 [-SetPIN] [-OldPIN <SecureString>] -NewPIN <SecureString> [<CommonParameters>]
+Set-YubiKeyFIDO2 [-SetPIN] [-OldPIN <SecureString>] -NewPIN <SecureString> [<CommonParameters>]
 ```
 
 ## DESCRIPTION

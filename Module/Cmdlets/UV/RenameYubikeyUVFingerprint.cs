@@ -12,7 +12,7 @@ using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommon.Rename, "YubikeyUVFingerprint")]
+    [Cmdlet(VerbsCommon.Rename, "YubiKeyUVFingerprint")]
     public class RenameYubikeyUVFingerprintCmdlet : PSCmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Friendly name of fingerprint to rename", ParameterSetName = "Rename using Name")]

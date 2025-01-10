@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# New-YubikeyPIVKey
+# New-YubiKeyPIVKey
 
 ## SYNOPSIS
 Create a new private key
@@ -13,7 +13,7 @@ Create a new private key
 ## SYNTAX
 
 ```
-New-YubikeyPIVKey [-Slot] <PIVSlot> [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-PassThru]
+New-YubiKeyPIVKey [-Slot] <PIVSlot> [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-PassThru]
  [-WhatIf] [-Confirm] -Algorithm <PivAlgorithm> [<CommonParameters>]
 ```
 

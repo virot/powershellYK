@@ -12,7 +12,7 @@ using Microsoft.VisualBasic;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommon.Set, "YubikeyFIDO2")]
+    [Cmdlet(VerbsCommon.Set, "YubiKeyFIDO2")]
 
     public class SetYubikeyFIDO2Cmdlet : PSCmdlet, IDynamicParameters
     {
@@ -206,7 +206,7 @@ namespace powershellYK.Cmdlets.Fido
                             YubiKeyModule._fido2PINNew = null;
                         }
                         YubiKeyModule._fido2PIN = (SecureString)this.MyInvocation.BoundParameters["NewPIN"];
-                        WriteWarning("Changing FIDO2 PIN using Set-YubiKeyFIDO2 has been depricated, use Set-YubiKeyFIDO2PIN instead.");
+                        WriteWarning("Changing FIDO2 PIN using Set-YubiKeyFIDO2 has been deprecated, use Set-YubiKeyFIDO2PIN instead.");
                         WriteInformation("FIDO PIN updated.", new string[] { "FIDO2", "Info" });
 
                         break;

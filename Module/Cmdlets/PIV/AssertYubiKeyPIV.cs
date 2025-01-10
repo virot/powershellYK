@@ -4,11 +4,12 @@ using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using System.Security.Cryptography;
 using powershellYK.PIV;
+using powershellYK.support.transform;
 
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsLifecycle.Assert, "YubikeyPIV")]
+    [Cmdlet(VerbsLifecycle.Assert, "YubiKeyPIV")]
     public class AssertYubiKeyPIVCommand : PSCmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
@@ -16,7 +17,7 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "ExportToFile")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "DisplayOnScreen")]
         public PIVSlot Slot { get; set; }
-
+        [TransformPath()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Location of the attestation certificate", ParameterSetName = "ExportToFile")]
         public string? OutFile { get; set; } = null;
 
@@ -57,6 +58,7 @@ namespace powershellYK.Cmdlets.PIV
                 string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
                 if (OutFile is not null)
                 {
+                    WriteDebug($"Writing Attestation certificate to {OutFile}");
                     File.WriteAllText(OutFile, pemData);
                 }
                 else

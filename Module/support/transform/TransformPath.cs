@@ -14,18 +14,18 @@ namespace powershellYK.support.transform
         {
             if (inputData is string)
             {
-                // there is a bug with GetCurrentDirectory, which breaks relative paths
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Resolve-Path");
-                myPowersShellInstance.AddParameter("Path", inputData);
-                myPowersShellInstance.AddCommand("Select-Object").AddParameter("ExpandProperty", "Path");
-                System.Collections.ObjectModel.Collection<System.Management.Automation.PSObject> returnValue = myPowersShellInstance.Invoke();
-                string? newPath = returnValue.FirstOrDefault()?.BaseObject.ToString();
-                if (System.IO.File.Exists(newPath))
+                // fix relative paths
+                if (!Path.IsPathFullyQualified(inputData?.ToString() ?? ""))
                 {
-                    return newPath;
+                    var sessionState = engineIntrinsics.SessionState;
+                    return Path.Combine(sessionState.Path.CurrentFileSystemLocation.ToString(), inputData?.ToString() ?? "");
                 }
             }
-            return inputData;
+            return inputData!;
+        }
+
+        public TransformPath()
+        {
         }
     }
 }

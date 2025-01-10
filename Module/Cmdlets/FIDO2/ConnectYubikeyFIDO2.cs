@@ -12,7 +12,7 @@ using System.Collections.ObjectModel;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommunications.Connect, "YubikeyFIDO2")]
+    [Cmdlet(VerbsCommunications.Connect, "YubiKeyFIDO2")]
 
     public class ConnectYubikeyFIDO2Command : PSCmdlet, IDynamicParameters
     {

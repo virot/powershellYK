@@ -23,13 +23,13 @@ Creates a CSR for a slot in the YubiKey.
 ### [Build-YubikeyPIVSignCertificate](Build-YubikeyPIVSignCertificate.md)
 Sign a certificate request with a YubiKey.
 
-### [Confirm-YubikeyAttestion](Confirm-YubikeyAttestion.md)
+### [Confirm-YubiKeyAttestion](Confirm-YubiKeyAttestion.md)
 Confirm YubiKey Attestion.
 
 ### [Connect-Yubikey](Connect-Yubikey.md)
 Connect the module to the YubiKey.
 
-### [Connect-YubikeyFIDO2](Connect-YubikeyFIDO2.md)
+### [Connect-YubiKeyFIDO2](Connect-YubiKeyFIDO2.md)
 Connect to the FIDO2 session.
 
 ### [Connect-YubikeyOATH](Connect-YubikeyOATH.md)
@@ -65,7 +65,7 @@ Returns the connected YubiKey
 ### [Get-YubikeyFIDO2](Get-YubikeyFIDO2.md)
 Get FIDO2 information from YubiKey
 
-### [Get-YubikeyFIDO2Credentials](Get-YubikeyFIDO2Credentials.md)
+### [Get-YubikeyFIDO2Credential](Get-YubikeyFIDO2Credential.md)
 Read the FIDO2 discoverable credentials
 
 ### [Get-YubikeyOATH](Get-YubikeyOATH.md)

@@ -7,8 +7,8 @@ using powershellYK.support;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Alias("Get-YubikeyFIDO2Credentials")]
-    [Cmdlet(VerbsCommon.Get, "YubikeyFIDO2Credential")]
+    [Alias("Get-YubiKeyFIDO2Credentials")]
+    [Cmdlet(VerbsCommon.Get, "YubiKeyFIDO2Credential")]
 
     public class GetYubikeyFIDO2CredentialsCommand : PSCmdlet
     {

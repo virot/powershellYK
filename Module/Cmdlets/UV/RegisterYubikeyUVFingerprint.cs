@@ -12,7 +12,7 @@ using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsLifecycle.Register, "YubikeyUVFingerprint")]
+    [Cmdlet(VerbsLifecycle.Register, "YubiKeyUVFingerprint")]
     public class RegisterYubikeyUVFingerprintCmdlet : Cmdlet
     {
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Name of the finger to register")]

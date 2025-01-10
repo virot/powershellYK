@@ -7,7 +7,7 @@ using powershellYK.support;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommon.Get, "YubikeyFIDO2")]
+    [Cmdlet(VerbsCommon.Get, "YubiKeyFIDO2")]
 
     public class GetYubikeyFIDO2Cmdlet : PSCmdlet
     {

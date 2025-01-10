@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace powershellYK.Cmdlets.OTP
 {
-    [Cmdlet(VerbsCommon.Unlock, "Yubikey")]
+    [Cmdlet(VerbsCommon.Unlock, "YubiKey")]
     public class UnlockYubikeyCommand : PSCmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Lock Code for YubiKey")]
