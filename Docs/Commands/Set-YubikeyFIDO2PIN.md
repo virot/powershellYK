@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Set-YubikeyFIDO2PIN
+# Set-YubiKeyFIDO2PIN
 
 ## SYNOPSIS
 Set the PIN for the FIDO2 application on the YubiKey.
@@ -13,7 +13,7 @@ Set the PIN for the FIDO2 application on the YubiKey.
 ## SYNTAX
 
 ```
-Set-YubikeyFIDO2PIN [-OldPIN <SecureString>] -NewPIN <SecureString> [<CommonParameters>]
+Set-YubiKeyFIDO2PIN [-OldPIN <SecureString>] -NewPIN <SecureString> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
