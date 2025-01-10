@@ -10,7 +10,7 @@ using Yubico.YubiKey.Sample.PivSampleCode;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsCommon.Get, "YubikeyPIV")]
+    [Cmdlet(VerbsCommon.Get, "YubiKeyPIV")]
     public class GetYubikeyPIVCommand : PSCmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]

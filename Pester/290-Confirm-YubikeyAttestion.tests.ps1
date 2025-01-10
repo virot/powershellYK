@@ -6,7 +6,7 @@ Describe "Confirm-YubikeyAttestion requestWithBuiltinAttestion" -Tag "Without-Yu
         #Get-Variable pest*|Remove-Variable
     }
 
-    It -Name "Verify 'Confirm-YubikeyAttestion -CertificateRequest _fullfile_' works, Windows" -Skip:(!$IsWindows) -Test {
+    It -Name "Verify 'Confirm-YubiKeyAttestion -CertificateRequest _fullfile_' works, Windows" -Skip:(!$IsWindows) -Test {
         $pest_return = Confirm-YubikeyAttestion -CertificateRequest "$PSScriptRoot\TestData\piv_attestion_certificaterequest_with_attestion.req"
         $pest_return | Should -BeOfType powershellYK.Attestion
         $pest_return.Slot | Should -Be 0x9a

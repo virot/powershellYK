@@ -12,7 +12,7 @@ using Yubico.YubiKey.Otp.Operations;
 
 namespace powershellYK.Cmdlets.OTP
 {
-    [Cmdlet(VerbsCommon.Set, "YubikeyOTP", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Set, "YubiKeyOTP", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class SetYubikeyOTPCommand : PSCmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey OTP Slot")]

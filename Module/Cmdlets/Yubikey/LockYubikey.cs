@@ -4,7 +4,7 @@ using Yubico.YubiKey.Management.Commands;
 
 namespace powershellYK.Cmdlets.OTP
 {
-    [Cmdlet(VerbsCommon.Lock, "Yubikey")]
+    [Cmdlet(VerbsCommon.Lock, "YubiKey")]
     public class LockYubikeyCommand : PSCmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "LockCode for Yubikey")]

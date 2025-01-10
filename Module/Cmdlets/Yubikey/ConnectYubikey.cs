@@ -7,7 +7,7 @@ using Yubico.YubiKey.Sample.PivSampleCode;
 
 namespace powershellYK.Cmdlets.Yubikey
 {
-    [Cmdlet(VerbsCommunications.Connect, "Yubikey", DefaultParameterSetName = "Connect single Yubikey")]
+    [Cmdlet(VerbsCommunications.Connect, "YubiKey", DefaultParameterSetName = "Connect single Yubikey")]
     public class ConnectYubikeyCommand : PSCmdlet
     {
 

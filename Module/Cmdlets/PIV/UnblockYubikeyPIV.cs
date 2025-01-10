@@ -13,7 +13,7 @@ using powershellYK.support.validators;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsSecurity.Unblock, "YubikeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsSecurity.Unblock, "YubiKeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class UnblockYubikeyPIVCmdlet : Cmdlet
     {
 

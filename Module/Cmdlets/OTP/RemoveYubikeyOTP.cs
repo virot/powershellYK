@@ -8,7 +8,7 @@ using Yubico.YubiKey.Oath;
 
 namespace powershellYK.Cmdlets.OTP
 {
-    [Cmdlet(VerbsCommon.Remove, "YubikeyOTP", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Remove, "YubiKeyOTP", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class RemoveYubikeyOTPCommand : Cmdlet
     {
         //[ValidateOTPSlot()]

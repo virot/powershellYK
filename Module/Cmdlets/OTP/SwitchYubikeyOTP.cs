@@ -5,7 +5,7 @@ using Yubico.YubiKey.Otp;
 
 namespace powershellYK.Cmdlets.OTP
 {
-    [Cmdlet(VerbsCommon.Switch, "YubikeyOTP")]
+    [Cmdlet(VerbsCommon.Switch, "YubiKeyOTP")]
     public class SwitchYubikeyOTPCommand : Cmdlet
     {
         protected override void BeginProcessing()

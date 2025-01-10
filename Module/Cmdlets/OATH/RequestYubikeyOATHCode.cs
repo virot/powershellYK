@@ -11,7 +11,7 @@ using System;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsLifecycle.Request, "YubikeyOATHCode", DefaultParameterSetName = "All")]
+    [Cmdlet(VerbsLifecycle.Request, "YubiKeyOATHCode", DefaultParameterSetName = "All")]
 
     public class GetYubikeyOATHCodeCommand : PSCmdlet
     {

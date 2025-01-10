@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Connect-YubikeyFIDO2
+# Connect-YubiKeyFIDO2
 
 ## SYNOPSIS
 Connect to the FIDO2 session.
@@ -13,7 +13,7 @@ Connect to the FIDO2 session.
 ## SYNTAX
 
 ```
-Connect-YubikeyFIDO2 [-PIN <SecureString>] [<CommonParameters>]
+Connect-YubiKeyFIDO2 -PIN <SecureString> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -61,7 +61,7 @@ Type: SecureString
 Parameter Sets: (All)
 Aliases:
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False

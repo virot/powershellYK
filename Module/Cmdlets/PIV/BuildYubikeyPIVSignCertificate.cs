@@ -10,7 +10,7 @@ using powershellYK.PIV;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsLifecycle.Build, "YubikeyPIVSignCertificate")]
+    [Cmdlet(VerbsLifecycle.Build, "YubiKeyPIVSignCertificate")]
     public class BuildYubikeySignedCertificateCommand : Cmdlet
     {
         [TransformCertificateRequest_Path()]

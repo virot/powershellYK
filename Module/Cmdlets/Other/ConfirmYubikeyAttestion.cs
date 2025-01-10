@@ -11,7 +11,7 @@ using powershellYK.PIV;
 
 namespace powershellYK.Cmdlets.Other
 {
-    [Cmdlet(VerbsLifecycle.Confirm, "YubikeyAttestion")]
+    [Cmdlet(VerbsLifecycle.Confirm, "YubiKeyAttestion")]
     public class ConfirmYubikeyAttestionCommand : PSCmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithExternalAttestion")]
