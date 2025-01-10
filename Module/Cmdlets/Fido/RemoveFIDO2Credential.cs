@@ -7,7 +7,7 @@ using powershellYK.support;
 namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommon.Remove, "YubikeyFIDO2Credential", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
-    public class RemoveYubikeyFIDO2CredentialCmdlet : Cmdlet
+    public class RemoveYubikeyFIDO2CredentialCmdlet : PSCmdlet
     {
         // Credential ID is required when calling the cmdlet.
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Credential ID to remove")]
