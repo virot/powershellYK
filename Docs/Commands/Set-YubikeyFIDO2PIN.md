@@ -38,7 +38,7 @@ Update the FIDO2 application PIN on an unconnected YubiKey.
 ## PARAMETERS
 
 ### -NewPIN
-New PIN code to set for the FIDO2 module.
+New PIN code to set for the FIDO applet.
 
 ```yaml
 Type: SecureString

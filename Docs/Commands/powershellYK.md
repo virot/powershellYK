@@ -95,7 +95,7 @@ Move a key from one slot to another
 ### [New-YubikeyOATHAccount](New-YubikeyOATHAccount.md)
 Created a TOTP or HOTP account
 
-### [New-YubikeyPIVKey](New-YubikeyPIVKey.md)
+### [New-YubiKeyPIVKey](New-YubiKeyPIVKey.md)
 Create a new private key
 
 ### [New-YubikeyPIVSelfSign](New-YubikeyPIVSelfSign.md)
@@ -106,6 +106,9 @@ Set / update password
 
 ### [Register-YubikeyUVFingerprint](Register-YubikeyUVFingerprint.md)
 Register a new fingerprint on the YubiKey Bio.
+
+### [Remove-YubikeyFIDO2Credential](Remove-YubikeyFIDO2Credential.md)
+Removes a FIDO2 credential from the YubiKey.
 
 ### [Remove-YubikeyOATHAccount](Remove-YubikeyOATHAccount.md)
 Removes an account from the YubiKey OATH application.
@@ -143,10 +146,10 @@ Resets the PIV part of your YubiKey.
 ### [Set-Yubikey](Set-Yubikey.md)
 Allows basic YubiKey configuration.
 
-### [Set-YubikeyFIDO2](Set-YubikeyFIDO2.md)
+### [Set-YubiKeyFIDO2](Set-YubiKeyFIDO2.md)
 Allows settings FIDO2 options.
 
-### [Set-YubikeyFIDO2PIN](Set-YubikeyFIDO2PIN.md)
+### [Set-YubiKeyFIDO2PIN](Set-YubiKeyFIDO2PIN.md)
 Set the PIN for the FIDO2 application on the YubiKey.
 
 ### [Set-YubikeyOTP](Set-YubikeyOTP.md)
