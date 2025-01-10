@@ -1,10 +1,7 @@
-﻿using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using Yubico.YubiKey.Piv;
+﻿using Newtonsoft.Json.Linq;
 using System.Management.Automation;
 using Yubico.YubiKey.Fido2;
 using Yubico.YubiKey.Fido2.Cose;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace powershellYK.FIDO2
 {
@@ -13,18 +10,7 @@ namespace powershellYK.FIDO2
         public string? DisplayName { get; private set; }
         public string? UserName { get; private set; }
         public string? RPId { get; private set; }
-        public string? CredID
-        {
-            get
-            {
-                byte[] credentialIdBytes = CredentialID.Id.ToArray();
-
-                string credentialIdBase64 = Convert.ToBase64String(credentialIdBytes);
-                return credentialIdBase64;
-            }
-        }
-        [Hidden]
-        public CredentialId CredentialID { get; private set; }
+        public powershellYK.FIDO2.CredentialID CredentialID { get; private set; }
         [Hidden]
         public CoseKey? coseKey { get; set; }
 
@@ -33,7 +19,11 @@ namespace powershellYK.FIDO2
             this.RPId = RPId;
             this.UserName = UserName;
             this.DisplayName = DisplayName;
-            this.CredentialID = CredentialID;
+            this.CredentialID = new powershellYK.FIDO2.CredentialID(CredentialID);
         }
+
+        #region Operators
+
+        #endregion // Operators
     }
 }
