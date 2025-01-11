@@ -7,19 +7,20 @@ namespace powershellYK.FIDO2
 {
     public class Credential
     {
-        public string? DisplayName { get; private set; }
-        public string? UserName { get; private set; }
-        public string? RPId { get; private set; }
+        public string? DisplayName { get { return this.CredentialUserInfo.User.DisplayName; } }
+        public string? UserName { get { return this.CredentialUserInfo.User.Name; } }
+        public string? RPId { get { return this.RelyingParty.Id; } }
         public powershellYK.FIDO2.CredentialID CredentialID { get; private set; }
         [Hidden]
-        public CoseKey? coseKey { get; set; }
+        public RelyingParty RelyingParty { get; private set; }
+        [Hidden]
+        public CredentialUserInfo CredentialUserInfo { get; private set; }
 
-        public Credential(string RPId, string? UserName, string? DisplayName, CredentialId CredentialID)
+        public Credential(RelyingParty relyingParty, CredentialUserInfo credentialUserInfo)
         {
-            this.RPId = RPId;
-            this.UserName = UserName;
-            this.DisplayName = DisplayName;
-            this.CredentialID = new powershellYK.FIDO2.CredentialID(CredentialID);
+            this.CredentialID = new powershellYK.FIDO2.CredentialID(credentialUserInfo.CredentialId);
+            this.RelyingParty = relyingParty;
+            this.CredentialUserInfo = credentialUserInfo;
         }
 
         #region Operators

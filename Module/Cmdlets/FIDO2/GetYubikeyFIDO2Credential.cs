@@ -67,7 +67,7 @@ namespace powershellYK.Cmdlets.Fido
 
                         foreach (CredentialUserInfo user in relayCredentials)
                         {
-                            Credential credential = new Credential(RPId: relyingParty.Id, UserName: user.User.Name, DisplayName: user.User.DisplayName, CredentialID: user.CredentialId);
+                            Credential credential = new Credential(relyingParty: relyingParty, credentialUserInfo: user);
                             WriteObject(credential);
                         }
                     }
