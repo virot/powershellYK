@@ -30,9 +30,30 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (ShouldProcess($"Key in slot {Slot}", "Remove"))
                 {
-                    pivSession.DeleteKey(Slot);
+                    bool keyExists = false;
+                    try
+                    {
+                        
+                        PivPublicKey pubkey = pivSession.GetMetadata(Slot).PublicKey;
+                        keyExists = true;
+                    }
+                    catch
+                    {
+                    
+                    }
+
+                    if (keyExists)
+                    {
+                        pivSession.DeleteKey(Slot);
+                        WriteInformation($"Removed private key from PIV slot {Slot}.", new string[] { "PIV", "Info" });
+                    }
+                    else
+                    {
+                        WriteWarning($"No private key found in PIV slot {Slot}. Nothing to remove.");
+                    }
                 }
             }
         }
+
     }
 }
