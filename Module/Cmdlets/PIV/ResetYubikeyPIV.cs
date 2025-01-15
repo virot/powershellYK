@@ -42,6 +42,7 @@ namespace powershellYK.Cmdlets.PIV
                     pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
                     pivSession.ResetApplication();
                 }
+                WriteInformation("YubiKey PIV applet successfully reset.", new string[] { "PIV", "Info" });
             }
         }
     }
