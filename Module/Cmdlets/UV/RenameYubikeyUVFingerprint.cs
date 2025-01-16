@@ -55,6 +55,7 @@ namespace powershellYK.Cmdlets.PIV
                 if (fingerprint is not null)
                 {
                     session.SetBioTemplateFriendlyName(fingerprint.TemplateId, NewName);
+                    WriteInformation($"Fingerprint renamed ({(NewName)}).", new string[] { "Biometrics", "Info" });
                 }
                 else
                 {
