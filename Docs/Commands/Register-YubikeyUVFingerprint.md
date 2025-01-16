@@ -8,7 +8,7 @@ schema: 2.0.0
 # Register-YubikeyUVFingerprint
 
 ## SYNOPSIS
-Register a new fingerprint on the YubiKey Bio.
+Register a new fingerprint on a YubiKey Bio _or_ a YubiKey Bio Multi-Protocol Edition (MPE).
 
 ## SYNTAX
 
@@ -17,25 +17,25 @@ Register-YubikeyUVFingerprint [-Name <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Register a new fingerprint on the yubikey Bio.
+Register a new fingerprint on a YubiKey Bio _or_ a YubiKey Bio Multi-Protocol Edition (MPE).
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> Register-YubikeyUVFingerprint -Name "tumme"
+PS C:\> Register-YubikeyUVFingerprint -Name "left index"
 
 TemplateId                     FriendlyName
 ----------                     ------------
-System.ReadOnlyMemory<Byte>[2] tumme
+System.ReadOnlyMemory<Byte>[2] left index
 ```
 
-This adds a new fingerprint to the yubikey Bio.
+This adds a new fingerprint to the YubiKey Bio / YubiKey Bio MPE.
 
 ## PARAMETERS
 
 ### -Name
-Name of finger to register
+Name of finger to register, for example: "left index" or "right index".
 
 ```yaml
 Type: String
