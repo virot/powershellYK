@@ -45,11 +45,11 @@ namespace powershellYK.Cmdlets.PIV
                     if (keyExists)
                     {
                         pivSession.DeleteKey(Slot);
-                        WriteInformation($"Removed private key from PIV slot {Slot}.", new string[] { "PIV", "Info" });
+                        WriteInformation($"Removed key(s) from PIV slot {Slot}.", new string[] { "PIV", "Info" });
                     }
                     else
                     {
-                        WriteWarning($"No private key found in PIV slot {Slot}. Nothing to remove.");
+                        WriteWarning($"No key(s) found in PIV slot {Slot}. Nothing to remove.");
                     }
                 }
             }

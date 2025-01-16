@@ -97,7 +97,7 @@ namespace powershellYK.Cmdlets.PIV
                                 WriteObject((ECDsa)dotNetPublicKey);
                             }
                         }
-                        WriteInformation($"New private key created in slot {Slot}.", new string[] { "PIV", "Info" });
+                        WriteInformation($"New key(s) created in slot {Slot}.", new string[] { "PIV", "Info" });
                     }
                     else
                     {
