@@ -223,7 +223,10 @@ namespace powershellYK.Cmdlets.PIV
                         try
                         {
                             pivSession.WriteObject(chuid);
+                            // TODO: Maybe print value in parenthesis as "New CHUID set (CHUID)."?
+                            WriteInformation("New CHUID set.", new string[] { "PIV", "Info" });
                         }
+                        
                         catch (Exception e)
                         {
                             throw new Exception("Failed to generate new CHUID", e);
