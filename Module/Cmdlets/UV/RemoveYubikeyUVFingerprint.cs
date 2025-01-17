@@ -9,15 +9,15 @@ using powershellYK.support.transform;
 using Yubico.YubiKey.Fido2.Commands;
 using Yubico.YubiKey.Piv;
 
-
 namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.Remove, "YubiKeyUVFingerprint", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class RemoveYubikeyUVFingerprintCmdlet : PSCmdlet
     {
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Name of finger to remove", ParameterSetName = "Remove using Name")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Name of fingerprint to remove", ParameterSetName = "Remove using Name")]
         public String? Name;
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ID of finger to remove", ParameterSetName = "Remove using ID")]
+
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ID of fingerprint to remove", ParameterSetName = "Remove using ID")]
         [ValidateLength(4, 4)]
         public String? ID;
 
@@ -37,26 +37,38 @@ namespace powershellYK.Cmdlets.PIV
                 switch (ParameterSetName)
                 {
                     case "Remove using Name":
-                        fingerprint = session.EnumerateBioEnrollments().Where(x => x.FriendlyName.ToLower() == Name!.ToLower()).FirstOrDefault();
+                        fingerprint = session.EnumerateBioEnrollments()
+                            .FirstOrDefault(x => x.FriendlyName.Equals(Name, StringComparison.OrdinalIgnoreCase));
                         break;
+
                     case "Remove using ID":
-                        fingerprint = session.EnumerateBioEnrollments().Where(x => HexConverter.ByteArrayToString(x.TemplateId.ToArray()).ToLower() == ID!.ToLower()).FirstOrDefault();
+                        fingerprint = session.EnumerateBioEnrollments()
+                            .FirstOrDefault(x => HexConverter.ByteArrayToString(x.TemplateId.ToArray())
+                                .Equals(ID, StringComparison.OrdinalIgnoreCase));
                         break;
 
                     default:
                         throw new Exception("Invalid ParameterSetName");
-                };
+                }
 
                 if (fingerprint is not null)
                 {
-                    if (ShouldProcess("This will remove the selected fingerprint from the YubiKey", "This will remove the fingerprint from the YubiKey", "Remove Fingerprint?"))
+                    if (ShouldProcess($"This will remove the fingerprint '{(Name ?? ID)}' from the YubiKey", "Remove Fingerprint?"))
                     {
-                        session.TryRemoveBioTemplate(fingerprint.TemplateId);
+                        bool removed = session.TryRemoveBioTemplate(fingerprint.TemplateId);
+                        if (removed)
+                        {
+                            WriteInformation($"Fingerprint '{(Name ?? ID)}' successfully deleted.", new string[] { "Biometrics", "Info" });
+                        }
+                        else
+                        {
+                            throw new Exception("Failed to remove the fingerprint from the YubiKey.");
+                        }
                     }
                 }
                 else
                 {
-                    throw new Exception("No fingerprint found.");
+                    throw new Exception($"No fingerprint found with {(Name is not null ? $"name '{Name}'" : $"ID '{ID}'")}.");
                 }
             }
         }

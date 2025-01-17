@@ -131,6 +131,9 @@ namespace powershellYK.Cmdlets.PIV
                         {
                             WriteWarning("PIN and PUK codes reset to default, remember to change them!");
                         }
+
+                        WriteInformation($"Number of PIN/PUK retries set ({PinRetries},{PukRetries}).", new string[] { "PIV", "Info" });
+
                         break;
                     case "ChangePIN":
                         try
@@ -140,6 +143,7 @@ namespace powershellYK.Cmdlets.PIV
     , out retriesLeft) == true)
                             {
                                 YubiKeyModule._pivPIN = NewPIN;
+                                WriteInformation("PIN updated.", new string[] { "PIV", "Info" });
                             }
                             else
                             {
@@ -219,7 +223,10 @@ namespace powershellYK.Cmdlets.PIV
                         try
                         {
                             pivSession.WriteObject(chuid);
+                            // TODO: Maybe print value in parenthesis as "New CHUID set (CHUID)."?
+                            WriteInformation("New CHUID set.", new string[] { "PIV", "Info" });
                         }
+
                         catch (Exception e)
                         {
                             throw new Exception("Failed to generate new CHUID", e);
@@ -228,6 +235,9 @@ namespace powershellYK.Cmdlets.PIV
                     case "Set Managementkey to PIN protected":
                         PivAlgorithm mgmtKeyAlgorithm = ((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivAesManagementKey) ? PivAlgorithm.Aes256 : PivAlgorithm.TripleDes;
                         pivSession.SetPinOnlyMode(PivPinOnlyMode.PinProtected, mgmtKeyAlgorithm);
+
+                        WriteInformation($"Management key set to PIN protected.", new string[] { "PIV", "Info" });
+
                         break;
                 }
             }

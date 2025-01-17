@@ -8,6 +8,7 @@ using powershellYK.support;
 using powershellYK.support.transform;
 using Yubico.YubiKey.Fido2.Commands;
 using Yubico.YubiKey.Piv;
+using Yubico.YubiKey.Otp;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -29,9 +30,20 @@ namespace powershellYK.Cmdlets.PIV
             {
                 session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                TemplateInfo fingerprint = session.EnrollFingerprint(Name, null);
+                try
+                {
+                    // TODO: There should ideally be a prompt for each read.
+                    WriteInformation("Place your finger against the sensor repeatedly...", new string[] { "Biometrics", "prompt" });
 
-                WriteObject(fingerprint);
+                    TemplateInfo fingerprint = session.EnrollFingerprint(Name, null);
+
+                    WriteInformation($"Fingerprint registered ({Name ?? "Unnamed"}).", new string[] { "Biometrics", "Info" });
+
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Failed to register fingerprint ({Name ?? "Unnamed"}): {ex.Message}", ex);
+                }
             }
         }
 
