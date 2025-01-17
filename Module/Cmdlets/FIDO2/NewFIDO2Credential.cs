@@ -53,6 +53,7 @@ namespace powershellYK.Cmdlets.Fido
 
         protected override void ProcessRecord()
         {
+            throw new NotImplementedException("New-YubikeyFIDO2Credential not implemented.");
             if (UserDisplayName is null)
             {
                 UserDisplayName = Username;
