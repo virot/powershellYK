@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-YubikeyUVFingerprint
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Removes a selected fingerprint template from the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ## SYNTAX
 
@@ -29,10 +29,19 @@ Remove-YubikeyUVFingerprint -ID <String> [-WhatIf] [-Confirm] [<CommonParameters
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Remove-YubikeyUVFingerprint -Name "left index"
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "Y"): Y
+Fingerprint 'left index' successfully deleted.
 ```
+A fingerprint template is removed by name.
 
-{{ Add example description here }}
+### Example 2
+```powershell
+Remove-YubikeyUVFingerprint -ID 23FC
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "Y"): Y
+Fingerprint '23FC' successfully deleted.
+```
+A fingerprint template is removed by ID.
 
 ## PARAMETERS
 

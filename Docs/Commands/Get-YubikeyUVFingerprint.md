@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-YubikeyUVFingerprint
 
 ## SYNOPSIS
-List current installed fingerprints on a YubiKey Bio.
+List fingerprint templates registered on a YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ## SYNTAX
 
@@ -17,16 +17,17 @@ Get-YubikeyUVFingerprint [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-List current installed fingerprints on a YubiKey Bio.
+List fingerprint templates registered on a YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> {{ Add example code here }}
+PS C:\> Register-YubikeyUVFingerprint -Name "left index"
+Place your finger against the sensor repeatedly...
+Fingerprint registered (left index).
 ```
-
-{{ Add example description here }}
+Register left index finger as "left index".
 
 ## PARAMETERS
 
