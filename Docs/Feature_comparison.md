@@ -31,7 +31,7 @@
 | **Generate One Time Password** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Rename accounts** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Remove accounts** | 🟢 | 🔴 | 🟢 | 🟢 |
-| **Reset application** | 🟢 | 🔴 | 🟢 | 🟢 |
+| **Reset applet** | 🟢 | 🔴 | 🟢 | 🟢 |
 
 ### YubiOTP, Challenge-Response & Static Password
 | Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator |
@@ -49,10 +49,18 @@
 ### PIV
 | Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator | yubico-piv-tool |
 | :--- | --- | --- | --- | --- | --- |
+| **Set PIN** | 🟢 | 🟢 | 🟢 |🟢 | 🟢 |
+| **Set PUK** | 🟢 | 🟢 | 🟢 |🟢 | 🟢 |
+| **Set Management Key** | 🟢 | 🟢 | 🟢 |🟢 | 🟢 |
+| **Generate keys in slot** | 🟢 | 🟢 | 🟢 |🟢 | 🟢 |
+| **Move keys between slot** | 🟢 | 🔴 | 🟢 |🔴 | 🟢 |
+| **Delete keys in slot** | 🟢 | 🟢 | 🟢 | 🟢 |🟢 |
+| **Generate CSR with Attestation** | 🟢 | 🔴 | 🔴 |🔴 | 🟢 |
 | **Generate CSR with Attestation** | 🟢 | 🔴 | 🔴 |🔴 | 🟢 |
 | **Generate Attestation certificate** | 🟢 | 🔴 | 🟢 | 🔴 |🟢 |
 | **Sign certificate request** | 🟢 | 🔴 | 🔴 | 🔴 |🔴 |
-| **Delete keys in slot** | 🟢 | 🟢 | 🟢 | 🟢 |🟢 |
+| **Reset applet** | 🟢 | 🟢 | 🟢 |🟢 | 🟢 |
+
 
 ## Only in powershellYK
 _The following are custom features available only in powershellYK:_
