@@ -3,58 +3,58 @@
 ## Feature difference between powershellYK and Yubikey tools
 
 ### Yubikey configuration
-| Feature | powershellYK | ykman GUI | ykman CLI | Yubico Authenticator |
+| Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator |
 | :--- | --- | --- | --- | --- |
 | **Toggle applications** | 🟢 | 🟢 | 🟢 |🟢 |
-| **Configuration lock** | 🟢 | 🔴 | 🟢 | 🔴 |
+| **Set Configuration lock** | 🟢 | 🔴 | 🟢 | 🔴 |
 | **Configure Touch-Eject PIV** | 🟢 | 🔴 | 🟢 | 🔴 |
-| **Configure Automatic Touch-Eject** | 🟢 | 🔴 | 🟢 | 🔴 |
+| **Configure Auto Touch-Eject** | 🟢 | 🔴 | 🟢 | 🔴 |
 | **Restrict NFC** | 🟢 | 🔴 | 🟢 | 🔴 |
 
 ### FIDO (U2F & FIDO2)
-| Feature | powershellYK | ykman GUI | ykman CLI | Yubico Authenticator |
+| Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator |
 | :--- | --- | --- | --- | --- |
 | **Set PIN** | 🟢 | 🟢 | 🟢 | 🟢 |
 | **Set minimum PIN length** | 🟢 | 🟢 | 🟢 | 🔴 |
 | **Force PIN change** | 🟢 | 🔴 | 🟢 | 🔴 |
 | **List passkey credentials** | 🟢 | 🔴 | 🟢 | 🟢 |
-| **Remove passkey credentials** | 🔴 | 🔴 | 🟢 | 🟢 |
+| **Remove passkey credentials** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Reset applet** | 🟢 | 🟢 | 🟢 | 🟢 |
 
 
 ### OATH (TOTP & HOTP)
-| Feature | powershellYK | ykman GUI | ykman CLI | Yubico Authenticator |
+| Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator |
 | :--- | --- | --- | --- | --- |
 | **Basic info** | 🟢 | 🔴 | 🟢 |🟢 |
 | **Set password** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **List accounts** | 🟢 | 🔴 | 🟢 | 🟢 |
-| **Generate OTP** | 🟢 | 🔴 | 🟢 | 🟢 |
+| **Generate One Time Password** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Rename accounts** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Remove accounts** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Reset application** | 🟢 | 🔴 | 🟢 | 🟢 |
 
 ### YubiOTP, Challenge-Response & Static Password
-| Feature | powershellYK | ykman GUI | ykman CLI | Yubico Authenticator |
+| Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator |
 | :--- | --- | --- | --- | --- |
-| **Perform a challenge-response operation** | 🔴 | 🔴 | 🔴 | 🔴 |
-| **Program a challenge-response credential** | 🟢 | 🔴 | 🟢 | 🟢 |
-| **Delete configuration stored in a slot** | 🟢 | 🟢 | 🟢 | 🟢 |
-| **Display general status of the YubiKey OTP slots** | 🟢 | 🟢 | 🟢 | 🟢 |
-| **Configure a slot to be used over NDEF (NFC)** | 🔴| 🔴 | 🟢 | 🔴 |
-| **Update the settings for a slot** | 🔴 | 🟢 | 🔴 | 🔴 |
-| **Configure a static password** | 🟢 | 🟢 | 🟢 | 🟢 |
+| **Program challenge-response** | 🟢 | 🔴 | 🟢 | 🟢 |
+| **Perform challenge-response** | 🔴 | 🔴 | 🔴 | 🔴 |
+| **Delete slot configuration** | 🟢 | 🟢 | 🟢 | 🟢 |
+| **Display YubiOTP slot status** | 🟢 | 🟢 | 🟢 | 🟢 |
+| **Configure static password** | 🟢 | 🟢 | 🟢 | 🟢 |
+| **Configure NDEF (NFC) slot** | 🔴| 🔴 | 🟢 | 🔴 |
+| **Update slot settings** | 🔴 | 🟢 | 🔴 | 🔴 |
 | **Swap slot configurations** | 🟢 | 🟢 | 🟢 | 🟢 |
-| **Program a YubiOTP credential** | 🔴 | 🟢 | 🟢 | 🟢 |
+| **Program YubiOTP** | 🔴 | 🟢 | 🟢 | 🟢 |
 
 ### PIV
-| Feature | powershellYK | ykman GUI | ykman CLI | Yubico Authenticator | yubico-piv-tool |
+| Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator | yubico-piv-tool |
 | :--- | --- | --- | --- | --- | --- |
 | **Generate CSR with Attestation** | 🟢 | 🔴 | 🔴 |🔴 | 🟢 |
 | **Generate Attestation certificate** | 🟢 | 🔴 | 🟢 | 🔴 |🟢 |
 | **Sign certificate request** | 🟢 | 🔴 | 🔴 | 🔴 |🔴 |
 | **Delete keys in slot** | 🟢 | 🟢 | 🟢 | 🟢 |🟢 |
 
-### Only in powershellYK
+## Only in powershellYK
 _The following are custom features available only in powershellYK:_
 - Validate YubiKey attestion certificates.
 - Validate YubiKey certificate signing requests (CSRs) with _built-in_ attestion.
