@@ -5,6 +5,7 @@ using Yubico.YubiKey.Piv;
 using System.Security.Cryptography;
 using Yubico.YubiKey.Sample.PivSampleCode;
 using powershellYK.PIV;
+using powershellYK.support.transform;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -21,6 +22,7 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subject name of certificate")]
 
         public string Subjectname { get; set; } = "CN=SubjectName to be supplied by Server,O=Fake";
+        [TransformPath()]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Save CSR as file")]
         public string? OutFile { get; set; } = null;
 
