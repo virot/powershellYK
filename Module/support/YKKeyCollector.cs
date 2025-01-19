@@ -86,7 +86,7 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyOathPassword:
                     if (YubiKeyModule._OATHPassword is null)
                     {
-                        throw new OATHNotConnectedException("Password is required before issuing command, use 'Connect-YubikeyOATH' to authenticate.");
+                        throw new OATHNotConnectedException("Password is required before issuing command, use 'Connect-YubikeyOATH -Password' to authenticate.");
                     }
                     keyEntryData.SubmitValue(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPassword!))!));
                     break;

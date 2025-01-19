@@ -7,11 +7,14 @@ using Yubico.YubiKey.Fido2.Commands;
 using powershellYK.Exceptions;
 using System.Diagnostics;
 
+
 namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommon.Reset, "YubiKeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class ResetYubikeyFIDO2Cmdlet : PSCmdlet
     {
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Force reset of the FIDO2 applet")]
+        public SwitchParameter Force { get; set; } = false;
         private bool _yubiKeyRemoved = false;
         private bool _yubiKeyArrived = false;
 
@@ -38,7 +41,17 @@ namespace powershellYK.Cmdlets.Fido
 
         protected override void ProcessRecord()
         {
-            if (ShouldProcess("This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings. Proceed?", "This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings. Proceed?", "WARNING!"))
+            // Add Bio MPE check
+            // TODO: @virot can/should we use our helper instead here?
+            var formFactor = YubiKeyModule._yubikey!.FormFactor;
+            var capabilities = YubiKeyModule._yubikey.AvailableUsbCapabilities;
+
+            if ((formFactor == FormFactor.UsbABiometricKeychain || formFactor == FormFactor.UsbCBiometricKeychain) && capabilities.HasFlag(YubiKeyCapabilities.Piv))
+            {
+                throw new Exception("YubiKey Bio Multi-Protocol Edition (MPE) detected. Reset using 'Reset-YubiKey' instead!");
+            }
+
+            if (Force || ShouldProcess("This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings. Proceed?", "This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings. Proceed?", "WARNING!"))
             {
                 Console.WriteLine("Remove and re-insert the YubiKey to perform the reset...");
 
@@ -106,7 +119,7 @@ namespace powershellYK.Cmdlets.Fido
                     }
 
                     YubiKeyModule._fido2PIN = null;
-                    WriteInformation("YubiKey FIDO applet successfully reset.", new string[] { "FIDO2", "Info" });
+                    WriteInformation("YubiKey FIDO applet successfully reset.", new string[] { "FIDO2", "Reset" });
                 }
             }
         }

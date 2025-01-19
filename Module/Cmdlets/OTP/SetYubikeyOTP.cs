@@ -122,6 +122,7 @@ namespace powershellYK.Cmdlets.OTP
                             {
                                 // https://github.com/Yubico/yubikey-manager/blob/fbdae2bc12ba0451bcfc62372bc9191c10ecad0c/ykman/otp.py#L95
                                 // TODO: Implement Upload to YubiCloud
+                                // @virot: upload is no longer supported. Need to output a CSV file for manual upload.
                                 WriteWarning("Upload to YubiCloud is not implemented yet!");
                             }
                             break;

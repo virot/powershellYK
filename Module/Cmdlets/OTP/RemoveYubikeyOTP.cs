@@ -45,7 +45,8 @@ namespace powershellYK.Cmdlets.OTP
                         return;
                     }
                     var deleteSlot = otpSession.DeleteSlotConfiguration(Slot);
-                    deleteSlot.Execute();
+                    deleteSlot.Execute(); // TODO: @virot deletion returns an error even when successful.                  
+                    WriteInformation($"Removed OTP configuration from slot {Slot.ToString("d")}", new string[] { "OTP", "Info" });
                 }
             }
         }
