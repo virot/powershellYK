@@ -60,7 +60,7 @@ namespace powershellYK.Cmdlets.OATH
                             var myPowerShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace)
                                 .AddCommand("Read-Host")
                                 .AddParameter("AsSecureString")
-                                .AddParameter("Prompt", "Enter current OATH Password");
+                                .AddParameter("Prompt", "Enter OATH Password");
                             
                             Password = (SecureString)myPowerShellInstance.Invoke()[0].BaseObject;
                         }

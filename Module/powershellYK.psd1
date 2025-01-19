@@ -79,6 +79,7 @@ CmdletsToExport = @(
  'Get-YubiKey',
  'Lock-YubiKey',
  'Set-YubiKey',
+ 'Reset-YubiKey',
  'Unlock-YubiKey',
  'Connect-YubiKeyFIDO2',
  'Enable-YubiKeyFIDO2EnterpriseAttestation',

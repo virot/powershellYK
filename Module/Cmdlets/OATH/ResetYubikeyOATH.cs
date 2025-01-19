@@ -11,9 +11,10 @@ using Yubico.YubiKey.Piv;
 namespace powershellYK.Cmdlets.OATH
 {
     [Cmdlet(VerbsCommon.Reset, "YubiKeyOATH", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
-
-    public class ResetYubikeyOATH2Command : Cmdlet
+    public class ResetYubikeyOATHCommand : Cmdlet
     {
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Force reset of the OATH applet")]
+        public SwitchParameter Force { get; set; } = false;
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -27,14 +28,23 @@ namespace powershellYK.Cmdlets.OATH
 
         protected override void ProcessRecord()
         {
-            if (ShouldProcess($"Yubikey OATH", "Reset"))
+            if (Force || ShouldProcess("This will delete all OATH credentials, and restore factory settings. Proceed?", "This will delete all OATH credentials, and restore factory settings. Proceed?", "WARNING!"))
             {
-                using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
+                try
                 {
-                    oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                    oathSession.ResetApplication();
+                    using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
+                    {
+                        oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                        oathSession.ResetApplication();
+                        WriteInformation("YubiKey OATH applet successfully reset.", new string[] { "OATH", "Reset" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    WriteError(new ErrorRecord(ex, "OATHResetError", ErrorCategory.OperationStopped, null));
                 }
             }
         }
     }
 }
+
