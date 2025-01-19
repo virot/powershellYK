@@ -34,8 +34,12 @@ namespace powershellYK.Cmdlets.OTP
         {
             using (var otpSession = new OtpSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                WriteObject(new Info(Slot.ShortPress.ToString(), otpSession.IsShortPressConfigured, otpSession.ShortPressRequiresTouch));
-                WriteObject(new Info(Slot.LongPress.ToString(), otpSession.IsLongPressConfigured, otpSession.LongPressRequiresTouch));
+                WriteObject(new Info($"Slot {Slot.ShortPress.ToString("d")} ({Slot.ShortPress})", 
+                    otpSession.IsShortPressConfigured, 
+                    otpSession.ShortPressRequiresTouch));
+                WriteObject(new Info($"Slot {Slot.LongPress.ToString("d")} ({Slot.LongPress})", 
+                    otpSession.IsLongPressConfigured, 
+                    otpSession.LongPressRequiresTouch));
             }
         }
 
