@@ -13,17 +13,10 @@ using System.Net.Security;
 
 namespace powershellYK.Cmdlets.OATH
 {
-    [Cmdlet(VerbsSecurity.Unprotect, "YubiKeyOATH")]
+    [Cmdlet(VerbsSecurity.Unprotect, "YubiKeyOATH", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
 
-    public class UnprotectYubikeyOATH2Command : PSCmdlet
+    public class UnprotectYubikeyOATH2Cmdlet : PSCmdlet
     {
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Remove password requirement", ParameterSetName = "Clear password")]
-        public SwitchParameter ClearPassword;
-        [ValidateYubikeyPassword(1, 255)]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Password", ParameterSetName = "Change password")]
-        public SecureString UpdatePassword = new SecureString();
-
-
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -37,14 +30,18 @@ namespace powershellYK.Cmdlets.OATH
 
         protected override void ProcessRecord()
         {
-            using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
+            if (ShouldProcess("This will remove the password for the OATH application. Proceed?", "This will remove the password for the OATH application. Proceed?", "WARNING!"))
             {
-                oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-
-                if (oathSession.IsPasswordProtected)
+                using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
-                    oathSession.UnsetPassword();
-                    YubiKeyModule._OATHPassword = null;
+                    oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+
+                    if (oathSession.IsPasswordProtected)
+                    {
+                        oathSession.UnsetPassword();
+                        YubiKeyModule._OATHPassword = null;
+                        WriteInformation("YubiKey OATH applet password removed.", new string[] { "OATH", "Info" });
+                    }
                 }
             }
         }

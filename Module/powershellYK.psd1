@@ -88,11 +88,13 @@ CmdletsToExport = @(
  'Remove-YubiKeyFIDO2Credential'
  'Set-YubiKeyFIDO2',
  'Set-YubiKeyFIDO2PIN',
+ 'New-YubiKeyFIDO2Credential',
  'Reset-YubiKeyFIDO2',
  'Connect-YubiKeyOATH',
  'Get-YubiKeyOATH',
  'Get-YubiKeyOATHAccount',
  'New-YubiKeyOATHAccount',
+ 'Set-YubiKeyOATHPassword',
  'Remove-YubiKeyOATHAccount',
  'Protect-YubiKeyOATH',
  'Reset-YubiKeyOATH',
