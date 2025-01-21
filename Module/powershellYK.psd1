@@ -84,6 +84,7 @@ CmdletsToExport = @(
  'Enable-YubiKeyFIDO2EnterpriseAttestation',
  'Get-YubiKeyFIDO2',
  'Get-YubiKeyFIDO2Credential',
+ 'New-YubiKeyFIDO2Credential',
  'Remove-YubiKeyFIDO2Credential'
  'Set-YubiKeyFIDO2',
  'Set-YubiKeyFIDO2PIN',

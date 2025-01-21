@@ -22,6 +22,7 @@ namespace powershellYK.Cmdlets.PIV
         [ValidateSet("SHA1", "SHA256", "SHA384", "SHA512", IgnoreCase = true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "HashAlgoritm")]
         public HashAlgorithmName HashAlgorithm { get; set; } = HashAlgorithmName.SHA256;
+        [TransformPath()]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Output file")]
         public string? OutFile { get; set; } = null;
 
