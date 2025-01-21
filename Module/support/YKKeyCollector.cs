@@ -86,7 +86,7 @@ namespace powershellYK
                 case KeyEntryRequest.VerifyOathPassword:
                     if (YubiKeyModule._OATHPassword is null)
                     {
-                        throw new OATHNotConnectedException("Password is required before issuing command, use 'Connect-YubikeyOATH' to authenticate.");
+                        throw new OATHNotConnectedException("Password is required before issuing command, use 'Connect-YubikeyOATH -Password' to authenticate.");
                     }
                     keyEntryData.SubmitValue(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPassword!))!));
                     break;
@@ -95,10 +95,8 @@ namespace powershellYK
                     keyEntryData.SubmitValue(YubiKeyModule._pivManagementKey);
                     break;
                 case KeyEntryRequest.SetOathPassword:
-                    if (YubiKeyModule._OATHPassword is not null && YubiKeyModule._OATHPassword.Length >= 1)
-                    {
-                        keyEntryData.SubmitValues(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPassword!))!), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPasswordNew!))!));
-                    }
+                    keyEntryData.SubmitValues(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPassword ?? new System.Security.SecureString()))!),
+                        System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPasswordNew ?? new System.Security.SecureString()))!));
                     break;
                 case KeyEntryRequest.ChangePivPin:
                     throw new NotImplementedException("Change PIV PIN is not yet implemented");

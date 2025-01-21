@@ -33,16 +33,15 @@ namespace powershellYK.Cmdlets.PIV
         }
         protected override void ProcessRecord()
         {
-
             WriteDebug("ProcessRecord in Reset-YubikeyPIV");
-            if (ShouldProcess("YubiKey PIV", "Reset"))
+            if (Force || ShouldProcess("This will delete all PIV credentials, and restore factory settings. Proceed?", "This will delete all PIV credentials, and restore factory settings. Proceed?", "WARNING!"))
             {
                 using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
                     pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
                     pivSession.ResetApplication();
                 }
-                WriteInformation("YubiKey PIV applet successfully reset.", new string[] { "PIV", "Info" });
+                WriteInformation("YubiKey PIV applet successfully reset.", new string[] { "PIV", "Reset" });
             }
         }
     }
