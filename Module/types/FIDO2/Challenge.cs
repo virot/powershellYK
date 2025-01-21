@@ -73,7 +73,7 @@ namespace powershellYK.FIDO2
             _ = digester.TransformBlock(randomBytes, 0, randomBytes.Length, null, 0);
             _ = digester.TransformFinalBlock(idBytes, 0, idBytes.Length);
 
-            return digester.Hash;
+            return digester.Hash!;
         }
         #endregion // support
     }

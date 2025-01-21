@@ -10,22 +10,28 @@ using powershellYK.FIDO2;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsCommon.New, "YubikeyFIDO2Credential", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.New, "YubiKeyFIDO2Credential", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class NewYubikeyFIDO2CredentialCmdlet : PSCmdlet
     {
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Specify which relayingParty (site) this credential is regards to.")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Specify which relayingParty (site) this credential is regards to.", ParameterSetName = "UserEntity-HostData")]
         public required string RelyingPartyID { private get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Friendlyname for the relayingParty.")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Friendlyname for the relayingParty.", ParameterSetName = "UserEntity-HostData")]
         public required string RelyingPartyName { private get; set; }
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Username to create credental for.")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Username to create credental for.", ParameterSetName = "UserData-HostData")]
         public required string Username { private get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "UserDisplayName to create credental for.")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "UserDisplayName to create credental for.", ParameterSetName = "UserData-HostData")]
         public string? UserDisplayName { private get; set; }
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "UserID.", ParameterSetName = "UserData-HostData")]
+        public byte[]? UserID { private get; set; }
+
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Challange.")]
         public required Challenge Challange { private get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Should this credential be discoverable.")]
         public bool Discoverable { private get; set; } = true;
 
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Supply the user entity in complete form.", ParameterSetName = "UserEntity-HostData")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Supply the user entity in complete form.", ParameterSetName = "UserEntity-RelyingParty")]
+        public UserEntity? UserEntity { get; set; } = new UserEntity(new byte[] { 0,0});
         protected override void BeginProcessing()
         {
             // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
@@ -53,7 +59,7 @@ namespace powershellYK.Cmdlets.Fido
 
         protected override void ProcessRecord()
         {
-            throw new NotImplementedException("New-YubikeyFIDO2Credential not implemented.");
+            WriteWarning("This cmdlet is still in development and may not work as expected.");
             if (UserDisplayName is null)
             {
                 UserDisplayName = Username;
@@ -62,22 +68,25 @@ namespace powershellYK.Cmdlets.Fido
             {
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                var randomObject = CryptographyProviders.RngCreator();
-                byte[] randomBytes = new byte[16];
-                randomObject.GetBytes(randomBytes);
-                var userId = new ReadOnlyMemory<byte>(randomBytes);
+                //var randomObject = CryptographyProviders.RngCreator();
+                //byte[] randomBytes = new byte[32];
+                //randomObject.GetBytes(UserID);
+                var userId = new ReadOnlyMemory<byte>(UserID);
                 var relayingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName };
-                var user = new UserEntity(userId)
+
+                if (UserEntity is null)
                 {
-                    Name = Username,
-                    DisplayName = UserDisplayName,
-                };
+                    UserEntity = new UserEntity(userId)
+                    {
+                        Name = Username,
+                        DisplayName = UserDisplayName ?? Username,
+                    };
+                }
 
                 ReadOnlyMemory<byte> clientDataHash = Challange.ToByte().AsMemory();
 
 
-                var make = new MakeCredentialParameters(relayingParty, user);
-                make.AddHmacSecretExtension(fido2Session.AuthenticatorInfo);
+                var make = new MakeCredentialParameters(relayingParty, UserEntity);
                 if (Discoverable)
                 {
                     make.AddOption("rk", true);
@@ -85,7 +94,7 @@ namespace powershellYK.Cmdlets.Fido
 
                 if (fido2Session.AuthenticatorInfo.IsExtensionSupported("hmac-secret"))
                 {
-                    make.AddHmacSecretExtension(fido2Session.AuthenticatorInfo);
+  //                  make.AddHmacSecretExtension(fido2Session.AuthenticatorInfo);
                 }
 
                 make.ClientDataHash = clientDataHash;
