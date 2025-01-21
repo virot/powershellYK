@@ -1,18 +1,11 @@
-using powershellYK.Cmdlets.Other;
-using powershellYK.support;
-using System.Diagnostics;
+
 using System.Management.Automation;           // Windows PowerShell namespace.
-using Yubico.YubiKey;
-using Yubico.YubiKey.Sample.PivSampleCode;
 
 namespace powershellYK.Cmdlets.Bio
 {
     [Cmdlet(VerbsCommon.Reset, "YubiKeyBioMPE", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class ResetYubiKeyCmdlet : PSCmdlet
     {
-        [Parameter(Mandatory = false)]
-        public SwitchParameter Force;
-
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -26,7 +19,7 @@ namespace powershellYK.Cmdlets.Bio
 
         protected override void ProcessRecord()
         {
-            if (!Force && !ShouldProcess("This will delete all stored data and restore factory settings. Proceed?", "This will delete all stored data and restore factory settings. Proceed?", "WARNING!"))
+            if (!ShouldProcess("This will delete all stored data and restore factory settings. Proceed?", "This will delete all stored data and restore factory settings. Proceed?", "WARNING!"))
             {
                 return;
             }

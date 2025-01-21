@@ -13,8 +13,6 @@ namespace powershellYK.Cmdlets.OATH
     [Cmdlet(VerbsCommon.Reset, "YubiKeyOATH", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class ResetYubikeyOATHCommand : Cmdlet
     {
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Force reset of the OATH applet")]
-        public SwitchParameter Force { get; set; } = false;
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -28,7 +26,7 @@ namespace powershellYK.Cmdlets.OATH
 
         protected override void ProcessRecord()
         {
-            if (Force || ShouldProcess("This will delete all OATH credentials, and restore factory settings. Proceed?", "This will delete all OATH credentials, and restore factory settings. Proceed?", "WARNING!"))
+            if (ShouldProcess("This will delete all OATH credentials, and restore factory settings. Proceed?", "This will delete all OATH credentials, and restore factory settings. Proceed?", "WARNING!"))
             {
                 try
                 {

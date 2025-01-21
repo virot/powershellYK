@@ -14,16 +14,9 @@
 
 using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
-using Yubico.YubiKey.Fido2;
-using powershellYK.support;
-using System.Data.Common;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey.Oath;
-using Yubico.YubiKey.Piv;
 using powershellYK.support.validators;
 using System.Security;
-using System.Net.Security;
 
 namespace powershellYK.Cmdlets.OATH
 {
@@ -63,10 +56,10 @@ namespace powershellYK.Cmdlets.OATH
                             .AddCommand("Read-Host")
                             .AddParameter("AsSecureString")
                             .AddParameter("Prompt", "Enter current OATH Password");
-                        
+
                         // Store the password from prompt for use in password verification
                         YubiKeyModule._OATHPassword = (SecureString)myPowerShellInstance.Invoke()[0].BaseObject;
-                        
+
                         // Verify the current password from prompt before proceeding...
                         oathSession.VerifyPassword();
                     }
@@ -79,7 +72,7 @@ namespace powershellYK.Cmdlets.OATH
                             .AddCommand("Read-Host")
                             .AddParameter("AsSecureString")
                             .AddParameter("Prompt", "Enter new OATH Password");
-                        
+
                         // Store the new password from prompt for use for use when setting the password
                         YubiKeyModule._OATHPasswordNew = (SecureString)newPasswordInstance.Invoke()[0].BaseObject;
                     }
@@ -97,7 +90,7 @@ namespace powershellYK.Cmdlets.OATH
                         YubiKeyModule._OATHPassword = UpdatePassword;
                         YubiKeyModule._OATHPasswordNew = null;
                     */
-                    
+
                     // If the OATH applet is NOT protected, set the password
                     if (!oathSession.IsPasswordProtected)
                     {
@@ -112,7 +105,7 @@ namespace powershellYK.Cmdlets.OATH
                         //oathSession.SetPassword(YubiKeyModule._OATHPassword, YubiKeyModule._OATHPasswordNew);
                         oathSession.SetPassword();
                     }
-                    
+
                     YubiKeyModule._OATHPassword = YubiKeyModule._OATHPasswordNew;
                     YubiKeyModule._OATHPasswordNew = null;
                 }

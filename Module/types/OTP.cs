@@ -1,11 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using Yubico.YubiKey.Piv;
-using System.Management.Automation;
-using Newtonsoft.Json.Linq;
-using System;
-using Yubico.Core.Buffers;
-using powershellYK.support;
+﻿using powershellYK.support;
 
 namespace powershellYK.OTP
 {
