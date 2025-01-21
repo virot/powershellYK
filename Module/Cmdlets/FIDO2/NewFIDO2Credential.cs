@@ -31,7 +31,7 @@ namespace powershellYK.Cmdlets.Fido
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Supply the user entity in complete form.", ParameterSetName = "UserEntity-HostData")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Supply the user entity in complete form.", ParameterSetName = "UserEntity-RelyingParty")]
-        public UserEntity? UserEntity { get; set; } = new UserEntity(new byte[] { 0,0});
+        public UserEntity? UserEntity { get; set; } = new UserEntity(new byte[] { 0, 0 });
         protected override void BeginProcessing()
         {
             // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
@@ -94,7 +94,7 @@ namespace powershellYK.Cmdlets.Fido
 
                 if (fido2Session.AuthenticatorInfo.IsExtensionSupported("hmac-secret"))
                 {
-  //                  make.AddHmacSecretExtension(fido2Session.AuthenticatorInfo);
+                    //                  make.AddHmacSecretExtension(fido2Session.AuthenticatorInfo);
                 }
 
                 make.ClientDataHash = clientDataHash;

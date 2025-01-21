@@ -10,8 +10,8 @@ namespace powershellYK.FIDO2
     {
         public MakeCredentialData MakeCredentialData { get { return this._makeCredentialData; } }
         private readonly MakeCredentialData _makeCredentialData;
-        
-public CredentialData(MakeCredentialData MakeCredentialData)
+
+        public CredentialData(MakeCredentialData MakeCredentialData)
         {
             this._makeCredentialData = MakeCredentialData;
         }
@@ -24,7 +24,7 @@ public CredentialData(MakeCredentialData MakeCredentialData)
             return "";
         }
 
-        public byte[] w3cEncoded ()
+        public byte[] w3cEncoded()
         {
             var writer = new CborWriter();
             writer.WriteStartMap(3);
