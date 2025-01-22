@@ -28,7 +28,7 @@ namespace powershellYK.Cmdlets.Fido
         public byte[]? UserID { private get; set; }
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Challange.")]
-        public required Challenge Challange { private get; set; }
+        public required Challenge Challenge { private get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Should this credential be discoverable.")]
         public bool Discoverable { private get; set; } = true;
 
@@ -103,7 +103,7 @@ namespace powershellYK.Cmdlets.Fido
                 }
 
                 //ReadOnlyMemory<byte> clientDataHash = Challange.ToByte().AsMemory();
-                make.ClientDataHash = Challange.CalculateSHA256().AsMemory();
+                make.ClientDataHash = Challenge.CalculateSHA256().AsMemory();
 
                 MakeCredentialData returnvalue = fido2Session.MakeCredential(make);
                 WriteObject(returnvalue);

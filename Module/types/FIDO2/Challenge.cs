@@ -48,7 +48,12 @@ namespace powershellYK.FIDO2
             _ = digester.TransformFinalBlock(_challenge, 0, _challenge.Length);
             return digester.Hash!;
         }
-
+        public string UrlEncode()
+        {
+            var base64 = Convert.ToBase64String(_challenge);
+            var urlEncoded = base64.Replace('+', '-').Replace('/', '_').Replace("=", "");
+            return urlEncoded;
+        }
 
         #region Operators
 
