@@ -71,25 +71,20 @@ namespace powershellYK.Cmdlets.Fido
             {
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                //var randomObject = CryptographyProviders.RngCreator();
-                //byte[] randomBytes = new byte[32];
-                //randomObject.GetBytes(UserID);
-                var userId = new ReadOnlyMemory<byte>(UserID);
-
                 if (RelyingParty is null)
                 {
                     RelyingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName };
                 }
                 if (UserEntity is null)
                 {
-                    UserEntity = new UserEntity(userId)
+                    UserEntity = new UserEntity(UserID.AsMemory())
                     {
                         Name = Username,
                         DisplayName = UserDisplayName ?? Username,
                     };
                 }
 
- 
+
 
                 var make = new MakeCredentialParameters(RelyingParty, UserEntity);
                 if (Discoverable)
