@@ -1,32 +1,29 @@
-﻿using Newtonsoft.Json.Linq;
-using powershellYK.support;
-using System.Management.Automation;
+﻿using powershellYK.support;
 using Yubico.YubiKey.Cryptography;
-using Yubico.YubiKey.Fido2;
-using Yubico.YubiKey.Fido2.Cose;
+
 
 namespace powershellYK.FIDO2
 {
     public class Challenge
     {
-        private readonly byte[] _challange;
+        private readonly byte[] _challenge;
 
         public Challenge(string value)
         {
             // If the length is 32, we assume it's a hex string
             if (value.Length == 32 && value.All(c => (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f')))
             {
-                this._challange = HexConverter.StringToByteArray(value);
+                this._challenge = HexConverter.StringToByteArray(value);
             }
             // else we assume it's a base64 string
             else
             {
-                this._challange = System.Convert.FromBase64String(value);
+                this._challenge = System.Convert.FromBase64String(value);
             }
         }
         public Challenge(byte[] value)
         {
-            this._challange = value;
+            this._challenge = value;
         }
 
         public static Challenge FakeChallange(string relyingPartyID)
@@ -39,12 +36,20 @@ namespace powershellYK.FIDO2
         }
         public string ToString(string? format = "x")
         {
-            return HexConverter.ByteArrayToString(_challange).ToLower();
+            return HexConverter.ByteArrayToString(_challenge).ToLower();
         }
         public byte[] ToByte()
         {
-            return _challange;
+            return _challenge;
         }
+        public byte[] CalculateSHA256()
+        {
+            var digester = CryptographyProviders.Sha256Creator();
+            _ = digester.TransformFinalBlock(_challenge, 0, _challenge.Length);
+            return digester.Hash!;
+        }
+
+
         #region Operators
 
         public static implicit operator byte[](Challenge source)
@@ -60,6 +65,7 @@ namespace powershellYK.FIDO2
         #endregion // Operators
 
         #region support
+
         private static byte[] BuildFakeClientDataHash(string relyingPartyId)
         {
             byte[] idBytes = System.Text.Encoding.Unicode.GetBytes(relyingPartyId);
