@@ -4,7 +4,6 @@
 ```pwsh
 $username = "powershellYK$($(new-guid).tostring().Replace('-',''))"
 $password = (get-date -Format 'yyyy-MM-dd')
-$site = "demo.yubico.com"
 ```
 
 ### Create the user in the Yubico playground
@@ -15,13 +14,13 @@ $createUser = @{
 'username'=$username;
 'password'=$password
 } | ConvertTo-JSON
-$userCreation = Invoke-RestMethod -Method Post -SessionVariable session -Uri "https://$site/api/v1/user" -Body $createUser -ContentType 'application/json'
+$userCreation = Invoke-RestMethod -Method Post -SessionVariable session -Uri "https://demo.yubico.com/api/v1/user" -Body $createUser -ContentType 'application/json'
 ```
 
 ### Lets begin registering the YubiKey
 ```pwsh
 $registerBeginBody = @{'authenticatorAttachment' = 'cross-platform'; 'residentKey' = $true} | ConvertTo-JSON
-$registerBeginReturn = Invoke-RestMethod -Method Post -WebSession $session -Uri "https://$site/api/v1/user/$($userCreation.data.uuid)/webauthn/register-begin" -Body $registerBeginBody -ContentType 'application/json'
+$registerBeginReturn = Invoke-RestMethod -Method Post -WebSession $session -Uri "https://demo.yubico.com/api/v1/user/$($userCreation.data.uuid)/webauthn/register-begin" -Body $registerBeginBody -ContentType 'application/json'
 
 $userEntity = [Yubico.YubiKey.Fido2.UserEntity]::new([system.convert]::FromBase64String($registerBeginReturn.data.publicKey.user.id.'$base64'))
 $userEntity.Name = $registerBeginReturn.data.publicKey.user.name
@@ -37,7 +36,7 @@ $a = [powershellYK.FIDO2.CredentialData]::new($out)
 $clientDataJSON = @{
     'type' = 'webauthn.create';
     'challenge' = $registerBeginReturn.data.publicKey.challenge.'$base64' -replace '\+', '-' -replace '/', '_' -replace '=','';
-    'origin' = "https://$site";
+    'origin' = "https://demo.yubico.com";
     'crossOrigin' = $false
 } | ConvertTo-JSON -Compress
 
@@ -49,7 +48,7 @@ $registerFinishBody = @{
         'clientDataJSON' = @{'$base64'=[system.convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($clientDataJSON))}
     }
 } | ConvertTo-JSON -Compress
-$registerFinishReturn = Invoke-RestMethod -Method Post -WebSession $session -Uri "https://$site/api/v1/user/$($userCreation.data.uuid)/webauthn/register-finish" -Body $registerFinishBody -ContentType 'application/json'
+$registerFinishReturn = Invoke-RestMethod -Method Post -WebSession $session -Uri "https://demo.yubico.com/api/v1/user/$($userCreation.data.uuid)/webauthn/register-finish" -Body $registerFinishBody -ContentType 'application/json'
 ```
 
 Here we should be done, but something is broken somewhere..
