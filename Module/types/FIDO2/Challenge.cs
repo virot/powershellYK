@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using powershellYK.support;
-using System.Management.Automation;
+﻿using powershellYK.support;
 using Yubico.YubiKey.Cryptography;
-using Yubico.YubiKey.Fido2;
-using Yubico.YubiKey.Fido2.Cose;
+
 
 namespace powershellYK.FIDO2
 {
@@ -58,6 +55,7 @@ namespace powershellYK.FIDO2
         #endregion // Operators
 
         #region support
+
         private static byte[] BuildFakeClientDataHash(string relyingPartyId)
         {
             byte[] idBytes = System.Text.Encoding.Unicode.GetBytes(relyingPartyId);

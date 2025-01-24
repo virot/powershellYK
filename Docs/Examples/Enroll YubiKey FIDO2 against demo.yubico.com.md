@@ -4,7 +4,6 @@
 ```pwsh
 $username = "powershellYK$($(new-guid).tostring().Replace('-',''))"
 $password = (get-date -Format 'yyyy-MM-dd')
-$site = "demo.yubico.com"
 ```
 
 ### Create the user in the Yubico playground
@@ -15,13 +14,13 @@ $createUser = @{
 'username'=$username;
 'password'=$password
 } | ConvertTo-JSON
-$userCreation = Invoke-RestMethod -Method Post -SessionVariable session -Uri "https://$site/api/v1/user" -Body $createUser -ContentType 'application/json'
+$userCreation = Invoke-RestMethod -Method Post -SessionVariable session -Uri "https://demo.yubico.com/api/v1/user" -Body $createUser -ContentType 'application/json'
 ```
 
 ### Lets begin registering the YubiKey
 ```pwsh
 $registerBeginBody = @{'authenticatorAttachment' = 'cross-platform'; 'residentKey' = $true} | ConvertTo-JSON
-$registerBeginReturn = Invoke-RestMethod -Method Post -WebSession $session -Uri "https://$site/api/v1/user/$($userCreation.data.uuid)/webauthn/register-begin" -Body $registerBeginBody -ContentType 'application/json'
+$registerBeginReturn = Invoke-RestMethod -Method Post -WebSession $session -Uri "https://demo.yubico.com/api/v1/user/$($userCreation.data.uuid)/webauthn/register-begin" -Body $registerBeginBody -ContentType 'application/json'
 
 $userEntity = [Yubico.YubiKey.Fido2.UserEntity]::new([system.convert]::FromBase64String($registerBeginReturn.data.publicKey.user.id.'$base64'))
 $userEntity.Name = $registerBeginReturn.data.publicKey.user.name
@@ -39,7 +38,7 @@ $registerFinishBody = @{
         'clientDataJSON' = @{'$base64'=$out.GetBase64clientDataJSON()}
     }
 } | ConvertTo-JSON -Compress
-$registerFinishReturn = Invoke-RestMethod -Method Post -WebSession $session -Uri "https://$site/api/v1/user/$($userCreation.data.uuid)/webauthn/register-finish" -Body $registerFinishBody -ContentType 'application/json'
+$registerFinishReturn = Invoke-RestMethod -Method Post -WebSession $session -Uri "https://demo.yubico.com/api/v1/user/$($userCreation.data.uuid)/webauthn/register-finish" -Body $registerFinishBody -ContentType 'application/json'
 ```
 
 Now you can surf into [Yubikey Demo Site](https://demo.yubico.com/) and logon with your onboarded YubiKey.
