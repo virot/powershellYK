@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Remove-YubikeyUVFingerprint
+# Remove-YubiKeyUVFingerprint
 
 ## SYNOPSIS
 Removes a selected fingerprint template from the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
@@ -14,12 +14,12 @@ Removes a selected fingerprint template from the YubiKey Bio or YubiKey Bio Mult
 
 ### Remove using Name
 ```
-Remove-YubikeyUVFingerprint -Name <String> [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-YubiKeyUVFingerprint -Name <String> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Remove using ID
 ```
-Remove-YubikeyUVFingerprint -ID <String> [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-YubiKeyUVFingerprint -ID <String> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -33,6 +33,7 @@ PS C:\> Remove-YubikeyUVFingerprint -Name "left index"
 [Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "Y"): Y
 Fingerprint 'left index' successfully deleted.
 ```
+
 A fingerprint template is removed by name.
 
 ### Example 2
@@ -41,6 +42,7 @@ Remove-YubikeyUVFingerprint -ID 23FC
 [Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "Y"): Y
 Fingerprint '23FC' successfully deleted.
 ```
+
 A fingerprint template is removed by ID.
 
 ## PARAMETERS

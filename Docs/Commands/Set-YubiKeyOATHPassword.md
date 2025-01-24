@@ -5,56 +5,55 @@ online version:
 schema: 2.0.0
 ---
 
-# Reset-YubiKeyFIDO2
+# Set-YubiKeyOATHPassword
 
 ## SYNOPSIS
-Reset a YubiKey FIDO2 device to factory settings.
+Set the password for the YubiKey OATH application.
 
 ## SYNTAX
 
 ```
-Reset-YubiKeyFIDO2 [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-YubiKeyOATHPassword -OldPassword <SecureString> -NewPassword <SecureString> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Resets the YubiKey FIDO2 applet to factory settings. This will remove all stored credentials and reset the applet to factory settings.
-This REQUIRES the YubiKey to be (re)inserted at a maximum `5` seconds _before_ running the command.
+Set the password for the YubiKey OATH application.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> Reset-YubikeyFIDO2
+PS C:\> 
 ```
 
-Resets the YubiKey FIDO2 applet to factory settings.
+{{ Add example description here }}
 
 ## PARAMETERS
 
-### -Confirm
-Prompts you for confirmation before running the cmdlet.
+### -NewPassword
+New password provided as a SecureString.
 
 ```yaml
-Type: SwitchParameter
+Type: SecureString
 Parameter Sets: (All)
-Aliases: cf
+Aliases:
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -WhatIf
-Shows what would happen if the cmdlet runs. The cmdlet is not run.
+### -OldPassword
+Current password provided as a SecureString.
 
 ```yaml
-Type: SwitchParameter
+Type: SecureString
 Parameter Sets: (All)
-Aliases: wi
+Aliases:
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False

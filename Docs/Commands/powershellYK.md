@@ -80,8 +80,8 @@ YubiKey OTP Information
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
 Gets information about the PIV module and specific slots.
 
-### [Get-YubikeyUVFingerprint](Get-YubikeyUVFingerprint.md)
-List current installed fingerprints on a YubiKey Bio.
+### [Get-YubiKeyUVFingerprint](Get-YubiKeyUVFingerprint.md)
+List fingerprint templates registered on a YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ### [Import-YubikeyPIV](Import-YubikeyPIV.md)
 Import certificate
@@ -92,6 +92,10 @@ Lock the YubiKey configuration
 ### [Move-YubikeyPIV](Move-YubikeyPIV.md)
 Move a key from one slot to another
 
+### [New-YubiKeyFIDO2Credential](New-YubiKeyFIDO2Credential.md)
+Creates a new FIDO2 credential on the connected YubiKey.
+For more complete examples see: https://github.com/virot/powershellYK/tree/master/Docs/Examples
+
 ### [New-YubikeyOATHAccount](New-YubikeyOATHAccount.md)
 Created a TOTP or HOTP account
 
@@ -101,11 +105,11 @@ Create a new private key
 ### [New-YubikeyPIVSelfSign](New-YubikeyPIVSelfSign.md)
 Create a self signed certificate
 
-### [Protect-YubikeyOATH](Protect-YubikeyOATH.md)
+### [Protect-YubiKeyOATH](Protect-YubiKeyOATH.md)
 Set / update password
 
 ### [Register-YubikeyUVFingerprint](Register-YubikeyUVFingerprint.md)
-Register a new fingerprint on the YubiKey Bio.
+Register a new fingerprint on a YubiKey Bio _or_ a YubiKey Bio Multi-Protocol Edition (MPE).
 
 ### [Remove-YubikeyFIDO2Credential](Remove-YubikeyFIDO2Credential.md)
 Removes a FIDO2 credential from the YubiKey.
@@ -119,14 +123,14 @@ Remove YubiKey OTP slot.
 ### [Remove-YubikeyPIVKey](Remove-YubikeyPIVKey.md)
 Remove a key from a YubiKey PIV slot.
 
-### [Remove-YubikeyUVFingerprint](Remove-YubikeyUVFingerprint.md)
-{{ Fill in the Synopsis }}
+### [Remove-YubiKeyUVFingerprint](Remove-YubiKeyUVFingerprint.md)
+Removes a selected fingerprint template from the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ### [Rename-YubikeyOATHAccount](Rename-YubikeyOATHAccount.md)
 Rename OATH account
 
-### [Rename-YubikeyUVFingerprint](Rename-YubikeyUVFingerprint.md)
-Changes the friendlyname of a fingerprint on the YubiKey Bio.
+### [Rename-YubiKeyUVFingerprint](Rename-YubiKeyUVFingerprint.md)
+Changes the template name of a registered fingerprint on the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ### [Request-YubikeyOATHCode](Request-YubikeyOATHCode.md)
 Displays TOTP / HOTP codes for YubiKey OATH credentials.
@@ -134,7 +138,10 @@ Displays TOTP / HOTP codes for YubiKey OATH credentials.
 ### [Request-YubikeyOTPChallange](Request-YubikeyOTPChallange.md)
 Send Challaenge to YubiKey.
 
-### [Reset-YubikeyFIDO2](Reset-YubikeyFIDO2.md)
+### [Reset-YubiKeyBioMPE](Reset-YubiKeyBioMPE.md)
+Allows the user to reset the YubiKey Bio Multi-Protocol Edition (MPE) to factory settings.
+
+### [Reset-YubiKeyFIDO2](Reset-YubiKeyFIDO2.md)
 Reset a YubiKey FIDO2 device to factory settings.
 
 ### [Reset-YubikeyOATH](Reset-YubikeyOATH.md)
@@ -152,13 +159,16 @@ Allows settings FIDO2 options.
 ### [Set-YubiKeyFIDO2PIN](Set-YubiKeyFIDO2PIN.md)
 Set the PIN for the FIDO2 application on the YubiKey.
 
+### [Set-YubiKeyOATHPassword](Set-YubiKeyOATHPassword.md)
+Set the password for the YubiKey OATH application.
+
 ### [Set-YubikeyOTP](Set-YubikeyOTP.md)
 Configure OTP slots
 
 ### [Set-YubikeyPIV](Set-YubikeyPIV.md)
 Allows the updating of PIV settings
 
-### [Switch-YubikeyOTP](Switch-YubikeyOTP.md)
+### [Switch-YubiKeyOTP](Switch-YubiKeyOTP.md)
 Switch places for the configuration of the YubiKey OTP.
 
 ### [Unblock-YubikeyPIV](Unblock-YubikeyPIV.md)
@@ -167,6 +177,6 @@ Unblock a PIN locked YubiKey PIV.
 ### [Unlock-Yubikey](Unlock-Yubikey.md)
 Unlocks the configuration lock on the YubiKey.
 
-### [Unprotect-YubikeyOATH](Unprotect-YubikeyOATH.md)
+### [Unprotect-YubiKeyOATH](Unprotect-YubiKeyOATH.md)
 {{ Fill in the Synopsis }}
 
