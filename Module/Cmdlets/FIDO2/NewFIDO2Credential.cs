@@ -63,20 +63,24 @@ namespace powershellYK.Cmdlets.Fido
         protected override void ProcessRecord()
         {
             WriteWarning("This cmdlet is still in development and may not work as expected.");
-            if (UserDisplayName is null)
-            {
-                UserDisplayName = Username;
-            }
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
                 if (RelyingParty is null)
                 {
+                    WriteDebug($"Building new RelyingParty with {RelyingPartyID} and {RelyingPartyName}");
                     RelyingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName };
                 }
-                if (UserEntity is null)
+
+                if (UserEntity is null && UserID is null)
                 {
+                    // I Dont think this can happen, as Powershell requires one of them.
+                    throw new Exception("UserID is required if UserEntity is not supplied.");
+                }
+                else if (UserEntity is null && UserID is not null)
+                {
+                    WriteDebug($"Building new UserEntity with {HexConverter.ByteArrayToString(UserID)}");
                     UserEntity = new UserEntity(UserID.AsMemory())
                     {
                         Name = Username,
@@ -86,7 +90,7 @@ namespace powershellYK.Cmdlets.Fido
 
 
 
-                var make = new MakeCredentialParameters(RelyingParty, UserEntity);
+                var make = new MakeCredentialParameters(RelyingParty, UserEntity!);
                 if (Discoverable)
                 {
                     make.AddOption("rk", true);
@@ -112,9 +116,10 @@ namespace powershellYK.Cmdlets.Fido
                 _ = digester.TransformFinalBlock(clientDataBytes, 0, clientDataBytes.Length);
                 make.ClientDataHash = digester.Hash!.AsMemory();
 
+                WriteDebug($"Sending new credential data into SDK");
                 MakeCredentialData returnvalue = fido2Session.MakeCredential(make);
 
-                var credData = new CredentialData(returnvalue, clientDataJSON, UserEntity, RelyingParty);
+                var credData = new CredentialData(returnvalue, clientDataJSON, UserEntity!, RelyingParty);
                 WriteObject(credData);
             }
         }

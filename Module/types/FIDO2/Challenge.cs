@@ -10,7 +10,7 @@ namespace powershellYK.FIDO2
 
         public Challenge(string value)
         {
-            this._challenge = System.Convert.FromBase64String(value);
+            this._challenge = System.Convert.FromBase64String(AddMissingPadding(value));
         }
         public Challenge(byte[] value)
         {
@@ -55,7 +55,16 @@ namespace powershellYK.FIDO2
         #endregion // Operators
 
         #region support
-
+        private static string AddMissingPadding(string base64)
+        {
+            // Calculate the number of padding characters needed
+            int paddingCount = 4 - (base64.Length % 4);
+            if (paddingCount != 4)
+            {
+                base64 += new string('=', paddingCount);
+            }
+            return base64;
+        }
         private static byte[] BuildFakeClientDataHash(string relyingPartyId)
         {
             byte[] idBytes = System.Text.Encoding.Unicode.GetBytes(relyingPartyId);

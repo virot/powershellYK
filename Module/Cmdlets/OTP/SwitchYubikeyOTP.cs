@@ -8,8 +8,6 @@ namespace powershellYK.Cmdlets.OTP
     [Cmdlet(VerbsCommon.Switch, "YubiKeyOTP", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class SwitchYubikeyOTPCommand : Cmdlet
     {
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Force swap of the OTP slots")]
-        public SwitchParameter Force { get; set; } = false;
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -29,7 +27,7 @@ namespace powershellYK.Cmdlets.OTP
         }
         protected override void ProcessRecord()
         {
-            if (Force || ShouldProcess("This will swap the two OTP slots of the YubiKey. Proceed?", "This will swap the two OTP slots of the YubiKey. Proceed?", "WARNING!"))
+            if (ShouldProcess("This will swap the two OTP slots of the YubiKey. Proceed?", "This will swap the two OTP slots of the YubiKey. Proceed?", "WARNING!"))
             {
                 try
                 {

@@ -1,11 +1,11 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Rename-YubikeyUVFingerprint
+# Rename-YubiKeyUVFingerprint
 
 ## SYNOPSIS
 Changes the template name of a registered fingerprint on the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
@@ -14,12 +14,12 @@ Changes the template name of a registered fingerprint on the YubiKey Bio or Yubi
 
 ### Rename using Name
 ```
-Rename-YubikeyUVFingerprint -Name <String> -NewName <String> [<CommonParameters>]
+Rename-YubiKeyUVFingerprint -Name <String> -NewName <String> [<CommonParameters>]
 ```
 
 ### Rename using ID
 ```
-Rename-YubikeyUVFingerprint -ID <String> -NewName <String> [<CommonParameters>]
+Rename-YubiKeyUVFingerprint -ID <String> -NewName <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -38,6 +38,7 @@ ID   Name
 PS C:\> Rename-YubikeyUVFingerprint -ID 23FC -NewName "left index finger"
 Fingerprint renamed (left index finger).
 ```
+
 Changes the friendly name of the fingerprint with name "left index" to "left index finger".
 
 ### Example 2
@@ -51,6 +52,7 @@ ID   Name
 PS C:\> Rename-YubikeyUVFingerprint -Name "left" -NewName "thumb"
 Fingerprint renamed (thumb).
 ```
+
 Changes the friendly name of the fingerprint with name "left index to "thumb".
 
 ## PARAMETERS

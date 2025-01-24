@@ -1,25 +1,19 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Unprotect-YubikeyOATH
+# Unprotect-YubiKeyOATH
 
 ## SYNOPSIS
 {{ Fill in the Synopsis }}
 
 ## SYNTAX
 
-### Clear password
 ```
-Unprotect-YubikeyOATH [-ClearPassword] [<CommonParameters>]
-```
-
-### Change password
-```
-Unprotect-YubikeyOATH -UpdatePassword <SecureString> [<CommonParameters>]
+Unprotect-YubiKeyOATH [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -36,30 +30,30 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -ClearPassword
-Remove password requirement
+### -Confirm
+Prompts you for confirmation before running the cmdlet.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Clear password
-Aliases:
+Parameter Sets: (All)
+Aliases: cf
 
-Required: True
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -UpdatePassword
-Password
+### -WhatIf
+Shows what would happen if the cmdlet runs. The cmdlet is not run.
 
 ```yaml
-Type: SecureString
-Parameter Sets: Change password
-Aliases:
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
 
-Required: True
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

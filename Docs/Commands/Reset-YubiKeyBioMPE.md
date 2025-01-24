@@ -1,33 +1,32 @@
-﻿---
+---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
 schema: 2.0.0
 ---
 
-# Reset-YubiKeyFIDO2
+# Reset-YubiKeyBioMPE
 
 ## SYNOPSIS
-Reset a YubiKey FIDO2 device to factory settings.
+Allows the user to reset the YubiKey Bio Multi-Protocol Edition (MPE) to factory settings.
 
 ## SYNTAX
 
 ```
-Reset-YubiKeyFIDO2 [-WhatIf] [-Confirm] [<CommonParameters>]
+Reset-YubiKeyBioMPE [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Resets the YubiKey FIDO2 applet to factory settings. This will remove all stored credentials and reset the applet to factory settings.
-This REQUIRES the YubiKey to be (re)inserted at a maximum `5` seconds _before_ running the command.
+Allows the user to reset the YubiKey Bio Multi-Protocol Edition (MPE) to factory settings.
 
 ## EXAMPLES
 
 ### Example 1
 ```powershell
-PS C:\> Reset-YubikeyFIDO2
+PS C:\> Reset-YubiKeyBioMPE -Confirm:$False
 ```
 
-Resets the YubiKey FIDO2 applet to factory settings.
+Reset the YubiKey Bio Multi-Protocol Edition (MPE) to factory settings without prompting for confirmation.
 
 ## PARAMETERS
 
@@ -47,7 +46,8 @@ Accept wildcard characters: False
 ```
 
 ### -WhatIf
-Shows what would happen if the cmdlet runs. The cmdlet is not run.
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: SwitchParameter
