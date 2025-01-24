@@ -10,16 +10,7 @@ namespace powershellYK.FIDO2
 
         public Challenge(string value)
         {
-            // If the length is 32, we assume it's a hex string
-            if (value.Length == 32 && value.All(c => (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f')))
-            {
-                this._challenge = HexConverter.StringToByteArray(value);
-            }
-            // else we assume it's a base64 string
-            else
-            {
-                this._challenge = System.Convert.FromBase64String(value);
-            }
+            this._challenge = System.Convert.FromBase64String(value);
         }
         public Challenge(byte[] value)
         {
@@ -42,13 +33,7 @@ namespace powershellYK.FIDO2
         {
             return _challenge;
         }
-        public byte[] CalculateSHA256()
-        {
-            var digester = CryptographyProviders.Sha256Creator();
-            _ = digester.TransformFinalBlock(_challenge, 0, _challenge.Length);
-            return digester.Hash!;
-        }
-        public string UrlEncode()
+        public string Base64UrlEncode()
         {
             var base64 = Convert.ToBase64String(_challenge);
             var urlEncoded = base64.Replace('+', '-').Replace('/', '_').Replace("=", "");

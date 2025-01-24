@@ -97,11 +97,25 @@ namespace powershellYK.Cmdlets.Fido
                     make.AddHmacSecretExtension(fido2Session.AuthenticatorInfo);
                 }
 
-                //ReadOnlyMemory<byte> clientDataHash = Challange.ToByte().AsMemory();
-                make.ClientDataHash = Challenge.CalculateSHA256().AsMemory();
+                // Generate ClientDataHash
+
+                var clientData = new
+                {
+                    type = "webauthn.create",
+                    origin = $"https://{RelyingParty.Id}",
+                    challenge = Challenge.Base64UrlEncode(),
+                };
+
+                var clientDataJSON = System.Text.Json.JsonSerializer.Serialize(clientData);
+                var clientDataBytes = System.Text.Encoding.UTF8.GetBytes(clientDataJSON);
+                var digester = CryptographyProviders.Sha256Creator();
+                _ = digester.TransformFinalBlock(clientDataBytes, 0, clientDataBytes.Length);
+                make.ClientDataHash = digester.Hash!.AsMemory();
 
                 MakeCredentialData returnvalue = fido2Session.MakeCredential(make);
-                WriteObject(returnvalue);
+
+                var credData = new CredentialData(returnvalue, clientDataJSON, UserEntity, RelyingParty);
+                WriteObject(credData);
             }
         }
     }
