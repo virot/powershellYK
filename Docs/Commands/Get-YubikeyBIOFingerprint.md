@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-YubiKeyUVFingerprint
+# Get-YubiKeyBIOFingerprint
 
 ## SYNOPSIS
 List fingerprint templates registered on a YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
@@ -13,7 +13,7 @@ List fingerprint templates registered on a YubiKey Bio or YubiKey Bio Multi-Prot
 ## SYNTAX
 
 ```
-Get-YubiKeyUVFingerprint [<CommonParameters>]
+Get-YubiKeyBIOFingerprint [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,7 +23,7 @@ List fingerprint templates registered on a YubiKey Bio or YubiKey Bio Multi-Prot
 
 ### Example 1
 ```powershell
-PS C:\> Register-YubikeyUVFingerprint -Name "left index"
+PS C:\> Register-YubikeyBIOFingerprint -Name "left index"
 Place your finger against the sensor repeatedly...
 Fingerprint registered (left index).
 ```

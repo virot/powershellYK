@@ -13,8 +13,8 @@ using Yubico.YubiKey.Otp;
 
 namespace powershellYK.Cmdlets.PIV
 {
-    [Cmdlet(VerbsLifecycle.Register, "YubiKeyUVFingerprint")]
-    public class RegisterYubikeyUVFingerprintCmdlet : Cmdlet
+    [Cmdlet(VerbsLifecycle.Register, "YubiKeyBIOFingerprint")]
+    public class RegisterYubikeyBIOFingerprintCmdlet : Cmdlet
     {
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Name of the finger to register")]
         public String? Name;
