@@ -121,7 +121,15 @@ namespace powershellYK.Cmdlets.Fido
                         YubiKeyModule._fido2PIN = (SecureString)this.MyInvocation.BoundParameters["PIN"];
                     }
                     fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                    fido2Session.VerifyPin();
+                    try
+                    {
+                        fido2Session.TryVerifyPin();
+                    }
+                    catch
+                    {
+                        YubiKeyModule._fido2PIN = null;
+                        throw new UnauthorizedAccessException("Invalid PIN");
+                    }
                 }
             }
         }

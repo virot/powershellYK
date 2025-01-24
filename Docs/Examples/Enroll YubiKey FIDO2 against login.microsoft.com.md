@@ -5,7 +5,6 @@ To simplify I am using **DSInternals.Passkeys** as **Invoke-MgBetaCreationUserAu
 ```pwsh
 Install-ModuLe PowershellYK
 Install-ModuLe Microsoft.Graph.Authentication
-Install-Module DSInternals.Passkeys
 ```
 
 ### Lets start by creating the information prior to creation.
@@ -18,7 +17,6 @@ $tenent = '<your tenant>'
 ```pwsh
 Import-Module powershellYK
 Import-ModuLe Microsoft.Graph.Authentication
-Import-Module DSInternals.Passkeys
 ```
 
 ### Lets connect to Microsoft Graph
@@ -28,19 +26,19 @@ Connect-MgGraph -Scopes UserAuthenticationMethod.ReadWrite.All -TenantId $tenant
 
 ### Lets get the Challenge data from Microsoft Azure
 ```pwsh
-$RegistrationOptions = $RegistrationOptions = Get-PasskeyRegistrationOptions -UserId $userid
+$FIDO2Options = Invoke-MgGraphRequest -Method "GET" -Uri "/beta/users/$userid/authentication/fido2Methods/creationOptions(challengeTimeoutInMinutes=$($challengeTimeoutInMinutes ?? "5"))" 
 ```
 
 ### Lets begin registering the YubiKey
 Lets start with building the Userentity, Challenge and RelayingParty. This can be done or we can sned the different parts to the Cmdlets.
 ```pwsh
-$challenge = [powershellYK.FIDO2.Challenge]::new($RegistrationOptions.PublicKeyOptions.Challenge)
-$userEntity = [Yubico.YubiKey.Fido2.UserEntity]::new($RegistrationOptions.PublicKeyOptions.User.Id)
-$userEntity.Name = $RegistrationOptions.PublicKeyOptions.User.Name
-$userentity.DisplayName = $RegistrationOptions.PublicKeyOptions.User.DisplayName
-$RelyingParty = [Yubico.YubiKey.Fido2.RelyingParty]::new($RegistrationOptions.PublicKeyOptions.RelyingParty.id)
+$challenge = [powershellYK.FIDO2.Challenge]::new($FIDO2Options.publicKey.challenge)
+$userEntity = [Yubico.YubiKey.Fido2.UserEntity]::new([System.Convert]::FromBase64String("$($FIDO2Options.publicKey.user.id -replace "-","+" -replace "_","/")"))
+$userEntity.Name = $FIDO2Options.publicKey.user.name
+$userentity.DisplayName = $FIDO2Options.publicKey.user.displayName
+$RelyingParty = [Yubico.YubiKey.Fido2.RelyingParty]::new($FIDO2Options.publicKey.rp.id)
 
-$passkey = New-YubiKeyFIDO2Credential -RelyingParty $RelyingParty -Discoverable $true -Challenge $challenge -UserEntity $userEntity
+$FIDO2Response = New-YubiKeyFIDO2Credential -RelyingParty $RelyingParty -Discoverable $true -Challenge $challenge -UserEntity $userEntity
 ```
 
 ### Return the data from the YubiKey to Microsoft so it will work
@@ -49,10 +47,10 @@ When we have enrolled the FIDO credential we need to send over some data to Azur
 $return = @{
   'displayName' = 'Name of yubikey';
   'publicKeyCredential' = @{
-    'id' = $passkey.GetBase64UrlSafeCredentialID();
+    'id' = $FIDO2Response.GetBase64UrlSafeCredentialID();
     'response' = @{
-      'clientDataJSON' = $passkey.GetBase64clientDataJSON();
-      'attestationObject' = $passkey.GetBase64AttestationObject()
+      'clientDataJSON' = $FIDO2Response.GetBase64clientDataJSON();
+      'attestationObject' = $FIDO2Response.GetBase64AttestationObject()
     }     
   }
 }| ConvertTo-JSON -Depth 4
