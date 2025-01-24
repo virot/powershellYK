@@ -41,9 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="powershellYK.format.ps1xml">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
     <None Update="powershellYK.psd1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
