@@ -33,13 +33,17 @@ namespace powershellYK.FIDO2
         {
             return _challenge;
         }
-        public string Base64UrlEncode()
+        public string Base64URLEncode()
         {
             var base64 = Convert.ToBase64String(_challenge);
             var urlEncoded = base64.Replace('+', '-').Replace('/', '_').Replace("=", "");
             return urlEncoded;
         }
 
+        public static Challenge FromBase64URLEncoded(string input)
+        {
+            return new Challenge(System.Convert.FromBase64String(RemoveBase64URLSafe(AddMissingPadding(input))));
+        }
         #region Operators
 
         public static implicit operator byte[](Challenge source)
@@ -55,6 +59,11 @@ namespace powershellYK.FIDO2
         #endregion // Operators
 
         #region support
+        private static string RemoveBase64URLSafe(string urlsafe)
+        {
+            return urlsafe.Replace('-', '+').Replace('_', '/');
+        }
+
         private static string AddMissingPadding(string base64)
         {
             // Calculate the number of padding characters needed

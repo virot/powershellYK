@@ -69,8 +69,8 @@ namespace powershellYK.Cmdlets.Fido
 
                 if (RelyingParty is null)
                 {
-                    WriteDebug($"Building new RelyingParty with {RelyingPartyID} and {RelyingPartyName}");
-                    RelyingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName };
+                    WriteDebug($"Building new RelyingParty with {RelyingPartyID} and {RelyingPartyName ?? RelyingPartyID}");
+                    RelyingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName ?? RelyingPartyID};
                 }
 
                 if (UserEntity is null && UserID is null)
@@ -107,7 +107,7 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     type = "webauthn.create",
                     origin = $"https://{RelyingParty.Id}",
-                    challenge = Challenge.Base64UrlEncode(),
+                    challenge = Challenge.Base64URLEncode(),
                 };
 
                 var clientDataJSON = System.Text.Json.JsonSerializer.Serialize(clientData);
