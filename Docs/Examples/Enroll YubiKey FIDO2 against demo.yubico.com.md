@@ -1,4 +1,4 @@
-# UNDER CONSTRUCTION #
+# Enroll YubiKey FIDO2 against demo.yubico.com
 
 ### Lets start by creating the information prior to creation.
 ```pwsh
@@ -26,31 +26,21 @@ $registerBeginReturn = Invoke-RestMethod -Method Post -WebSession $session -Uri 
 $userEntity = [Yubico.YubiKey.Fido2.UserEntity]::new([system.convert]::FromBase64String($registerBeginReturn.data.publicKey.user.id.'$base64'))
 $userEntity.Name = $registerBeginReturn.data.publicKey.user.name
 $userentity.DisplayName = $registerBeginReturn.data.publicKey.user.displayname
-$out = New-YubiKeyFIDO2Credential -RelyingPartyID $registerBeginReturn.data.publicKey.rp.id -RelyingPartyName $registerBeginReturn.data.publicKey.rp.name -Discoverable $true  -Challange $registerBeginReturn.data.publicKey.challenge.'$base64' -UserEntity $userEntity
+$out = New-YubiKeyFIDO2Credential -RelyingPartyID $registerBeginReturn.data.publicKey.rp.id -RelyingPartyName $registerBeginReturn.data.publicKey.rp.name -Discoverable $true  -Challenge $registerBeginReturn.data.publicKey.challenge.'$base64' -UserEntity $userEntity
 ```
 
 ### Return the attestion data etc to the site
 This Data is lost by the SDK so we need to build it backup. Wonder if this is where it breaks.
 ```pwsh
-$a = [powershellYK.FIDO2.CredentialData]::new($out)
-#[system.convert]::ToBase64String($a.w3cEncoded())
-$clientDataJSON = @{
-    'type' = 'webauthn.create';
-    'challenge' = $registerBeginReturn.data.publicKey.challenge.'$base64' -replace '\+', '-' -replace '/', '_' -replace '=','';
-    'origin' = "https://$site";
-    'crossOrigin' = $false
-} | ConvertTo-JSON -Compress
-
-# Lets send stuff back to demo.yubico.com to enable the security key
 $registerFinishBody = @{
     'requestId' = $registerBeginReturn.data.requestId;
     'attestation' = @{
-        'attestationObject' = @{'$base64'=[system.convert]::ToBase64String($a.w3cEncoded())};
-        'clientDataJSON' = @{'$base64'=[system.convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($clientDataJSON))}
+        'attestationObject' = @{'$base64'=$out.GetBase64AttestationObject()};
+        'clientDataJSON' = @{'$base64'=$out.GetBase64clientDataJSON()}
     }
 } | ConvertTo-JSON -Compress
 $registerFinishReturn = Invoke-RestMethod -Method Post -WebSession $session -Uri "https://$site/api/v1/user/$($userCreation.data.uuid)/webauthn/register-finish" -Body $registerFinishBody -ContentType 'application/json'
 ```
 
-Here we should be done, but something is broken somewhere..
+Now you can surf into [Yubikey Demo Site](https://demo.yubico.com/) and logon with your onboarded YubiKey.
 

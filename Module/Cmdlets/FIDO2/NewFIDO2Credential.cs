@@ -17,6 +17,9 @@ namespace powershellYK.Cmdlets.Fido
         public required string RelyingPartyID { private get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Friendlyname for the relayingParty.", ParameterSetName = "UserEntity-HostData")]
         public required string RelyingPartyName { private get; set; }
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "RelaingParty object.", ParameterSetName = "UserData-RelyingParty")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "RelaingParty object.", ParameterSetName = "UserEntity-RelyingParty")]
+        public required RelyingParty RelyingParty { private get; set; }
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Username to create credental for.", ParameterSetName = "UserData-HostData")]
         public required string Username { private get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "UserDisplayName to create credental for.", ParameterSetName = "UserData-HostData")]
@@ -25,7 +28,7 @@ namespace powershellYK.Cmdlets.Fido
         public byte[]? UserID { private get; set; }
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Challange.")]
-        public required Challenge Challange { private get; set; }
+        public required Challenge Challenge { private get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Should this credential be discoverable.")]
         public bool Discoverable { private get; set; } = true;
 
@@ -68,25 +71,22 @@ namespace powershellYK.Cmdlets.Fido
             {
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                //var randomObject = CryptographyProviders.RngCreator();
-                //byte[] randomBytes = new byte[32];
-                //randomObject.GetBytes(UserID);
-                var userId = new ReadOnlyMemory<byte>(UserID);
-                var relayingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName };
-
+                if (RelyingParty is null)
+                {
+                    RelyingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName };
+                }
                 if (UserEntity is null)
                 {
-                    UserEntity = new UserEntity(userId)
+                    UserEntity = new UserEntity(UserID.AsMemory())
                     {
                         Name = Username,
                         DisplayName = UserDisplayName ?? Username,
                     };
                 }
 
-                ReadOnlyMemory<byte> clientDataHash = Challange.ToByte().AsMemory();
 
 
-                var make = new MakeCredentialParameters(relayingParty, UserEntity);
+                var make = new MakeCredentialParameters(RelyingParty, UserEntity);
                 if (Discoverable)
                 {
                     make.AddOption("rk", true);
@@ -94,12 +94,28 @@ namespace powershellYK.Cmdlets.Fido
 
                 if (fido2Session.AuthenticatorInfo.IsExtensionSupported("hmac-secret"))
                 {
-                    //                  make.AddHmacSecretExtension(fido2Session.AuthenticatorInfo);
+                    make.AddHmacSecretExtension(fido2Session.AuthenticatorInfo);
                 }
 
-                make.ClientDataHash = clientDataHash;
+                // Generate ClientDataHash
+
+                var clientData = new
+                {
+                    type = "webauthn.create",
+                    origin = $"https://{RelyingParty.Id}",
+                    challenge = Challenge.Base64UrlEncode(),
+                };
+
+                var clientDataJSON = System.Text.Json.JsonSerializer.Serialize(clientData);
+                var clientDataBytes = System.Text.Encoding.UTF8.GetBytes(clientDataJSON);
+                var digester = CryptographyProviders.Sha256Creator();
+                _ = digester.TransformFinalBlock(clientDataBytes, 0, clientDataBytes.Length);
+                make.ClientDataHash = digester.Hash!.AsMemory();
+
                 MakeCredentialData returnvalue = fido2Session.MakeCredential(make);
-                WriteObject(returnvalue);
+
+                var credData = new CredentialData(returnvalue, clientDataJSON, UserEntity, RelyingParty);
+                WriteObject(credData);
             }
         }
     }
