@@ -1,12 +1,10 @@
 ﻿using System.Management.Automation;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
-using System.Linq;
 using powershellYK.support;
-using System.Formats.Cbor;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 using Yubico.YubiKey.Cryptography;
 using powershellYK.FIDO2;
+
 
 namespace powershellYK.Cmdlets.Fido
 {
@@ -35,6 +33,8 @@ namespace powershellYK.Cmdlets.Fido
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Supply the user entity in complete form.", ParameterSetName = "UserEntity-HostData")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Supply the user entity in complete form.", ParameterSetName = "UserEntity-RelyingParty")]
         public UserEntity? UserEntity { get; set; } = new UserEntity(new byte[] { 0, 0 });
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Algorithms the RelyingParty accepts")]
+        public List<Yubico.YubiKey.Fido2.Cose.CoseAlgorithmIdentifier> RequestedAlgorithms = new List<Yubico.YubiKey.Fido2.Cose.CoseAlgorithmIdentifier> { Yubico.YubiKey.Fido2.Cose.CoseAlgorithmIdentifier.ES256 };
         protected override void BeginProcessing()
         {
             // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
@@ -62,7 +62,6 @@ namespace powershellYK.Cmdlets.Fido
 
         protected override void ProcessRecord()
         {
-            WriteWarning("This cmdlet is still in development and may not work as expected.");
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
@@ -115,6 +114,13 @@ namespace powershellYK.Cmdlets.Fido
                 var digester = CryptographyProviders.Sha256Creator();
                 _ = digester.TransformFinalBlock(clientDataBytes, 0, clientDataBytes.Length);
                 make.ClientDataHash = digester.Hash!.AsMemory();
+
+                WriteDebug("Adding requested Algorithms");
+                foreach (var alg in RequestedAlgorithms)
+                {
+                    WriteDebug($"`tAdding {alg.ToString()}");
+                    make.AddAlgorithm("public-key", alg);
+                }
 
                 WriteDebug($"Sending new credential data into SDK");
                 MakeCredentialData returnvalue = fido2Session.MakeCredential(make);
