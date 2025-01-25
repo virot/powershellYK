@@ -15,7 +15,8 @@ _To install powershellYK:_
 
 1. Open PowerShell
 2. Execute command: ```Install-Module powershellYK```
-3. Press ```Y``` when prompted to proceed with installation.
+3. Press ```Y``` when prompted to proceed with installation
+4. Execute command: ```Import-Module powershellYK```
 
 ## 📖 Basic usage
 _To get started with powershellYK:_
