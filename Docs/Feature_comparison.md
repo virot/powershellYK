@@ -6,6 +6,7 @@
 | Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator |
 | :--- | --- | --- | --- | --- |
 | **Toggle applications** | 🟢 | 🟢 | 🟢 |🟢 |
+| **Toggle interfaces** | 🟢 | 🟢 | 🟢 |🟢 |
 | **Set Configuration lock** | 🟢 | 🔴 | 🟢 | 🔴 |
 | **Configure Touch-Eject PIV** | 🟢 | 🔴 | 🟢 | 🔴 |
 | **Configure Auto Touch-Eject** | 🟢 | 🔴 | 🟢 | 🔴 |
