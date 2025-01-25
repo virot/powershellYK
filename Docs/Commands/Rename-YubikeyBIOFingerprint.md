@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Rename-YubiKeyUVFingerprint
+# Rename-YubiKeyBIOFingerprint
 
 ## SYNOPSIS
 Changes the template name of a registered fingerprint on the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
@@ -14,12 +14,12 @@ Changes the template name of a registered fingerprint on the YubiKey Bio or Yubi
 
 ### Rename using Name
 ```
-Rename-YubiKeyUVFingerprint -Name <String> -NewName <String> [<CommonParameters>]
+Rename-YubiKeyBIOFingerprint -Name <String> -NewName <String> [<CommonParameters>]
 ```
 
 ### Rename using ID
 ```
-Rename-YubiKeyUVFingerprint -ID <String> -NewName <String> [<CommonParameters>]
+Rename-YubiKeyBIOFingerprint -ID <String> -NewName <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -29,13 +29,13 @@ You can update the friendly name of a fingerprint on the yubikey Bio.
 
 ### Example 1
 ```powershell
-PS C:\> Get-YubikeyuVFingerprint
+PS C:\> Get-YubikeyBIOFingerprint
 
 ID   Name
 --   ----
 23FC left index
 
-PS C:\> Rename-YubikeyUVFingerprint -ID 23FC -NewName "left index finger"
+PS C:\> Rename-YubikeyBIOFingerprint -ID 23FC -NewName "left index finger"
 Fingerprint renamed (left index finger).
 ```
 
@@ -43,13 +43,13 @@ Changes the friendly name of the fingerprint with name "left index" to "left ind
 
 ### Example 2
 ```powershell
-PS C:\> Get-YubikeyuVFingerprint
+PS C:\> Get-YubikeyBIOFingerprint
 
 ID   Name
 --   ----
 23FC left index
 
-PS C:\> Rename-YubikeyUVFingerprint -Name "left" -NewName "thumb"
+PS C:\> Rename-YubikeyBIOFingerprint -Name "left" -NewName "thumb"
 Fingerprint renamed (thumb).
 ```
 

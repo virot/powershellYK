@@ -62,6 +62,9 @@ Get module internal information.
 ### [Get-Yubikey](Get-Yubikey.md)
 Returns the connected YubiKey
 
+### [Get-YubiKeyBIOFingerprint](Get-YubiKeyBIOFingerprint.md)
+List fingerprint templates registered on a YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
+
 ### [Get-YubikeyFIDO2](Get-YubikeyFIDO2.md)
 Get FIDO2 information from YubiKey
 
@@ -79,9 +82,6 @@ YubiKey OTP Information
 
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
 Gets information about the PIV module and specific slots.
-
-### [Get-YubiKeyUVFingerprint](Get-YubiKeyUVFingerprint.md)
-List fingerprint templates registered on a YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ### [Import-YubikeyPIV](Import-YubikeyPIV.md)
 Import certificate
@@ -106,10 +106,13 @@ Create a new private key
 Create a self signed certificate
 
 ### [Protect-YubiKeyOATH](Protect-YubiKeyOATH.md)
-Set / update password
+Set password
 
-### [Register-YubikeyUVFingerprint](Register-YubikeyUVFingerprint.md)
+### [Register-YubikeyBIOFingerprint](Register-YubikeyBIOFingerprint.md)
 Register a new fingerprint on a YubiKey Bio _or_ a YubiKey Bio Multi-Protocol Edition (MPE).
+
+### [Remove-YubiKeyBIOFingerprint](Remove-YubiKeyBIOFingerprint.md)
+Removes a selected fingerprint template from the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ### [Remove-YubikeyFIDO2Credential](Remove-YubikeyFIDO2Credential.md)
 Removes a FIDO2 credential from the YubiKey.
@@ -123,14 +126,11 @@ Remove YubiKey OTP slot.
 ### [Remove-YubikeyPIVKey](Remove-YubikeyPIVKey.md)
 Remove a key from a YubiKey PIV slot.
 
-### [Remove-YubiKeyUVFingerprint](Remove-YubiKeyUVFingerprint.md)
-Removes a selected fingerprint template from the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
+### [Rename-YubiKeyBIOFingerprint](Rename-YubiKeyBIOFingerprint.md)
+Changes the template name of a registered fingerprint on the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ### [Rename-YubikeyOATHAccount](Rename-YubikeyOATHAccount.md)
 Rename OATH account
-
-### [Rename-YubiKeyUVFingerprint](Rename-YubiKeyUVFingerprint.md)
-Changes the template name of a registered fingerprint on the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ### [Request-YubikeyOATHCode](Request-YubikeyOATHCode.md)
 Displays TOTP / HOTP codes for YubiKey OATH credentials.

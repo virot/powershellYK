@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Register-YubikeyUVFingerprint
+# Register-YubikeyBIOFingerprint
 
 ## SYNOPSIS
 Register a new fingerprint on a YubiKey Bio _or_ a YubiKey Bio Multi-Protocol Edition (MPE).
@@ -13,7 +13,7 @@ Register a new fingerprint on a YubiKey Bio _or_ a YubiKey Bio Multi-Protocol Ed
 ## SYNTAX
 
 ```
-Register-YubikeyUVFingerprint [-Name <String>] [<CommonParameters>]
+Register-YubikeyBIOFingerprint [-Name <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,7 +23,7 @@ Register a new fingerprint on a YubiKey Bio _or_ a YubiKey Bio Multi-Protocol Ed
 
 ### Example 1
 ```powershell
-PS C:\> Register-YubikeyUVFingerprint -Name "left index"
+PS C:\> Register-YubikeyBIOFingerprint -Name "left index"
 
 TemplateId                     FriendlyName
 ----------                     ------------
