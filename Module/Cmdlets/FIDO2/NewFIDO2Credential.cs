@@ -70,7 +70,7 @@ namespace powershellYK.Cmdlets.Fido
                 if (RelyingParty is null)
                 {
                     WriteDebug($"Building new RelyingParty with {RelyingPartyID} and {RelyingPartyName ?? RelyingPartyID}");
-                    RelyingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName ?? RelyingPartyID};
+                    RelyingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName ?? RelyingPartyID };
                 }
 
                 if (UserEntity is null && UserID is null)
