@@ -19,8 +19,12 @@ namespace powershellYK.Cmdlets.Yubikey
                     {
                         myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
                     }
+                    if (this.MyInvocation.BoundParameters.ContainsKey("ErrorAction"))
+                    {
+                        myPowersShellInstance = myPowersShellInstance.AddParameter("ErrorAction", this.MyInvocation.BoundParameters["ErrorAction"]);
+                    }
                     myPowersShellInstance.Invoke();
-                    WriteDebug($"Successfully connected.");
+                    WriteDebug($"Connect-Yubikey completed.");
                 }
                 catch (Exception e)
                 {
@@ -30,14 +34,20 @@ namespace powershellYK.Cmdlets.Yubikey
         }
         protected override void ProcessRecord()
         {
-            try
+            if (YubiKeyModule._yubikey is not null)
             {
-                WriteObject(new YubikeyInformation(yubiKey: (YubiKeyDevice)YubiKeyDevice.FindAll().Where(yk => yk.SerialNumber == YubiKeyModule._yubikey!.SerialNumber).First()));
+                try
+                {
+                    WriteObject(new YubikeyInformation(yubiKey: (YubiKeyDevice)YubiKeyDevice.FindAll().Where(yk => yk.SerialNumber == YubiKeyModule._yubikey!.SerialNumber).First()));
+                }
+                catch (System.InvalidOperationException e)
+                {
+                    WriteError(new ErrorRecord(new Exception("Failed to load the YubiKey information", e), "0x00020002", ErrorCategory.InvalidResult, null));
+                }
             }
-            catch (System.InvalidOperationException e)
+            else
             {
-                WriteWarning("No YubiKeys found, FIDO-only YubiKeys on Windows requires running as Administrator.");
-                throw new Exception(e.Message, e);
+                WriteError(new ErrorRecord(new Exception("None YubiKeys selected, Use Connect-Yubikey to specify which Yubikey to use."), "0x00020001", ErrorCategory.InvalidResult, null));
             }
         }
     }
