@@ -82,7 +82,7 @@ namespace powershellYK.Cmdlets.Yubikey
                 {
                     WriteWarning("No YubiKeys found, FIDO-only YubiKeys on Windows requires running as Administrator.");
                 }
-                WriteError(new ErrorRecord(new Exception("None or multiple YubiKeys found, Use Connect-Yubikey to specify which Yubikey to use."),"0x00010001",ErrorCategory.InvalidResult,null));
+                WriteError(new ErrorRecord(new Exception("None or multiple YubiKeys found, Use Connect-Yubikey to specify which Yubikey to use."), "0x00010001", ErrorCategory.InvalidResult, null));
             }
         }
     }
