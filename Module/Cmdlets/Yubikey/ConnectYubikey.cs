@@ -1,9 +1,8 @@
-﻿using powershellYK.Cmdlets.Other;
-using powershellYK.support;
+﻿using powershellYK.support;
 using System.Diagnostics;
 using System.Management.Automation;           // Windows PowerShell namespace.
+using System.Runtime.InteropServices;
 using Yubico.YubiKey;
-using Yubico.YubiKey.Sample.PivSampleCode;
 
 namespace powershellYK.Cmdlets.Yubikey
 {
@@ -79,7 +78,11 @@ namespace powershellYK.Cmdlets.Yubikey
             }
             else
             {
-                throw new Exception("None or multiple YubiKeys found, Use Connect-Yubikey to specify which Yubikey to use.");
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !Windows.IsRunningAsAdministrator())
+                {
+                    WriteWarning("No YubiKeys found, FIDO-only YubiKeys on Windows requires running as Administrator.");
+                }
+                WriteError(new ErrorRecord(new Exception("None or multiple YubiKeys found, Use Connect-Yubikey to specify which Yubikey to use."), "0x00010001", ErrorCategory.InvalidResult, null));
             }
         }
     }
