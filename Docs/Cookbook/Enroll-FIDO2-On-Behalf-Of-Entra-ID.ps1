@@ -1,136 +1,232 @@
 <#
     .SYNOPSIS
-        Enroll a YubiKey FIDO2 credential for a User
+        Enrolls and registers a YubiKey as device-bound passkey (FIDO2) for a user in Microsoft Entra ID (formerly Azure AD)
+
     .DESCRIPTION
-        This scripts uses powershellYK and MS Graph to onboard a user with a YubiKey without the need to interaction other than pushing the touch.
-        This script also allows for delayed Attestion, where the YubiKey can be transported without being attested in EntraId, making it unusable.
+        This script automates the enrollment of a YubiKey as device-bound passkey (FIDO2) credential in Microsoft Entra ID 
+        using PowerShellYK and Microsoft Graph API. It supports both immediate and delayed attestation workflows:
+
+        - Immediate attestation: Complete the enrollment in a single step
+        - Delayed attestation: Split the process into credential creation and attestation phases, 
+          allowing secure transport of unattested YubiKeys
+
+        The only physical interaction required is touching the YubiKey when prompted during credential creation.
+        Administrator rights (on Windows) and proper Microsoft Graph API permissions are required.
+
     .PARAMETER UserID
-        The ID or UPN of the user that we are enrolling for
-    .EXAMPLE
-        Enroll-FIDO2-On-Behalf-Of-Endra-ID.ps1 -UserID test.yubikey@virot.eu
+        The User Principal Name (UPN) or Object ID of the target user in Entra ID
 
-        Do a complete enrollment for the user specified
-    .EXAMPLE
-        Enroll-FIDO2-On-Behalf-Of-Endra-ID.ps1 -UserID test.yubikey@virot.eu -DisplayName "Dont loose this one"
+    .PARAMETER DisplayName
+        Optional. A friendly name (nickname) for the YubiKey in Entra ID (3-30 characters)
+        Default: Combines YubiKey model name and serial number
 
-        Do a complete enrollment for the user specified and name the FIDO2 credential in Entra ID
-    .EXAMPLE
-        Enroll-FIDO2-On-Behalf-Of-Endra-ID.ps1 -UserID test.yubikey@virot.eu -AttestionFileOut usersave.xml
+    .PARAMETER ChallengeTimeoutInMinutes
+        Optional. The time window allowed to complete the enrollment process
+        Default: 5 minutes
 
-        Create a fido2 credential but do not attest it, rather save it for a later attest.
-    .EXAMPLE
-        Enroll-FIDO2-On-Behalf-Of-Endra-ID.ps1 -UserID test.yubikey@virot.eu -AttestionFileIn usersave.xml
+    .PARAMETER AttestionFileOut
+        Optional. Path to save the attestation data for delayed enrollment
+        Used with delayed attestation workflow to save credential data for later use
 
-        Attest the earler created credential. This will make it functional.
+    .PARAMETER AttestionFileIn
+        Optional. Path to previously saved attestation data file
+        Used to complete delayed attestation of a previously created credential
+
+    .EXAMPLE
+        Enroll-FIDO2-On-Behalf-Of-Entra-ID.ps1 -UserID bob@contoso.com
+        Performs complete enrollment for the specified user in a single step
+
+    .EXAMPLE
+        Enroll-FIDO2-On-Behalf-Of-Entra-ID.ps1 -UserID bob@contoso.com -DisplayName "Backup YubiKey"
+        Enrolls the YubiKey with a custom display name in Entra ID
+
+    .EXAMPLE
+        Enroll-FIDO2-On-Behalf-Of-Entra-ID.ps1 -UserID bob@contoso.com -AttestionFileOut "C:\temp\key1.xml"
+        Creates a FIDO2 credential and saves the attestation data without registering it in Entra ID
+
+    .EXAMPLE
+        Enroll-FIDO2-On-Behalf-Of-Entra-ID.ps1 -UserID bob@contoso.com -AttestionFileIn "C:\temp\key1.xml"
+        Completes the registration using previously saved attestation data
+
+    .NOTES
+        Requires:
+        - PowerShell Core
+        - PowerShellYK module
+        - Microsoft.Graph.Authentication module
+        - Administrator rights
+        - Microsoft Graph API scope: UserAuthenticationMethod.ReadWrite.All
 
     .LINK
-        https://github.com/virot/powershellYK/docs/Cookbook/Enroll-FIDO2-On-Behalf-Of-Endra-ID.ps1
+        https://github.com/virot/powershellYK/docs/Cookbook/Enroll-FIDO2-On-Behalf-Of-Entra-ID.ps1
 
     .LINK
         https://github.com/virot/powershellYK
 #>
 
 #Requires -PSEdition Core
-#Requires -Modules powershellYK, Microsoft.Graph.Authentication
+#Requires -Modules @{ModuleName='powershellYK'; ModuleVersion='0.0.21.0'}, Microsoft.Graph.Authentication
 #Requires -RunAsAdministrator
 [CmdletBinding(DefaultParameterSetName = 'Complete')]
 param
 (
-    [Parameter(Mandatory=$True,HelpMessage = "The ID or UPN of the user that we are enrolling the ")]
+    [Parameter(Mandatory=$True,
+              HelpMessage = "The User Principal Name (UPN) or Object ID of the target user")]
+    [ValidateNotNullOrEmpty()]
     [string]
     $UserID,
-    [Parameter(Mandatory=$False,HelpMessage = "Name of the FIDO2 Key in Entra ID")]
-    [string]
+
+    [Parameter(Mandatory=$False,
+              HelpMessage = "Name of the YubiKey in Entra ID (3-30 characters)")]
+    [ValidateNotNullOrEmpty()]
     [ValidateLength(3,30)]
+    [string]
     $DisplayName = "$((Get-YubiKey).PrettyName) $((Get-YubiKey).SerialNumber)",
-    [Parameter(Mandatory=$False,HelpMessage = "The amount of minutes the Challange will be valid for, this is the time to complete the enrollment.", ParameterSetName="CreateCredential")]
+
+    [Parameter(Mandatory=$False,
+              ParameterSetName="CreateCredential",
+              HelpMessage = "Challenge timeout in minutes (1-43200 (30days))")]
+    [ValidateRange(1,43200)]
     [int]
-    $ChallengeTimeoutInMinutes=5,
-    [Parameter(Mandatory=$False,HelpMessage = "File to write the attestion data into", ParameterSetName="CreateCredential")]
+    $ChallengeTimeoutInMinutes = 5,
+
+    [Parameter(Mandatory=$False,
+              ParameterSetName="CreateCredential",
+              HelpMessage = "Path to save attestation data")]
+    [ValidateNotNullOrEmpty()]
     [string]
     $AttestionFileOut,
-    [ValidateScript({if (-not (Test-Path -Path $_ -PathType Leaf)){throw "File $_ does not exist."}else{$true}})]
-    [Parameter(Mandatory=$False,HelpMessage = "What action should be completed", ParameterSetName="AttestCredential")]
+
+    [Parameter(Mandatory=$False,
+              ParameterSetName="AttestCredential",
+              HelpMessage = "Path to attestation data file")]
+    [ValidateScript({
+        if (-not (Test-Path -Path $_ -PathType Leaf)) {
+            throw "Attestation file '$_' does not exist."
+        }
+        return $true
+    })]
     [string]
     $AttestionFileIn
 )
 Begin
 {
-  # 
-  if (
-    (Get-MgContext) -eq $Null -or  # Verify that we are authenticated to MSGraph
-    (-not (Microsoft.Graph.Authentication\Get-MgContext).Scopes.Contains('UserAuthenticationMethod.ReadWrite.All')) # Verify that we have the require permissions
-  )
-  {
-    throw "Not connected with correct permissions to MSGraph, run 'Connect-MgGraph -Scopes UserAuthenticationMethod.ReadWrite.All'"
-  }
-  if ((Microsoft.Graph.Authentication\Get-MgContext).Account -eq $UserID) # This is checking for same user as authenticated to Graph
-  {
-    throw "Microsoft does not allow Enrollment On Behalf Of same user."
-  }
-  if (
-    (Get-YubiKey) -eq $Null -or  # No YubiKey inserted
-    (Get-YubiKeyFIDO2).Options['clientPin'] -eq $False  # No PIN set
-  )
-  {
-    throw "Make sure to insert a YubiKey with a set FIDO2 PIN"
-  }
+    # Set strict error handling
+    $ErrorActionPreference = 'Stop'
+
+    # Verify Microsoft Graph authentication and permissions
+    if ($null -eq $(Get-MgContext)) {
+        Throw "Not connected to Microsoft Graph, see `"Connect-MgGraph -Scopes 'UserAuthenticationMethod.ReadWrite.All' -NoWelcome`""
+    }
+        
+    if (-not (Microsoft.Graph.Authentication\Get-MgContext).Scopes.Contains('UserAuthenticationMethod.ReadWrite.All')) {
+        throw "Missing required Microsoft Graph permission: UserAuthenticationMethod.ReadWrite.All `nSee: Connect-MgGraph -Scopes 'UserAuthenticationMethod.ReadWrite.All' -NoWelcome"
+    }
+
+    # YubiKey validation
+    if ((Get-YubiKey -ErrorAction SilentlyContinue) -eq $Null) {
+        throw "No YubiKey detected. Please insert a YubiKey and try again."
+    }
+
+    $fido2Status = Get-YubiKeyFIDO2
+    if (-not $fido2Status.Options['clientPin']) {
+        throw "YubiKey FIDO2 PIN is not set. Please set a PIN before continuing."
+    }
+
+    Write-Debug "YubiKey detected: $((Get-YubiKey).PrettyName) (Serial: $((Get-YubiKey).SerialNumber))"
 }
 Process
 {
-  Write-Debug -Message "Running with ParameterSetName=$($PSCmdlet.ParameterSetName)"
-  if ($PSCmdlet.ParameterSetName -in @('CreateCredential','Complete'))
-  {
-    Write-Debug -Message "Starting to create parameter in Entra ID"
-    $FIDO2Options = Invoke-MgGraphRequest -Method "GET" -Uri "/beta/users/$userid/authentication/fido2Methods/creationOptions(challengeTimeoutInMinutes=$($challengeTimeoutInMinutes ?? "5"))"
+    Write-Debug -Message "Running with ParameterSetName=$($PSCmdlet.ParameterSetName)"
+    
+    # Validate UserID format
+    if ($UserID -notmatch '^[^@]+@[^@]+\.[^@]+$' -and $UserID -notmatch '^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$') {
+        throw "Invalid UserID format. Please provide either a valid UPN (email format) or Object ID (GUID format)"
+    }
 
-    # prepair the resonse to send to the YubiKey.
-    $challenge = [powershellYK.FIDO2.Challenge]::new($FIDO2Options.publicKey.challenge)
-    $userEntity = [Yubico.YubiKey.Fido2.UserEntity]::new([System.Convert]::FromBase64String("$($FIDO2Options.publicKey.user.id -replace "-","+" -replace "_","/")"))
-    $userEntity.Name = $FIDO2Options.publicKey.user.name
-    $userentity.DisplayName = $FIDO2Options.publicKey.user.displayName
-    $RelyingParty = [Yubico.YubiKey.Fido2.RelyingParty]::new($FIDO2Options.publicKey.rp.id)
-    $Algorithms = $FIDO2Options.publicKey.pubKeyCredParams|Select -Exp Alg
+    if ($PSCmdlet.ParameterSetName -in @('CreateCredential','Complete'))
+    {
+        Write-Debug -Message "Starting passkey (FIDO2) credential creation in Entra ID"
+        try {
+            $FIDO2Options = Invoke-MgGraphRequest -Method "GET" `
+                -Uri "/beta/users/$UserID/authentication/fido2Methods/creationOptions(challengeTimeoutInMinutes=$ChallengeTimeoutInMinutes)" `
+                -ErrorAction Stop
+        }
+        catch {
+            throw "Failed to get passkey (FIDO2) creation options. Error: $($_.Exception.Message)"
+        }
 
-    # Inform user to press the YubiKey touch..
-    Write-Host -Message "Please touch the YubiKey when it starts blinking..." -ForegroundColor Yellow
+        # Prepare the response to send to the YubiKey.
+        $challenge = [powershellYK.FIDO2.Challenge]::new($FIDO2Options.publicKey.challenge)
+        $userEntity = [Yubico.YubiKey.Fido2.UserEntity]::new([System.Convert]::FromBase64String("$($FIDO2Options.publicKey.user.id -replace "-","+" -replace "_","/")"))
+        $userEntity.Name = $FIDO2Options.publicKey.user.name
+        $userentity.DisplayName = $FIDO2Options.publicKey.user.displayName
+        $RelyingParty = [Yubico.YubiKey.Fido2.RelyingParty]::new($FIDO2Options.publicKey.rp.id)
+        $Algorithms = $FIDO2Options.publicKey.pubKeyCredParams|Select -Exp Alg
 
-    # The actual creation of the credential
-    $FIDO2Response = New-YubiKeyFIDO2Credential -RelyingParty $RelyingParty -Discoverable $true -Challenge $challenge -UserEntity $userEntity -RequestedAlgorithms $Algorithms
-    $ReturnJSON = @{
-      'displayName' = $DisplayName.Trim();
-      'publicKeyCredential' = @{
-        'id' = $FIDO2Response.GetBase64UrlSafeCredentialID();
-        'response' = @{
-          'clientDataJSON' = $FIDO2Response.GetBase64clientDataJSON();
-          'attestationObject' = $FIDO2Response.GetBase64AttestationObject()
-        }     
-      }
+        # Inform user to touch the YubiKey when it starts blinking...
+        Write-Host -Message "Please touch the YubiKey when it starts blinking..." -ForegroundColor Yellow
+
+        # The actual creation of the credential
+        $FIDO2Response = New-YubiKeyFIDO2Credential -RelyingParty $RelyingParty -Discoverable $true -Challenge $challenge -UserEntity $userEntity -RequestedAlgorithms $Algorithms
+        $ReturnJSON = @{
+          'displayName' = $DisplayName.Trim();
+          'publicKeyCredential' = @{
+            'id' = $FIDO2Response.GetBase64UrlSafeCredentialID();
+            'response' = @{
+              'clientDataJSON' = $FIDO2Response.GetBase64clientDataJSON();
+              'attestationObject' = $FIDO2Response.GetBase64AttestationObject()
+            }     
+          }
+        }
     }
-  }
-  if ($PSCmdlet.ParameterSetName -eq 'CreateCredential')
-  {
-    Export-Clixml -Path $AttestionFileOut -InputObject $ReturnJSON
-  }
-  if ($PSCmdlet.ParameterSetName -eq 'AttestCredential')
-  {
-    $ReturnJSON = Import-Clixml -Path $AttestionFileIn
-  }
-  if ($PSCmdlet.ParameterSetName -in @('AttestCredential','Complete'))
-  {
-  # End of $return
-    if ($PSBoundParameters.ContainsKey('DisplayName'))
+    if ($PSCmdlet.ParameterSetName -eq 'CreateCredential')
     {
-      $ReturnJSON.displayName = $DisplayName.Trim();
+        Try
+        {
+            Export-Clixml -Path $AttestionFileOut -InputObject $ReturnJSON
+            Write-Host "Credential creation completed. Attestation data saved to: $AttestionFileOut"
+        }
+        Catch
+        {
+            Write-Error "Failed to save attestion information into: $AttestionFileOut"
+        }
     }
-    try
+    if ($PSCmdlet.ParameterSetName -eq 'AttestCredential')
     {
-      Invoke-MgGraphRequest -Method "POST" -Uri "https://graph.microsoft.com/beta/users/$userid/authentication/fido2Methods" -OutputType "Json" -ContentType 'application/json' -Body ($ReturnJSON| ConvertTo-JSON -Depth 4) | ConvertFrom-Json
-      Write-Host -ForegroundColor Green -Message "YubiKey onboarded with diplayname: $($DisplayName.Trim())"
+        Try
+        {
+            $ReturnJSON = Import-Clixml -Path $AttestionFileIn
+            Write-Host "Attestation data imported from: $AttestionFileIn"
+        }
+        Catch
+        {
+            Write-Error "Failed to read attestion information from: $AttestionFileIn"
+        }
     }
-    Catch
+    if ($PSCmdlet.ParameterSetName -in @('AttestCredential','Complete'))
     {
-      Write-Error -Message "YubiKey failed to onboard. Attestion step failed with message $($_.ErrorDetails)"
+    # End of $return
+        if ($PSBoundParameters.ContainsKey('DisplayName'))
+        {
+            $ReturnJSON.displayName = $DisplayName.Trim();
+        }
+        # I wanted to get the JSON reply even on failure, but I seem to have to choose.
+        $result = Invoke-MgGraphRequest -Method "POST" `
+            -Uri "https://graph.microsoft.com/beta/users/$UserID/authentication/fido2Methods" `
+            -OutputType ([Microsoft.Graph.PowerShell.Authentication.Models.OutputType]::HttpResponseMessage) `
+            -ContentType 'application/json' `
+            -Body ($ReturnJSON | ConvertTo-JSON -Depth 4) `
+            -SkipHttpErrorCheck
+
+
+
+        if ($result.IsSuccessStatusCode)
+        {
+            Write-Host -ForegroundColor Green -Message "YubiKey successfully onboarded with displayname: $($ReturnJSON.displayName)"
+        }
+        else
+        {
+            Write-Error -Message "Failed to onboard YubiKey. Attestation step failed: $err"
+        }
     }
-  }
 }
