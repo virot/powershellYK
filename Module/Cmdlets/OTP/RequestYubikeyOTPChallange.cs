@@ -50,7 +50,7 @@ namespace powershellYK.Cmdlets.OTP
                 CalculateChallengeResponse challange = otpSession.CalculateChallengeResponse(Slot);
                 challange = challange.UseChallenge((byte[])Phrase!.BaseObject);
                 challange.UseYubiOtp(YubikeyOTP);
-                WriteObject(HexConverter.ByteArrayToString(challange.GetDataBytes().ToArray()));
+                WriteObject(Converter.ByteArrayToString(challange.GetDataBytes().ToArray()));
             }
         }
 

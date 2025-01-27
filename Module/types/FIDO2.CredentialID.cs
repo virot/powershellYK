@@ -29,13 +29,27 @@ namespace powershellYK.FIDO2
 
         public override string ToString()
         {
-            return HexConverter.ByteArrayToString(_credentialID).ToLower();
+            return Converter.ByteArrayToString(_credentialID).ToLower();
         }
         public byte[] ToByte()
         {
             return _credentialID;
         }
+        public static CredentialID FromString(string value)
+        {
+            return new CredentialID(Converter.StringToByteArray(value));
+        }
+        public string ToStringBase64URL()
+        {
+            var base64 = Convert.ToBase64String(_credentialID);
+            var urlEncoded = base64.Replace('+', '-').Replace('/', '_').Replace("=", "");
+            return urlEncoded;
+        }
 
+        public static CredentialID FromStringBase64URL(string value)
+        {
+            return new CredentialID(System.Convert.FromBase64String(Converter.RemoveBase64URLSafe(Converter.AddMissingPadding(value))));
+        }
 
         #endregion // Destinations
 
@@ -63,7 +77,7 @@ namespace powershellYK.FIDO2
 
         public static implicit operator CredentialID(string value)
         {
-            byte[] credentialID = HexConverter.StringToByteArray(value);
+            byte[] credentialID = Converter.StringToByteArray(value);
             return new CredentialID(credentialID);
         }
 

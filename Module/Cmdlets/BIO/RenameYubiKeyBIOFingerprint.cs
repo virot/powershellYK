@@ -45,7 +45,7 @@ namespace powershellYK.Cmdlets.PIV
                         fingerprint = session.EnumerateBioEnrollments().Where(x => x.FriendlyName.ToLower() == Name!.ToLower()).FirstOrDefault();
                         break;
                     case "Rename using ID":
-                        fingerprint = session.EnumerateBioEnrollments().Where(x => HexConverter.ByteArrayToString(x.TemplateId.ToArray()).ToLower() == ID!.ToLower()).FirstOrDefault();
+                        fingerprint = session.EnumerateBioEnrollments().Where(x => Converter.ByteArrayToString(x.TemplateId.ToArray()).ToLower() == ID!.ToLower()).FirstOrDefault();
                         break;
 
                     default:

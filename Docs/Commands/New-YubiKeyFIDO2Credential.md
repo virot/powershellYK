@@ -1,4 +1,4 @@
----
+﻿---
 external help file: powershellYK.dll-Help.xml
 Module Name: powershellYK
 online version:
@@ -16,25 +16,32 @@ For more complete examples see: https://github.com/virot/powershellYK/tree/maste
 ### UserEntity-HostData
 ```
 New-YubiKeyFIDO2Credential -RelyingPartyID <String> [-RelyingPartyName <String>] -Challenge <Challenge>
- [-Discoverable <Boolean>] -UserEntity <UserEntity> [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Discoverable <Boolean>] -UserEntity <UserEntity>
+ [-RequestedAlgorithms <System.Collections.Generic.List`1[Yubico.YubiKey.Fido2.Cose.CoseAlgorithmIdentifier]>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### UserData-RelyingParty
 ```
 New-YubiKeyFIDO2Credential -RelyingParty <RelyingParty> -Challenge <Challenge> [-Discoverable <Boolean>]
+ [-RequestedAlgorithms <System.Collections.Generic.List`1[Yubico.YubiKey.Fido2.Cose.CoseAlgorithmIdentifier]>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### UserEntity-RelyingParty
 ```
 New-YubiKeyFIDO2Credential -RelyingParty <RelyingParty> -Challenge <Challenge> [-Discoverable <Boolean>]
- -UserEntity <UserEntity> [-WhatIf] [-Confirm] [<CommonParameters>]
+ -UserEntity <UserEntity>
+ [-RequestedAlgorithms <System.Collections.Generic.List`1[Yubico.YubiKey.Fido2.Cose.CoseAlgorithmIdentifier]>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### UserData-HostData
 ```
 New-YubiKeyFIDO2Credential -Username <String> [-UserDisplayName <String>] [-UserID <Byte[]>]
- -Challenge <Challenge> [-Discoverable <Boolean>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ -Challenge <Challenge> [-Discoverable <Boolean>]
+ [-RequestedAlgorithms <System.Collections.Generic.List`1[Yubico.YubiKey.Fido2.Cose.CoseAlgorithmIdentifier]>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -118,6 +125,22 @@ Friendlyname for the relayingParty.
 Type: String
 Parameter Sets: UserEntity-HostData
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -RequestedAlgorithms
+Algorithms the RelyingParty accepts
+
+```yaml
+Type: System.Collections.Generic.List`1[Yubico.YubiKey.Fido2.Cose.CoseAlgorithmIdentifier]
+Parameter Sets: (All)
+Aliases:
+Accepted values: None, RS256, ES512, ES384, ECDHwHKDF256, EdDSA, ES256
 
 Required: False
 Position: Named

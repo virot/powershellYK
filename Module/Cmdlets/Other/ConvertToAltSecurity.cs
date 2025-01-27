@@ -66,7 +66,7 @@ namespace powershellYK.Cmdlets.Other
                     string? serialNumber;
                     try
                     {
-                        serialNumber = $"X509:<I>{_certificate.Issuer}<SR>{HexConverter.ByteArrayToString(_certificate.GetSerialNumber())}";
+                        serialNumber = $"X509:<I>{_certificate.Issuer}<SR>{Converter.ByteArrayToString(_certificate.GetSerialNumber())}";
                     }
                     catch
                     {

@@ -79,7 +79,7 @@ namespace powershellYK.Cmdlets.Fido
                 }
                 else if (UserEntity is null && UserID is not null)
                 {
-                    WriteDebug($"Building new UserEntity with {HexConverter.ByteArrayToString(UserID)}");
+                    WriteDebug($"Building new UserEntity with {Converter.ByteArrayToString(UserID)}");
                     UserEntity = new UserEntity(UserID.AsMemory())
                     {
                         Name = Username,

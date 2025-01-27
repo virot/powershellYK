@@ -31,11 +31,11 @@ namespace powershellYK.OTP
         {
             this.Serial = serial;
             this.PublicIDByte = PublicID;
-            this.PublicID = HexConverter.ByteArrayToString(this.PublicIDByte);
+            this.PublicID = Converter.ByteArrayToString(this.PublicIDByte);
             this.PrivateIDByte = PrivateID;
-            this.PrivateID = HexConverter.ByteArrayToString(this.PrivateIDByte);
+            this.PrivateID = Converter.ByteArrayToString(this.PrivateIDByte);
             this.SecretKeyByte = SecretKey;
-            this.SecretKey = HexConverter.ByteArrayToString(this.SecretKeyByte);
+            this.SecretKey = Converter.ByteArrayToString(this.SecretKeyByte);
             this.onboardUrl = onboardUrl;
         }
     }
@@ -48,7 +48,7 @@ namespace powershellYK.OTP
         public ChallangeResponse(byte[] SecretKey)
         {
             this.SecretKeyByte = SecretKey;
-            this.SecretKey = HexConverter.ByteArrayToString(this.SecretKeyByte);
+            this.SecretKey = Converter.ByteArrayToString(this.SecretKeyByte);
         }
     }
 
