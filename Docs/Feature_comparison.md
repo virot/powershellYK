@@ -18,6 +18,7 @@
 | **Set PIN** | 🟢 | 🟢 | 🟢 | 🟢 |
 | **Set minimum PIN length** | 🟢 | 🟢 | 🟢 | 🔴 |
 | **Force PIN change** | 🟢 | 🔴 | 🟢 | 🔴 |
+| **Create passkey credentials** | 🟢 | 🔴 | 🔴 | 🔴 |
 | **List passkey credentials** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Remove passkey credentials** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Reset applet** | 🟢 | 🟢 | 🟢 | 🟢 |
