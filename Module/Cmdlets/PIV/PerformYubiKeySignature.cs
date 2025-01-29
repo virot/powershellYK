@@ -3,19 +3,23 @@
     /// This cmdlet signs input data using the private key stored in the specified PIV slot.
     /// Supports both RSA and ECC keys, with automatic algorithm selection based on the key type.
     /// Can sign raw byte data, individual files, or all files in a directory.
+    /// Reports signature completion time in milliseconds for performance monitoring.
     /// 
     /// .EXAMPLE
     /// # Sign raw byte data
     /// $data = [System.Text.Encoding]::UTF8.GetBytes("Hello World")
     /// $signature = New-YubiKeySignature -Slot "9c" -Data $data -PIN "123456"
+    /// # Output includes: "Successfully signed provided data (123ms)"
     /// 
     /// .EXAMPLE
     /// # Sign a single file
     /// $signature = New-YubiKeySignature -Slot "9c" -File "document.pdf" -PIN "123456"
+    /// # Output includes: "Successfully signed file: document.pdf (234ms)"
     /// 
     /// .EXAMPLE
     /// # Sign all files in a directory
     /// $signatures = New-YubiKeySignature -Slot "9c" -Dir "C:\Documents" -PIN "123456"
+    /// # Output includes timing for each file: "Successfully signed file: file1.pdf (156ms)"
     /// 
     /// .EXAMPLE
     /// # Using a different hash algorithm (will be overridden for ECC keys)
@@ -29,6 +33,7 @@ using System.Security.Cryptography;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using powershellYK.PIV;
+using System.Diagnostics;
 
 namespace powershellYK.Cmdlets.PIV
 {
@@ -104,8 +109,9 @@ namespace powershellYK.Cmdlets.PIV
                     foreach (string filePath in System.IO.Directory.GetFiles(Dir))
                     {
                         byte[] fileData = System.IO.File.ReadAllBytes(filePath);
-                        byte[] signature = SignData(pivSession, publicKey, fileData);
+                        var (signature, elapsed) = SignData(pivSession, publicKey, fileData);
                         WriteObject(new { FilePath = filePath, Signature = signature });
+                        WriteInformation($"Successfully signed file: {filePath} ({elapsed}ms)", new string[] { "SIGN" });
                     }
                 }
                 else if (File != null)
@@ -116,24 +122,28 @@ namespace powershellYK.Cmdlets.PIV
                     }
 
                     byte[] fileData = System.IO.File.ReadAllBytes(File);
-                    byte[] signature = SignData(pivSession, publicKey, fileData);
+                    var (signature, elapsed) = SignData(pivSession, publicKey, fileData);
                     WriteObject(signature);
+                    WriteInformation($"Successfully signed file: {File} ({elapsed}ms)", new string[] { "SIGN" });
                 }
                 else
                 {
-                    byte[] signature = SignData(pivSession, publicKey, Data);
+                    var (signature, elapsed) = SignData(pivSession, publicKey, Data);
                     WriteObject(signature);
+                    WriteInformation($"Successfully signed provided data ({elapsed}ms)", new string[] { "SIGN" });
                 }
             }
         }
 
-        private byte[] SignData(PivSession pivSession, PivPublicKey publicKey, byte[] dataToSign)
+        private (byte[], long) SignData(PivSession pivSession, PivPublicKey publicKey, byte[] dataToSign)
         {
+            var stopwatch = Stopwatch.StartNew();
+            byte[] signature;
+
             if (publicKey is PivRsaPublicKey)
             {
                 // RSA signing with PSS padding
-                return pivSession.Sign(Slot, HashAlgorithm, dataToSign, RSASignaturePaddingMode.Pss);
-
+                signature = pivSession.Sign(Slot, HashAlgorithm, dataToSign, RSASignaturePaddingMode.Pss);
             }
             else
             {
@@ -144,8 +154,11 @@ namespace powershellYK.Cmdlets.PIV
                     PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,
                     _ => throw new Exception("Unknown public Key algorithm")
                 };
-                return pivSession.Sign(Slot, dataToSign);
+                signature = pivSession.Sign(Slot, dataToSign);
             }
+
+            stopwatch.Stop();
+            return (signature, stopwatch.ElapsedMilliseconds);
         }
     }
 } 
