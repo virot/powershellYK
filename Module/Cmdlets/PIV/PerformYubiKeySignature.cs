@@ -25,7 +25,8 @@ using Yubico.YubiKey.Piv;
 using powershellYK.PIV;
 using System.Diagnostics;
 using Yubico.YubiKey.Sample.PivSampleCode;
-
+using System.Security.Cryptography.X509Certificates;
+using System.Runtime.InteropServices;
 
 namespace powershellYK.Cmdlets.PIV
 {
@@ -146,46 +147,164 @@ namespace powershellYK.Cmdlets.PIV
         private (byte[], long) SignData(PivSession pivSession, PivPublicKey publicKey, byte[] dataToSign)
         {
             WriteDebug($"Starting signing operation with {publicKey.GetType().Name}");
-            WriteDebug($"Initial hash algorithm: {HashAlgorithm}");
-            
             var stopwatch = Stopwatch.StartNew();
-            byte[] signature;
 
-            if (publicKey is PivRsaPublicKey rsaKey)
+            // Get the certificate from the YubiKey slot
+            X509Certificate2? certificate = pivSession.GetCertificate(Slot);
+            if (certificate == null)
             {
-                int keySize = publicKey.Algorithm switch
-                {
-                    PivAlgorithm.Rsa4096 => 4096,
-                    PivAlgorithm.Rsa3072 => 3072,
-                    PivAlgorithm.Rsa2048 => 2048,
-                    PivAlgorithm.Rsa1024 => 1024,
-                    _ => throw new Exception("Unsupported RSA key size")
-                };
-                WriteDebug($"RSA key detected: {keySize} bits");
-                WriteDebug("Using PSS padding mode");
-                // For RSA keys, use PSS padding mode for enhanced security
-                var signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey, RSASignaturePaddingMode.Pss);
-                signature = signer.SignData(dataToSign, HashAlgorithm);
+                throw new Exception($"No certificate found in slot {Slot}");
             }
-            else
+            WriteDebug($"Retrieved certificate: {certificate.Subject}");
+
+            try
             {
-                WriteDebug($"ECC key detected: {publicKey.Algorithm}");
-                // For ECC keys, hash algorithm must match the curve size
-                HashAlgorithm = publicKey.Algorithm switch
-                {
-                    PivAlgorithm.EccP256 => HashAlgorithmName.SHA256,  // P-256 requires SHA256
-                    PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,  // P-384 requires SHA384
-                    _ => throw new Exception("Unknown public Key algorithm")
-                };
-                
-                WriteDebug($"Selected hash algorithm for ECC: {HashAlgorithm}");
-                var signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey);
-                signature = signer.SignData(dataToSign, HashAlgorithm);
+                var signer = new AuthenticodeSignature();
+                signer.SignFile(File!, certificate);
+                WriteDebug("Authenticode signing completed");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to sign file: {ex.Message}", ex);
             }
 
             stopwatch.Stop();
-            WriteDebug($"Signing completed in {stopwatch.ElapsedMilliseconds}ms");
-            return (signature, stopwatch.ElapsedMilliseconds);
+            return (Array.Empty<byte>(), stopwatch.ElapsedMilliseconds);
+        }
+
+        private class AuthenticodeSignature
+        {
+            [StructLayout(LayoutKind.Sequential)]
+            private struct SIGNER_FILE_INFO
+            {
+                public uint cbSize;
+                [MarshalAs(UnmanagedType.LPWStr)]
+                public string pwszFileName;
+                public IntPtr hFile;
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct SIGNER_SUBJECT_INFO
+            {
+                public uint cbSize;
+                public IntPtr pdwIndex;
+                public uint dwSubjectChoice;
+                public SubjectChoiceUnion Union1;
+            }
+
+            [StructLayout(LayoutKind.Explicit)]
+            private struct SubjectChoiceUnion
+            {
+                [FieldOffset(0)]
+                public IntPtr pSignerFileInfo;
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct SIGNER_CERT
+            {
+                public uint cbSize;
+                public uint dwCertChoice;
+                public SignerCertUnion Union1;
+                [MarshalAs(UnmanagedType.LPWStr)]
+                public string? pwszStoreName;
+                [MarshalAs(UnmanagedType.LPWStr)]
+                public string? pwszStoreLocation;
+            }
+
+            [StructLayout(LayoutKind.Explicit)]
+            private struct SignerCertUnion
+            {
+                [FieldOffset(0)]
+                public IntPtr pCertContext;
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct SIGNER_SIGNATURE_INFO
+            {
+                public uint cbSize;
+                public uint algidHash;
+                public uint dwAttrChoice;
+                public IntPtr pAttrAuthCode;
+                [MarshalAs(UnmanagedType.LPWStr)]
+                public string? pwszTimestampURL;
+            }
+
+            [DllImport("MSSign32.dll", CharSet = CharSet.Unicode)]
+            private static extern int SignerSign(
+                IntPtr pSubjectInfo,
+                IntPtr pSignerCert,
+                IntPtr pSignatureInfo,
+                IntPtr pProviderInfo);
+
+            private const uint SIGNER_SUBJECT_FILE = 1;
+            private const uint CALG_SHA_256 = 0x0000800c;
+
+            public void SignFile(string filePath, X509Certificate2 certificate)
+            {
+                IntPtr pSubjectInfo = IntPtr.Zero;
+                IntPtr pSignerCert = IntPtr.Zero;
+                IntPtr pSignatureInfo = IntPtr.Zero;
+                IntPtr dwIndex = Marshal.AllocHGlobal(sizeof(uint));
+
+                try
+                {
+                    // Setup file info
+                    var fileInfo = new SIGNER_FILE_INFO
+                    {
+                        cbSize = (uint)Marshal.SizeOf(typeof(SIGNER_FILE_INFO)),
+                        pwszFileName = filePath,
+                        hFile = IntPtr.Zero
+                    };
+                    IntPtr pFileInfo = Marshal.AllocHGlobal(Marshal.SizeOf(fileInfo));
+                    Marshal.StructureToPtr(fileInfo, pFileInfo, false);
+
+                    // Setup subject info
+                    Marshal.WriteInt32(dwIndex, 0);
+                    var subjectInfo = new SIGNER_SUBJECT_INFO
+                    {
+                        cbSize = (uint)Marshal.SizeOf(typeof(SIGNER_SUBJECT_INFO)),
+                        pdwIndex = dwIndex,
+                        dwSubjectChoice = SIGNER_SUBJECT_FILE,
+                        Union1 = new SubjectChoiceUnion { pSignerFileInfo = pFileInfo }
+                    };
+                    pSubjectInfo = Marshal.AllocHGlobal(Marshal.SizeOf(subjectInfo));
+                    Marshal.StructureToPtr(subjectInfo, pSubjectInfo, false);
+
+                    // Setup certificate info
+                    var signerCert = new SIGNER_CERT
+                    {
+                        cbSize = (uint)Marshal.SizeOf(typeof(SIGNER_CERT)),
+                        dwCertChoice = 2,
+                        Union1 = new SignerCertUnion { pCertContext = certificate.Handle }
+                    };
+                    pSignerCert = Marshal.AllocHGlobal(Marshal.SizeOf(signerCert));
+                    Marshal.StructureToPtr(signerCert, pSignerCert, false);
+
+                    // Setup signature info
+                    var signatureInfo = new SIGNER_SIGNATURE_INFO
+                    {
+                        cbSize = (uint)Marshal.SizeOf(typeof(SIGNER_SIGNATURE_INFO)),
+                        algidHash = CALG_SHA_256,
+                        dwAttrChoice = 0,
+                        pAttrAuthCode = IntPtr.Zero
+                    };
+                    pSignatureInfo = Marshal.AllocHGlobal(Marshal.SizeOf(signatureInfo));
+                    Marshal.StructureToPtr(signatureInfo, pSignatureInfo, false);
+
+                    int result = SignerSign(pSubjectInfo, pSignerCert, pSignatureInfo, IntPtr.Zero);
+                    if (result != 0)
+                    {
+                        throw new Exception($"SignerSign failed with error code: {result} (0x{result:X8})");
+                    }
+                }
+                finally
+                {
+                    if (dwIndex != IntPtr.Zero) Marshal.FreeHGlobal(dwIndex);
+                    if (pSubjectInfo != IntPtr.Zero) Marshal.FreeHGlobal(pSubjectInfo);
+                    if (pSignerCert != IntPtr.Zero) Marshal.FreeHGlobal(pSignerCert);
+                    if (pSignatureInfo != IntPtr.Zero) Marshal.FreeHGlobal(pSignatureInfo);
+                }
+            }
         }
     }
 } 
