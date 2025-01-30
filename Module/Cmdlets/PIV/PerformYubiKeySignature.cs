@@ -6,27 +6,17 @@
     /// Reports signature completion time in milliseconds for performance monitoring.
     /// 
     /// .EXAMPLE
-    /// # Sign raw byte data
-    /// $data = [System.Text.Encoding]::UTF8.GetBytes("Hello World")
-    /// $signature = New-YubiKeySignature -Slot "9c" -Data $data -PIN "123456"
-    /// # Output includes: "Successfully signed provided data (123ms)"
-    /// 
-    /// .EXAMPLE
     /// # Sign a single file
     /// $signature = New-YubiKeySignature -Slot "9c" -File "document.pdf" -PIN "123456"
-    /// # Output includes: "Successfully signed file: document.pdf (234ms)"
     /// 
     /// .EXAMPLE
     /// # Sign all files in a directory
     /// $signatures = New-YubiKeySignature -Slot "9c" -Dir "C:\Documents" -PIN "123456"
-    /// # Output includes timing for each file: "Successfully signed file: file1.pdf (156ms)"
     /// 
     /// .EXAMPLE
     /// # Using a different hash algorithm (will be overridden for ECC keys)
     /// $signature = New-YubiKeySignature -Slot "Digital Signature" -File "document.pdf" -HashAlgorithm SHA512
     /// </summary>
-    /// 
-    /// 
 
 using System.Management.Automation;
 using System.Security.Cryptography;
@@ -34,9 +24,7 @@ using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using powershellYK.PIV;
 using System.Diagnostics;
-//using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey.Sample.PivSampleCode;
-//using powershellYK.support.transform;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -64,6 +52,7 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Hash algorithm")]
         public HashAlgorithmName HashAlgorithm { get; set; } = HashAlgorithmName.SHA256;
 
+        // @Virot: maybe it should do Connect-YubiKeyPIV?
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -84,14 +73,15 @@ namespace powershellYK.Cmdlets.PIV
 
         protected override void ProcessRecord()
         {
+            // Create a new PIV session with the currently connected YubiKey
             using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
+                WriteDebug($"Created PIV session for slot {Slot}");
+                
+                // Set up the key collector for PIN/PUK entry
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                                pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-
-
-                // Check the public key to determine use of algorithm
+                // Retrieve the public key from the specified slot to determine signing algorithm
                 PivPublicKey? publicKey = null;
                 try
                 {
@@ -100,74 +90,101 @@ namespace powershellYK.Cmdlets.PIV
                     {
                         throw new Exception("Public key is null!");
                     }
+                    WriteDebug($"Retrieved public key: Type={publicKey.GetType().Name}, Algorithm={publicKey.Algorithm}");
                 }
                 catch (Exception e)
                 {
                     throw new Exception($"Failed to get public key for slot {Slot}, does the key exist?", e);
                 }
 
+                // Handle directory signing mode - sign all files in specified directory
                 if (Dir != null)
                 {
+                    WriteDebug($"Directory signing mode: {Dir}");
                     if (!System.IO.Directory.Exists(Dir))
                     {
                         throw new Exception($"Directory {Dir} does not exist");
                     }
 
+                    // Iterate through all files in directory and sign each one
                     foreach (string filePath in System.IO.Directory.GetFiles(Dir))
                     {
+                        WriteDebug($"Processing file: {filePath}");
                         byte[] fileData = System.IO.File.ReadAllBytes(filePath);
-                        var (signature, elapsed) = SignData(pivSession, publicKey, fileData);
-                        WriteObject(new { FilePath = filePath, Signature = signature });
+                        WriteDebug($"File size: {fileData.Length} bytes");
+                        var (_, elapsed) = SignData(pivSession, publicKey, fileData);
                         WriteInformation($"Successfully signed file: {filePath} ({elapsed}ms)", new string[] { "SIGN" });
                     }
                 }
+                // Handle single file signing mode
                 else if (File != null)
                 {
+                    WriteDebug($"Single file signing mode: {File}");
                     if (!System.IO.File.Exists(File))
                     {
                         throw new Exception($"File {File} does not exist");
                     }
 
+                    // Read and sign the specified file
                     byte[] fileData = System.IO.File.ReadAllBytes(File);
-                    var (signature, elapsed) = SignData(pivSession, publicKey, fileData);
-                    WriteObject(signature);
+                    WriteDebug($"File size: {fileData.Length} bytes");
+                    var (_, elapsed) = SignData(pivSession, publicKey, fileData);
                     WriteInformation($"Successfully signed file: {File} ({elapsed}ms)", new string[] { "SIGN" });
                 }
+                // Handle raw data signing mode
                 else
                 {
-                    var (signature, elapsed) = SignData(pivSession, publicKey, Data);
-                    WriteObject(signature);
+                    WriteDebug("Raw data signing mode");
+                    WriteDebug($"Data size: {Data.Length} bytes");
+                    var (_, elapsed) = SignData(pivSession, publicKey, Data);
                     WriteInformation($"Successfully signed provided data ({elapsed}ms)", new string[] { "SIGN" });
                 }
             }
         }
 
+        /// Signs the provided data using the YubiKey's PIV slot
         private (byte[], long) SignData(PivSession pivSession, PivPublicKey publicKey, byte[] dataToSign)
         {
+            WriteDebug($"Starting signing operation with {publicKey.GetType().Name}");
+            WriteDebug($"Initial hash algorithm: {HashAlgorithm}");
+            
             var stopwatch = Stopwatch.StartNew();
             byte[] signature;
 
-            if (publicKey is PivRsaPublicKey)
+            if (publicKey is PivRsaPublicKey rsaKey)
             {
-                // Create RSA signature generator with PSS padding
+                int keySize = publicKey.Algorithm switch
+                {
+                    PivAlgorithm.Rsa4096 => 4096,
+                    PivAlgorithm.Rsa3072 => 3072,
+                    PivAlgorithm.Rsa2048 => 2048,
+                    PivAlgorithm.Rsa1024 => 1024,
+                    _ => throw new Exception("Unsupported RSA key size")
+                };
+                WriteDebug($"RSA key detected: {keySize} bits");
+                WriteDebug("Using PSS padding mode");
+                // For RSA keys, use PSS padding mode for enhanced security
                 var signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey, RSASignaturePaddingMode.Pss);
                 signature = signer.SignData(dataToSign, HashAlgorithm);
             }
             else
             {
-                // ECC signing with appropriate hash algorithm based on curve size
+                WriteDebug($"ECC key detected: {publicKey.Algorithm}");
+                // For ECC keys, hash algorithm must match the curve size
                 HashAlgorithm = publicKey.Algorithm switch
                 {
-                    PivAlgorithm.EccP256 => HashAlgorithmName.SHA256,
-                    PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,
+                    PivAlgorithm.EccP256 => HashAlgorithmName.SHA256,  // P-256 requires SHA256
+                    PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,  // P-384 requires SHA384
                     _ => throw new Exception("Unknown public Key algorithm")
                 };
                 
+                WriteDebug($"Selected hash algorithm for ECC: {HashAlgorithm}");
                 var signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey);
                 signature = signer.SignData(dataToSign, HashAlgorithm);
             }
 
             stopwatch.Stop();
+            WriteDebug($"Signing completed in {stopwatch.ElapsedMilliseconds}ms");
             return (signature, stopwatch.ElapsedMilliseconds);
         }
     }

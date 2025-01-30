@@ -131,6 +131,7 @@ CmdletsToExport = @(
  'ConvertTo-AltSecurity',
  'Enable-PowershellYKSDKLogging',
  'Get-PowershellYKInfo'
+ 'New-YubiKeySignature'
 )
 
 # Variables to export from this module
