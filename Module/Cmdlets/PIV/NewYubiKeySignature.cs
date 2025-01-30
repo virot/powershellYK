@@ -1,9 +1,9 @@
     /// <summary>
-    /// Performs a digital signature operation using a YubiKey PIV slot.
-    /// This cmdlet signs input data using the private key stored in the specified PIV slot.
-    /// Supports both RSA and ECC keys, with automatic algorithm selection based on the key type.
-    /// Can sign raw byte data, individual files, or all files in a directory.
+    /// Performs Authenticode signing using a YubiKey PIV slot.
+    /// This cmdlet signs executables and other signable files using the certificate stored in the specified PIV slot.
+    /// Supports signing individual files or all signable files in a directory.
     /// Reports signature completion time in milliseconds for performance monitoring.
+    /// Automatically uses SHA-256 as the hash algorithm for Authenticode signatures.
     /// 
     /// .EXAMPLE
     /// # Sign a single file
@@ -12,10 +12,6 @@
     /// .EXAMPLE
     /// # Sign all files in a directory
     /// $signatures = New-YubiKeySignature -Slot "9c" -Dir "C:\Documents" -PIN "123456"
-    /// 
-    /// .EXAMPLE
-    /// # Using a different hash algorithm (will be overridden for ECC keys)
-    /// $signature = New-YubiKeySignature -Slot "Digital Signature" -File "document.pdf" -HashAlgorithm SHA512
     /// </summary>
 
 using System.Management.Automation;
@@ -27,31 +23,37 @@ using System.Diagnostics;
 using Yubico.YubiKey.Sample.PivSampleCode;
 using System.Security.Cryptography.X509Certificates;
 using System.Runtime.InteropServices;
+using System.Linq;
+using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsCommon.New, "YubiKeySignature")]
-    public class PerformYubiKeySignatureCommand : Cmdlet
+    public class NewYubiKeySignatureCommand : Cmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "PIV slot to use for signing")]
         public PIVSlot Slot { get; set; }
 
-        [Parameter(Mandatory = true, ValueFromPipeline = true, HelpMessage = "Data to sign", ParameterSetName = "ByteData")]
-        public required byte[] Data { get; set; }
+        [Parameter(Mandatory = true, ValueFromPipeline = true, HelpMessage = "File to sign", ParameterSetName = "File")]
+        public System.IO.FileInfo? File { get; set; }
 
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "File to sign", ParameterSetName = "File")]
-        public string? File { get; set; }
-
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Directory containing files to sign", ParameterSetName = "Directory")]
-        public string? Dir { get; set; }
+        [Parameter(Mandatory = true, ValueFromPipeline = true, HelpMessage = "Directory containing files to sign", ParameterSetName = "Directory")]
+        public System.IO.DirectoryInfo? Dir { get; set; }
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PIN for the YubiKey")]
         public string? PIN { get; set; }
 
-        [ValidateSet("SHA1", "SHA256", "SHA384", "SHA512", IgnoreCase = true)]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Hash algorithm")]
-        public HashAlgorithmName HashAlgorithm { get; set; } = HashAlgorithmName.SHA256;
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Timestamp Server URL for signing. Uses free timestamping services provided by Certificate Authorities.")]
+        [ArgumentCompletions(
+            "http://timestamp.digicert.com",      // DigiCert - most reliable
+            "http://timestamp.sectigo.com",       // Sectigo (formerly Comodo)
+            "http://timestamp.globalsign.com/tsa/v3", // GlobalSign
+            "http://time.certum.pl",              // Certum
+            "http://timestamp.entrust.net/TSS/RFC3161" // Entrust
+        )]
+        public string? TimestampServer { get; set; }
 
         // @Virot: maybe it should do Connect-YubiKeyPIV?
         protected override void BeginProcessing()
@@ -98,53 +100,79 @@ namespace powershellYK.Cmdlets.PIV
                     throw new Exception($"Failed to get public key for slot {Slot}, does the key exist?", e);
                 }
 
-                // Handle directory signing mode - sign all files in specified directory
+                // Handle directory signing mode
                 if (Dir != null)
                 {
-                    WriteDebug($"Directory signing mode: {Dir}");
-                    if (!System.IO.Directory.Exists(Dir))
+                    WriteDebug($"Directory signing mode: {Dir.FullName}");
+                    if (!Dir.Exists)
                     {
-                        throw new Exception($"Directory {Dir} does not exist");
+                        throw new Exception($"Directory {Dir.FullName} does not exist");
                     }
 
-                    // Iterate through all files in directory and sign each one
-                    foreach (string filePath in System.IO.Directory.GetFiles(Dir))
+                    var allowedExtensions = new[] { 
+                        "*.msi", "*.exe", "*.dll", "*.sys", 
+                        "*.cat", "*.ocx", "*.cab", "*.ps1", 
+                        "*.psm1", "*.vbs", "*.js" 
+                    };
+
+                    var filesToSign = allowedExtensions
+                        .SelectMany(ext => Dir.GetFiles(ext))
+                        .Distinct()
+                        .ToArray();
+
+                    WriteDebug($"Found {filesToSign.Length} files to sign");
+
+                    object writeLock = new object();
+                    var parallelOptions = new ParallelOptions 
+                    { 
+                        MaxDegreeOfParallelism = Math.Min(4, Environment.ProcessorCount) 
+                    };
+
+                    Parallel.ForEach(filesToSign, parallelOptions, fileInfo =>
                     {
-                        WriteDebug($"Processing file: {filePath}");
-                        byte[] fileData = System.IO.File.ReadAllBytes(filePath);
-                        WriteDebug($"File size: {fileData.Length} bytes");
-                        var (_, elapsed) = SignData(pivSession, publicKey, fileData);
-                        WriteInformation($"Successfully signed file: {filePath} ({elapsed}ms)", new string[] { "SIGN" });
-                    }
+                        try
+                        {
+                            byte[] fileData = System.IO.File.ReadAllBytes(fileInfo.FullName);
+                            long elapsed = SignData(pivSession, publicKey, fileData);
+                            
+                            lock (writeLock)
+                            {
+                                WriteInformation(
+                                    $"Successfully signed file: {fileInfo.FullName} ({elapsed}ms)", 
+                                    new string[] { "SIGN" }
+                                );
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            lock (writeLock)
+                            {
+                                WriteWarning($"Skipping file {fileInfo.FullName} due to error: {ex.Message}");
+                            }
+                        }
+                    });
                 }
+                
                 // Handle single file signing mode
                 else if (File != null)
                 {
-                    WriteDebug($"Single file signing mode: {File}");
-                    if (!System.IO.File.Exists(File))
+                    WriteDebug($"Single file signing mode: {File.FullName}");
+                    if (!File.Exists)
                     {
-                        throw new Exception($"File {File} does not exist");
+                        throw new Exception($"File {File.FullName} does not exist");
                     }
 
-                    // Read and sign the specified file
-                    byte[] fileData = System.IO.File.ReadAllBytes(File);
+                    byte[] fileData = System.IO.File.ReadAllBytes(File.FullName);
                     WriteDebug($"File size: {fileData.Length} bytes");
-                    var (_, elapsed) = SignData(pivSession, publicKey, fileData);
-                    WriteInformation($"Successfully signed file: {File} ({elapsed}ms)", new string[] { "SIGN" });
-                }
-                // Handle raw data signing mode
-                else
-                {
-                    WriteDebug("Raw data signing mode");
-                    WriteDebug($"Data size: {Data.Length} bytes");
-                    var (_, elapsed) = SignData(pivSession, publicKey, Data);
-                    WriteInformation($"Successfully signed provided data ({elapsed}ms)", new string[] { "SIGN" });
+                    long elapsed = SignData(pivSession, publicKey, fileData);
+                    WriteInformation($"Successfully signed file: {File.FullName} ({elapsed}ms)", new string[] { "SIGN" });
                 }
             }
         }
 
         /// Signs the provided data using the YubiKey's PIV slot
-        private (byte[], long) SignData(PivSession pivSession, PivPublicKey publicKey, byte[] dataToSign)
+        /// Returns the time taken to perform the signing operation in milliseconds
+        private long SignData(PivSession pivSession, PivPublicKey publicKey, byte[] dataToSign)
         {
             WriteDebug($"Starting signing operation with {publicKey.GetType().Name}");
             var stopwatch = Stopwatch.StartNew();
@@ -160,7 +188,7 @@ namespace powershellYK.Cmdlets.PIV
             try
             {
                 var signer = new AuthenticodeSignature();
-                signer.SignFile(File!, certificate);
+                signer.SignFile(File!.FullName, certificate, TimestampServer);
                 WriteDebug("Authenticode signing completed");
             }
             catch (Exception ex)
@@ -169,7 +197,7 @@ namespace powershellYK.Cmdlets.PIV
             }
 
             stopwatch.Stop();
-            return (Array.Empty<byte>(), stopwatch.ElapsedMilliseconds);
+            return stopwatch.ElapsedMilliseconds;
         }
 
         private class AuthenticodeSignature
@@ -239,12 +267,34 @@ namespace powershellYK.Cmdlets.PIV
             private const uint SIGNER_SUBJECT_FILE = 1;
             private const uint CALG_SHA_256 = 0x0000800c;
 
-            public void SignFile(string filePath, X509Certificate2 certificate)
+            private class SafeSignerHandle : SafeHandle
             {
-                IntPtr pSubjectInfo = IntPtr.Zero;
-                IntPtr pSignerCert = IntPtr.Zero;
-                IntPtr pSignatureInfo = IntPtr.Zero;
-                IntPtr dwIndex = Marshal.AllocHGlobal(sizeof(uint));
+                public SafeSignerHandle() : base(IntPtr.Zero, true) { }
+
+                public override bool IsInvalid => handle == IntPtr.Zero;
+
+                protected override bool ReleaseHandle()
+                {
+                    if (!IsInvalid)
+                    {
+                        Marshal.FreeHGlobal(handle);
+                    }
+                    return true;
+                }
+            }
+
+            public void SignFile(string filePath, X509Certificate2 certificate, string? timestampUrl = null)
+            {
+                if (certificate == null || certificate.Handle == IntPtr.Zero)
+                {
+                    throw new ArgumentException("Invalid certificate or certificate handle is null", nameof(certificate));
+                }
+
+                using var pSubjectInfo = new SafeSignerHandle();
+                using var pSignerCert = new SafeSignerHandle();
+                using var pSignatureInfo = new SafeSignerHandle();
+                using var dwIndex = new SafeSignerHandle();
+                using var pFileInfo = new SafeSignerHandle();
 
                 try
                 {
@@ -255,20 +305,24 @@ namespace powershellYK.Cmdlets.PIV
                         pwszFileName = filePath,
                         hFile = IntPtr.Zero
                     };
-                    IntPtr pFileInfo = Marshal.AllocHGlobal(Marshal.SizeOf(fileInfo));
-                    Marshal.StructureToPtr(fileInfo, pFileInfo, false);
+                    
+                    pFileInfo.SetHandle(Marshal.AllocHGlobal(Marshal.SizeOf(fileInfo)));
+                    Marshal.StructureToPtr(fileInfo, pFileInfo.DangerousGetHandle(), false);
 
                     // Setup subject info
-                    Marshal.WriteInt32(dwIndex, 0);
+                    dwIndex.SetHandle(Marshal.AllocHGlobal(sizeof(uint)));
+                    Marshal.WriteInt32(dwIndex.DangerousGetHandle(), 0);
+                    
                     var subjectInfo = new SIGNER_SUBJECT_INFO
                     {
                         cbSize = (uint)Marshal.SizeOf(typeof(SIGNER_SUBJECT_INFO)),
-                        pdwIndex = dwIndex,
+                        pdwIndex = dwIndex.DangerousGetHandle(),
                         dwSubjectChoice = SIGNER_SUBJECT_FILE,
-                        Union1 = new SubjectChoiceUnion { pSignerFileInfo = pFileInfo }
+                        Union1 = new SubjectChoiceUnion { pSignerFileInfo = pFileInfo.DangerousGetHandle() }
                     };
-                    pSubjectInfo = Marshal.AllocHGlobal(Marshal.SizeOf(subjectInfo));
-                    Marshal.StructureToPtr(subjectInfo, pSubjectInfo, false);
+                    
+                    pSubjectInfo.SetHandle(Marshal.AllocHGlobal(Marshal.SizeOf(subjectInfo)));
+                    Marshal.StructureToPtr(subjectInfo, pSubjectInfo.DangerousGetHandle(), false);
 
                     // Setup certificate info
                     var signerCert = new SIGNER_CERT
@@ -277,32 +331,41 @@ namespace powershellYK.Cmdlets.PIV
                         dwCertChoice = 2,
                         Union1 = new SignerCertUnion { pCertContext = certificate.Handle }
                     };
-                    pSignerCert = Marshal.AllocHGlobal(Marshal.SizeOf(signerCert));
-                    Marshal.StructureToPtr(signerCert, pSignerCert, false);
+                    
+                    pSignerCert.SetHandle(Marshal.AllocHGlobal(Marshal.SizeOf(signerCert)));
+                    Marshal.StructureToPtr(signerCert, pSignerCert.DangerousGetHandle(), false);
 
-                    // Setup signature info
+                    // Setup signature info with timestamp
                     var signatureInfo = new SIGNER_SIGNATURE_INFO
                     {
                         cbSize = (uint)Marshal.SizeOf(typeof(SIGNER_SIGNATURE_INFO)),
                         algidHash = CALG_SHA_256,
                         dwAttrChoice = 0,
-                        pAttrAuthCode = IntPtr.Zero
+                        pAttrAuthCode = IntPtr.Zero,
+                        pwszTimestampURL = timestampUrl // Add timestamp URL if provided
                     };
-                    pSignatureInfo = Marshal.AllocHGlobal(Marshal.SizeOf(signatureInfo));
-                    Marshal.StructureToPtr(signatureInfo, pSignatureInfo, false);
+                    
+                    pSignatureInfo.SetHandle(Marshal.AllocHGlobal(Marshal.SizeOf(signatureInfo)));
+                    Marshal.StructureToPtr(signatureInfo, pSignatureInfo.DangerousGetHandle(), false);
 
-                    int result = SignerSign(pSubjectInfo, pSignerCert, pSignatureInfo, IntPtr.Zero);
+                    int result = SignerSign(
+                        pSubjectInfo.DangerousGetHandle(), 
+                        pSignerCert.DangerousGetHandle(), 
+                        pSignatureInfo.DangerousGetHandle(), 
+                        IntPtr.Zero
+                    );
+
                     if (result != 0)
                     {
-                        throw new Exception($"SignerSign failed with error code: {result} (0x{result:X8})");
+                        throw new Win32Exception(result, "SignerSign failed");
                     }
                 }
-                finally
+                catch (Win32Exception ex)
                 {
-                    if (dwIndex != IntPtr.Zero) Marshal.FreeHGlobal(dwIndex);
-                    if (pSubjectInfo != IntPtr.Zero) Marshal.FreeHGlobal(pSubjectInfo);
-                    if (pSignerCert != IntPtr.Zero) Marshal.FreeHGlobal(pSignerCert);
-                    if (pSignatureInfo != IntPtr.Zero) Marshal.FreeHGlobal(pSignatureInfo);
+                    string timestampError = !string.IsNullOrEmpty(timestampUrl) && ex.NativeErrorCode == 0x80092004 // CRYPT_E_TIMESTAMP_SERVER
+                        ? " (Timestamp server may be unavailable)"
+                        : "";
+                    throw new Exception($"Authenticode signing failed: {ex.Message}{timestampError} (Error code: 0x{ex.NativeErrorCode:X8})", ex);
                 }
             }
         }
