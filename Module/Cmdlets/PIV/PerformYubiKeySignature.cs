@@ -34,6 +34,10 @@ using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using powershellYK.PIV;
 using System.Diagnostics;
+//using System.Security.Cryptography.X509Certificates;
+using Yubico.YubiKey.Sample.PivSampleCode;
+//using powershellYK.support.transform;
+
 
 namespace powershellYK.Cmdlets.PIV
 {
@@ -83,6 +87,9 @@ namespace powershellYK.Cmdlets.PIV
             using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+
+                                pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+
 
                 // Check the public key to determine use of algorithm
                 PivPublicKey? publicKey = null;
@@ -142,8 +149,9 @@ namespace powershellYK.Cmdlets.PIV
 
             if (publicKey is PivRsaPublicKey)
             {
-                // RSA signing with PSS padding
-                signature = pivSession.Sign(Slot, HashAlgorithm, dataToSign, RSASignaturePaddingMode.Pss);
+                // Create RSA signature generator with PSS padding
+                var signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey, RSASignaturePaddingMode.Pss);
+                signature = signer.SignData(dataToSign, HashAlgorithm);
             }
             else
             {
@@ -154,7 +162,9 @@ namespace powershellYK.Cmdlets.PIV
                     PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,
                     _ => throw new Exception("Unknown public Key algorithm")
                 };
-                signature = pivSession.Sign(Slot, dataToSign);
+                
+                var signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey);
+                signature = signer.SignData(dataToSign, HashAlgorithm);
             }
 
             stopwatch.Stop();
