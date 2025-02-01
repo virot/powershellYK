@@ -43,7 +43,7 @@ namespace powershellYK.Cmdlets.PIV
 
                     case "Remove using ID":
                         fingerprint = session.EnumerateBioEnrollments()
-                            .FirstOrDefault(x => HexConverter.ByteArrayToString(x.TemplateId.ToArray())
+                            .FirstOrDefault(x => Converter.ByteArrayToString(x.TemplateId.ToArray())
                                 .Equals(ID, StringComparison.OrdinalIgnoreCase));
                         break;
 

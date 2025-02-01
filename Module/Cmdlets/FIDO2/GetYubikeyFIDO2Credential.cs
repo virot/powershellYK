@@ -8,10 +8,17 @@ using powershellYK.support;
 namespace powershellYK.Cmdlets.Fido
 {
     [Alias("Get-YubiKeyFIDO2Credentials")]
-    [Cmdlet(VerbsCommon.Get, "YubiKeyFIDO2Credential")]
+    [Cmdlet(VerbsCommon.Get, "YubiKeyFIDO2Credential", DefaultParameterSetName = "List-All")]
 
     public class GetYubikeyFIDO2CredentialsCommand : PSCmdlet
     {
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "List all", ParameterSetName = "List-All", DontShow = true)]
+        public SwitchParameter All { get; set; }
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Credential ID to remove", ParameterSetName = "List-CredentialID")]
+        public powershellYK.FIDO2.CredentialID? CredentialID { get; set; }
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Credential ID to remove int Base64 URL encoded format", ParameterSetName = "List-CredentialID-Base64URL")]
+        public string? CredentialIdBase64Url { get; set; } = string.Empty;
+
         protected override void BeginProcessing()
         {
             // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
@@ -39,6 +46,10 @@ namespace powershellYK.Cmdlets.Fido
 
         protected override void ProcessRecord()
         {
+            if (!this.CredentialID.HasValue && CredentialIdBase64Url is not null)
+            {
+                this.CredentialID = powershellYK.FIDO2.CredentialID.FromStringBase64URL(CredentialIdBase64Url);
+            }
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
@@ -67,8 +78,11 @@ namespace powershellYK.Cmdlets.Fido
 
                         foreach (CredentialUserInfo user in relayCredentials)
                         {
-                            Credential credential = new Credential(relyingParty: relyingParty, credentialUserInfo: user);
-                            WriteObject(credential);
+                            if (ParameterSetName == "List-All" || (user.CredentialId.Id.ToArray().SequenceEqual(this.CredentialID!.Value.ToByte())))
+                            {
+                                Credential credential = new Credential(relyingParty: relyingParty, credentialUserInfo: user);
+                                WriteObject(credential);
+                            }
                         }
                     }
                 }

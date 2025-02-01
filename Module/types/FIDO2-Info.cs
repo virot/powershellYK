@@ -57,7 +57,7 @@ namespace powershellYK.FIDO2
             this.AuthenticatorInfo = authenticatorInfo;
             if (authenticatorInfo.FirmwareVersion is not null)
             {
-                this.FirmwareVersion = HexConverter.IntToVersion((int)authenticatorInfo.FirmwareVersion);
+                this.FirmwareVersion = Converter.IntToVersion((int)authenticatorInfo.FirmwareVersion);
             }
         }
 

@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Connect-YubikeyOATH
+# Connect-YubiKeyOATH
 
 ## SYNOPSIS
 Connect to the OATH part of the connected YubiKey.
@@ -13,7 +13,7 @@ Connect to the OATH part of the connected YubiKey.
 ## SYNTAX
 
 ```
-Connect-YubikeyOATH -Password <SecureString> [<CommonParameters>]
+Connect-YubiKeyOATH -Password <SecureString> [<CommonParameters>]
 ```
 
 ## DESCRIPTION

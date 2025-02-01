@@ -23,7 +23,7 @@ Set the password for the YubiKey OATH application.
 
 ### Example 1
 ```powershell
-PS C:\> 
+PS C:\>
 ```
 
 {{ Add example description here }}

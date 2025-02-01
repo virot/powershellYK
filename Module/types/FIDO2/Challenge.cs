@@ -27,7 +27,7 @@ namespace powershellYK.FIDO2
         }
         public string ToString(string? format = "x")
         {
-            return HexConverter.ByteArrayToString(_challenge).ToLower();
+            return Converter.ByteArrayToString(_challenge).ToLower();
         }
         public byte[] ToByte()
         {

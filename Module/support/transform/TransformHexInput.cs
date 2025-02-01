@@ -14,7 +14,7 @@ namespace powershellYK.support.transform
             }
             else if (inputData is string)
             {
-                return HexConverter.StringToByteArray((string)inputData);
+                return Converter.StringToByteArray((string)inputData);
             }
             if (inputData is PSObject)
             {
@@ -24,7 +24,7 @@ namespace powershellYK.support.transform
                 }
                 else if (((PSObject)inputData).BaseObject is String)
                 {
-                    return HexConverter.StringToByteArray((string)((PSObject)inputData).BaseObject);
+                    return Converter.StringToByteArray((string)((PSObject)inputData).BaseObject);
                 }
             }
             return inputData;
