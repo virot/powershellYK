@@ -80,7 +80,7 @@ param
     [ValidateNotNullOrEmpty()]
     [ValidateLength(3,30)]
     [string]
-    $DisplayName = "$((Get-YubiKey).PrettyName) $((Get-YubiKey).SerialNumber)",
+    $DisplayName = "YubiKey with S/N: $((Get-YubiKey).SerialNumber)"
 
     [Parameter(Mandatory=$False,
               ParameterSetName="CreateCredential",
