@@ -11,8 +11,10 @@ namespace powershellYK.Cmdlets.Fido
     [Cmdlet(VerbsCommon.New, "YubiKeyFIDO2Credential", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class NewYubikeyFIDO2CredentialCmdlet : PSCmdlet
     {
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Specify which relayingParty (site) this credential is regards to.", ParameterSetName = "UserData-HostData")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Specify which relayingParty (site) this credential is regards to.", ParameterSetName = "UserEntity-HostData")]
         public required string RelyingPartyID { private get; set; }
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Friendlyname for the relayingParty.", ParameterSetName = "UserData-HostData")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Friendlyname for the relayingParty.", ParameterSetName = "UserEntity-HostData")]
         public required string RelyingPartyName { private get; set; }
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "RelaingParty object.", ParameterSetName = "UserData-RelyingParty")]
@@ -22,7 +24,7 @@ namespace powershellYK.Cmdlets.Fido
         public required string Username { private get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "UserDisplayName to create credental for.", ParameterSetName = "UserData-HostData")]
         public string? UserDisplayName { private get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "UserID.", ParameterSetName = "UserData-HostData")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "UserID.", ParameterSetName = "UserData-HostData")]
         public byte[]? UserID { private get; set; }
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Challange.")]
@@ -72,19 +74,17 @@ namespace powershellYK.Cmdlets.Fido
                     RelyingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName ?? RelyingPartyID };
                 }
 
-                if (UserEntity is null && UserID is null)
+                if ((ParameterSetName == "UserData-HostData" || ParameterSetName == "UserData-RelyingParty"))
                 {
-                    // I Dont think this can happen, as Powershell requires one of them.
-                    throw new Exception("UserID is required if UserEntity is not supplied.");
-                }
-                else if (UserEntity is null && UserID is not null)
-                {
-                    WriteDebug($"Building new UserEntity with {Converter.ByteArrayToString(UserID)}");
-                    UserEntity = new UserEntity(UserID.AsMemory())
+                    if (UserID is not null)
                     {
-                        Name = Username,
-                        DisplayName = UserDisplayName ?? Username,
-                    };
+                        WriteDebug($"Building new UserEntity with {Converter.ByteArrayToString(UserID)}");
+                        UserEntity = new UserEntity(UserID.AsMemory())
+                        {
+                            Name = Username,
+                            DisplayName = UserDisplayName ?? Username,
+                        };
+                    }
                 }
 
 
