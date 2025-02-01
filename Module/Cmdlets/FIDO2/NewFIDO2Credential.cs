@@ -20,10 +20,13 @@ namespace powershellYK.Cmdlets.Fido
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "RelaingParty object.", ParameterSetName = "UserData-RelyingParty")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "RelaingParty object.", ParameterSetName = "UserEntity-RelyingParty")]
         public required RelyingParty RelyingParty { private get; set; }
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Username to create credental for.", ParameterSetName = "UserData-RelyingParty")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Username to create credental for.", ParameterSetName = "UserData-HostData")]
         public required string Username { private get; set; }
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "UserDisplayName to create credental for.", ParameterSetName = "UserData-RelyingParty")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "UserDisplayName to create credental for.", ParameterSetName = "UserData-HostData")]
         public string? UserDisplayName { private get; set; }
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "UserID.", ParameterSetName = "UserData-RelyingParty")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "UserID.", ParameterSetName = "UserData-HostData")]
         public byte[]? UserID { private get; set; }
 
