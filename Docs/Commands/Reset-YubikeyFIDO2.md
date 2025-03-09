@@ -13,7 +13,7 @@ Reset a YubiKey FIDO2 device to factory settings.
 ## SYNTAX
 
 ```
-Reset-YubiKeyFIDO2 [-WhatIf] [-Confirm] [<CommonParameters>]
+Reset-YubiKeyFIDO2 [-Interactive <Boolean>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,6 +30,21 @@ PS C:\> Reset-YubikeyFIDO2
 Resets the YubiKey FIDO2 applet to factory settings.
 
 ## PARAMETERS
+
+### -Interactive
+Interactive mode for removing and reinserting YubiKey
+
+```yaml
+Type: Boolean
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -Confirm
 Prompts you for confirmation before running the cmdlet.

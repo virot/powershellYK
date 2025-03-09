@@ -13,6 +13,9 @@ namespace powershellYK.Cmdlets.Fido
     [Cmdlet(VerbsCommon.Reset, "YubiKeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class ResetYubikeyFIDO2Cmdlet : PSCmdlet
     {
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Interactive mode for removing and reinserting YubiKey")]
+        public Boolean Interactive { get; set; } = true;
+
         private bool _yubiKeyRemoved = false;
         private bool _yubiKeyArrived = false;
 
@@ -51,48 +54,56 @@ namespace powershellYK.Cmdlets.Fido
 
             if (ShouldProcess("This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings. Proceed?", "This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings. Proceed?", "WARNING!"))
             {
-                Console.WriteLine("Remove and re-insert the YubiKey to perform the reset...");
-
-                // Set up the YubiKeyDeviceListener
-                // This must not be disposed of.
-                var yubiKeyDeviceListener = YubiKeyDeviceListener.Instance;
-                // Use a stopwatch to make sure we wont get stuck in an infinite loop.
-                Stopwatch stopwatch = new Stopwatch();
-
-                // Register event handlers for remove and (re)insert
-                yubiKeyDeviceListener.Removed += YubiKeyRemoved;
-                yubiKeyDeviceListener.Arrived += YubiKeyArrived;
-
-
-                // Wait for the YubiKey to be removed
-                // If the YubiKey is not removed within 10 seconds, the reset will be aborted
-                stopwatch.Start();
-                while (!_yubiKeyRemoved)
+                if (Interactive)
                 {
-                    System.Threading.Thread.Sleep(100); // Prevent CPU overuse while waiting
-                    if (stopwatch.Elapsed.TotalSeconds > 10)
+                    if (YubiKeyModule._yubikey.SerialNumber is null)
                     {
-                        throw new Exception("YubiKey was not removed within 10 seconds. Reset aborted.");
+                        WriteError(new ErrorRecord(new Exception("To reset a SecurityKey please use Reset-YubiKeyFIDO -Interactive $False"), null, ErrorCategory.DeviceError, null));
+                        return;
                     }
-                }
 
-                // Wait for the YubiKey to be reinserted
-                // If the YubiKey is not removed within 10 seconds, the reset will be aborted
-                stopwatch.Restart();
-                while (!_yubiKeyArrived)
-                {
-                    System.Threading.Thread.Sleep(100); // Prevent CPU overuse while waiting
-                    if (stopwatch.Elapsed.TotalSeconds > 10)
+                    Console.WriteLine("Remove and re-insert the YubiKey to perform the reset...");
+
+                    // Set up the YubiKeyDeviceListener
+                    // This must not be disposed of.
+                    var yubiKeyDeviceListener = YubiKeyDeviceListener.Instance;
+                    // Use a stopwatch to make sure we wont get stuck in an infinite loop.
+                    Stopwatch stopwatch = new Stopwatch();
+
+                    // Register event handlers for remove and (re)insert
+                    yubiKeyDeviceListener.Removed += YubiKeyRemoved;
+                    yubiKeyDeviceListener.Arrived += YubiKeyArrived;
+
+
+                    // Wait for the YubiKey to be removed
+                    // If the YubiKey is not removed within 10 seconds, the reset will be aborted
+                    stopwatch.Start();
+                    while (!_yubiKeyRemoved)
                     {
-                        throw new Exception("YubiKey was not inserted within 10 seconds. Reset aborted.");
+                        System.Threading.Thread.Sleep(100); // Prevent CPU overuse while waiting
+                        if (stopwatch.Elapsed.TotalSeconds > 10)
+                        {
+                            throw new Exception("YubiKey was not removed within 10 seconds. Reset aborted.");
+                        }
                     }
+
+                    // Wait for the YubiKey to be reinserted
+                    // If the YubiKey is not removed within 10 seconds, the reset will be aborted
+                    stopwatch.Restart();
+                    while (!_yubiKeyArrived)
+                    {
+                        System.Threading.Thread.Sleep(100); // Prevent CPU overuse while waiting
+                        if (stopwatch.Elapsed.TotalSeconds > 10)
+                        {
+                            throw new Exception("YubiKey was not inserted within 10 seconds. Reset aborted.");
+                        }
+                    }
+
+                    // Unregister the event handler after reset is completed
+                    // is this needed, we are disposing the listener?
+                    yubiKeyDeviceListener.Removed -= YubiKeyRemoved;
+                    yubiKeyDeviceListener.Arrived -= YubiKeyArrived;
                 }
-
-                // Unregister the event handler after reset is completed
-                // is this needed, we are disposing the listener?
-                yubiKeyDeviceListener.Removed -= YubiKeyRemoved;
-                yubiKeyDeviceListener.Arrived -= YubiKeyArrived;
-
                 // Proceed with the reset after the YubiKey is (re)inserted
                 using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
