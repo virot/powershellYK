@@ -7,9 +7,9 @@ using powershellYK.PIV;
 
 namespace powershellYK
 {
-    public class Attestion
+    public class Attestation   
     {
-        public bool? AttestionValidated { get; }
+        public bool? AttestationValidated { get; }
         public uint? SerialNumber { get; }
         public FirmwareVersion? FirmwareVersion { get; }
         public PivPinPolicy? PinPolicy { get; }
@@ -19,13 +19,13 @@ namespace powershellYK
         public PivAlgorithm? Algorithm { get; }
         public bool? isFIPSSeries { get; } = false;
         public bool? isCSPNSeries { get; } = false;
-        public bool? AttestionMatchesCSR { get; } = null;
+        public bool? AttestationMatchesCSR { get; } = null;
 
-        public string? AttestionDataLocation { get; } = null;
+        public string? AttestationDataLocation { get; } = null;
 
-        public Attestion(bool attestionValidated = false, uint? serialnumber = null, FirmwareVersion? firmwareVersion = null, PivPinPolicy? pivPinPolicy = null, PivTouchPolicy? pivTouchPolicy = null, FormFactor? formFactor = null, PIVSlot? pivSlot = null, PivAlgorithm? pivAlgorithm = null, bool? isFIPSSeries = null, bool? isCSPNSeries = null, bool? AttestionMatchesCSR = null, string? attestionDataLocation = null)
+        public Attestation(bool attestationValidated = false, uint? serialnumber = null, FirmwareVersion? firmwareVersion = null, PivPinPolicy? pivPinPolicy = null, PivTouchPolicy? pivTouchPolicy = null, FormFactor? formFactor = null, PIVSlot? pivSlot = null, PivAlgorithm? pivAlgorithm = null, bool? isFIPSSeries = null, bool? isCSPNSeries = null, bool? AttestationMatchesCSR = null, string? attestationDataLocation = null)
         {
-            AttestionValidated = attestionValidated;
+            AttestationValidated = attestationValidated;
             this.SerialNumber = serialnumber;
             this.FirmwareVersion = firmwareVersion;
             this.PinPolicy = pivPinPolicy;
@@ -35,8 +35,8 @@ namespace powershellYK
             this.Algorithm = pivAlgorithm;
             this.isFIPSSeries = isFIPSSeries;
             this.isCSPNSeries = isCSPNSeries;
-            this.AttestionMatchesCSR = AttestionMatchesCSR;
-            this.AttestionDataLocation = attestionDataLocation;
+            this.AttestationMatchesCSR = AttestationMatchesCSR;
+            this.AttestationDataLocation = attestationDataLocation;
         }
     }
 }
