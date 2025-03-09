@@ -1,13 +1,10 @@
-﻿using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using Yubico.YubiKey.Piv;
-using System.Management.Automation;
+﻿using Yubico.YubiKey.Piv;
 using Yubico.YubiKey;
 using powershellYK.PIV;
 
 namespace powershellYK
 {
-    public class Attestation   
+    public class Attestation
     {
         public bool? AttestationValidated { get; }
         public uint? SerialNumber { get; }
