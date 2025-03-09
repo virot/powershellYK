@@ -23,8 +23,8 @@ Creates a CSR for a slot in the YubiKey.
 ### [Build-YubikeyPIVSignCertificate](Build-YubikeyPIVSignCertificate.md)
 Sign a certificate request with a YubiKey.
 
-### [Confirm-YubiKeyAttestion](Confirm-YubiKeyAttestion.md)
-Confirm YubiKey Attestion.
+### [Confirm-YubiKeyAttestation](Confirm-YubiKeyAttestation.md)
+Confirm YubiKey Attestation.
 
 ### [Connect-Yubikey](Connect-Yubikey.md)
 Connect the module to the YubiKey.
