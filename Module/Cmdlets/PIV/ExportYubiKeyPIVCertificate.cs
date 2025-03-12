@@ -45,47 +45,45 @@ namespace powershellYK.Cmdlets.PIV
 
         protected override void ProcessRecord()
         {
-            using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
+            try
             {
-                pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                X509Certificate2? certificate = null;
+                using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
+                {
+                    pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                    X509Certificate2 cert;
 
-                if (AttestationIntermediateCertificate.IsPresent)
-                {
-                    certificate = pivSession.GetAttestationCertificate();
-                }
-                else
-                {
-                    try
+                    // Special handling for attestation slot F9
+                    if (Slot == 0xF9)
                     {
-                        certificate = pivSession.GetCertificate(Slot);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception($"Failed to get certificate for slot {Slot}", e);
-                    }
-                }
-
-                byte[] slotAttestationCertificateBytes = certificate!.Export(X509ContentType.Cert);
-                string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
-
-                if (OutFile is not null)
-                {
-                    WriteCommandDetail($"Writing certificate to {OutFile}");
-                    File.WriteAllText(OutFile, pemData);
-                }
-                else
-                {
-                    if (PEMEncoded.IsPresent)
-                    {
-                        WriteObject(pemData);
+                        cert = pivSession.GetAttestationCertificate();
                     }
                     else
                     {
-                        WriteObject(certificate);
+                        cert = pivSession.GetCertificate(Slot);
+                    }
+
+                    // Export the certificate
+                    if (OutFile != null)
+                    {
+                        File.WriteAllText(OutFile, ExportCertificate(cert));
+                    }
+                    else
+                    {
+                        WriteObject(ExportCertificate(cert));
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                WriteError(new ErrorRecord(ex, "CertificateExportError", ErrorCategory.OperationStopped, null));
+            }
+        }
+
+        private string ExportCertificate(X509Certificate2 cert)
+        {
+            byte[] slotAttestationCertificateBytes = cert.Export(X509ContentType.Cert);
+            string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
+            return pemData;
         }
     }
 }
