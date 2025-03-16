@@ -19,7 +19,7 @@ namespace powershellYK.support.validators
             {
                 throw new ArgumentException($"Path {((FileInfo)arguments).FullName} already exists.");
             }
-            if (arguments is System.IO.FileInfo && _fileMustNotExist && ((FileInfo)arguments).Extension == _fileExt )
+            if (arguments is System.IO.FileInfo && _fileMustNotExist && ((FileInfo)arguments).Extension == _fileExt)
             {
                 throw new ArgumentException($"Path {((FileInfo)arguments).FullName} does not end in required {_fileExt}.");
             }

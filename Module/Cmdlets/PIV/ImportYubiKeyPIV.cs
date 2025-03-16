@@ -109,7 +109,7 @@ namespace powershellYK.Cmdlets.PIV
                         //https://github.com/dotnet/runtime/issues/36899
                     }
                     int keySize = newECDsaPrivateKey.KeySize / 8;
-                    eccParam = newECDsaPrivateKey.ExportParameters(true); 
+                    eccParam = newECDsaPrivateKey.ExportParameters(true);
                     byte[] privateKey = new byte[keySize];
                     int offset = keySize - eccParam.D!.Length;
                     Array.Copy(eccParam.D, 0, privateKey, offset, eccParam.D.Length);
