@@ -46,7 +46,7 @@ Create a RSA2048 in slot 0x9a with a touch policy of cached
 ## PARAMETERS
 
 ### -Algorithm
-What algorithm to use
+What algorithm to use, dependent on YubiKey firmware.
 
 ```yaml
 Type: PivAlgorithm

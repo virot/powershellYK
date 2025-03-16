@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Export-YubikeyPIVCertificate
+# Export-YubiKeyPIVCertificate
 
 ## SYNOPSIS
 Export certificate from YubiKey PIV
@@ -14,12 +14,12 @@ Export certificate from YubiKey PIV
 
 ### Slot
 ```
-Export-YubikeyPIVCertificate -Slot <PIVSlot> [-OutFile <String>] [-PEMEncoded] [<CommonParameters>]
+Export-YubiKeyPIVCertificate -Slot <PIVSlot> [-OutFile <FileInfo>] [-PEMEncoded] [<CommonParameters>]
 ```
 
 ### AttestationCertificate
 ```
-Export-YubikeyPIVCertificate [-AttestationIntermediateCertificate] [-OutFile <String>] [-PEMEncoded]
+Export-YubiKeyPIVCertificate [-AttestationIntermediateCertificate] [-OutFile <FileInfo>] [-PEMEncoded]
  [<CommonParameters>]
 ```
 
@@ -70,7 +70,7 @@ Accept wildcard characters: False
 Output file
 
 ```yaml
-Type: String
+Type: FileInfo
 Parameter Sets: (All)
 Aliases:
 

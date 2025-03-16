@@ -14,7 +14,7 @@ Creates a CSR for a slot in the YubiKey.
 
 ```
 Build-YubiKeyPIVCertificateSigningRequest -Slot <PIVSlot> [-Attestation] [-Subjectname <String>]
- [-OutFile <String>] [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded] [<CommonParameters>]
+ [-OutFile <FileInfo>] [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -80,7 +80,7 @@ Accept wildcard characters: False
 Save CSR as file
 
 ```yaml
-Type: String
+Type: FileInfo
 Parameter Sets: (All)
 Aliases:
 
