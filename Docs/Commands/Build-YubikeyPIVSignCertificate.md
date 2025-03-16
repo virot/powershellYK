@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Build-YubikeyPIVSignCertificate
+# Build-YubiKeyPIVSignCertificate
 
 ## SYNOPSIS
 Sign a certificate request with a YubiKey.
@@ -13,8 +13,8 @@ Sign a certificate request with a YubiKey.
 ## SYNTAX
 
 ```
-Build-YubikeyPIVSignCertificate -CertificateRequest <PSObject> -Slot <PIVSlot>
- [-HashAlgorithm <HashAlgorithmName>] [-OutFile <String>] [-PEMEncoded] [-Subjectname <String>]
+Build-YubiKeyPIVSignCertificate -CertificateRequest <PSObject> -Slot <PIVSlot>
+ [-HashAlgorithm <HashAlgorithmName>] [-OutFile <FileInfo>] [-PEMEncoded] [-Subjectname <String>]
  [-NotBefore <DateTimeOffset>] [-NotAfter <DateTimeOffset>] [-SerialNumber <Byte[]>] [-CertificateAuthority]
  [-SubjectAltName <String[]>] [-KeyUsage <X509KeyUsageFlags>] [-AIAUrl <String>] [<CommonParameters>]
 ```
@@ -145,7 +145,7 @@ Accept wildcard characters: False
 Output file
 
 ```yaml
-Type: String
+Type: FileInfo
 Parameter Sets: (All)
 Aliases:
 

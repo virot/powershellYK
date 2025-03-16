@@ -5,6 +5,7 @@ using Yubico.YubiKey.Piv;
 using Yubico.YubiKey;
 using powershellYK.PIV;
 using powershellYK.support.transform;
+using powershellYK.support.validators;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -18,9 +19,9 @@ namespace powershellYK.Cmdlets.PIV
         [Alias("AttestationCertificate")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Export Attestation certificate", ParameterSetName = "AttestationCertificate")]
         public SwitchParameter AttestationIntermediateCertificate { get; set; }
-        [TransformPath()]
+        [ValidatePath(fileMustExist: false, fileMustNotExist: true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Output file")]
-        public string? OutFile { get; set; } = null;
+        public System.IO.FileInfo? OutFile { get; set; } = null;
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Encode output as PEM")]
         public SwitchParameter PEMEncoded { get; set; }
@@ -45,46 +46,49 @@ namespace powershellYK.Cmdlets.PIV
 
         protected override void ProcessRecord()
         {
-            using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
+            try
             {
-                pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                X509Certificate2? certificate = null;
+                using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
+                {
+                    pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                    X509Certificate2? certificate = null;
 
-                if (AttestationIntermediateCertificate.IsPresent)
-                {
-                    certificate = pivSession.GetAttestationCertificate();
-                }
-                else
-                {
-                    try
+                    if (AttestationIntermediateCertificate.IsPresent || Slot.ToByte() == PivSlot.Attestation)
                     {
-                        certificate = pivSession.GetCertificate(Slot);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception($"Failed to get certificate for slot {Slot}", e);
-                    }
-                }
-
-                byte[] slotAttestationCertificateBytes = certificate!.Export(X509ContentType.Cert);
-                string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
-
-                if (OutFile is not null)
-                {
-                    WriteCommandDetail($"Writing certificate to {OutFile}");
-                    File.WriteAllText(OutFile, pemData);
-                }
-                else
-                {
-                    if (PEMEncoded.IsPresent)
-                    {
-                        WriteObject(pemData);
+                        certificate = pivSession.GetAttestationCertificate();
                     }
                     else
                     {
-                        WriteObject(certificate);
+                        certificate = pivSession.GetCertificate(Slot);
+                    }
+
+                    byte[] slotAttestationCertificateBytes = certificate!.Export(X509ContentType.Cert);
+                    string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
+                    if (OutFile is not null)
+                    {
+                        WriteCommandDetail($"Writing certificate to {OutFile.FullName}");
+                        using (FileStream stream = OutFile.OpenWrite())
+                        {
+                            byte[] pemDataArray = System.Text.Encoding.UTF8.GetBytes(pemData);
+                            stream.Write(pemDataArray, 0, pemDataArray.Length);
+                        }
+                    }
+                    else
+                    {
+                        if (PEMEncoded.IsPresent)
+                        {
+                            WriteObject(pemData);
+                        }
+                        else
+                        {
+                            WriteObject(certificate);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                WriteError(new ErrorRecord(ex, "CertificateExportError", ErrorCategory.OperationStopped, null));
             }
         }
     }

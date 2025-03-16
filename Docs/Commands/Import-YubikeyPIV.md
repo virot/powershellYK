@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Import-YubikeyPIV
+# Import-YubiKeyPIV
 
 ## SYNOPSIS
 Import certificate
@@ -14,24 +14,24 @@ Import certificate
 
 ### CertificateOnly
 ```
-Import-YubikeyPIV -Slot <PIVSlot> -Certificate <Object> [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-YubiKeyPIV -Slot <PIVSlot> -Certificate <Object> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### CertificateAndKey
 ```
-Import-YubikeyPIV -Slot <PIVSlot> -Certificate <Object> -PrivateKeyPath <String> [-Password <SecureString>]
+Import-YubiKeyPIV -Slot <PIVSlot> -Certificate <Object> -PrivateKeyPath <FileInfo> [-Password <SecureString>]
  [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### P12
 ```
-Import-YubikeyPIV -Slot <PIVSlot> -P12Path <String> [-Password <SecureString>] [-PinPolicy <PivPinPolicy>]
+Import-YubiKeyPIV -Slot <PIVSlot> -P12Path <FileInfo> [-Password <SecureString>] [-PinPolicy <PivPinPolicy>]
  [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Privatekey
 ```
-Import-YubikeyPIV -Slot <PIVSlot> -PrivateKeyPath <String> [-Password <SecureString>]
+Import-YubiKeyPIV -Slot <PIVSlot> -PrivateKeyPath <FileInfo> [-Password <SecureString>]
  [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -75,7 +75,7 @@ Accept wildcard characters: False
 P12 file to be stored
 
 ```yaml
-Type: String
+Type: FileInfo
 Parameter Sets: P12
 Aliases:
 
@@ -121,7 +121,7 @@ Accept wildcard characters: False
 Private key to be stored
 
 ```yaml
-Type: String
+Type: FileInfo
 Parameter Sets: CertificateAndKey, Privatekey
 Aliases:
 

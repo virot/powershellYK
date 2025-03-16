@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using Yubico.YubiKey.Sample.PivSampleCode;
 using powershellYK.support.transform;
 using powershellYK.PIV;
+using powershellYK.support.validators;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -22,9 +23,9 @@ namespace powershellYK.Cmdlets.PIV
         [ValidateSet("SHA1", "SHA256", "SHA384", "SHA512", IgnoreCase = true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "HashAlgoritm")]
         public HashAlgorithmName HashAlgorithm { get; set; } = HashAlgorithmName.SHA256;
-        [TransformPath()]
+        [ValidatePath(fileMustExist: false, fileMustNotExist: true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Output file")]
-        public string? OutFile { get; set; } = null;
+        public System.IO.FileInfo? OutFile { get; set; } = null;
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Encode output as PEM")]
         public SwitchParameter PEMEncoded { get; set; }
@@ -184,7 +185,12 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (OutFile is not null)
                 {
-                    File.WriteAllText(OutFile, pemData);
+                    WriteCommandDetail($"Writing certificate to {OutFile.FullName}");
+                    using (FileStream stream = OutFile.OpenWrite())
+                    {
+                        byte[] pemDataArray = System.Text.Encoding.UTF8.GetBytes(pemData);
+                        stream.Write(pemDataArray, 0, pemDataArray.Length);
+                    }
                 }
                 else
                 {

@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Assert-YubikeyPIV
+# Assert-YubiKeyPIV
 
 ## SYNOPSIS
 Create attestation certificate
@@ -14,12 +14,12 @@ Create attestation certificate
 
 ### ExportToFile
 ```
-Assert-YubikeyPIV -Slot <PIVSlot> -OutFile <String> [<CommonParameters>]
+Assert-YubiKeyPIV -Slot <PIVSlot> -OutFile <FileInfo> [<CommonParameters>]
 ```
 
 ### DisplayOnScreen
 ```
-Assert-YubikeyPIV -Slot <PIVSlot> [-PEMEncoded] [<CommonParameters>]
+Assert-YubiKeyPIV -Slot <PIVSlot> [-PEMEncoded] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -40,7 +40,7 @@ Creates and exports the attestation certificate for slot 0x9a
 Location of attestation certificate
 
 ```yaml
-Type: String
+Type: FileInfo
 Parameter Sets: ExportToFile
 Aliases:
 

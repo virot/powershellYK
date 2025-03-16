@@ -5,6 +5,7 @@ using Yubico.YubiKey.Piv;
 using System.Security.Cryptography;
 using powershellYK.PIV;
 using powershellYK.support.transform;
+using powershellYK.support.validators;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -17,9 +18,9 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "ExportToFile")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "DisplayOnScreen")]
         public PIVSlot Slot { get; set; }
-        [TransformPath()]
+        [ValidatePath(fileMustExist: false, fileMustNotExist: true)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Location of the attestation certificate", ParameterSetName = "ExportToFile")]
-        public string? OutFile { get; set; } = null;
+        public System.IO.FileInfo? OutFile { get; set; } = null;
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Encode output as PEM", ParameterSetName = "DisplayOnScreen")]
         public SwitchParameter PEMEncoded { get; set; }
@@ -58,8 +59,12 @@ namespace powershellYK.Cmdlets.PIV
                 string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
                 if (OutFile is not null)
                 {
-                    WriteDebug($"Writing Attestation certificate to {OutFile}");
-                    File.WriteAllText(OutFile, pemData);
+                    WriteDebug($"Writing Attestation certificate to {OutFile.FullName}");
+                    using (FileStream stream = OutFile.OpenWrite())
+                    {
+                        byte[] pemDataArray = System.Text.Encoding.UTF8.GetBytes(pemData);
+                        stream.Write(pemDataArray, 0, pemDataArray.Length);
+                    }
                 }
                 else
                 {

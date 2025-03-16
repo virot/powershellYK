@@ -25,15 +25,13 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Certificate to be stored", ParameterSetName = "CertificateOnly")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Certificate to be stored", ParameterSetName = "CertificateAndKey")]
         public object? Certificate { get; set; } = null;
-        [TransformPath()]
-        [ValidatePath("p12")]
+        [ValidatePath(fileMustExist: true, fileMustNotExist: false, fileExt: ".p12")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "P12 file to be stored", ParameterSetName = "P12")]
-        public string? P12Path { get; set; }
-        [TransformPath()]
-        [ValidatePath()]
+        public System.IO.FileInfo? P12Path { get; set; }
+        [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Private key to be stored", ParameterSetName = "Privatekey")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Private key to be stored", ParameterSetName = "CertificateAndKey")]
-        public string? PrivateKeyPath { get; set; }
+        public System.IO.FileInfo? PrivateKeyPath { get; set; }
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Private key password", ParameterSetName = "Privatekey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Private key password", ParameterSetName = "CertificateAndKey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Private key password", ParameterSetName = "P12")]
@@ -79,11 +77,11 @@ namespace powershellYK.Cmdlets.PIV
             {
                 this._newcertificate = (X509Certificate2)Certificate!;
             }
-            if (ParameterSetName == "P12")
+            if (ParameterSetName == "P12" && P12Path is not null && P12Path.Exists)
             {
                 WriteDebug($"Loading P12 from {P12Path}");
                 // Make sure to load with the private key exportable
-                X509Certificate2 p12Data = new X509Certificate2(P12Path!, Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!)), X509KeyStorageFlags.Exportable);
+                X509Certificate2 p12Data = new X509Certificate2(P12Path.FullName, Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!)), X509KeyStorageFlags.Exportable);
                 this._newcertificate = p12Data;
                 if (p12Data.PublicKey.Oid.FriendlyName == "RSA")
                 {
@@ -111,7 +109,7 @@ namespace powershellYK.Cmdlets.PIV
                         //https://github.com/dotnet/runtime/issues/36899
                     }
                     int keySize = newECDsaPrivateKey.KeySize / 8;
-                    eccParam = newECDsaPrivateKey.ExportParameters(true);
+                    eccParam = newECDsaPrivateKey.ExportParameters(true); 
                     byte[] privateKey = new byte[keySize];
                     int offset = keySize - eccParam.D!.Length;
                     Array.Copy(eccParam.D, 0, privateKey, offset, eccParam.D.Length);
@@ -121,7 +119,17 @@ namespace powershellYK.Cmdlets.PIV
             }
             if (ParameterSetName == "Privatekey" || ParameterSetName == "CertificateAndKey")
             {
-                string pemContent = System.IO.File.ReadAllText(PrivateKeyPath!);
+                string pemContent = "";
+                if (PrivateKeyPath!.Exists)
+                {
+                    using (FileStream fileStream = PrivateKeyPath.OpenRead())
+                    {
+                        using (StreamReader reader = new StreamReader(fileStream))
+                        {
+                            pemContent = reader.ReadToEnd();
+                        }
+                    }
+                }
                 if (Password.Length >= 1)
                 {
                     if (pemContent.Contains("BEGIN ENCRYPTED PRIVATE KEY"))
