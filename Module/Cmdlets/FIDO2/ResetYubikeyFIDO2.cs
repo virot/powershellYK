@@ -52,16 +52,16 @@ namespace powershellYK.Cmdlets.Fido
                 throw new Exception("YubiKey Bio Multi-Protocol Edition (MPE) detected. Reset using 'Reset-YubiKey' instead!");
             }
 
+            if (Interactive && YubiKeyModule._yubikey.SerialNumber is null)
+            {
+                WriteError(new ErrorRecord(new Exception("To reset a SecurityKey please use Reset-YubiKeyFIDO -Interactive $False"), null, ErrorCategory.DeviceError, null));
+                return;
+            }
+
             if (ShouldProcess("This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings. Proceed?", "This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings. Proceed?", "WARNING!"))
             {
                 if (Interactive)
-                {
-                    if (YubiKeyModule._yubikey.SerialNumber is null)
-                    {
-                        WriteError(new ErrorRecord(new Exception("To reset a SecurityKey please use Reset-YubiKeyFIDO -Interactive $False"), null, ErrorCategory.DeviceError, null));
-                        return;
-                    }
-
+                { 
                     Console.WriteLine("Remove and re-insert the YubiKey to perform the reset...");
 
                     // Set up the YubiKeyDeviceListener
