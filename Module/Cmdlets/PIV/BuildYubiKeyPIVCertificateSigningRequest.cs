@@ -16,10 +16,14 @@ namespace powershellYK.Cmdlets.PIV
     public class BuildYubiKeyPIVCertificateSigningRequestCmdlet : Cmdlet
     {
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Create a CSR for slot")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Create a CSR for slot", ParameterSetName = "With Attestation")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Create a CSR for slot", ParameterSetName = "Without Attestation")]
         public PIVSlot Slot { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Include attestion certificate in CSR")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Include attestation certificate in CSR", ParameterSetName = "With Attestation")]
         public SwitchParameter Attestation { get; set; }
+        [ValidateSet("Both", "Legacy", "Standard", ErrorMessage = null)]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "OID to store attestation in CSR.", ParameterSetName = "With Attestation")]
+        public string AttestationLocation { get; set; } = "Both";
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subject name of certificate")]
 
         public string Subjectname { get; set; } = "CN=SubjectName to be supplied by Server,O=Fake";
@@ -111,8 +115,21 @@ namespace powershellYK.Cmdlets.PIV
                     X509Certificate2 yubikeyIntermediateAttestationCertificate = pivSession.GetAttestationCertificate();
                     byte[] yubikeyIntermediateAttestationCertificateBytes = yubikeyIntermediateAttestationCertificate.Export(X509ContentType.Cert);
                     Oid oidIntermediate = new Oid("1.3.6.1.4.1.41482.3.2");
-                    Oid oidSlotAttestation = new Oid("1.3.6.1.4.1.41482.3.11");
-                    request.CertificateExtensions.Add(new X509Extension(oidSlotAttestation, slotAttestationCertificateBytes, false));
+                    Oid oidSlotAttestationStandard = new Oid("1.3.6.1.4.1.41482.3.1");
+                    Oid oidSlotAttestationLegacy = new Oid("1.3.6.1.4.1.41482.3.11");
+                    switch(AttestationLocation)
+                    {
+                        case "Both":
+                            request.CertificateExtensions.Add(new X509Extension(oidSlotAttestationStandard, slotAttestationCertificateBytes, false));
+                            request.CertificateExtensions.Add(new X509Extension(oidSlotAttestationLegacy, slotAttestationCertificateBytes, false));
+                            break;
+                        case "Standard":
+                            request.CertificateExtensions.Add(new X509Extension(oidSlotAttestationStandard, slotAttestationCertificateBytes, false));
+                            break;
+                        case "Legacy":
+                            request.CertificateExtensions.Add(new X509Extension(oidSlotAttestationLegacy, slotAttestationCertificateBytes, false));
+                            break;
+                    }
                     request.CertificateExtensions.Add(new X509Extension(oidIntermediate, yubikeyIntermediateAttestationCertificateBytes, false));
                 }
 

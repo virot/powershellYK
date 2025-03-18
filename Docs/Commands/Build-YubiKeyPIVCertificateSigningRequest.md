@@ -12,9 +12,17 @@ Creates a CSR for a slot in the YubiKey.
 
 ## SYNTAX
 
+### With Attestation
 ```
-Build-YubiKeyPIVCertificateSigningRequest -Slot <PIVSlot> [-Attestation] [-Subjectname <String>]
- [-OutFile <FileInfo>] [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded] [<CommonParameters>]
+Build-YubiKeyPIVCertificateSigningRequest -Slot <PIVSlot> [-Attestation] [-AttestationLocation <String>]
+ [-Subjectname <String>] [-OutFile <FileInfo>] [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded]
+ [<CommonParameters>]
+```
+
+### Without Attestation
+```
+Build-YubiKeyPIVCertificateSigningRequest -Slot <PIVSlot> [-Subjectname <String>] [-OutFile <FileInfo>]
+ [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -50,8 +58,27 @@ Include attestion certificate in CSR
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: (All)
+Parameter Sets: With Attestation
 Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -AttestationLocation
+OID to store attestation in CSR
+Legacy stores the attestation in the .11 OID as yubico-piv-tool used until 2025.
+Standard stores the attestation in the .1 OID as yubico-piv-tool uses from 2025.
+Both stores the attestation in both OIDs.
+
+```yaml
+Type: String
+Parameter Sets: With Attestation
+Aliases:
+Accepted values: Both, Legacy, Standard
 
 Required: False
 Position: Named
