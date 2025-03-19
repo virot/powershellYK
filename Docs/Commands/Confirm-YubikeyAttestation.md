@@ -12,26 +12,48 @@ Confirm YubiKey Attestation.
 
 ## SYNTAX
 
-### requestWithExternalAttestation
+### requestWithExternalAttestation-Object
 ```
-Confirm-YubiKeyAttestation -CertificateRequest <PSObject> -AttestationCertificate <PSObject>
- -IntermediateCertificate <PSObject> [<CommonParameters>]
-```
-
-### requestWithBuiltinAttestation
-```
-Confirm-YubiKeyAttestation -CertificateRequest <PSObject> [<CommonParameters>]
+Confirm-YubiKeyAttestation -CertificateRequest <CertificateRequest> -AttestationCertificate <X509Certificate2>
+ -IntermediateCertificate <X509Certificate2> [<CommonParameters>]
 ```
 
-### JustAttestCertificate
+### requestWithBuiltinAttestation-Object
 ```
-Confirm-YubiKeyAttestation -AttestationCertificate <PSObject> -IntermediateCertificate <PSObject>
+Confirm-YubiKeyAttestation -CertificateRequest <CertificateRequest> [<CommonParameters>]
+```
+
+### requestWithExternalAttestation-File
+```
+Confirm-YubiKeyAttestation -CertificateRequestFile <FileInfo> -AttestationCertificateFile <FileInfo>
+ -IntermediateCertificateFile <FileInfo> [<CommonParameters>]
+```
+
+### requestWithBuiltinAttestation-File
+```
+Confirm-YubiKeyAttestation -CertificateRequestFile <FileInfo> [<CommonParameters>]
+```
+
+### JustAttestCertificate-Object
+```
+Confirm-YubiKeyAttestation -AttestationCertificate <X509Certificate2>
+ -IntermediateCertificate <X509Certificate2> [<CommonParameters>]
+```
+
+### JustAttestCertificate-File
+```
+Confirm-YubiKeyAttestation -AttestationCertificateFile <FileInfo> -IntermediateCertificateFile <FileInfo>
  [<CommonParameters>]
 ```
 
-### CertificateIncludingAttestation
+### CertificateIncludingAttestation-Object
 ```
-Confirm-YubiKeyAttestation -CertificateIncludingAttestation <PSObject> [<CommonParameters>]
+Confirm-YubiKeyAttestation -CertificateIncludingAttestation <X509Certificate2> [<CommonParameters>]
+```
+
+### CertificateIncludingAttestation-File
+```
+Confirm-YubiKeyAttestation -CertificateIncludingAttestationFile <FileInfo> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -106,8 +128,23 @@ If the attestation certificate isn't include in the Certificate Request, please 
 - X509Certificate2
 
 ```yaml
-Type: PSObject
-Parameter Sets: requestWithExternalAttestation, JustAttestCertificate
+Type: X509Certificate2
+Parameter Sets: requestWithExternalAttestation-Object, JustAttestCertificate-Object
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -AttestationCertificateFile
+AttestationCertificate
+
+```yaml
+Type: FileInfo
+Parameter Sets: requestWithExternalAttestation-File, JustAttestCertificate-File
 Aliases:
 
 Required: True
@@ -121,8 +158,23 @@ Accept wildcard characters: False
 CertificateIncludingAttestation
 
 ```yaml
-Type: PSObject
-Parameter Sets: CertificateIncludingAttestation
+Type: X509Certificate2
+Parameter Sets: CertificateIncludingAttestation-Object
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CertificateIncludingAttestationFile
+CertificateIncludingAttestation
+
+```yaml
+Type: FileInfo
+Parameter Sets: CertificateIncludingAttestation-File
 Aliases:
 
 Required: True
@@ -139,8 +191,23 @@ Specifies a CertificateRequest to check. The acceptable values for this paramete
 - A byte array (byte[])
 
 ```yaml
-Type: PSObject
-Parameter Sets: requestWithExternalAttestation, requestWithBuiltinAttestation
+Type: CertificateRequest
+Parameter Sets: requestWithExternalAttestation-Object, requestWithBuiltinAttestation-Object
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CertificateRequestFile
+CSR to check
+
+```yaml
+Type: FileInfo
+Parameter Sets: requestWithExternalAttestation-File, requestWithBuiltinAttestation-File
 Aliases:
 
 Required: True
@@ -157,8 +224,23 @@ The intermediate certificate is signed by Yubico and unique in each YubiKey. If 
 - X509Certificate2
 
 ```yaml
-Type: PSObject
-Parameter Sets: requestWithExternalAttestation, JustAttestCertificate
+Type: X509Certificate2
+Parameter Sets: requestWithExternalAttestation-Object, JustAttestCertificate-Object
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IntermediateCertificateFile
+IntermediateCertificate
+
+```yaml
+Type: FileInfo
+Parameter Sets: requestWithExternalAttestation-File, JustAttestCertificate-File
 Aliases:
 
 Required: True
