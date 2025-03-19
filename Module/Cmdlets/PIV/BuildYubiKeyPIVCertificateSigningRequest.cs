@@ -117,7 +117,7 @@ namespace powershellYK.Cmdlets.PIV
                     Oid oidIntermediate = new Oid("1.3.6.1.4.1.41482.3.2");
                     Oid oidSlotAttestationStandard = new Oid("1.3.6.1.4.1.41482.3.1");
                     Oid oidSlotAttestationLegacy = new Oid("1.3.6.1.4.1.41482.3.11");
-                    switch(AttestationLocation)
+                    switch (AttestationLocation)
                     {
                         case "Both":
                             request.CertificateExtensions.Add(new X509Extension(oidSlotAttestationStandard, slotAttestationCertificateBytes, false));
