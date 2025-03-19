@@ -11,7 +11,7 @@ Locale: en-US
 {{ Fill in the Description }}
 
 ## powershellYK Cmdlets
-### [Assert-YubikeyPIV](Assert-YubikeyPIV.md)
+### [Assert-YubiKeyPIV](Assert-YubiKeyPIV.md)
 Create attestation certificate
 
 ### [Block-YubikeyPIV](Block-YubikeyPIV.md)
@@ -20,10 +20,10 @@ Block out PIN or PUK codes
 ### [Build-YubiKeyPIVCertificateSigningRequest](Build-YubiKeyPIVCertificateSigningRequest.md)
 Creates a CSR for a slot in the YubiKey.
 
-### [Build-YubikeyPIVSignCertificate](Build-YubikeyPIVSignCertificate.md)
+### [Build-YubiKeyPIVSignCertificate](Build-YubiKeyPIVSignCertificate.md)
 Sign a certificate request with a YubiKey.
 
-### [Confirm-YubiKeyAttestation](Confirm-YubiKeyAttestation.md)
+### [Confirm-YubiKeyPIVAttestation](Confirm-YubiKeyPIVAttestation.md)
 Confirm YubiKey Attestation.
 
 ### [Connect-Yubikey](Connect-Yubikey.md)
@@ -32,7 +32,7 @@ Connect the module to the YubiKey.
 ### [Connect-YubiKeyFIDO2](Connect-YubiKeyFIDO2.md)
 Connect to the FIDO2 session.
 
-### [Connect-YubikeyOATH](Connect-YubikeyOATH.md)
+### [Connect-YubiKeyOATH](Connect-YubiKeyOATH.md)
 Connect to the OATH part of the connected YubiKey.
 
 ### [Connect-YubikeyPIV](Connect-YubikeyPIV.md)
@@ -50,7 +50,7 @@ Enables logging from the Yubico SDK.
 ### [Enable-YubikeyFIDO2EnterpriseAttestation](Enable-YubikeyFIDO2EnterpriseAttestation.md)
 Enables the Enterprise Attestion feature on the YubiKey FIDO2 device.
 
-### [Export-YubikeyPIVCertificate](Export-YubikeyPIVCertificate.md)
+### [Export-YubiKeyPIVCertificate](Export-YubiKeyPIVCertificate.md)
 Export certificate from YubiKey PIV
 
 ### [Find-Yubikey](Find-Yubikey.md)
@@ -68,7 +68,7 @@ List fingerprint templates registered on a YubiKey Bio or YubiKey Bio Multi-Prot
 ### [Get-YubikeyFIDO2](Get-YubikeyFIDO2.md)
 Get FIDO2 information from YubiKey
 
-### [Get-YubikeyFIDO2Credential](Get-YubikeyFIDO2Credential.md)
+### [Get-YubiKeyFIDO2Credential](Get-YubiKeyFIDO2Credential.md)
 Read the FIDO2 discoverable credentials
 
 ### [Get-YubikeyOATH](Get-YubikeyOATH.md)
@@ -83,7 +83,7 @@ YubiKey OTP Information
 ### [Get-YubikeyPIV](Get-YubikeyPIV.md)
 Gets information about the PIV module and specific slots.
 
-### [Import-YubikeyPIV](Import-YubikeyPIV.md)
+### [Import-YubiKeyPIV](Import-YubiKeyPIV.md)
 Import certificate
 
 ### [Lock-Yubikey](Lock-Yubikey.md)

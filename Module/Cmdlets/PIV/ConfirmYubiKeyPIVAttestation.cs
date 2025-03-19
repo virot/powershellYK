@@ -13,8 +13,9 @@ using System.Text;
 
 namespace powershellYK.Cmdlets.Other
 {
-    [Cmdlet(VerbsLifecycle.Confirm, "YubiKeyAttestation")]
-    public class ConfirmYubikeyAttestationCommand : PSCmdlet
+    [Alias("Confirm-YubiKeyAttestation")]
+    [Cmdlet(VerbsLifecycle.Confirm, "YubiKeyPIVAttestation")]
+    public class ConfirmYubikeyPIVAttestationCmdlet : PSCmdlet
     {
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithExternalAttestation-Object")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithBuiltinAttestation-Object")]
