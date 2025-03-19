@@ -84,12 +84,14 @@ namespace powershellYK.Cmdlets.Other
             Match? match;
             X509Extension? extensioncsr;
 
+            WriteDebug($"Cmdlet triggered with ParameterSetName={ParameterSetName}");
+
             #region // Load to internal objects
             if (ParameterSetName == "requestWithBuiltinAttestation-Object" || ParameterSetName == "requestWithExternalAttestation-Object")
             {
                 _CertificateRequest = CertificateRequest;
             }
-            else if (ParameterSetName == "requestWithBuiltinAttestation-File" || ParameterSetName == "requestWithExternalAttestation-File")
+            if (ParameterSetName == "requestWithBuiltinAttestation-File" || ParameterSetName == "requestWithExternalAttestation-File")
             {
                 using (FileStream fileStream = CertificateRequestFile!.OpenRead())
                 {
@@ -101,12 +103,12 @@ namespace powershellYK.Cmdlets.Other
                     }
                 }
             }
-            else if (ParameterSetName == "requestWithExternalAttestation-Object" || ParameterSetName == "JustAttestCertificate-Object")
+            if (ParameterSetName == "requestWithExternalAttestation-Object" || ParameterSetName == "JustAttestCertificate-Object")
             {
                 _AttestationCertificate = AttestationCertificate;
                 _IntermediateCertificate = IntermediateCertificate;
             }
-            else if (ParameterSetName == "requestWithExternalAttestation-File" || ParameterSetName == "JustAttestCertificate-File")
+            if (ParameterSetName == "requestWithExternalAttestation-File" || ParameterSetName == "JustAttestCertificate-File")
             {
                 WriteDebug($"Reading Attestation certificate from file {AttestationCertificateFile}");
                 using (FileStream fileStream = AttestationCertificateFile!.OpenRead())
