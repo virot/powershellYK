@@ -36,6 +36,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="support\AttestationCerts\CA\yubico-ca-1.pem" />
+    <None Remove="support\AttestationCerts\CA\yubico-piv-ca-1.pem" />
+    <None Remove="support\AttestationCerts\Intermediate\yubico-intermediate.pem" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="support\AttestationCerts\CA\yubico-ca-1.pem" />
+    <EmbeddedResource Include="support\AttestationCerts\CA\yubico-piv-ca-1.pem" />
+    <EmbeddedResource Include="support\AttestationCerts\Intermediate\yubico-intermediate.pem" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Management.Automation" Version="7.4.6" />
     <PackageReference Include="Yubico.YubiKey" Version="1.12.1" />
   </ItemGroup>

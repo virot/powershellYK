@@ -12,13 +12,13 @@ namespace powershellYK.support.transform
 
         public override object Transform(EngineIntrinsics engineIntrinsics, object inputData)
         {
-            if (inputData is string)
+            if (inputData is String)
             {
                 // fix relative paths
-                if (!Path.IsPathFullyQualified(inputData?.ToString() ?? ""))
+                if (!Path.IsPathFullyQualified(((String)inputData).ToString() ?? ""))
                 {
                     var sessionState = engineIntrinsics.SessionState;
-                    return Path.Combine(sessionState.Path.CurrentFileSystemLocation.ToString(), inputData?.ToString() ?? "");
+                    return new FileInfo(Path.Combine(sessionState.Path.CurrentFileSystemLocation.ToString(), ((String)inputData)?.ToString() ?? ""));
                 }
             }
             return inputData!;

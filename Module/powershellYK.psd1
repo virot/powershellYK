@@ -112,6 +112,8 @@ CmdletsToExport = @(
  'Block-YubiKeyPIV',
  'Build-YubiKeyPIVCertificateSigningRequest',
  'Build-YubiKeyPIVSignCertificate',
+ 'Confirm-YubiKeyAttestation',
+ 'Confirm-YubiKeyPIVAttestation',
  'Connect-YubiKeyPIV',
  'Export-YubiKeyPIVCertificate',
  'Get-YubiKeyPIV',
@@ -127,7 +129,6 @@ CmdletsToExport = @(
  'Register-YubiKeyBIOFingerprint',
  'Remove-YubiKeyBIOFingerprint',
  'Rename-YubiKeyBIOFingerprint',
- 'Confirm-YubiKeyAttestation',
  'ConvertTo-AltSecurity',
  'Enable-PowershellYKSDKLogging',
  'Get-PowershellYKInfo'
