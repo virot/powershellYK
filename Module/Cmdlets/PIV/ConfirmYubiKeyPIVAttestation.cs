@@ -1,3 +1,4 @@
+// Imports
 using powershellYK.support.transform;
 using powershellYK.support.validators;
 using System.Management.Automation;           // Windows PowerShell namespace.
@@ -13,10 +14,13 @@ using System.Text;
 
 namespace powershellYK.Cmdlets.Other
 {
+    // Allows the cmdlet to be called by alias for backward compatibility
     [Alias("Confirm-YubiKeyAttestation")]
     [Cmdlet(VerbsLifecycle.Confirm, "YubiKeyPIVAttestation")]
     public class ConfirmYubikeyPIVAttestationCmdlet : PSCmdlet
     {
+        #region Parameter Definitions
+        // Parameters for handling Certificate Signing Requests (CSR)
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithExternalAttestation-Object")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithBuiltinAttestation-Object")]
         public CertificateRequest? CertificateRequest { get; set; }
@@ -55,15 +59,19 @@ namespace powershellYK.Cmdlets.Other
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CertificateIncludingAttestation", ParameterSetName = "CertificateIncludingAttestation-File")]
         public System.IO.FileInfo? CertificateIncludingAttestationFile { get; set; }
 
+        #endregion
 
+        #region Private Fields
+        // Internal storage for processed certificates and requests
         private CertificateRequest? _CertificateRequest;
         private X509Certificate2? _AttestationCertificate;
         private X509Certificate2? _IntermediateCertificate;
         private X509Certificate2? _CertificateIncludingAttestation;
 
+        // Regex pattern for PEM format validation
         private static string pemFormatRegex = "^-----[^-]*-----(?<certificateContent>.*)-----[^-]*-----$";
 
-        // temp storage for the attestation objectdata
+        // Storage for extracted attestation data
         private uint? _out_SerialNumber;
         private FirmwareVersion? _out_FirmwareVersion;
         private PivPinPolicy? _out_PinPolicy;
@@ -75,19 +83,23 @@ namespace powershellYK.Cmdlets.Other
         private bool? _out_AttestationMatchesCSR = null;
         private PivAlgorithm? _out_Algorithm;
         private string? _out_AttestationDataLocation = null;
+        #endregion
+
         protected override void BeginProcessing()
         {
         }
 
         protected override void ProcessRecord()
         {
+            // Initialize regex for PEM format parsing
             Regex regex = new Regex(pemFormatRegex, RegexOptions.Singleline);
             Match? match;
             X509Extension? extensioncsr;
 
             WriteDebug($"Cmdlet triggered with ParameterSetName={ParameterSetName}");
 
-            #region // Load to internal objects
+            #region Load Input Data
+            // Load certificate request from object or file
             if (ParameterSetName == "requestWithBuiltinAttestation-Object" || ParameterSetName == "requestWithExternalAttestation-Object")
             {
                 _CertificateRequest = CertificateRequest;
@@ -100,7 +112,6 @@ namespace powershellYK.Cmdlets.Other
                     {
                         string request = reader.ReadToEnd();
                         _CertificateRequest = LoadSigningRequestPem(request, HashAlgorithmName.SHA256, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
-
                     }
                 }
             }
@@ -180,11 +191,13 @@ namespace powershellYK.Cmdlets.Other
                     }
                 }
             }
+            #endregion
 
-            #endregion // Load to internal objects
-            #region // For all BuiltInAttestion extract the Attestation and Intermediate certificates
+            #region Process Attestation Data
+            // Extract attestation data from built-in certificates
             if ((ParameterSetName == "requestWithBuiltinAttestation-Object" || ParameterSetName == "requestWithBuiltinAttestation-File") && _CertificateRequest is not null)
             {
+                // Check for standard attestation OID (1.3.6.1.4.1.41482.3.1)
                 if (_CertificateRequest!.CertificateExtensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.1"))
                 {
                     extensioncsr = _CertificateRequest!.CertificateExtensions
@@ -240,62 +253,17 @@ namespace powershellYK.Cmdlets.Other
                     throw new ArgumentException("The CertificateRequest does not contain embedded intermediate attestation certificate");
                 }
             }
-            #endregion // For all BuiltInAttestion extract the Attestation and Intermediate certificates
+            #endregion
 
-            #region // For CertificateIncludingAttestation extract the Attestation and Intermediate certificates
-            if (ParameterSetName.StartsWith("Certificate") && _CertificateIncludingAttestation is not null)
-            {
-                if (_CertificateIncludingAttestation.Extensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.1"))
-                {
-                    WriteDebug("Found 1.3.6.1.4.1.41482.3.1 extension, trying to extract attestationdata certificate");
-                    extensioncsr = _CertificateIncludingAttestation.Extensions.Cast<X509Extension>().FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.1", new X509Extension(new AsnEncodedData("1.3.6.1.4.1.41482.3.1", new byte[] { 0x00 }), false));
-                    _out_AttestationDataLocation = "1.3.6.1.4.1.41482.3.1";
-                    try
-                    {
-                        _AttestationCertificate = new X509Certificate2(extensioncsr.RawData);
-                    }
-                    catch
-                    {
-                        throw new ArgumentException("Failed to parse the embedded attestationdata certificate");
-                    }
-                }
-                else
-                {
-                    throw new Exception("Certificate does not contain attestation data");
-                }
-
-                if (_CertificateIncludingAttestation!.Extensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.2"))
-                {
-                    WriteDebug("Found 1.3.6.1.4.1.41482.3.2 extension, trying to extract intermediate certificate");
-                    // Read from CSR 1.3.6.1.4.1.41482.3.2
-                    extensioncsr = _CertificateIncludingAttestation.Extensions.Cast<X509Extension>().FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.2", new X509Extension(new AsnEncodedData("1.3.6.1.4.1.41482.3.2", new byte[] { 0x00 }), false));
-                    try
-                    {
-                        _IntermediateCertificate = new X509Certificate2(extensioncsr.RawData);
-                    }
-                    catch
-                    {
-                        throw new ArgumentException("Failed to parse the embedded intermediate attestation certificate");
-                    }
-
-                }
-            }
-            #endregion // For CertificateIncludingAttestation extract the Attestation and Intermediate certificates
-
-            if (_AttestationCertificate is null || _IntermediateCertificate is null)
-            {
-                // Is this still needed??
-                throw new Exception("Attestation Certificate or Intermediate Certificate is missing!");
-            }
-
-            // Check the entire chain up to Yubico's root CA
+            #region Validate Certificate Chain
+            // Set up chain validation parameters
             X509Chain chain = new X509Chain();
             chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
             chain.ChainPolicy.ExtraStore.Add(_IntermediateCertificate);
             chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
             chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
 
-            // Import All Yubico's root CA and intermediates, they are included in the DLL
+            // Load Yubico root and intermediate certificates from embedded resources
             Assembly assembly = Assembly.GetExecutingAssembly();
             string[] resourceNames = assembly.GetManifestResourceNames();
 
@@ -331,14 +299,18 @@ namespace powershellYK.Cmdlets.Other
                     }
                 }
             }
+            #endregion
 
+            #region Extract Attestation Information
             if (chain.Build(_AttestationCertificate) == false)
             {
+                // Chain validation failed
                 Attestation returnObject = new Attestation(false);
                 WriteObject(returnObject);
             }
             else
             {
+                // Extract PIV slot from certificate subject
                 WriteDebug($"Slot {_AttestationCertificate.Subject}");
                 string slotPattern = @"CN=YubiKey PIV Attestation (?<slot>[0-9A-Fa-f]{2})";
                 Regex slotRegex = new Regex(slotPattern);
@@ -352,6 +324,7 @@ namespace powershellYK.Cmdlets.Other
                     _out_Slot = 0x00;
                 }
 
+                // Process certificate extensions to extract YubiKey metadata
                 foreach (X509Extension extension in _AttestationCertificate.Extensions)
                 {
                     switch (extension.Oid!.Value)
@@ -378,7 +351,7 @@ namespace powershellYK.Cmdlets.Other
                     }
                 }
 
-                // Make sure that the default type is Normal.
+                // Determine YubiKey series type (FIPS/CSPN)
                 _out_isFIPSSeries = false;
                 _out_isCSPNSeries = false;
 
@@ -387,17 +360,17 @@ namespace powershellYK.Cmdlets.Other
                     switch (extension.Oid!.Value)
                     {
                         case "1.3.6.1.4.1.41482.3.10":
-                            WriteDebug("Yubikey is FIPS series");
+                            WriteDebug("YubiKey is FIPS series");
                             _out_isFIPSSeries = true;
                             break;
                         case "1.3.6.1.4.1.41482.3.11":
-                            WriteDebug("Yubikey is CSPN series");
+                            WriteDebug("YubiKey is CSPN series");
                             _out_isCSPNSeries = true;
                             break;
                     }
                 }
 
-                // Check if the public key in the CSR matches the public key in the attestation certificate
+                // Verify public key matches between attestation and CSR/certificate
                 if (ParameterSetName.StartsWith("request") && _CertificateRequest is not null)
                 {
                     _out_AttestationMatchesCSR = _AttestationCertificate.PublicKey.EncodedKeyValue.RawData.SequenceEqual(_CertificateRequest.PublicKey.EncodedKeyValue.RawData);
@@ -407,7 +380,7 @@ namespace powershellYK.Cmdlets.Other
                     _out_AttestationMatchesCSR = _AttestationCertificate.PublicKey.EncodedKeyValue.RawData.SequenceEqual(_CertificateIncludingAttestation.PublicKey.EncodedKeyValue.RawData);
                 }
 
-                // Figure out the PublicKey algorithm
+                // Determine the public key algorithm and parameters
                 if (_AttestationCertificate.PublicKey.Oid.FriendlyName == "RSA")
                 {
                     switch (_AttestationCertificate.PublicKey.GetRSAPublicKey()!.KeySize)
@@ -453,11 +426,25 @@ namespace powershellYK.Cmdlets.Other
                     _out_Algorithm = PivAlgorithm.None;
                 }
 
-                Attestation returnObject = new Attestation(true, _out_SerialNumber, _out_FirmwareVersion, _out_PinPolicy, _out_TouchPolicy, _out_FormFactor, _out_Slot, _out_Algorithm, _out_isFIPSSeries, _out_isCSPNSeries, AttestationMatchesCSR: _out_AttestationMatchesCSR, attestationDataLocation: _out_AttestationDataLocation);
+                // Create and return the attestation object with all extracted data
+                Attestation returnObject = new Attestation(
+                    true,                           // Validation successful
+                    _out_SerialNumber,             // YubiKey serial number
+                    _out_FirmwareVersion,          // Firmware version
+                    _out_PinPolicy,                // PIN policy
+                    _out_TouchPolicy,              // Touch policy
+                    _out_FormFactor,               // Form factor
+                    _out_Slot,                     // PIV slot
+                    _out_Algorithm,                // Key algorithm
+                    _out_isFIPSSeries,             // FIPS series flag
+                    _out_isCSPNSeries,             // CSPN series flag
+                    AttestationMatchesCSR: _out_AttestationMatchesCSR,  // Key matching result
+                    attestationDataLocation: _out_AttestationDataLocation // OID location
+                );
 
                 WriteObject(returnObject);
             }
+            #endregion
         }
-
     }
 }
