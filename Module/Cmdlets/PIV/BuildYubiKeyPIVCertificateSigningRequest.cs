@@ -27,6 +27,7 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subject name of certificate")]
 
         public string Subjectname { get; set; } = "CN=SubjectName to be supplied by Server,O=Fake";
+        [TransformPath]
         [ValidatePath(fileMustExist: false, fileMustNotExist: true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Save CSR as file")]
         public System.IO.FileInfo? OutFile { get; set; } = null;

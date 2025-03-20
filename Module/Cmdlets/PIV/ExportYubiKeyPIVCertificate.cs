@@ -19,6 +19,7 @@ namespace powershellYK.Cmdlets.PIV
         [Alias("AttestationCertificate")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Export Attestation certificate", ParameterSetName = "AttestationCertificate")]
         public SwitchParameter AttestationIntermediateCertificate { get; set; }
+        [TransformPath]
         [ValidatePath(fileMustExist: false, fileMustNotExist: true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Output file")]
         public System.IO.FileInfo? OutFile { get; set; } = null;

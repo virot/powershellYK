@@ -63,7 +63,8 @@ This cmdlet allows for verification of the attestation of YubiKeys. This can be 
 
 ### Example 1
 ```powershell
-PS C:\> Confirm-YubiKeyPIVAttestation -CertificateRequest (New-YubikeyPIVCSR -Slot 0x9a -Attestation -PEMEncoded)
+PS C:\> New-YubikeyPIVCSR -Slot 0x9a -Attestation -OutFile csr.pem
+PS C:\> Confirm-YubiKeyPIVAttestation -CertificateRequestFile csr.pem
 
 Slot                : 0x9A
 AttestationValidated  : True
@@ -101,7 +102,7 @@ Since this did not include a Certificate Request, *AttestationMatchesCSR* is nul
 
 ### Example 3
 ```powershell
-PS C:\> Confirm-YubiKeyPIVAttestation -CertificateRequest csr.pem -AttestationCertificate attestation.pem -IntermediateCertificate intermediate.pem
+PS C:\> Confirm-YubiKeyPIVAttestation -CertificateRequestFile csr.pem -AttestationCertificateFile attestation.pem -IntermediateCertificateFile intermediate.pem
 
 AttestationValidated  : True
 SerialNumber        : 29167224

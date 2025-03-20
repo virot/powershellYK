@@ -18,6 +18,7 @@ namespace powershellYK.Cmdlets.PIV
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "ExportToFile")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Yubikey PIV Slot", ParameterSetName = "DisplayOnScreen")]
         public PIVSlot Slot { get; set; }
+        [TransformPath]
         [ValidatePath(fileMustExist: false, fileMustNotExist: true)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Location of the attestation certificate", ParameterSetName = "ExportToFile")]
         public System.IO.FileInfo? OutFile { get; set; } = null;
