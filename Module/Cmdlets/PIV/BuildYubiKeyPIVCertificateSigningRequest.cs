@@ -65,7 +65,13 @@ namespace powershellYK.Cmdlets.PIV
                 CertificateRequest request;
                 X509SignatureGenerator signer;
 
-                // get the metadata catch if fails                
+                // This is only supported on firmware 5.3.0 and newer.
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).FirmwareVersion < new FirmwareVersion(5, 3, 0))
+                {
+                    throw new NotSupportedException("This feature requires firmware version 5.3.0 or newer.");
+                }
+                
+                // get the metadata catch if fails
                 PivMetadata? metadata = null;
                 PivPublicKey? publicKey = null;
                 try
