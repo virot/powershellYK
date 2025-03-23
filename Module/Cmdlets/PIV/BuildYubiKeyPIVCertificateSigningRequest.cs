@@ -70,7 +70,7 @@ namespace powershellYK.Cmdlets.PIV
                 {
                     throw new NotSupportedException("This feature requires firmware version 5.3.0 or newer.");
                 }
-                
+
                 // get the metadata catch if fails
                 PivMetadata? metadata = null;
                 PivPublicKey? publicKey = null;
