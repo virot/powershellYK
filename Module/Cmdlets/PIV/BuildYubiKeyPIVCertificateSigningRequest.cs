@@ -168,7 +168,8 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     else
                     {
-                        WriteObject(requestSigned);
+                        var csrObject = CertificateRequest.LoadSigningRequestPem(pemData.AsSpan(), HashAlgorithm, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
+                        WriteObject(csrObject);
                     }
                 }
                 WriteDebug("ProcessRecord in New-YubikeyPIVCSR");
