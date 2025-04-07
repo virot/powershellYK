@@ -453,7 +453,14 @@ namespace powershellYK.Cmdlets.Other
                     _out_Algorithm = PivAlgorithm.None;
                 }
 
-                Attestation returnObject = new Attestation(true, _out_SerialNumber, _out_FirmwareVersion, _out_PinPolicy, _out_TouchPolicy, _out_FormFactor, _out_Slot, _out_Algorithm, _out_isFIPSSeries, _out_isCSPNSeries, AttestationMatchesCSR: _out_AttestationMatchesCSR, attestationDataLocation: _out_AttestationDataLocation);
+                // Extract the attestaionpath
+                // Ignore the first two elements, they are the attestation and onboard intermediate certificates
+                // Select the SubjectName from the rest of the chain elements
+                // Then reverse the list to get the correct order, MSB order.
+                List<string> attestionPath = chain.ChainElements.Cast<X509ChainElement>().Skip(2).Select(e => e.Certificate.Subject.ToString()).Where(subj => subj != null).Select(item => item!).ToList();
+                attestionPath.Reverse();
+
+                Attestation returnObject = new Attestation(true, _out_SerialNumber, _out_FirmwareVersion, _out_PinPolicy, _out_TouchPolicy, _out_FormFactor, _out_Slot, _out_Algorithm, _out_isFIPSSeries, _out_isCSPNSeries, AttestationMatchesCSR: _out_AttestationMatchesCSR, attestationDataLocation: _out_AttestationDataLocation, attestationPath: attestionPath);
 
                 WriteObject(returnObject);
             }

@@ -19,8 +19,9 @@ namespace powershellYK
         public bool? AttestationMatchesCSR { get; } = null;
 
         public string? AttestationDataLocation { get; } = null;
+        public List<string>? AttestationPath { get; } = null;
 
-        public Attestation(bool attestationValidated = false, uint? serialnumber = null, FirmwareVersion? firmwareVersion = null, PivPinPolicy? pivPinPolicy = null, PivTouchPolicy? pivTouchPolicy = null, FormFactor? formFactor = null, PIVSlot? pivSlot = null, PivAlgorithm? pivAlgorithm = null, bool? isFIPSSeries = null, bool? isCSPNSeries = null, bool? AttestationMatchesCSR = null, string? attestationDataLocation = null)
+        public Attestation(bool attestationValidated = false, uint? serialnumber = null, FirmwareVersion? firmwareVersion = null, PivPinPolicy? pivPinPolicy = null, PivTouchPolicy? pivTouchPolicy = null, FormFactor? formFactor = null, PIVSlot? pivSlot = null, PivAlgorithm? pivAlgorithm = null, bool? isFIPSSeries = null, bool? isCSPNSeries = null, bool? AttestationMatchesCSR = null, string? attestationDataLocation = null, List<string>? attestationPath = null)
         {
             AttestationValidated = attestationValidated;
             this.SerialNumber = serialnumber;
@@ -34,6 +35,7 @@ namespace powershellYK
             this.isCSPNSeries = isCSPNSeries;
             this.AttestationMatchesCSR = AttestationMatchesCSR;
             this.AttestationDataLocation = attestationDataLocation;
+            this.AttestationPath = attestationPath;
         }
     }
 }
