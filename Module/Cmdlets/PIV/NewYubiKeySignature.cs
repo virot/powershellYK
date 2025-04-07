@@ -12,6 +12,14 @@
     /// .EXAMPLE
     /// # Sign all files in a directory
     /// $signatures = New-YubiKeySignature -Slot "9c" -Dir "C:\Documents" -PIN "123456"
+    /// 
+    /// .EXAMPLE
+    /// # Sign all files in a file using a timestamp server
+    /// New-YubiKeySignature -Slot "9c" -File "C:\CODE\CSRInspector\MSI\Release\CSRInspector.msi" -PIN "123456" -TimestampServer "http://timestamp.digicert.com"
+    /// 
+    /// .EXAMPLE
+    /// # Sign all files in a directory with debugging
+    /// New-YubiKeySignature -Slot "9c" -Dir "C:\CODE\CSRInspector\MSI\Release" -PIN "123456" -Debug
     /// </summary>
 
 using System.Management.Automation;
@@ -29,6 +37,7 @@ using System.ComponentModel;
 
 namespace powershellYK.Cmdlets.PIV
 {
+
     [Cmdlet(VerbsCommon.New, "YubiKeySignature")]
     public class NewYubiKeySignatureCommand : Cmdlet
     {
@@ -76,6 +85,22 @@ namespace powershellYK.Cmdlets.PIV
 
         protected override void ProcessRecord()
         {
+            // Validate that only one parameter set is used
+            if (File != null && Dir != null)
+            {
+                ThrowTerminatingError(new ErrorRecord(
+                    new ArgumentException("You must specify either -File or -Dir, not both."),
+                    "InvalidParameterSet",
+                    ErrorCategory.InvalidArgument,
+                    this));
+            }
+
+            // Warn about missing timestamp server
+            if (string.IsNullOrEmpty(TimestampServer))
+            {
+                WriteWarning("No timestamp server provided. Signature may appear invalid after certificate expiration.");
+            }
+
             // Create a new PIV session with the currently connected YubiKey
             using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
@@ -183,17 +208,38 @@ namespace powershellYK.Cmdlets.PIV
             {
                 throw new Exception($"No certificate found in slot {Slot}");
             }
-            WriteDebug($"Retrieved certificate: {certificate.Subject}");
+            
+            // Add detailed certificate information in debug messages
+            WriteDebug($"Retrieved certificate from slot {Slot}:");
+            WriteDebug($"  Subject: {certificate.Subject}");
+            WriteDebug($"  Issuer: {certificate.Issuer}");
+            WriteDebug($"  Valid from: {certificate.NotBefore} to {certificate.NotAfter}");
+            WriteDebug($"  Has private key: {certificate.HasPrivateKey}");
+            WriteDebug($"  Key algorithm: {certificate.GetKeyAlgorithm()}");
+            WriteDebug($"  Key usage: {string.Join(", ", certificate.Extensions.OfType<X509KeyUsageExtension>().Select(x => x.KeyUsages.ToString()))}");
+            //WriteDebug($"  Enhanced key usage: {string.Join(", ", certificate.Extensions.OfType<X509EnhancedKeyUsageExtension>().SelectMany(x => x.EnhancedKeyUsages.FriendlyName))}");
+            WriteDebug($"  Certificate handle: 0x{certificate.Handle.ToInt64():X8}");
 
             try
             {
-                var signer = new AuthenticodeSignature();
+                var signer = new AuthenticodeSignature(this);
+                WriteDebug($"Attempting to sign file: {File!.FullName}");
+                WriteDebug($"Using timestamp server: {(string.IsNullOrEmpty(TimestampServer) ? "none" : TimestampServer)}");
                 signer.SignFile(File!.FullName, certificate, TimestampServer);
                 WriteDebug("Authenticode signing completed");
             }
+            catch (Win32Exception ex)
+            {
+                WriteDebug($"Win32 error code: 0x{ex.NativeErrorCode:X8}");
+                WriteDebug($"Win32 error message: {ex.Message}");
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to sign file: {ex.Message}", ex);
+                WriteDebug($"Exception type: {ex.GetType().Name}");
+                WriteDebug($"Exception message: {ex.Message}");
+                WriteDebug($"Stack trace: {ex.StackTrace}");
+                throw;
             }
 
             stopwatch.Stop();
@@ -202,6 +248,39 @@ namespace powershellYK.Cmdlets.PIV
 
         private class AuthenticodeSignature
         {
+            private readonly Cmdlet _cmdlet;
+
+            public AuthenticodeSignature(Cmdlet cmdlet)
+            {
+                _cmdlet = cmdlet;
+            }
+
+            private void WriteDebug(string message)
+            {
+                _cmdlet.WriteDebug(message);
+            }
+
+            private class SafeSignerHandle : SafeHandle
+            {
+                public SafeSignerHandle() : base(IntPtr.Zero, true) { }
+
+                public override bool IsInvalid => handle == IntPtr.Zero;
+
+                protected override bool ReleaseHandle()
+                {
+                    if (!IsInvalid)
+                    {
+                        Marshal.FreeHGlobal(handle);
+                    }
+                    return true;
+                }
+
+                public void InitializeHandle(IntPtr newHandle)
+                {
+                    SetHandle(newHandle);
+                }
+            }
+
             [StructLayout(LayoutKind.Sequential)]
             private struct SIGNER_FILE_INFO
             {
@@ -267,93 +346,87 @@ namespace powershellYK.Cmdlets.PIV
             private const uint SIGNER_SUBJECT_FILE = 1;
             private const uint CALG_SHA_256 = 0x0000800c;
 
-            private class SafeSignerHandle : SafeHandle
-            {
-                public SafeSignerHandle() : base(IntPtr.Zero, true) { }
-
-                public override bool IsInvalid => handle == IntPtr.Zero;
-
-                protected override bool ReleaseHandle()
-                {
-                    if (!IsInvalid)
-                    {
-                        Marshal.FreeHGlobal(handle);
-                    }
-                    return true;
-                }
-            }
-
             public void SignFile(string filePath, X509Certificate2 certificate, string? timestampUrl = null)
             {
+                WriteDebug($"SignFile called with path: {filePath}");
+                WriteDebug($"Certificate info in SignFile:");
+                WriteDebug($"  Handle: 0x{certificate.Handle.ToInt64():X8}");
+                WriteDebug($"  Subject: {certificate.Subject}");
+
                 if (certificate == null || certificate.Handle == IntPtr.Zero)
                 {
                     throw new ArgumentException("Invalid certificate or certificate handle is null", nameof(certificate));
                 }
 
-                using var pSubjectInfo = new SafeSignerHandle();
-                using var pSignerCert = new SafeSignerHandle();
-                using var pSignatureInfo = new SafeSignerHandle();
-                using var dwIndex = new SafeSignerHandle();
-                using var pFileInfo = new SafeSignerHandle();
+                using var fileInfoHandle = new SafeSignerHandle();
+                using var dwIndexHandle = new SafeSignerHandle();
+                using var subjectInfoHandle = new SafeSignerHandle();
+                using var signerCertHandle = new SafeSignerHandle();
+                using var signatureInfoHandle = new SafeSignerHandle();
 
                 try
                 {
-                    // Setup file info
+                    // Setup SIGNER_FILE_INFO
                     var fileInfo = new SIGNER_FILE_INFO
                     {
                         cbSize = (uint)Marshal.SizeOf(typeof(SIGNER_FILE_INFO)),
                         pwszFileName = filePath,
                         hFile = IntPtr.Zero
                     };
-                    
-                    pFileInfo.SetHandle(Marshal.AllocHGlobal(Marshal.SizeOf(fileInfo)));
-                    Marshal.StructureToPtr(fileInfo, pFileInfo.DangerousGetHandle(), false);
+                    fileInfoHandle.InitializeHandle(Marshal.AllocHGlobal(Marshal.SizeOf(fileInfo)));
+                    Marshal.StructureToPtr(fileInfo, fileInfoHandle.DangerousGetHandle(), false);
 
-                    // Setup subject info
-                    dwIndex.SetHandle(Marshal.AllocHGlobal(sizeof(uint)));
-                    Marshal.WriteInt32(dwIndex.DangerousGetHandle(), 0);
-                    
+                    // Setup dwIndex
+                    dwIndexHandle.InitializeHandle(Marshal.AllocHGlobal(sizeof(uint)));
+                    Marshal.WriteInt32(dwIndexHandle.DangerousGetHandle(), 0);
+
+                    // Setup SIGNER_SUBJECT_INFO
                     var subjectInfo = new SIGNER_SUBJECT_INFO
                     {
                         cbSize = (uint)Marshal.SizeOf(typeof(SIGNER_SUBJECT_INFO)),
-                        pdwIndex = dwIndex.DangerousGetHandle(),
+                        pdwIndex = dwIndexHandle.DangerousGetHandle(),
                         dwSubjectChoice = SIGNER_SUBJECT_FILE,
-                        Union1 = new SubjectChoiceUnion { pSignerFileInfo = pFileInfo.DangerousGetHandle() }
+                        Union1 = new SubjectChoiceUnion
+                        {
+                            pSignerFileInfo = fileInfoHandle.DangerousGetHandle()
+                        }
                     };
-                    
-                    pSubjectInfo.SetHandle(Marshal.AllocHGlobal(Marshal.SizeOf(subjectInfo)));
-                    Marshal.StructureToPtr(subjectInfo, pSubjectInfo.DangerousGetHandle(), false);
+                    subjectInfoHandle.InitializeHandle(Marshal.AllocHGlobal(Marshal.SizeOf(subjectInfo)));
+                    Marshal.StructureToPtr(subjectInfo, subjectInfoHandle.DangerousGetHandle(), false);
 
-                    // Setup certificate info
+                    // Setup SIGNER_CERT
                     var signerCert = new SIGNER_CERT
                     {
                         cbSize = (uint)Marshal.SizeOf(typeof(SIGNER_CERT)),
-                        dwCertChoice = 2,
-                        Union1 = new SignerCertUnion { pCertContext = certificate.Handle }
+                        dwCertChoice = 2, // SIGNER_CERT_SPC or SIGNER_CERT_CONTEXT
+                        Union1 = new SignerCertUnion { pCertContext = certificate.Handle },
+                        pwszStoreName = null,
+                        pwszStoreLocation = null
                     };
-                    
-                    pSignerCert.SetHandle(Marshal.AllocHGlobal(Marshal.SizeOf(signerCert)));
-                    Marshal.StructureToPtr(signerCert, pSignerCert.DangerousGetHandle(), false);
+                    signerCertHandle.InitializeHandle(Marshal.AllocHGlobal(Marshal.SizeOf(signerCert)));
+                    Marshal.StructureToPtr(signerCert, signerCertHandle.DangerousGetHandle(), false);
 
-                    // Setup signature info with timestamp
+                    // Setup SIGNER_SIGNATURE_INFO
                     var signatureInfo = new SIGNER_SIGNATURE_INFO
                     {
                         cbSize = (uint)Marshal.SizeOf(typeof(SIGNER_SIGNATURE_INFO)),
                         algidHash = CALG_SHA_256,
                         dwAttrChoice = 0,
                         pAttrAuthCode = IntPtr.Zero,
-                        pwszTimestampURL = timestampUrl // Add timestamp URL if provided
+                        pwszTimestampURL = timestampUrl
                     };
-                    
-                    pSignatureInfo.SetHandle(Marshal.AllocHGlobal(Marshal.SizeOf(signatureInfo)));
-                    Marshal.StructureToPtr(signatureInfo, pSignatureInfo.DangerousGetHandle(), false);
+                    signatureInfoHandle.InitializeHandle(Marshal.AllocHGlobal(Marshal.SizeOf(signatureInfo)));
+                    Marshal.StructureToPtr(signatureInfo, signatureInfoHandle.DangerousGetHandle(), false);
 
+                    // Call SignerSign
+                    WriteDebug("Calling SignerSign");
                     int result = SignerSign(
-                        pSubjectInfo.DangerousGetHandle(), 
-                        pSignerCert.DangerousGetHandle(), 
-                        pSignatureInfo.DangerousGetHandle(), 
-                        IntPtr.Zero
-                    );
+                        subjectInfoHandle.DangerousGetHandle(),
+                        signerCertHandle.DangerousGetHandle(),
+                        signatureInfoHandle.DangerousGetHandle(),
+                        IntPtr.Zero);
+
+                    WriteDebug($"SignerSign result: 0x{result:X8}");
 
                     if (result != 0)
                     {
@@ -362,10 +435,10 @@ namespace powershellYK.Cmdlets.PIV
                 }
                 catch (Win32Exception ex)
                 {
-                    string timestampError = !string.IsNullOrEmpty(timestampUrl) && ex.NativeErrorCode == 0x80092004 // CRYPT_E_TIMESTAMP_SERVER
-                        ? " (Timestamp server may be unavailable)"
-                        : "";
-                    throw new Exception($"Authenticode signing failed: {ex.Message}{timestampError} (Error code: 0x{ex.NativeErrorCode:X8})", ex);
+                    WriteDebug($"Win32Exception in SignFile:");
+                    WriteDebug($"  NativeErrorCode: 0x{ex.NativeErrorCode:X8}");
+                    WriteDebug($"  Message: {ex.Message}");
+                    throw;
                 }
             }
         }
