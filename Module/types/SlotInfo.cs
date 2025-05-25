@@ -2,6 +2,7 @@
 using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey.Piv;
 using System.Management.Automation;
+using Yubico.YubiKey.Cryptography;
 
 namespace powershellYK.PIV
 {
@@ -13,7 +14,7 @@ namespace powershellYK.PIV
         public PivPinPolicy? PinPolicy { get; private set; }
         public PivTouchPolicy? TouchPolicy { get; private set; }
         public X509Certificate2? Certificate { get; private set; }
-        // public AsymmetricAlgorithm? PublicKey { get; private set; }
+        public IPublicKey? PublicKey { get; private set; }
 
         public SlotInfo(
             int Slot,
@@ -21,8 +22,8 @@ namespace powershellYK.PIV
             PivAlgorithm? Algorithm,
             PivPinPolicy? PinPolicy,
             PivTouchPolicy? TouchPolicy,
-            X509Certificate2? Certificate)
-            //AsymmetricAlgorithm? PublicKey)
+            X509Certificate2? Certificate,
+            IPublicKey? PublicKey = null)
         {
             this.Slot = Slot;
             this.KeyStatus = KeyStatus;
@@ -30,7 +31,7 @@ namespace powershellYK.PIV
             this.PinPolicy = PinPolicy;
             this.TouchPolicy = TouchPolicy;
             this.Certificate = Certificate;
-            //this.PublicKey = PublicKey;
+            this.PublicKey = PublicKey;
         }
     }
 }

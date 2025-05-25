@@ -1,8 +1,8 @@
-Describe "Test YubikeyPIV PIV/PUK management" -Tag "" {
+Describe "Test YubikeyPIV PIV/PUK management" -Tag "PIV" {
     BeforeAll {
         {Reset-YubikeyPIV -Confirm:$false} | Should -Not -Throw
         {Connect-YubikeyPIV -PIN (ConvertTo-SecureString -String "123456" -AsPlainText -Force)} | Should -Not -Throw
-	{New-YubikeyPIVKey -Slot "0x9c" -PinPolicy Default -Algorithm EccP256 -TouchPolicy Never} | Should -Not -Throw
+	{New-YubikeyPIVKey -Slot "0x9c" -PinPolicy Default -Algorithm ECP256 -TouchPolicy Never} | Should -Not -Throw
 	{New-YubikeyPIVSelfSign -Slot "0x9c"} | Should -Not -Throw
     }
     It "PIVSlot 'string byte' works" {

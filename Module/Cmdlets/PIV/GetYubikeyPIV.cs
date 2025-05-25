@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using powershellYK.PIV;
 using Yubico.YubiKey;
+using Yubico.YubiKey.Cryptography;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Objects;
 using Yubico.YubiKey.Sample.PivSampleCode;
@@ -128,10 +129,12 @@ namespace powershellYK.Cmdlets.PIV
                     try
                     {
                         X509Certificate2? certificate = null;
+                        IPublicKey? publicKey = null;
                         PivMetadata slotData = pivSession.GetMetadata((byte)Slot);
 
-                        //using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(slotData.PublicKey);
-
+                        // using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(slotData.PublicKey);
+                        // try to read the publicKey and Certificate if they exist, otherwise we return null
+                        try { publicKey = pivSession.GetMetadata((byte)Slot).PublicKeyParameters; } catch { }
                         try { certificate = pivSession.GetCertificate((byte)Slot); } catch { }
 
                         SlotInfo returnSlot = new SlotInfo(
@@ -140,7 +143,8 @@ namespace powershellYK.Cmdlets.PIV
                             slotData.Algorithm,
                             slotData.PinPolicy,
                             slotData.TouchPolicy,
-                            certificate
+                            certificate,
+                            publicKey
                             );
                         WriteObject(returnSlot);
                     }

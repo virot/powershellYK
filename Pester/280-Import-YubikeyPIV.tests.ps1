@@ -20,33 +20,33 @@ BeforeAll -Scriptblock {
 #openssl pkcs12 -export -out ecc_secp384r1_password=password.p12 -inkey ecc_secp384r1_key_withoutpassword.pem -in ecc_secp384r1_cert.pem -passout pass:password
 
 
-Describe "Import-YubikeyPIV PrivateKey" -Tag "Import-YubikeyPIV" {
+Describe "Import-YubikeyPIV PrivateKey" -Tag "Import-YubikeyPIV",'PIV' {
     It -Name "RSA2048 '-PrivateKeyPath _fullpath_'" -Test {
         {Get-YubikeyPIV -Slot 0x9a} | Should -Throw
 	{Import-YubikeyPIV -Slot 0x9a -PrivateKeyPath "$PSScriptRoot\TestData\rsa_2048_key_withoutpassword.pem"} | Should -Not -Throw
         {Get-YubikeyPIV -Slot 0x9a} | Should -Not -Throw
-	(Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'System.Security.Cryptography.RSABCrypt'
+	(Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'Yubico.YubiKey.Cryptography.RSAPublicKey'
     }
 
     It -Name "ECC P384 '-PrivateKeyPath _fullpath_'" -Test {
 	{Import-YubikeyPIV -Slot 0x9a -PrivateKeyPath "$PSScriptRoot\TestData\ecc_secp384r1_key_withoutpassword.pem" -Confirm:$False} | Should -Not -Throw
-	(Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'System.Security.Cryptography.ECDsaWrapper'
+	(Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'Yubico.YubiKey.Cryptography.ECPublicKey'
     }
 
     It -Name "RSA2048 DES3 '-PrivateKeyPath _fullpath_ -Password _password_'" -Test {
 	{Import-YubikeyPIV -Slot 0x9a -PrivateKeyPath "$PSScriptRoot\TestData\rsa_2048_key_des3_password=password.pem" -Password (ConvertTo-SecureString -String "password" -AsPlainText -Force) -Confirm:$False} | Should -Not -Throw
-	(Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'System.Security.Cryptography.RSABCrypt'
+	(Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'Yubico.YubiKey.Cryptography.RSAPublicKey'
     }
 
     #It -Name "ECC P384 '-PrivateKeyPath _fullpath_ -Password _password_'" -Test {
     #    {Import-YubikeyPIV -Slot 0x9a -PrivateKeyPath "$PSScriptRoot\TestData\ecc_secp384r1_key_des3_password=password.pem" -Password (ConvertTo-SecureString -String "password" -AsPlainText -Force) -Confirm:$False} | Should -Not -Throw
-    #    (Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'System.Security.Cryptography.ECDsaWrapper'
+    #    (Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'Yubico.YubiKey.Cryptography.ECPublicKey'
     #}
 
     It -Name "RSA2048 AES256 '-PrivateKeyPath _fullpath_ -Password _password_'" -Test {
 	New-YubikeyPIVKey -Slot 0x9a -Algorithm EccP384 -Confirm:$false
 	{Import-YubikeyPIV -Slot 0x9a -PrivateKeyPath "$PSScriptRoot\TestData\rsa_2048_key_aes256_password=password.pem" -Password (ConvertTo-SecureString -String "password" -AsPlainText -Force) -Confirm:$False} | Should -Not -Throw
-	(Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'System.Security.Cryptography.RSABCrypt'
+	(Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'Yubico.YubiKey.Cryptography.RSAPublicKey'
     }
 
 }
@@ -57,7 +57,7 @@ Describe "Import-YubikeyPIV P12" -Tag "Import-YubikeyPIV" {
 	{Import-YubikeyPIV -Slot 0x9c -P12Path "$PSScriptRoot\TestData\rsa_2048_password=password.p12" -Confirm:$False } | Should -Throw
 	{Import-YubikeyPIV -Slot 0x9c -P12Path "$PSScriptRoot\TestData\rsa_2048_password=password.p12" -Password (ConvertTo-SecureString -String "password" -AsPlainText -Force) -Confirm:$False } | Should -Not -Throw
         {Get-YubikeyPIV -Slot 0x9c} | Should -Not -Throw
-	(Get-YubikeyPIV -Slot 0x9c).PublicKey.GetType().Fullname | Should -Be 'System.Security.Cryptography.RSABCrypt'
+	(Get-YubikeyPIV -Slot 0x9c).PublicKey.GetType().Fullname | Should -Be 'Yubico.YubiKey.Cryptography.RSAPublicKey'
     }
     # Dont check whill ECDsaCng breaks plaintext exports
     #It -Name "ECC P384 '-P12Path _fullpath_ -Password _password_'" -Test {
@@ -65,7 +65,7 @@ Describe "Import-YubikeyPIV P12" -Tag "Import-YubikeyPIV" {
     #    {Import-YubikeyPIV -Slot 0x9d -P12Path "$PSScriptRoot\TestData\ecc_secp384r1_password=password.p12" -Confirm:$False } | Should -Throw
     #    {Import-YubikeyPIV -Slot 0x9d -P12Path "$PSScriptRoot\TestData\ecc_secp384r1_password=password.p12" -Password (ConvertTo-SecureString -String "password" -AsPlainText -Force) -Confirm:$False } | Should -Not -Throw
     #    {Get-YubikeyPIV -Slot 0x9d} | Should -Not -Throw
-    #    (Get-YubikeyPIV -Slot 0x9d).PublicKey.GetType().Fullname | Should -Be 'System.Security.Cryptography.ECDsaWrapper'
+    #    (Get-YubikeyPIV -Slot 0x9d).PublicKey.GetType().Fullname | Should -Be 'Yubico.YubiKey.Cryptography.ECPublicKey'
     #}
 }
 

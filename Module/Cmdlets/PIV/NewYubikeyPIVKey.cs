@@ -80,7 +80,7 @@ namespace powershellYK.Cmdlets.PIV
                 bool keyExists = false;
                 try
                 {
-                    PivPublicKey pubkey = pivSession.GetMetadata(Slot).PublicKey;
+                    IPublicKey? pubkey = pivSession.GetMetadata(Slot).PublicKeyParameters;
                     keyExists = true;
                 }
                 catch { }
