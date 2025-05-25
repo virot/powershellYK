@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Set-YubikeyOTP
+# Set-YubiKeyOTP
 
 ## SYNOPSIS
 Configure OTP slots
@@ -14,26 +14,32 @@ Configure OTP slots
 
 ### Yubico OTP
 ```
-Set-YubikeyOTP -Slot <Slot> [-YubicoOTP] [-PublicID <Byte[]>] [-PrivateID <Byte[]>] [-SecretKey <Byte[]>]
+Set-YubiKeyOTP -Slot <Slot> [-YubicoOTP] [-PublicID <Byte[]>] [-PrivateID <Byte[]>] [-SecretKey <Byte[]>]
  [-Upload] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Static Password
 ```
-Set-YubikeyOTP -Slot <Slot> [-StaticPassword] -Password <SecureString> [-KeyboardLayout <KeyboardLayout>]
+Set-YubiKeyOTP -Slot <Slot> [-StaticPassword] -Password <SecureString> [-KeyboardLayout <KeyboardLayout>]
  [-AppendCarriageReturn] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Static Generated Password
 ```
-Set-YubikeyOTP -Slot <Slot> [-StaticGeneratedPassword] -PasswordLength <Int32>
+Set-YubiKeyOTP -Slot <Slot> [-StaticGeneratedPassword] -PasswordLength <Int32>
  [-KeyboardLayout <KeyboardLayout>] [-AppendCarriageReturn] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ChallengeResponse
 ```
-Set-YubikeyOTP -Slot <Slot> [-ChallengeResponse] [-SecretKey <Byte[]>]
+Set-YubiKeyOTP -Slot <Slot> [-ChallengeResponse] [-SecretKey <Byte[]>]
  [-Algorithm <ChallengeResponseAlgorithm>] [-RequireTouch] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### HOTP
+```
+Set-YubiKeyOTP -Slot <Slot> [-SecretKey <Byte[]>] [-AppendCarriageReturn] [-HOTP] [-Base32Secret <String>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -105,7 +111,22 @@ field and "pressing Enter" on behalf of the user.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Static Password, Static Generated Password
+Parameter Sets: Static Password, Static Generated Password, HOTP
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Base32Secret
+Base32 encoded secret key for HOTP
+
+```yaml
+Type: String
+Parameter Sets: HOTP
 Aliases:
 
 Required: False
@@ -121,6 +142,21 @@ Allows for Challenge-Response configuration with all defaults.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: ChallengeResponse
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -HOTP
+Allows configuration of HOTP mode
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: HOTP
 Aliases:
 
 Required: False
@@ -226,7 +262,7 @@ Sets the Secret Key, defaults to random 16 bytes.
 
 ```yaml
 Type: Byte[]
-Parameter Sets: Yubico OTP, ChallengeResponse
+Parameter Sets: Yubico OTP, ChallengeResponse, HOTP
 Aliases:
 
 Required: False

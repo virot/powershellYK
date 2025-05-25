@@ -174,13 +174,13 @@ namespace powershellYK.Cmdlets.OTP
 
 
         /// Main processing method that configures the YubiKey OTP settings based on the selected mode
-          protected override void ProcessRecord()
+        protected override void ProcessRecord()
         {
             using (var otpSession = new OtpSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
                 WriteDebug($"Working with {ParameterSetName}");
-                if ((Slot == Yubico.YubiKey.Otp.Slot.ShortPress && !otpSession.IsShortPressConfigured) || 
-                    (Slot == Yubico.YubiKey.Otp.Slot.LongPress && !otpSession.IsLongPressConfigured) || 
+                if ((Slot == Yubico.YubiKey.Otp.Slot.ShortPress && !otpSession.IsShortPressConfigured) ||
+                    (Slot == Yubico.YubiKey.Otp.Slot.LongPress && !otpSession.IsLongPressConfigured) ||
                     ShouldProcess($"Yubikey OTP {Slot}", "Set"))
                 {
                     switch (ParameterSetName)
@@ -274,7 +274,7 @@ namespace powershellYK.Cmdlets.OTP
                             // Configure challenge-response mode
                             Memory<byte> _CRsecretKey = new Memory<byte>(new byte[20]);
                             ConfigureChallengeResponse configureCR = otpSession.ConfigureChallengeResponse(Slot);
-                            
+
                             // Handle Secret Key configuration
                             if (SecretKey is null)
                             {
@@ -316,7 +316,7 @@ namespace powershellYK.Cmdlets.OTP
                             // Configure HOTP mode
                             Memory<byte> _HOTPsecretKey = new Memory<byte>(new byte[20]);
                             ConfigureHotp configureHOTP = otpSession.ConfigureHotp(Slot);
-                            
+
                             // Handle Secret Key configuration
                             if (Base32Secret != null)
                             {
@@ -348,7 +348,8 @@ namespace powershellYK.Cmdlets.OTP
                             configureHOTP.Execute();
 
                             // Return both raw and Base32 representations of the key
-                            WriteObject(new { 
+                            WriteObject(new
+                            {
                                 SecretKey = _HOTPsecretKey.ToArray(),
                                 Base32Secret = powershellYK.support.Base32.Encode(_HOTPsecretKey.ToArray())
                             });
