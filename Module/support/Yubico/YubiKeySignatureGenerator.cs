@@ -74,11 +74,11 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
             _algorithm = pivPublicKey.Algorithm;
             _rsaPaddingMode = rsaPaddingMode;
 
-            using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(pivPublicKey);
+            using var dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(pivPublicKey);
 
             if (_algorithm.IsRsa())
             {
-                RSASignaturePadding paddingScheme = rsaPaddingMode == RSASignaturePaddingMode.Pss ?
+                var paddingScheme = rsaPaddingMode == RSASignaturePaddingMode.Pss ?
                     RSASignaturePadding.Pss : RSASignaturePadding.Pkcs1;
                 _defaultGenerator = X509SignatureGenerator.CreateForRSA((RSA)dotNetPublicKey, paddingScheme);
             }
@@ -96,7 +96,7 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
         }
 
         // Return the public key as an instance of PublicKey.
-        protected override PublicKey BuildPublicKey()
+        protected override System.Security.Cryptography.X509Certificates.PublicKey BuildPublicKey()
         {
             return _defaultGenerator.PublicKey;
         }
@@ -126,6 +126,7 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
             {
                 dataToSign = PadRsa(dataToSign, hashAlgorithm);
             }
+
             return _pivSession.Sign(_slotNumber, dataToSign);
         }
 
@@ -166,9 +167,8 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
                         InvalidAlgorithmMessage));
             }
 
-
             _ = digester.TransformFinalBlock(data, 0, data.Length);
-            Array.Copy(digester.Hash!, 0, digest, offset, digester.Hash!.Length);
+            Array.Copy(digester.Hash!, 0, digest, offset, digest.Length);
 
             return digest;
         }

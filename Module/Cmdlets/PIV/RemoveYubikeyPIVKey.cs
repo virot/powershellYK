@@ -33,7 +33,7 @@ namespace powershellYK.Cmdlets.PIV
                     try
                     {
                         //  This will throw an exception if no key is found in the slot
-                        var _ = pivSession.GetMetadata(Slot).PublicKey;
+                        var _ = pivSession.GetMetadata(Slot).PublicKeyParameters;
                         pivSession.DeleteKey(Slot);
                         WriteInformation($"Removed key(s) from PIV slot {Slot}.", new string[] { "PIV", "Info" });
                     }

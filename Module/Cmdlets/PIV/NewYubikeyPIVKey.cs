@@ -6,6 +6,8 @@ using Yubico.YubiKey.Sample.PivSampleCode;
 using System.Collections.ObjectModel;
 using powershellYK.support.validators;
 using powershellYK.PIV;
+using Yubico.YubiKey.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace powershellYK.Cmdlets.PIV
 {
@@ -39,8 +41,10 @@ namespace powershellYK.Cmdlets.PIV
                 if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa2048)) { availableAlgorithms.Add("Rsa2048"); };
                 if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa3072)) { availableAlgorithms.Add("Rsa3072"); };
                 if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa4096)) { availableAlgorithms.Add("Rsa4096"); };
-                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { availableAlgorithms.Add("EccP256"); };
-                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { availableAlgorithms.Add("EccP384"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { availableAlgorithms.Add("EcP256"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { availableAlgorithms.Add("EcP384"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { availableAlgorithms.Add("Ed25519"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { availableAlgorithms.Add("X25519"); };
             }
             else
             {
@@ -49,15 +53,17 @@ namespace powershellYK.Cmdlets.PIV
                 availableAlgorithms.Add("Rsa2048");
                 availableAlgorithms.Add("Rsa3072");
                 availableAlgorithms.Add("Rsa4096");
-                availableAlgorithms.Add("EccP256");
-                availableAlgorithms.Add("EccP384");
+                availableAlgorithms.Add("EcP256");
+                availableAlgorithms.Add("EcP384");
+                availableAlgorithms.Add("Ed25519");
+                availableAlgorithms.Add("X25519");
             }
             var runtimeDefinedParameterDictionary = new RuntimeDefinedParameterDictionary();
 
             var algorithmCollection = new Collection<Attribute>() {
                 new ParameterAttribute() { Mandatory = true, HelpMessage = "What algorithm to use, dependent on YubiKey firmware.", ParameterSetName = "__AllParameterSets", ValueFromPipeline = false },
                 new ValidateSetAttribute((availableAlgorithms).ToArray())};
-            var runtimeDefinedAlgorithms = new RuntimeDefinedParameter("Algorithm", typeof(PivAlgorithm), algorithmCollection);
+            var runtimeDefinedAlgorithms = new RuntimeDefinedParameter("Algorithm", typeof(KeyType), algorithmCollection);
             runtimeDefinedParameterDictionary.Add("Algorithm", runtimeDefinedAlgorithms);
             return runtimeDefinedParameterDictionary;
         }
@@ -81,27 +87,49 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (!keyExists || ShouldProcess($"Slot {Slot}", "New"))
                 {
-                    WriteDebug("ProcessRecord in New-YubikeyPIVKey");
-                    PivPublicKey publicKey = pivSession.GenerateKeyPair(Slot, (PivAlgorithm)this.MyInvocation.BoundParameters["Algorithm"], PinPolicy, TouchPolicy);
-                    if (publicKey is not null)
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).FirmwareVersion < new FirmwareVersion(5, 2, 0))
                     {
-                        if (PassThru.IsPresent)
+                        WriteDebug("ProcessRecord in New-YubikeyPIVKey using prior to 5.7 code");
+#pragma warning disable CS0618 // Type or member is obsolete
+                        PivPublicKey publicKey = pivSession.GenerateKeyPair(Slot, (PivAlgorithm)this.MyInvocation.BoundParameters["Algorithm"], PinPolicy, TouchPolicy);
+#pragma warning restore CS0618 // Type or member is obsolete
+                        if (publicKey is not null)
                         {
-                            using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
-                            if (publicKey is PivRsaPublicKey)
+                            if (PassThru.IsPresent)
                             {
-                                WriteObject((RSA)dotNetPublicKey);
+                                using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
+                                if (publicKey is PivRsaPublicKey)
+                                {
+                                    WriteObject((RSA)dotNetPublicKey);
+                                }
+                                else
+                                {
+                                    WriteObject((ECDsa)dotNetPublicKey);
+                                }
                             }
-                            else
-                            {
-                                WriteObject((ECDsa)dotNetPublicKey);
-                            }
+                            WriteInformation($"New key(s) created in slot {Slot}.", new string[] { "PIV", "Info" });
                         }
-                        WriteInformation($"New key(s) created in slot {Slot}.", new string[] { "PIV", "Info" });
+                        else
+                        {
+                            throw new Exception("Could not create keypair!");
+                        }
                     }
                     else
                     {
-                        throw new Exception("Could not create keypair!");
+                        WriteDebug("ProcessRecord in New-YubikeyPIVKey using 5.7 code");
+                        IPublicKey publicKey = pivSession.GenerateKeyPair(Slot, (KeyType)this.MyInvocation.BoundParameters["Algorithm"], PinPolicy, TouchPolicy);
+                        if (publicKey is not null)
+                        {
+                            if (PassThru.IsPresent)
+                            {
+                                WriteObject(publicKey);
+                            }
+                            WriteInformation($"New key(s) created in slot {Slot}.", new string[] { "PIV", "Info" });
+                        }
+                        else
+                        {
+                            throw new Exception("Could not create keypair!");
+                        }
                     }
                 }
             }

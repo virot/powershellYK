@@ -38,13 +38,7 @@ namespace powershellYK.Cmdlets.PIV
                 if (ShouldProcess($"Certificate in slot {Slot}, subjectname: '{currentCertificate.SubjectName}'", "Remove"))
                 {
                     throw new NotImplementedException("Remove-YubiKeyPIVCertificate not implemented.");
-                    try
-                    {
-                        //  This will throw an exception if no key is found in the slot
-                    }
-                    catch
-                    {
-                    }
+                    
                 }
             }
         }

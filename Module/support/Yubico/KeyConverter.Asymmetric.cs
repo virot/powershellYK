@@ -36,7 +36,7 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
             // cast the input to RSA.
             if (string.Equals(dotNetObject.SignatureAlgorithm, AlgorithmRsa, StringComparison.Ordinal))
             {
-                RSAParameters rsaParams = ((RSA)dotNetObject).ExportParameters(false);
+                var rsaParams = ((RSA)dotNetObject).ExportParameters(false);
                 // This constructor will validate the modulus and exponent.
                 var rsaPubKey = new PivRsaPublicKey(rsaParams.Modulus, rsaParams.Exponent);
                 return (PivPublicKey)rsaPubKey;
@@ -60,9 +60,9 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
 
                 byte[] point = new byte[(keySize * 2) + 1];
                 point[0] = 4;
-                int offset = 1 + (keySize - eccParams.Q.X!.Length);
+                int offset = 1 + (keySize - eccParams.Q.X.Length);
                 Array.Copy(eccParams.Q.X, 0, point, offset, eccParams.Q.X.Length);
-                offset += keySize + (keySize - eccParams.Q.Y!.Length);
+                offset += keySize + (keySize - eccParams.Q.Y.Length);
                 Array.Copy(eccParams.Q.Y, 0, point, offset, eccParams.Q.Y.Length);
 
                 var eccPubKey = new PivEccPublicKey(point);
@@ -165,7 +165,7 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
                     int keySize = dotNetObject.KeySize / 8;
 
                     byte[] privateValue = new byte[keySize];
-                    int offset = keySize - eccParams.D!.Length;
+                    int offset = keySize - eccParams.D.Length;
                     Array.Copy(eccParams.D, 0, privateValue, offset, eccParams.D.Length);
                     var eccPriKey = new PivEccPrivateKey(privateValue);
                     return (PivPrivateKey)eccPriKey;
