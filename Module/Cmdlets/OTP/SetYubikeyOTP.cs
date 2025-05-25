@@ -44,8 +44,11 @@
 /// .EXAMPLE
 /// # Configure HOTP with base32 encoded secret and carriage return
 /// Set-YubiKeyOTP -Slot ShortPress -HOTP -Base32Secret "QRFJ7DTIVASL3PNYXWFIQAQN5RKUJD4U" -AppendCarriageReturn
-/// </summary>
 /// 
+/// .EXAMPLE
+/// # Configure HOTP with TAB before OTP code for easier form navigation
+/// Set-YubiKeyOTP -Slot ShortPress -HOTP -Base32Secret "QRFJ7DTIVASL3PNYXWFIQAQN5RKUJD4U" -SendTabFirst
+/// </summary>
 
 using System.Management.Automation;
 using System.Runtime.InteropServices;
@@ -121,13 +124,15 @@ namespace powershellYK.Cmdlets.OTP
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Keyboard layout to be used", ParameterSetName = "Static Generated Password")]
         public KeyboardLayout KeyboardLayout { get; set; } = KeyboardLayout.ModHex;
 
-        /// <summary>
-        /// Flag to append carriage return (Enter) to static passwords
-        /// </summary>
+        /// Flag to append carriage return (Enter) after credential output
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter)", ParameterSetName = "Static Password")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter)", ParameterSetName = "Static Generated Password")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter)", ParameterSetName = "HOTP")]
         public SwitchParameter AppendCarriageReturn { get; set; }
+
+        // Sends a TAB character before the OTP passcode when using HOTP mode
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Send TAB before passcode to help navigate UI", ParameterSetName = "HOTP")]
+        public SwitchParameter SendTabFirst { get; set; }
 
         /// Configures the slot for HMAC-based One-Time Password (HOTP) mode
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Allows configuration of HOTP mode", ParameterSetName = "HOTP")]
@@ -146,6 +151,7 @@ namespace powershellYK.Cmdlets.OTP
         /// </summary>
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Base32 encoded secret key for HOTP", ParameterSetName = "HOTP")]
         public string? Base32Secret { get; set; }
+
 
         /// Initializes the cmdlet by ensuring a YubiKey is connected
         protected override void BeginProcessing()
@@ -325,6 +331,12 @@ namespace powershellYK.Cmdlets.OTP
                             {
                                 _HOTPsecretKey = SecretKey;
                                 configureHOTP = configureHOTP.UseKey(SecretKey);
+                            }
+
+                            // Configure TAB before OTP if requested
+                            if (SendTabFirst.IsPresent)
+                            {
+                                configureHOTP = configureHOTP.SendTabFirst();
                             }
 
                             // Configure carriage return if requested
