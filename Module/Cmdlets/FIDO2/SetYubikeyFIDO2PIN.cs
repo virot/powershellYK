@@ -47,7 +47,7 @@ namespace powershellYK.Cmdlets.Fido
             else
             {
                 oldPIN = new Collection<Attribute>() {
-                    new ParameterAttribute() { Mandatory = false, HelpMessage = "Old PIN, required to change the PIN code.", ParameterSetName = "Set PIN", ValueFromPipeline = false},
+                    new ParameterAttribute() { Mandatory = true, HelpMessage = "Old PIN, required to change the PIN code.", ParameterSetName = "Set PIN", ValueFromPipeline = false},
                     new ValidateYubikeyPIN(4, 63)
                 };
                 newPIN = new Collection<Attribute>() {
