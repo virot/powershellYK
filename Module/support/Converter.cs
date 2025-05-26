@@ -87,7 +87,8 @@ namespace powershellYK.support
                 ECDsa ecc = ECDsa.Create();
                 ecc.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
                 return ecc;
-            } else if (publicKey is Curve25519PublicKey curve25519PublicKey)
+            }
+            else if (publicKey is Curve25519PublicKey curve25519PublicKey)
             {
                 throw new NotImplementedException("Curve25519PublicKey is not implemented yet.");
             }

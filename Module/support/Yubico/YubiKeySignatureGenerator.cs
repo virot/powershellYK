@@ -92,7 +92,7 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
                     ecc.ImportSubjectPublicKeyInfo(_publicKey.ExportSubjectPublicKeyInfo(), out _);
                     _defaultGenerator = X509SignatureGenerator.CreateForECDsa(ecc);
                 }
-                
+
             }
             else
             {
