@@ -44,7 +44,7 @@ Describe "Import-YubikeyPIV PrivateKey" -Tag "Import-YubikeyPIV",'PIV' {
     #}
 
     It -Name "RSA2048 AES256 '-PrivateKeyPath _fullpath_ -Password _password_'" -Test {
-	New-YubikeyPIVKey -Slot 0x9a -Algorithm EccP384 -Confirm:$false
+	New-YubikeyPIVKey -Slot 0x9a -Algorithm EcP384 -Confirm:$false
 	{Import-YubikeyPIV -Slot 0x9a -PrivateKeyPath "$PSScriptRoot\TestData\rsa_2048_key_aes256_password=password.pem" -Password (ConvertTo-SecureString -String "password" -AsPlainText -Force) -Confirm:$False} | Should -Not -Throw
 	(Get-YubikeyPIV -Slot 0x9a).PublicKey.GetType().Fullname | Should -Be 'Yubico.YubiKey.Cryptography.RSAPublicKey'
     }

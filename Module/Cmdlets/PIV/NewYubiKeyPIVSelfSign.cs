@@ -68,10 +68,10 @@ namespace powershellYK.Cmdlets.PIV
                     throw new Exception($"Failed to get public key for slot {Slot}, does the key exist?", e);
                 }
 
-
+                WriteDebug($"Starting to generate CertificateRequest for KeyType {publicKey.KeyType.ToString()}");
                 if (publicKey is RSAPublicKey rsaPublicKey)
                 {
-                    request = new CertificateRequest(Subjectname, ((RSA)Converter.YubiKeyPublicKeyToDotNet(publicKey)), HashAlgorithm, RSASignaturePadding.Pkcs1);
+                    request = new CertificateRequest(Subjectname, (RSA)Converter.YubiKeyPublicKeyToDotNet(publicKey), HashAlgorithm, RSASignaturePadding.Pkcs1);
                 }
                 else if (publicKey is ECPublicKey ecPublicKey)
                 {

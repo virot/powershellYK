@@ -221,8 +221,8 @@ namespace powershellYK.Cmdlets.PIV
                     {
                         throw new Exception("No public key found, not uploading certificate.");
                     }
-                    else if ((_newcertificate.PublicKey.Oid.FriendlyName == "RSA" && publicKey is RSAPublicKey) ||
-                        (_newcertificate.PublicKey.Oid.FriendlyName == "ECC" && publicKey is ECPublicKey))
+                    else if ((_newcertificate.PublicKey.Oid.FriendlyName == "RSA" && publicKey is not RSAPublicKey) ||
+                        (_newcertificate.PublicKey.Oid.FriendlyName == "ECC" && publicKey is not ECPublicKey))
                     {
                         throw new Exception("Private key does match certificate type: RSA / ECDSA.");
                     }

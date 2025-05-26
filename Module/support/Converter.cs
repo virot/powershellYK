@@ -78,21 +78,16 @@ namespace powershellYK.support
         {
             if (publicKey is RSAPublicKey rsaPublicKey)
             {
-                using (RSA rsa = RSA.Create())
-                {
-                    rsa.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
-                    return rsa;
-                }
+                RSA rsa = RSA.Create();
+                rsa.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
+                return rsa;
             }
             else if (publicKey is ECPublicKey eccPublicKey)
             {
-                using (ECDsa ecc = ECDsa.Create())
-                {
-                    ecc.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
-                    return ecc;
-                }
-            }
-            else if (publicKey is Curve25519PublicKey curve25519PublicKey)
+                ECDsa ecc = ECDsa.Create();
+                ecc.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
+                return ecc;
+            } else if (publicKey is Curve25519PublicKey curve25519PublicKey)
             {
                 throw new NotImplementedException("Curve25519PublicKey is not implemented yet.");
             }
