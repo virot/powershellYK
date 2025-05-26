@@ -7,6 +7,7 @@ using Yubico.YubiKey.Sample.PivSampleCode;
 using powershellYK.PIV;
 using powershellYK.support.transform;
 using powershellYK.support.validators;
+using Yubico.YubiKey.Cryptography;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -73,11 +74,12 @@ namespace powershellYK.Cmdlets.PIV
 
                 // get the metadata catch if fails
                 PivMetadata? metadata = null;
-                PivPublicKey? publicKey = null;
+                IPublicKey? publicKey = null;
+                //IPublicKey? publicKeyParam = null;
                 try
                 {
                     metadata = pivSession.GetMetadata(Slot);
-                    publicKey = metadata.PublicKey;
+                    publicKey = metadata.PublicKeyParameters;
                 }
                 catch (Exception e)
                 {
@@ -96,23 +98,39 @@ namespace powershellYK.Cmdlets.PIV
                     }
                 }
 
-
-                using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
-
-                if (publicKey is PivRsaPublicKey)
+                if (publicKey is RSAPublicKey)
                 {
-                    request = new CertificateRequest(Subjectname, (RSA)dotNetPublicKey, HashAlgorithm, RSASignaturePadding.Pkcs1);
+                    using (RSA rsa = RSA.Create())
+                    {
+                        rsa.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
+                        request = new CertificateRequest(Subjectname, rsa, HashAlgorithm, RSASignaturePadding.Pkcs1);
+                    }
+                }
+                else if (publicKey is ECPublicKey)
+                {
+                    HashAlgorithm = publicKey.KeyType switch
+                    {
+                        KeyType.ECP256 => HashAlgorithmName.SHA256,
+                        KeyType.ECP384 => HashAlgorithmName.SHA384,
+                        KeyType.ECP521 => HashAlgorithmName.SHA512,
+                        _ => throw new Exception("Unknown Public key algorithm")
+                    };
+
+                    using (ECDsa ecc = ECDsa.Create())
+                    {
+                        ecc.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
+                        WriteDebug($"Using Hash based on ECC size: {HashAlgorithm.ToString()}");
+                        request = new CertificateRequest(Subjectname, ecc, HashAlgorithm);
+                    }
+                }
+                else if (publicKey is Curve25519PublicKey)
+                {
+                    // If needed otherwise use the default SHA256
+                    throw new NotSupportedException("Curve25519 is not supported for CSR generation.");
                 }
                 else
                 {
-                    HashAlgorithm = publicKey.Algorithm switch
-                    {
-                        PivAlgorithm.EccP256 => HashAlgorithmName.SHA256,
-                        PivAlgorithm.EccP384 => HashAlgorithmName.SHA384,
-                        _ => throw new Exception("Unknown Public key algorithm")
-                    };
-                    WriteDebug($"Using Hash based on ECC size: {HashAlgorithm.ToString()}");
-                    request = new CertificateRequest(Subjectname, (ECDsa)dotNetPublicKey, HashAlgorithm);
+                    throw new Exception($"Unknown public key type {publicKey.KeyType}");
                 }
 
                 if (Attestation.IsPresent)
@@ -140,13 +158,22 @@ namespace powershellYK.Cmdlets.PIV
                     request.CertificateExtensions.Add(new X509Extension(oidIntermediate, yubikeyIntermediateAttestationCertificateBytes, false));
                 }
 
-                if (publicKey is PivRsaPublicKey)
+                if (publicKey is RSAPublicKey)
                 {
                     signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey, RSASignaturePaddingMode.Pss);
                 }
-                else
+                else if (publicKey is ECPublicKey)
                 {
                     signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey);
+                }
+                else if (publicKey is Curve25519PublicKey)
+                {
+                    //signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey);
+                    throw new NotSupportedException("Curve25519 is not supported for CSR generation.");
+                }
+                else
+                {
+                    throw new Exception($"Unknown public key type {publicKey.KeyType}");
                 }
 
                 byte[] requestSigned = request.CreateSigningRequest(signer);

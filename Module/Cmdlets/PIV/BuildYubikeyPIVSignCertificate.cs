@@ -7,6 +7,7 @@ using Yubico.YubiKey.Sample.PivSampleCode;
 using powershellYK.support.transform;
 using powershellYK.PIV;
 using powershellYK.support.validators;
+using Yubico.YubiKey.Cryptography;
 
 
 namespace powershellYK.Cmdlets.PIV
@@ -78,11 +79,11 @@ namespace powershellYK.Cmdlets.PIV
 
                 X509SignatureGenerator signer;
                 X509Certificate2 certificateCA;
-                PivPublicKey publicKey;
+                IPublicKey? publicKey;
 
                 try
                 {
-                    publicKey = pivSession.GetMetadata(Slot).PublicKey;
+                    publicKey = pivSession.GetMetadata(Slot).PublicKeyParameters;
                     certificateCA = pivSession.GetCertificate(Slot);
                     if (certificateCA.PublicKey is null)
                     {
@@ -170,13 +171,22 @@ namespace powershellYK.Cmdlets.PIV
                     _request.CertificateExtensions.Add(sanBuilder.Build());
                 }
 
-                if (publicKey is PivRsaPublicKey)
+                if (publicKey is RSAPublicKey)
                 {
                     signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey, RSASignaturePaddingMode.Pss);
                 }
-                else
+                else if (publicKey is ECPublicKey)
                 {
                     signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey);
+                }
+                else if (publicKey is Curve25519PublicKey)
+                {
+                    WriteError(new ErrorRecord(null, "UnknownAlgorithmFamily", ErrorCategory.OperationStopped, null));
+                    return;
+                }
+                else
+                {
+                    throw new Exception("Unknown public Key algorithm");
                 }
 
                 X509Certificate2 signedCertificate = _request.Create(certificateCA.SubjectName, signer, NotBefore, NotAfter, SerialNumber);

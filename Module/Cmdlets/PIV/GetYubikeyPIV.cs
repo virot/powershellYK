@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using powershellYK.PIV;
 using Yubico.YubiKey;
+using Yubico.YubiKey.Cryptography;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Objects;
 using Yubico.YubiKey.Sample.PivSampleCode;
@@ -71,11 +72,12 @@ namespace powershellYK.Cmdlets.PIV
                     List<PIVSlot> certificateLocations = new List<PIVSlot>();
                     var locationsToCheck = new PIVSlot[] { 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x9a, 0x9c, 0x9d, 0x9e };
 
+
                     foreach (var location in locationsToCheck)
                     {
                         try
                         {
-                            PivPublicKey pubkey = pivSession.GetMetadata(location).PublicKey;
+                            _ = pivSession.GetMetadata(location).PublicKeyParameters;
                             certificateLocations.Add(location);
                         }
                         catch
@@ -90,8 +92,11 @@ namespace powershellYK.Cmdlets.PIV
                     if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa2048)) { supportedAlgorithms.Add("Rsa2048"); };
                     if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa3072)) { supportedAlgorithms.Add("Rsa3072"); };
                     if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa4096)) { supportedAlgorithms.Add("Rsa4096"); };
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { supportedAlgorithms.Add("EccP256"); };
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { supportedAlgorithms.Add("EccP384"); };
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { supportedAlgorithms.Add("EcP256"); };
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { supportedAlgorithms.Add("EcP384"); };
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { supportedAlgorithms.Add("Ed25519"); };
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { supportedAlgorithms.Add("X25519"); };
+
 
                     CardholderUniqueId chuid;
                     try
@@ -124,9 +129,12 @@ namespace powershellYK.Cmdlets.PIV
                     try
                     {
                         X509Certificate2? certificate = null;
+                        IPublicKey? publicKey = null;
                         PivMetadata slotData = pivSession.GetMetadata((byte)Slot);
-                        using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(slotData.PublicKey);
 
+                        // using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(slotData.PublicKey);
+                        // try to read the publicKey and Certificate if they exist, otherwise we return null
+                        try { publicKey = pivSession.GetMetadata((byte)Slot).PublicKeyParameters; } catch { }
                         try { certificate = pivSession.GetCertificate((byte)Slot); } catch { }
 
                         SlotInfo returnSlot = new SlotInfo(
@@ -136,10 +144,9 @@ namespace powershellYK.Cmdlets.PIV
                             slotData.PinPolicy,
                             slotData.TouchPolicy,
                             certificate,
-                            dotNetPublicKey
+                            publicKey
                             );
                         WriteObject(returnSlot);
-
                     }
                     catch (Exception e)
                     {
