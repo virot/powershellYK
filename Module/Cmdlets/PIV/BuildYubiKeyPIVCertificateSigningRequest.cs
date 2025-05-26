@@ -74,20 +74,19 @@ namespace powershellYK.Cmdlets.PIV
 
                 // get the metadata catch if fails
                 PivMetadata? metadata = null;
-                PivPublicKey? publicKey = null;
-                IPublicKey? publicKeyParam = null;
+                IPublicKey? publicKey = null;
+                //IPublicKey? publicKeyParam = null;
                 try
                 {
                     metadata = pivSession.GetMetadata(Slot);
-                    publicKeyParam = metadata.PublicKeyParameters;
-                    publicKey = metadata.PublicKey; // This is obsolete, but the sample code uses it..
+                    publicKey = metadata.PublicKeyParameters;
                 }
                 catch (Exception e)
                 {
                     throw new Exception($"Failed to get metadata for slot {Slot}.", e);
                 }
 
-                if (publicKeyParam is null)
+                if (publicKey is null)
                 {
                     throw new Exception($"Failed to get public key for slot {Slot}, does there exist a key?");
                 }
@@ -99,17 +98,17 @@ namespace powershellYK.Cmdlets.PIV
                     }
                 }
 
-                if (publicKeyParam is RSAPublicKey)
+                if (publicKey is RSAPublicKey)
                 {
                     using (RSA rsa = RSA.Create())
                     {
-                        rsa.ImportSubjectPublicKeyInfo(publicKeyParam.ExportSubjectPublicKeyInfo(), out _);
+                        rsa.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
                         request = new CertificateRequest(Subjectname, rsa, HashAlgorithm, RSASignaturePadding.Pkcs1);
                     }
                 }
-                else if (publicKeyParam is ECPublicKey)
+                else if (publicKey is ECPublicKey)
                 {
-                    HashAlgorithm = publicKeyParam.KeyType switch
+                    HashAlgorithm = publicKey.KeyType switch
                     {
                         KeyType.ECP256 => HashAlgorithmName.SHA256,
                         KeyType.ECP384 => HashAlgorithmName.SHA384,
@@ -119,19 +118,19 @@ namespace powershellYK.Cmdlets.PIV
 
                     using (ECDsa ecc = ECDsa.Create())
                     {
-                        ecc.ImportSubjectPublicKeyInfo(publicKeyParam.ExportSubjectPublicKeyInfo(), out _);
+                        ecc.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
                         WriteDebug($"Using Hash based on ECC size: {HashAlgorithm.ToString()}");
                         request = new CertificateRequest(Subjectname, ecc, HashAlgorithm);
                     }
                 }
-                else if (publicKeyParam is Curve25519PublicKey)
+                else if (publicKey is Curve25519PublicKey)
                 {
                     // If needed otherwise use the default SHA256
                     throw new NotSupportedException("Curve25519 is not supported for CSR generation.");
                 }
                 else
                 {
-                    throw new Exception($"Unknown public key type {publicKeyParam.KeyType}");
+                    throw new Exception($"Unknown public key type {publicKey.KeyType}");
                 }
 
                 if (Attestation.IsPresent)
@@ -159,22 +158,22 @@ namespace powershellYK.Cmdlets.PIV
                     request.CertificateExtensions.Add(new X509Extension(oidIntermediate, yubikeyIntermediateAttestationCertificateBytes, false));
                 }
 
-                if (publicKeyParam is RSAPublicKey)
+                if (publicKey is RSAPublicKey)
                 {
                     signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey, RSASignaturePaddingMode.Pss);
                 }
-                else if (publicKeyParam is ECPublicKey)
+                else if (publicKey is ECPublicKey)
                 {
                     signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey);
                 }
-                else if (publicKeyParam is Curve25519PublicKey)
+                else if (publicKey is Curve25519PublicKey)
                 {
                     //signer = new YubiKeySignatureGenerator(pivSession, Slot, publicKey);
                     throw new NotSupportedException("Curve25519 is not supported for CSR generation.");
                 }
                 else
                 {
-                    throw new Exception($"Unknown public key type {publicKeyParam.KeyType}");
+                    throw new Exception($"Unknown public key type {publicKey.KeyType}");
                 }
 
                 byte[] requestSigned = request.CreateSigningRequest(signer);

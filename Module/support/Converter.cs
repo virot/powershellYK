@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yubico.YubiKey.Cryptography;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace powershellYK.support
 {
@@ -69,6 +72,34 @@ namespace powershellYK.support
                 base64 += new string('=', paddingCount);
             }
             return base64;
+        }
+
+        public static AsymmetricAlgorithm YubiKeyPublicKeyToDotNet(IPublicKey publicKey)
+        {
+            if (publicKey is RSAPublicKey rsaPublicKey)
+            {
+                using (RSA rsa = RSA.Create())
+                {
+                    rsa.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
+                    return rsa;
+                }
+            }
+            else if (publicKey is ECPublicKey eccPublicKey)
+            {
+                using (ECDsa ecc = ECDsa.Create())
+                {
+                    ecc.ImportSubjectPublicKeyInfo(publicKey.ExportSubjectPublicKeyInfo(), out _);
+                    return ecc;
+                }
+            }
+            else if (publicKey is Curve25519PublicKey curve25519PublicKey)
+            {
+                throw new NotImplementedException("Curve25519PublicKey is not implemented yet.");
+            }
+            else
+            {
+                throw new NotSupportedException("Unsupported public key type");
+            }
         }
     }
 }

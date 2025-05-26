@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using powershellYK.support.validators;
 using powershellYK.PIV;
 using Yubico.YubiKey.Cryptography;
-using System.Security.Cryptography.X509Certificates;
+using powershellYK.support;
 
 namespace powershellYK.Cmdlets.PIV
 {
@@ -87,51 +87,21 @@ namespace powershellYK.Cmdlets.PIV
 
                 if (!keyExists || ShouldProcess($"Slot {Slot}", "New"))
                 {
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).FirmwareVersion < new FirmwareVersion(5, 2, 0))
+                    IPublicKey publicKey = pivSession.GenerateKeyPair(Slot, (KeyType)this.MyInvocation.BoundParameters["Algorithm"], PinPolicy, TouchPolicy);
+                    if (publicKey is not null)
                     {
-                        WriteDebug("ProcessRecord in New-YubikeyPIVKey using prior to 5.7 code");
-#pragma warning disable CS0618 // Type or member is obsolete
-                        PivPublicKey publicKey = pivSession.GenerateKeyPair(Slot, (PivAlgorithm)this.MyInvocation.BoundParameters["Algorithm"], PinPolicy, TouchPolicy);
-#pragma warning restore CS0618 // Type or member is obsolete
-                        if (publicKey is not null)
+                        if (PassThru.IsPresent)
                         {
-                            if (PassThru.IsPresent)
-                            {
-                                using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
-                                if (publicKey is PivRsaPublicKey)
-                                {
-                                    WriteObject((RSA)dotNetPublicKey);
-                                }
-                                else
-                                {
-                                    WriteObject((ECDsa)dotNetPublicKey);
-                                }
-                            }
-                            WriteInformation($"New key(s) created in slot {Slot}.", new string[] { "PIV", "Info" });
+                            WriteObject(publicKey);
                         }
-                        else
-                        {
-                            throw new Exception("Could not create keypair!");
-                        }
+                        WriteInformation($"New key(s) created in slot {Slot}.", new string[] { "PIV", "Info" });
                     }
                     else
                     {
-                        WriteDebug("ProcessRecord in New-YubikeyPIVKey using 5.7 code");
-                        IPublicKey publicKey = pivSession.GenerateKeyPair(Slot, (KeyType)this.MyInvocation.BoundParameters["Algorithm"], PinPolicy, TouchPolicy);
-                        if (publicKey is not null)
-                        {
-                            if (PassThru.IsPresent)
-                            {
-                                WriteObject(publicKey);
-                            }
-                            WriteInformation($"New key(s) created in slot {Slot}.", new string[] { "PIV", "Info" });
-                        }
-                        else
-                        {
-                            throw new Exception("Could not create keypair!");
-                        }
+                        throw new Exception("Could not create keypair!");
                     }
                 }
+
             }
         }
     }
