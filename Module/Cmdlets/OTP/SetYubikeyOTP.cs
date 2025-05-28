@@ -48,6 +48,14 @@
 /// .EXAMPLE
 /// # Configure HOTP with TAB before OTP code for easier form navigation
 /// Set-YubiKeyOTP -Slot ShortPress -HOTP -Base32Secret "QRFJ7DTIVASL3PNYXWFIQAQN5RKUJD4U" -SendTabFirst
+/// 
+/// .EXAMPLE
+/// # Configure HOTP with 8 digits instead of 6
+/// Set-YubiKeyOTP -Slot ShortPress -HOTP -Use8Digits
+/// 
+/// .EXAMPLE
+/// # Configure HOTP with 8 digits, TAB, and carriage return
+/// Set-YubiKeyOTP -Slot ShortPress -HOTP -Use8Digits -SendTabFirst -AppendCarriageReturn
 /// </summary>
 
 using System.Management.Automation;
@@ -147,6 +155,10 @@ namespace powershellYK.Cmdlets.OTP
         // Base32 encoded secret key for HOTP mode
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Base32 encoded secret key for HOTP", ParameterSetName = "HOTP")]
         public string? Base32Secret { get; set; }
+
+        // Use 8 digits instead of 6 for HOTP mode
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Use 8 digits instead of 6 for HOTP", ParameterSetName = "HOTP")]
+        public SwitchParameter Use8Digits { get; set; }
 
         // Initializes the cmdlet by ensuring a YubiKey is connected
         protected override void BeginProcessing()
@@ -338,6 +350,12 @@ namespace powershellYK.Cmdlets.OTP
                             if (AppendCarriageReturn.IsPresent)
                             {
                                 configureHOTP = configureHOTP.AppendCarriageReturn();
+                            }
+
+                            // Configure 8 digits if requested
+                            if (Use8Digits.IsPresent)
+                            {
+                                configureHOTP = configureHOTP.Use8Digits();
                             }
 
                             configureHOTP.Execute();

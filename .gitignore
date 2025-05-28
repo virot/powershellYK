@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /.vscode/launch.json
 /powershellYK.psd1
+/Docs/Cookbook/hotp-secrets.csv
+/Docs/Cookbook/Set-YubiKey-HOTP.ps1
