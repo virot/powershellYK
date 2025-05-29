@@ -2,6 +2,7 @@
 /// Utility class for Base32 encoding and decoding using the standard alphabet (A-Z2-7)
 /// </summary>
 
+// Imports
 using System;
 using System.Text;
 

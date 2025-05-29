@@ -1,4 +1,20 @@
-﻿using System.Management.Automation;           // Windows PowerShell namespace.
+﻿/// <summary>
+/// Resets the FIDO2 applet on a YubiKey to factory settings.
+/// Deletes all FIDO credentials, including FIDO U2F credentials.
+/// Requires physical interaction with the YubiKey (removal and reinsertion).
+/// Requires a YubiKey with FIDO2 support and administrator privileges on Windows.
+/// Note: This operation cannot be undone.
+/// 
+/// .EXAMPLE
+/// Reset-YubiKeyFIDO2
+/// Resets the FIDO2 applet on the connected YubiKey
+/// 
+/// .EXAMPLE
+/// Reset-YubiKeyFIDO2 -Confirm:$false
+/// Resets the FIDO2 applet without confirmation prompt
+/// </summary>
+
+using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
 using powershellYK.FIDO2;
@@ -7,15 +23,16 @@ using Yubico.YubiKey.Fido2.Commands;
 using powershellYK.Exceptions;
 using System.Diagnostics;
 
-
 namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommon.Reset, "YubiKeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class ResetYubikeyFIDO2Cmdlet : PSCmdlet
     {
+        // Track YubiKey removal and insertion events
         private bool _yubiKeyRemoved = false;
         private bool _yubiKeyArrived = false;
 
+        // Initialize processing and verify requirements
         protected override void BeginProcessing()
         {
             // Check if running as Administrator
@@ -24,6 +41,7 @@ namespace powershellYK.Cmdlets.Fido
                 throw new Exception("FIDO access on Windows requires running as Administrator.");
             }
 
+            // Connect to YubiKey if not already connected
             if (YubiKeyModule._yubikey is null)
             {
                 WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
@@ -37,6 +55,7 @@ namespace powershellYK.Cmdlets.Fido
             }
         }
 
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
             // Add Bio MPE check
@@ -53,47 +72,42 @@ namespace powershellYK.Cmdlets.Fido
             {
                 Console.WriteLine("Remove and re-insert the YubiKey to perform the reset...");
 
-                // Set up the YubiKeyDeviceListener
-                // This must not be disposed of.
+                // Set up YubiKey device monitoring
                 var yubiKeyDeviceListener = YubiKeyDeviceListener.Instance;
                 // Use a stopwatch to make sure we wont get stuck in an infinite loop.
                 Stopwatch stopwatch = new Stopwatch();
 
-                // Register event handlers for remove and (re)insert
+                // Register event handlers for device removal and insertion
                 yubiKeyDeviceListener.Removed += YubiKeyRemoved;
                 yubiKeyDeviceListener.Arrived += YubiKeyArrived;
 
-
-                // Wait for the YubiKey to be removed
-                // If the YubiKey is not removed within 10 seconds, the reset will be aborted
+                // Wait for YubiKey removal (10 second timeout)
                 stopwatch.Start();
                 while (!_yubiKeyRemoved)
                 {
-                    System.Threading.Thread.Sleep(100); // Prevent CPU overuse while waiting
+                    System.Threading.Thread.Sleep(100);
                     if (stopwatch.Elapsed.TotalSeconds > 10)
                     {
                         throw new Exception("YubiKey was not removed within 10 seconds. Reset aborted.");
                     }
                 }
 
-                // Wait for the YubiKey to be reinserted
-                // If the YubiKey is not removed within 10 seconds, the reset will be aborted
+                // Wait for YubiKey reinsertion (10 second timeout)
                 stopwatch.Restart();
                 while (!_yubiKeyArrived)
                 {
-                    System.Threading.Thread.Sleep(100); // Prevent CPU overuse while waiting
+                    System.Threading.Thread.Sleep(100);
                     if (stopwatch.Elapsed.TotalSeconds > 10)
                     {
                         throw new Exception("YubiKey was not inserted within 10 seconds. Reset aborted.");
                     }
                 }
 
-                // Unregister the event handler after reset is completed
-                // is this needed, we are disposing the listener?
+                // Unregister event handlers
                 yubiKeyDeviceListener.Removed -= YubiKeyRemoved;
                 yubiKeyDeviceListener.Arrived -= YubiKeyArrived;
 
-                // Proceed with the reset after the YubiKey is (re)inserted
+                // Perform the reset operation
                 using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
                     ResetCommand resetCommand = new ResetCommand();
@@ -109,19 +123,20 @@ namespace powershellYK.Cmdlets.Fido
                             throw new Exception("Please touch the YubiKey to complete reset.");
 
                         case ResponseStatus.ConditionsNotSatisfied:
-                            // This should not happen anymore after the forcing of yubikey reinsertion above.
                             throw new Exception("Failed to reset, YubiKey needs to be reinserted within 5 seconds.");
 
                         case ResponseStatus.Success:
                             break;
                     }
 
+                    // Clear FIDO2 PIN after successful reset
                     YubiKeyModule._fido2PIN = null;
                     WriteInformation("YubiKey FIDO applet successfully reset.", new string[] { "FIDO2", "Reset" });
                 }
             }
         }
 
+        // Event handler for YubiKey removal
         private void YubiKeyRemoved(object? sender, YubiKeyDeviceEventArgs e)
         {
             if (YubiKeyModule._yubikey!.SerialNumber == e.Device.SerialNumber)
@@ -130,6 +145,7 @@ namespace powershellYK.Cmdlets.Fido
             }
         }
 
+        // Event handler for YubiKey insertion
         private void YubiKeyArrived(object? sender, YubiKeyDeviceEventArgs e)
         {
             if (YubiKeyModule._yubikey!.SerialNumber == e.Device.SerialNumber)

@@ -1,16 +1,20 @@
-﻿// Summary:
-// Connects to the OATH application on a YubiKey, handling password authentication if required.
-// If no YubiKey is selected, it will automatically call Connect-Yubikey first.
-//
-// Examples:
-// # Basic connection (will prompt for password if needed)
-// Connect-YubiKeyOATH
-//
-// # Connect with password
-// $securePassword = ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force
-// Connect-YubiKeyOATH -Password $securePassword
-//
+﻿/// <summary>
+/// Connects to the OATH applet on a YubiKey.
+/// Handles password authentication if the OATH applet is password protected.
+/// If no YubiKey is selected, automatically calls Connect-Yubikey first.
+/// Requires a YubiKey with OTP support.
+/// 
+/// .EXAMPLE
+/// Connect-YubiKeyOATH
+/// Connects to the OATH applet, prompting for password if needed
+/// 
+/// .EXAMPLE
+/// $securePassword = ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force
+/// Connect-YubiKeyOATH -Password $securePassword
+/// Connects to the OATH applet using the provided password
+/// </summary>
 
+// Imports
 using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Oath;
@@ -23,11 +27,13 @@ namespace powershellYK.Cmdlets.OATH
     [Cmdlet(VerbsCommunications.Connect, "YubiKeyOATH", DefaultParameterSetName = "Password")]
     public class ConnectYubikeyOATHCommand : PSCmdlet, IDynamicParameters
     {
+        // Get dynamic parameters based on OATH state
         public object GetDynamicParameters()
         {
             Collection<Attribute> passwordAttributes;
             if (YubiKeyModule._yubikey is not null)
             {
+                // Check password requirement for connected YubiKey
                 using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
                     if (oathSession.IsPasswordProtected)
@@ -48,7 +54,7 @@ namespace powershellYK.Cmdlets.OATH
             }
             else
             {
-                // Try to conect to any YubiKey that is inserted.
+                // Try to connect to any available YubiKey
                 try
                 {
                     var yubiKey = YubiKeyDevice.FindAll().First();
@@ -72,6 +78,7 @@ namespace powershellYK.Cmdlets.OATH
                 }
                 catch
                 {
+                    // Default to requiring password if no YubiKey is found
                     passwordAttributes = new Collection<Attribute>()
                     {
                         new ParameterAttribute() { Mandatory = true, HelpMessage = "Password provided as a SecureString.", ParameterSetName = "Password"},
@@ -79,14 +86,18 @@ namespace powershellYK.Cmdlets.OATH
                     };
                 }
             }
+
+            // Create and return dynamic parameters
             var runtimeDefinedParameterDictionary = new RuntimeDefinedParameterDictionary();
             var runtimeDefinedPassword = new RuntimeDefinedParameter("Password", typeof(SecureString), passwordAttributes);
             runtimeDefinedParameterDictionary.Add("Password", runtimeDefinedPassword);
             return runtimeDefinedParameterDictionary;
         }
 
+        // Initialize processing and verify requirements
         protected override void BeginProcessing()
         {
+            // Connect to YubiKey if not already connected
             if (YubiKeyModule._yubikey is null)
             {
                 WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
@@ -96,6 +107,7 @@ namespace powershellYK.Cmdlets.OATH
             }
         }
 
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
             try
@@ -104,7 +116,7 @@ namespace powershellYK.Cmdlets.OATH
                 {
                     oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                    // Check if the OATH applet is password protected
+                    // Handle password authentication if required
                     if (oathSession.IsPasswordProtected)
                     {
                         try

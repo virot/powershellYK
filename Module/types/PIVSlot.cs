@@ -1,9 +1,27 @@
-﻿using Yubico.YubiKey.Piv;
+﻿/// <summary>
+/// Represents a PIV slot with validation and conversion capabilities.
+/// Handles slot number validation and conversion between different formats.
+/// 
+/// .EXAMPLE
+/// # Create a PIV slot from a named slot
+/// $slot = [powershellYK.PIV.PIVSlot]::new("Management")
+/// Write-Host "Slot value: $($slot.Value)"
+/// 
+/// .EXAMPLE
+/// # Convert slot to named format
+/// $namedSlot = $slot.ToNamedSlot()
+/// Write-Host "Named slot: $namedSlot"
+/// </summary>
+
+// Imports
+using Yubico.YubiKey.Piv;
 
 namespace powershellYK.PIV
 {
+    // Represents a PIV slot with validation and conversion capabilities
     public readonly struct PIVSlot
     {
+        // Internal slot value
         private readonly byte _value;
         private readonly HashSet<byte> _validPIVSlots = new HashSet<byte> { 0x80, 0x81, 0x9b, 0x9a, 0x9c, 0x9d, 0x9e, 0xf9, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95 };
 
@@ -16,6 +34,7 @@ namespace powershellYK.PIV
             _value = value;
         }
 
+        // Creates a new PIV slot from an integer value
         public PIVSlot(int value)
         {
             if (value < 0 || value > 0xFF)
@@ -29,6 +48,7 @@ namespace powershellYK.PIV
             _value = (byte)value;
         }
 
+        // Creates a new PIV slot from a string value
         public PIVSlot(string value)
         {
             if (String.Equals(value, "Management", StringComparison.OrdinalIgnoreCase))
@@ -79,16 +99,19 @@ namespace powershellYK.PIV
 
         #region Destinations
 
+        // Returns the slot value as a byte
         public byte ToByte()
         {
             return _value;
         }
 
+        // Returns a string representation of the slot
         public override string ToString()
         {
             return $"0x{_value.ToString("X2")}";
         }
 
+        // Returns the named representation of the slot
         public string ToNamedSlot()
         {
             switch (_value)
@@ -153,31 +176,37 @@ namespace powershellYK.PIV
         #endregion // Destinations
 
         #region Operators
+
+        // Implicit conversion from byte
         public static implicit operator PIVSlot(byte value)
         {
             return new PIVSlot(value);
         }
 
+        // Implicit conversion from int
         public static implicit operator PIVSlot(int value)
         {
             return new PIVSlot((byte)value);
         }
 
+        // Implicit conversion to byte
         public static implicit operator byte(PIVSlot slot)
         {
             return slot.Value;
         }
 
+        // Implicit conversion to int
         public static implicit operator int(PIVSlot slot)
         {
             return slot.Value;
         }
 
+        // Implicit conversion from string
         public static implicit operator PIVSlot(string value)
         {
             return new PIVSlot(value);
         }
+
         #endregion // Operators
     }
-
 }

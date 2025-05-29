@@ -1,16 +1,37 @@
-﻿using System.Reflection;
+﻿/// <summary>
+/// Provides Windows-specific functionality for YubiKey operations.
+/// Handles DLL directory management and administrator privilege checks.
+/// 
+/// .EXAMPLE
+/// # Add DLL directory for native libraries
+/// [powershellYK.support.Windows]::AddDllDirectory()
+/// 
+/// .EXAMPLE
+/// # Check if running with administrator privileges
+/// $isAdmin = [powershellYK.support.Windows]::IsRunningAsAdministrator()
+/// if ($isAdmin) {
+///     Write-Host "Running with administrator privileges"
+/// }
+/// </summary>
+
+// Imports
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 
 namespace powershellYK.support
 {
+    // Windows-specific functionality for YubiKey operations
     public class Windows
     {
+        // Native Windows API import for adding DLL directories
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr AddDllDirectory(string NewDirectory);
 
+        // Adds the appropriate native DLL directory based on system architecture
         public static void AddDllDirectory()
         {
+            // Get the assembly location and directory
             string assemblyLocation = Assembly.GetExecutingAssembly().Location;
             string assemblyPath = Path.GetDirectoryName(assemblyLocation)!;
             if (RuntimeInformation.OSArchitecture == Architecture.X64)
@@ -22,6 +43,7 @@ namespace powershellYK.support
             {
                 string runtimePath = assemblyPath != null ? Path.Combine(assemblyPath, "runtimes\\win-arm64\\native") : "";
                 IntPtr result = AddDllDirectory(runtimePath);
+                // Note: Error handling is intentionally omitted as per original code
             }
             else if (RuntimeInformation.OSArchitecture == Architecture.Arm)
             {
@@ -44,6 +66,7 @@ namespace powershellYK.support
         }
         public static bool IsRunningAsAdministrator()
         {
+            // Only check on Windows platform
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 WindowsIdentity identity = WindowsIdentity.GetCurrent();

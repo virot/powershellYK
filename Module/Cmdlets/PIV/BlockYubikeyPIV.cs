@@ -1,24 +1,41 @@
-﻿using System.Management.Automation;
+﻿/// <summary>
+/// Blocks the PIN and/or PUK of a YubiKey PIV application.
+/// Can block either or both authentication methods by exhausting retry attempts.
+/// Requires a YubiKey with PIV support.
+/// 
+/// .EXAMPLE
+/// Block-YubiKeyPIV -PIN
+/// Blocks the PIN by exhausting retry attempts
+/// 
+/// .EXAMPLE
+/// Block-YubiKeyPIV -PIN -PUK
+/// Blocks both PIN and PUK by exhausting retry attempts
+/// </summary>
+
+// Imports
+using System.Management.Automation;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
 using Yubico.YubiKey.Piv.Commands;
 
-
 namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsSecurity.Block, "YubiKeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Low)]
     public class BlockYubikeyPIVCommand : Cmdlet
     {
-
+        // Parameter for blocking PIN
         [Parameter(Mandatory = true, ParameterSetName = "BlockBoth", ValueFromPipeline = false, HelpMessage = "Block the PIN for the PIV device")]
         [Parameter(Mandatory = true, ParameterSetName = "BlockPIN", ValueFromPipeline = false, HelpMessage = "Block the PIN for the PIV device")]
         public SwitchParameter PIN { get; set; }
+
+        // Parameter for blocking PUK
         [Parameter(Mandatory = true, ParameterSetName = "BlockBoth", HelpMessage = "Block the PUK for the PIV device")]
         [Parameter(Mandatory = true, ParameterSetName = "BlockPUK", HelpMessage = "Block the PUK for the PIV device")]
         public SwitchParameter PUK { get; set; }
 
+        // Connect to YubiKey when cmdlet starts
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -36,10 +53,13 @@ namespace powershellYK.Cmdlets.PIV
                 }
             }
         }
+
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
             using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
+                // Block PIN if requested
                 if (PIN.IsPresent)
                 {
                     try
@@ -62,6 +82,8 @@ namespace powershellYK.Cmdlets.PIV
                         }
                     }
                 }
+
+                // Block PUK if requested
                 if (PUK.IsPresent)
                 {
                     try
@@ -86,6 +108,5 @@ namespace powershellYK.Cmdlets.PIV
                 }
             }
         }
-
     }
 }

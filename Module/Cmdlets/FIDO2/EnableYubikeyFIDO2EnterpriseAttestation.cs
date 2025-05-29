@@ -1,4 +1,21 @@
-﻿using System.Management.Automation;           // Windows PowerShell namespace.
+﻿/// <summary>
+/// Enables enterprise attestation the YubiKey FIDO2 applet.
+/// Enterprise attestation (EA) allows the YubiKey to provide detailed device information
+/// during FIDO2 authentication, which can be useful for enterprise deployments.
+/// Requires a YubiKey capable of Enterprise Attestation and administrator privileges on Windows.
+/// Note: Enterprise attestation cannot be disabled without resetting the FIDO2 applet.
+/// 
+/// .EXAMPLE
+/// Enable-YubiKeyFIDO2EnterpriseAttestation
+/// Enables enterprise attestation on the connected YubiKey
+/// 
+/// .EXAMPLE
+/// Enable-YubiKeyFIDO2EnterpriseAttestation -Confirm:$false
+/// Enables enterprise attestation without confirmation prompt
+/// </summary>
+
+// Imports
+using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
 using powershellYK.FIDO2;
@@ -6,16 +23,15 @@ using powershellYK.support;
 using System.Security;
 using powershellYK.support.validators;
 
-
 namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsLifecycle.Enable, "YubiKeyFIDO2EnterpriseAttestation", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
-
     public class EnableYubikeyFIDO2CmdletEnterpriseAttestation : PSCmdlet
     {
+        // Initialize processing and verify requirements
         protected override void BeginProcessing()
         {
-            // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
+            // Connect to FIDO2 if not already authenticated
             if (YubiKeyModule._fido2PIN is null)
             {
                 WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2");
@@ -31,7 +47,6 @@ namespace powershellYK.Cmdlets.Fido
                 }
             }
 
-
             // Check if running as Administrator
             if (Windows.IsRunningAsAdministrator() == false)
             {
@@ -39,10 +54,12 @@ namespace powershellYK.Cmdlets.Fido
             }
         }
 
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
+                // Set up key collector for PIN operations
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
                 fido2Session.AuthenticatorInfo.Options!.Any(v => v.Key.Contains(AuthenticatorOptions.ep));
                 if (!(fido2Session.AuthenticatorInfo.Options!.Any(v => v.Key.Contains(AuthenticatorOptions.ep))) || fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.ep) == OptionValue.False)
