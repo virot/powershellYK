@@ -1,19 +1,33 @@
-﻿using System.Management.Automation;           // Windows PowerShell namespace.
+﻿/// <summary>
+/// Retrieves information about the FIDO2 applet on a YubiKey.
+/// Returns details about supported features, capabilities, and current settings.
+/// Requires a YubiKey with FIDO2 support and administrator privileges on Windows.
+/// 
+/// .EXAMPLE
+/// Get-YubiKeyFIDO2
+/// Returns information about the FIDO2 applet on the connected YubiKey
+/// 
+/// .EXAMPLE
+/// Get-YubiKeyFIDO2 | Format-List
+/// Returns detailed FIDO2 information in a list format
+/// </summary>
+
+// Imports
+using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
 using powershellYK.FIDO2;
 using powershellYK.support;
 
-
 namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommon.Get, "YubiKeyFIDO2")]
-
     public class GetYubikeyFIDO2Cmdlet : PSCmdlet
     {
+        // Initialize processing and verify requirements
         protected override void BeginProcessing()
         {
-            // Get-YubiKeyFIDO2, does not require authentication, so just make sure we have a YubiKey connected.
+            // Connect to YubiKey if not already connected
             if (YubiKeyModule._yubikey is null)
             {
                 WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
@@ -33,14 +47,14 @@ namespace powershellYK.Cmdlets.Fido
             }
         }
 
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-
+                // Get and output FIDO2 authenticator information
                 AuthenticatorInfo info = fido2Session.AuthenticatorInfo;
                 WriteObject(new Information(info));
-
             }
         }
     }

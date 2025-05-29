@@ -1,4 +1,19 @@
-﻿using System.Management.Automation;
+﻿/// <summary>
+/// Imports certificates and private keys into a YubiKey PIV slot.
+/// Supports importing from X.509 certificates, P12 files, and PEM-encoded private keys.
+/// Requires a YubiKey with PIV support.
+/// 
+/// .EXAMPLE
+/// Import-YubiKeyPIV -Slot "PIV Authentication" -Certificate $cert
+/// Imports a certificate into the PIV Authentication slot
+/// 
+/// .EXAMPLE
+/// Import-YubiKeyPIV -Slot "Digital Signature" -P12Path "cert.p12" -Password $securePassword
+/// Imports a certificate and private key from a P12 file
+/// </summary>
+
+// Imports
+using System.Management.Automation;
 using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
@@ -13,56 +28,68 @@ using Yubico.YubiKey.Cryptography;
 using powershellYK.support;
 using System.Linq;
 
-
 namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsData.Import, "YubiKeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class ImportYubiKeyPIVCommand : PSCmdlet
     {
+        // Parameters for slot selection
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slotnumber")]
         public PIVSlot Slot { get; set; }
 
+        // Parameters for certificate import
         [TransformCertificatePath_Certificate()]
         [ValidateX509Certificate2_string()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Certificate to be stored", ParameterSetName = "CertificateOnly")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Certificate to be stored", ParameterSetName = "CertificateAndKey")]
         public object? Certificate { get; set; } = null;
+
+        // Parameters for P12 file import
         [ValidatePath(fileMustExist: true, fileMustNotExist: false, fileExt: ".p12")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "P12 file to be stored", ParameterSetName = "P12")]
         public System.IO.FileInfo? P12Path { get; set; }
+
+        // Parameters for private key import
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Private key to be stored", ParameterSetName = "Privatekey")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Private key to be stored", ParameterSetName = "CertificateAndKey")]
         public System.IO.FileInfo? PrivateKeyPath { get; set; }
+
+        // Parameters for key protection
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Private key password", ParameterSetName = "Privatekey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Private key password", ParameterSetName = "CertificateAndKey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Private key password", ParameterSetName = "P12")]
         public SecureString Password { get; set; } = new SecureString();
 
+        // Parameters for key policies
         [ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy", ParameterSetName = "Privatekey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy", ParameterSetName = "CertificateAndKey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy", ParameterSetName = "P12")]
         public PivPinPolicy PinPolicy { get; set; } = PivPinPolicy.Default;
 
+        // Parameter for touch policy
         [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Touch policy", ParameterSetName = "Privatekey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Touch policy", ParameterSetName = "CertificateAndKey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Touch policy", ParameterSetName = "P12")]
         public PivTouchPolicy TouchPolicy { get; set; } = PivTouchPolicy.Default;
 
-
+        // Private fields for certificate and key
         private X509Certificate2? _newcertificate = null;
         private IPrivateKey? _newPrivateKey = null;
 
+        // Connect to YubiKey when cmdlet starts
         protected override void BeginProcessing()
         {
+            // Check if a YubiKey is connected, if not attempt to connect
             if (YubiKeyModule._yubikey is null)
             {
                 WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
+                    // Create a new PowerShell instance to run Connect-Yubikey
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
                     WriteDebug($"Successfully connected.");
@@ -73,19 +100,26 @@ namespace powershellYK.Cmdlets.PIV
                 }
             }
         }
+
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
-            // Initial section load keys and certificates from files.
+            // Load certificate from parameter
             if (ParameterSetName == "CertificateOnly" || ParameterSetName == "CertificateAndKey")
             {
                 this._newcertificate = (X509Certificate2)Certificate!;
             }
+
+            // Load certificate and key from P12 file
             if (ParameterSetName == "P12" && P12Path is not null && P12Path.Exists)
             {
                 WriteDebug($"Loading P12 from {P12Path}");
-                // Make sure to load with the private key exportable
+                
+                // Load P12 with exportable private key
                 X509Certificate2 p12Data = new X509Certificate2(P12Path.FullName, Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!)), X509KeyStorageFlags.Exportable);
                 this._newcertificate = p12Data;
+
+                // Extract private key based on algorithm
                 if (p12Data.PublicKey.Oid.FriendlyName == "RSA")
                 {
                     WriteDebug("Transforming RSA p12 private key");
@@ -110,6 +144,8 @@ namespace powershellYK.Cmdlets.PIV
                     this._newPrivateKey = ECPrivateKey.CreateFromParameters(eccParam);
                 }
             }
+
+            // Load private key from file
             if (ParameterSetName == "Privatekey" || ParameterSetName == "CertificateAndKey")
             {
                 string pemContent = "";
@@ -123,6 +159,8 @@ namespace powershellYK.Cmdlets.PIV
                         }
                     }
                 }
+
+                // Handle encrypted private keys
                 if (Password.Length >= 1)
                 {
                     if (pemContent.Contains("BEGIN ENCRYPTED PRIVATE KEY"))
@@ -147,6 +185,8 @@ namespace powershellYK.Cmdlets.PIV
                         throw new Exception("No private key found in file!");
                     }
                 }
+                
+                // Handle unencrypted private keys
                 else
                 {
                     if (pemContent.Contains("BEGIN PRIVATE KEY"))
@@ -178,12 +218,13 @@ namespace powershellYK.Cmdlets.PIV
                 }
             }
 
+            // Import data into YubiKey
             using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
+                // Set up key collector for authentication
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-
-                // If we get a new private key, check and install
+                // Import private key if available
                 if (_newPrivateKey is not null)
                 {
                     PivMetadata? pivMestadata = null;
@@ -199,7 +240,7 @@ namespace powershellYK.Cmdlets.PIV
                     }
                 }
 
-                // If we got a new certificate, check and install
+                // Import certificate if available
                 if (_newcertificate is not null)
                 {
                     IPublicKey? publicKey = null;

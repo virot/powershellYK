@@ -1,4 +1,25 @@
-﻿using powershellYK.Exceptions;
+﻿/// <summary>
+/// Handles key collection and authentication for YubiKey operations.
+/// Manages PIN, password, and management key interactions for PIV, FIDO2, and OATH.
+/// 
+/// .EXAMPLE
+/// $collector = New-Object powershellYK.YKKeyCollector
+/// $keyEntryData = New-Object Yubico.YubiKey.KeyEntryData
+/// $result = $collector.YKKeyCollectorDelegate($keyEntryData)
+/// 
+/// .EXAMPLE
+/// # Handle PIN verification
+/// $collector = New-Object powershellYK.YKKeyCollector
+/// $keyEntryData = New-Object Yubico.YubiKey.KeyEntryData -Property @{
+///     Request = [Yubico.YubiKey.KeyEntryRequest]::VerifyPivPin
+///     IsRetry = $true
+///     RetriesRemaining = 2
+/// }
+/// $result = $collector.YKKeyCollectorDelegate($keyEntryData)
+/// </summary>
+
+// Imports
+using powershellYK.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +30,19 @@ using Yubico.YubiKey;
 
 namespace powershellYK
 {
-
+    // Handles key collection and authentication for YubiKey operations
     public class YKKeyCollector
     {
-
+        // Processes key entry requests and handles authentication
         public bool YKKeyCollectorDelegate(KeyEntryData keyEntryData)
         {
+            // Validate input
             if (keyEntryData is null)
             {
                 return false;
             }
 
+            // Handle retry scenarios
             if (keyEntryData.IsRetry)
             {
                 switch (keyEntryData.Request)
@@ -94,16 +117,19 @@ namespace powershellYK
                 case KeyEntryRequest.AuthenticatePivManagementKey:
                     keyEntryData.SubmitValue(YubiKeyModule._pivManagementKey);
                     break;
+
                 case KeyEntryRequest.SetOathPassword:
                     keyEntryData.SubmitValues(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPassword ?? new System.Security.SecureString()))!),
                         System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._OATHPasswordNew ?? new System.Security.SecureString()))!));
                     break;
+
                 case KeyEntryRequest.ChangePivPin:
                     throw new NotImplementedException("Change PIV PIN is not yet implemented");
-                //break;
+
                 case KeyEntryRequest.SetFido2Pin:
                     keyEntryData.SubmitValue(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PINNew!))!));
                     break;
+
                 case KeyEntryRequest.ChangeFido2Pin:
                     keyEntryData.SubmitValues(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PIN!))!), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._fido2PINNew!))!));
                     break;

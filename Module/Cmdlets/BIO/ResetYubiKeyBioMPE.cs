@@ -1,11 +1,26 @@
+/// <summary>
+/// Resets a YubiKey Bio MPE to factory settings.
+/// Deletes all stored data and restores default configuration.
+/// Requires confirmation before proceeding.
+/// 
+/// .EXAMPLE
+/// Reset-YubiKeyBioMPE
+/// Resets the connected YubiKey Bio MPE to factory settings after confirmation
+/// 
+/// .EXAMPLE
+/// Reset-YubiKeyBioMPE -Confirm:$false
+/// Resets the connected YubiKey Bio MPE without confirmation prompt
+/// </summary>
 
-using System.Management.Automation;           // Windows PowerShell namespace.
+// Imports
+using System.Management.Automation;
 
 namespace powershellYK.Cmdlets.Bio
 {
     [Cmdlet(VerbsCommon.Reset, "YubiKeyBioMPE", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class ResetYubiKeyCmdlet : PSCmdlet
     {
+        // Connect to YubiKey when cmdlet starts
         protected override void BeginProcessing()
         {
             if (YubiKeyModule._yubikey is null)
@@ -17,13 +32,16 @@ namespace powershellYK.Cmdlets.Bio
             }
         }
 
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
+            // Confirm reset operation with user
             if (!ShouldProcess("This will delete all stored data and restore factory settings. Proceed?", "This will delete all stored data and restore factory settings. Proceed?", "WARNING!"))
             {
                 return;
             }
 
+            // Verify YubiKey is connected
             if (YubiKeyModule._yubikey is null)
             {
                 ThrowTerminatingError(
