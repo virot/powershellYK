@@ -1,42 +1,53 @@
 ﻿/// <summary>
-/// Provides functionality to set or change the password protection for a YubiKey's OATH application.
-/// This cmdlet allows users to either set an initial password on an unprotected OATH application
-/// or change an existing password. Passwords can be provided as a parameter or entered interactively.
+/// Sets or changes password protection for the YubiKey OATH applet.
+/// Allows setting an initial password or changing an existing one.
+/// Requires a YubiKey with OTP support.
+/// If no YubiKey is selected, automatically calls Connect-Yubikey first.
+/// Note: This operation cannot be undone.
 /// 
-/// @Virot: it looks like theres a problem if the applet is not protected.
+/// .EXAMPLE
+/// Set-YubiKeyOATHPassword
+/// Sets a new password interactively
 /// 
-/// TEST CASES:
-/// 1. Reset OATH applet then run Protect-YubikeyOATH (without parameter)
-/// 2. Reset OATH applet then run Protect-YubikeyOATH with parameter
-/// 3. Reset OATH applet then set password using Yubico Authenticator then run Cmlet
-/// 4. ....
+/// .EXAMPLE
+/// $pass = ConvertTo-SecureString "password" -AsPlainText -Force
+/// Set-YubiKeyOATHPassword -NewPassword $pass
+/// Sets a new password using a SecureString
 /// </summary>
 
-using System.Management.Automation;           // Windows PowerShell namespace.
-using Yubico.YubiKey;
-using Yubico.YubiKey.Oath;
-using powershellYK.support.validators;
-using System.Security;
-using System.Collections.ObjectModel;
+// Imports
+using System.Management.Automation;           // PowerShell cmdlet base classes and attributes
+using Yubico.YubiKey;                        // YubiKey device management and session handling
+using Yubico.YubiKey.Oath;                   // OATH application functionality and credential management
+using powershellYK.support.validators;       // Custom parameter validation for YubiKey operations
+using System.Security;                       // SecureString for password handling
+using System.Collections.ObjectModel;        // Collection types for dynamic parameter attributes
 
 namespace powershellYK.Cmdlets.OATH
 {
+    // Alias for backward compatibility with Protect-YubiKeyOATH command
     [Alias("Protect-YubiKeyOATH")]
     [Cmdlet(VerbsCommon.Set, "YubiKeyOATHPassword")]
     public class SetYubiKeyOATHPasswordCmdlet : PSCmdlet, IDynamicParameters
     {
+        // Dynamic parameter handling for password management
         public object GetDynamicParameters()
         {
+            // Configure new password parameter with validation
             Collection<Attribute> newPasswordAttributes = new Collection<Attribute>()
             {
                 new ParameterAttribute() { Mandatory = true, HelpMessage = "New password provided as a SecureString.", ParameterSetName = "Password"},
                 new ValidateYubikeyPassword(1, 255)
             };
+
+            // Configure old password parameter based on current state
             Collection<Attribute> OldPasswordAttributes;
             if (YubiKeyModule._yubikey is not null)
             {
+                // Check current YubiKey state
                 using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
+                    // Require old password if applet is protected and no password is cached
                     if (oathSession.IsPasswordProtected && YubiKeyModule._OATHPassword is null)
                     {
                         OldPasswordAttributes = new Collection<Attribute>() {
@@ -46,6 +57,7 @@ namespace powershellYK.Cmdlets.OATH
                     }
                     else
                     {
+                        // Make old password optional if applet is not protected or password is cached
                         OldPasswordAttributes = new Collection<Attribute>() {
                             new ParameterAttribute() { Mandatory = false, HelpMessage = "Current password provided as a SecureString.", ParameterSetName = "Password"},
                             new ValidateYubikeyPassword(1, 255)
@@ -55,12 +67,13 @@ namespace powershellYK.Cmdlets.OATH
             }
             else
             {
-                // Try to conect to any YubiKey that is inserted.
+                // Try to connect to any YubiKey that is inserted
                 try
                 {
                     var yubiKey = YubiKeyDevice.FindAll().First();
                     using (var oathSession = new OathSession(yubiKey))
                     {
+                        // Require old password if applet is protected and no password is cached
                         if (oathSession.IsPasswordProtected && YubiKeyModule._OATHPassword is null)
                         {
                             OldPasswordAttributes = new Collection<Attribute>() {
@@ -70,6 +83,7 @@ namespace powershellYK.Cmdlets.OATH
                         }
                         else
                         {
+                            // Make old password optional if applet is not protected or password is cached
                             OldPasswordAttributes = new Collection<Attribute>() {
                                 new ParameterAttribute() { Mandatory = false, HelpMessage = "Current password provided as a SecureString.", ParameterSetName = "Password"},
                                 new ValidateYubikeyPassword(1, 255)
@@ -79,6 +93,7 @@ namespace powershellYK.Cmdlets.OATH
                 }
                 catch
                 {
+                    // Default to requiring old password if connection fails
                     OldPasswordAttributes = new Collection<Attribute>()
                     {
                         new ParameterAttribute() { Mandatory = true, HelpMessage = "Current password provided as a SecureString.", ParameterSetName = "Password"},
@@ -86,6 +101,8 @@ namespace powershellYK.Cmdlets.OATH
                     };
                 }
             }
+
+            // Create and return dynamic parameters
             var runtimeDefinedParameterDictionary = new RuntimeDefinedParameterDictionary();
             var runtimeDefinedOldPassword = new RuntimeDefinedParameter("OldPassword", typeof(SecureString), OldPasswordAttributes);
             var runtimeDefinedNewPassword = new RuntimeDefinedParameter("NewPassword", typeof(SecureString), newPasswordAttributes);
@@ -94,8 +111,10 @@ namespace powershellYK.Cmdlets.OATH
             return runtimeDefinedParameterDictionary;
         }
 
+        // Initialize processing and verify requirements
         protected override void BeginProcessing()
         {
+            // Connect to YubiKey if not already connected
             if (YubiKeyModule._yubikey is null)
             {
                 WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
@@ -104,33 +123,41 @@ namespace powershellYK.Cmdlets.OATH
                 WriteDebug($"Successfully connected.");
             }
         }
+
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
             using (var oathSession = new OathSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
+                // Set up key collector for password handling
                 oathSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                // Check if the OATH applet is password protected
+
                 try
                 {
+                    // Set old password if provided in parameters
                     if (this.MyInvocation.BoundParameters.ContainsKey("OldPassword"))
                     {
                         YubiKeyModule._OATHPassword = (SecureString)this.MyInvocation.BoundParameters["OldPassword"];
                     }
+
+                    // Set new password from parameters
                     YubiKeyModule._OATHPasswordNew = (SecureString)this.MyInvocation.BoundParameters["NewPassword"];
 
+                    // Apply password change to YubiKey
                     oathSession.SetPassword();
+
+                    // Update cached password and clear temporary storage
                     YubiKeyModule._OATHPassword = YubiKeyModule._OATHPasswordNew;
                     YubiKeyModule._OATHPasswordNew = null;
                     WriteInformation("YubiKey OATH applet password set.", new string[] { "OATH", "Info" });
                 }
                 catch (Exception ex)
                 {
+                    // Clear cached passwords on error to prevent stale state
                     YubiKeyModule._OATHPassword = null;
                     YubiKeyModule._OATHPasswordNew = null;
                     WriteError(new ErrorRecord(ex, "Failed to update password for OATH applet", ErrorCategory.OperationStopped, null));
                 }
-
-
             }
         }
     }

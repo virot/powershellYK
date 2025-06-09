@@ -1,4 +1,19 @@
-﻿using System.Management.Automation;
+﻿/// <summary>
+/// Imports certificates and private keys into a YubiKey PIV slot.
+/// Supports importing from X.509 certificates, P12 files, and PEM-encoded private keys.
+/// Requires a YubiKey with PIV support.
+/// 
+/// .EXAMPLE
+/// Import-YubiKeyPIV -Slot "PIV Authentication" -Certificate $cert
+/// Imports a certificate into the PIV Authentication slot
+/// 
+/// .EXAMPLE
+/// Import-YubiKeyPIV -Slot "Digital Signature" -P12Path "cert.p12" -Password $securePassword
+/// Imports a certificate and private key from a P12 file
+/// </summary>
+
+// Imports
+using System.Management.Automation;
 using System.Security.Cryptography.X509Certificates;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Piv;
@@ -9,57 +24,72 @@ using powershellYK.support.validators;
 using System.Security;
 using System.Runtime.InteropServices;
 using powershellYK.PIV;
-
+using Yubico.YubiKey.Cryptography;
+using powershellYK.support;
+using System.Linq;
 
 namespace powershellYK.Cmdlets.PIV
 {
     [Cmdlet(VerbsData.Import, "YubiKeyPIV", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class ImportYubiKeyPIVCommand : PSCmdlet
     {
+        // Parameters for slot selection
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slotnumber")]
         public PIVSlot Slot { get; set; }
 
+        // Parameters for certificate import
         [TransformCertificatePath_Certificate()]
         [ValidateX509Certificate2_string()]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Certificate to be stored", ParameterSetName = "CertificateOnly")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Certificate to be stored", ParameterSetName = "CertificateAndKey")]
         public object? Certificate { get; set; } = null;
+
+        // Parameters for P12 file import
         [ValidatePath(fileMustExist: true, fileMustNotExist: false, fileExt: ".p12")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "P12 file to be stored", ParameterSetName = "P12")]
         public System.IO.FileInfo? P12Path { get; set; }
+
+        // Parameters for private key import
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Private key to be stored", ParameterSetName = "Privatekey")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Private key to be stored", ParameterSetName = "CertificateAndKey")]
         public System.IO.FileInfo? PrivateKeyPath { get; set; }
+
+        // Parameters for key protection
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Private key password", ParameterSetName = "Privatekey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Private key password", ParameterSetName = "CertificateAndKey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Private key password", ParameterSetName = "P12")]
         public SecureString Password { get; set; } = new SecureString();
 
+        // Parameters for key policies
         [ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy", ParameterSetName = "Privatekey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy", ParameterSetName = "CertificateAndKey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy", ParameterSetName = "P12")]
         public PivPinPolicy PinPolicy { get; set; } = PivPinPolicy.Default;
 
+        // Parameter for touch policy
         [ValidateSet("Default", "Never", "Always", "Cached", IgnoreCase = true)]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Touch policy", ParameterSetName = "Privatekey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Touch policy", ParameterSetName = "CertificateAndKey")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Touch policy", ParameterSetName = "P12")]
         public PivTouchPolicy TouchPolicy { get; set; } = PivTouchPolicy.Default;
 
-
+        // Private fields for certificate and key
         private X509Certificate2? _newcertificate = null;
-        private PivPrivateKey? _newPrivateKey = null;
+        private IPrivateKey? _newPrivateKey = null;
 
+        // Connect to YubiKey when cmdlet starts
         protected override void BeginProcessing()
         {
+            // Check if a YubiKey is connected, if not attempt to connect
             if (YubiKeyModule._yubikey is null)
             {
                 WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
+                    // Create a new PowerShell instance to run Connect-Yubikey
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
                     myPowersShellInstance.Invoke();
                     WriteDebug($"Successfully connected.");
@@ -70,32 +100,33 @@ namespace powershellYK.Cmdlets.PIV
                 }
             }
         }
+
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
-            // Initial section load keys and certificates from files.
+            // Load certificate from parameter
             if (ParameterSetName == "CertificateOnly" || ParameterSetName == "CertificateAndKey")
             {
                 this._newcertificate = (X509Certificate2)Certificate!;
             }
+
+            // Load certificate and key from P12 file
             if (ParameterSetName == "P12" && P12Path is not null && P12Path.Exists)
             {
                 WriteDebug($"Loading P12 from {P12Path}");
-                // Make sure to load with the private key exportable
+
+                // Load P12 with exportable private key
                 X509Certificate2 p12Data = new X509Certificate2(P12Path.FullName, Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!)), X509KeyStorageFlags.Exportable);
                 this._newcertificate = p12Data;
+
+                // Extract private key based on algorithm
                 if (p12Data.PublicKey.Oid.FriendlyName == "RSA")
                 {
                     WriteDebug("Transforming RSA p12 private key");
                     RSA newRSAPrivateKey;
                     newRSAPrivateKey = p12Data.GetRSAPrivateKey()!;
                     RSAParameters rsaParam = newRSAPrivateKey.ExportParameters(true);
-                    PivRsaPrivateKey pivRsaPrivateKey = new PivRsaPrivateKey(
-                        rsaParam.P,
-                        rsaParam.Q,
-                        rsaParam.DP,
-                        rsaParam.DQ,
-                        rsaParam.InverseQ);
-                    this._newPrivateKey = (PivPrivateKey)pivRsaPrivateKey;
+                    this._newPrivateKey = RSAPrivateKey.CreateFromParameters(rsaParam);
                 }
                 else if (p12Data.PublicKey.Oid.FriendlyName == "ECC")
                 {
@@ -110,13 +141,11 @@ namespace powershellYK.Cmdlets.PIV
                     }
                     int keySize = newECDsaPrivateKey.KeySize / 8;
                     eccParam = newECDsaPrivateKey.ExportParameters(true);
-                    byte[] privateKey = new byte[keySize];
-                    int offset = keySize - eccParam.D!.Length;
-                    Array.Copy(eccParam.D, 0, privateKey, offset, eccParam.D.Length);
-                    PivEccPrivateKey pivEccPrivateKey = new PivEccPrivateKey(privateKey);
-                    this._newPrivateKey = (PivPrivateKey)pivEccPrivateKey;
+                    this._newPrivateKey = ECPrivateKey.CreateFromParameters(eccParam);
                 }
             }
+
+            // Load private key from file
             if (ParameterSetName == "Privatekey" || ParameterSetName == "CertificateAndKey")
             {
                 string pemContent = "";
@@ -130,6 +159,8 @@ namespace powershellYK.Cmdlets.PIV
                         }
                     }
                 }
+
+                // Handle encrypted private keys
                 if (Password.Length >= 1)
                 {
                     if (pemContent.Contains("BEGIN ENCRYPTED PRIVATE KEY"))
@@ -138,13 +169,7 @@ namespace powershellYK.Cmdlets.PIV
                         RSA newRSAPrivateKey = RSA.Create();
                         newRSAPrivateKey.ImportFromEncryptedPem(pemContent.ToCharArray(), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!))!));
                         RSAParameters rsaParam = newRSAPrivateKey.ExportParameters(true);
-                        PivRsaPrivateKey pivRsaPrivateKey = new PivRsaPrivateKey(
-                            rsaParam.P,
-                            rsaParam.Q,
-                            rsaParam.DP,
-                            rsaParam.DQ,
-                            rsaParam.InverseQ);
-                        this._newPrivateKey = (PivPrivateKey)pivRsaPrivateKey;
+                        this._newPrivateKey = RSAPrivateKey.CreateFromParameters(rsaParam);
                     }
                     else if (pemContent.Contains("BEGIN EC PRIVATE KEY"))
                     {
@@ -153,17 +178,15 @@ namespace powershellYK.Cmdlets.PIV
                         newECDsaPrivateKey.ImportFromEncryptedPem(pemContent.ToCharArray(), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!))!));
                         int keySize = newECDsaPrivateKey.KeySize / 8;
                         ECParameters eccParam = newECDsaPrivateKey.ExportParameters(true);
-                        byte[] privateKey = new byte[keySize];
-                        int offset = keySize - eccParam.D!.Length;
-                        Array.Copy(eccParam.D, 0, privateKey, offset, eccParam.D.Length);
-                        PivEccPrivateKey pivEccPrivateKey = new PivEccPrivateKey(privateKey);
-                        this._newPrivateKey = (PivPrivateKey)pivEccPrivateKey;
+                        this._newPrivateKey = ECPrivateKey.CreateFromParameters(eccParam);
                     }
                     else
                     {
                         throw new Exception("No private key found in file!");
                     }
                 }
+
+                // Handle unencrypted private keys
                 else
                 {
                     if (pemContent.Contains("BEGIN PRIVATE KEY"))
@@ -174,13 +197,7 @@ namespace powershellYK.Cmdlets.PIV
                             RSA newRSAPrivateKey = RSA.Create();
                             newRSAPrivateKey.ImportFromPem(pemContent.ToCharArray());
                             RSAParameters rsaParam = newRSAPrivateKey.ExportParameters(true);
-                            PivRsaPrivateKey pivRsaPrivateKey = new PivRsaPrivateKey(
-                                rsaParam.P,
-                                rsaParam.Q,
-                                rsaParam.DP,
-                                rsaParam.DQ,
-                                rsaParam.InverseQ);
-                            this._newPrivateKey = (PivPrivateKey)pivRsaPrivateKey;
+                            this._newPrivateKey = RSAPrivateKey.CreateFromParameters(rsaParam);
                         }
                         catch { }
                         try
@@ -190,11 +207,7 @@ namespace powershellYK.Cmdlets.PIV
                             newECDsaPrivateKey.ImportFromPem(pemContent.ToCharArray());
                             int keySize = newECDsaPrivateKey.KeySize / 8;
                             ECParameters eccParam = newECDsaPrivateKey.ExportParameters(true);
-                            byte[] privateKey = new byte[keySize];
-                            int offset = keySize - eccParam.D!.Length;
-                            Array.Copy(eccParam.D, 0, privateKey, offset, eccParam.D.Length);
-                            PivEccPrivateKey pivEccPrivateKey = new PivEccPrivateKey(privateKey);
-                            this._newPrivateKey = (PivPrivateKey)pivEccPrivateKey;
+                            this._newPrivateKey = ECPrivateKey.CreateFromParameters(eccParam);
                         }
                         catch { }
                         if (this._newPrivateKey is null)
@@ -205,12 +218,13 @@ namespace powershellYK.Cmdlets.PIV
                 }
             }
 
+            // Import data into YubiKey
             using (var pivSession = new PivSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
+                // Set up key collector for authentication
                 pivSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-
-                // If we get a new private key, check and install
+                // Import private key if available
                 if (_newPrivateKey is not null)
                 {
                     PivMetadata? pivMestadata = null;
@@ -226,13 +240,13 @@ namespace powershellYK.Cmdlets.PIV
                     }
                 }
 
-                // If we got a new certificate, check and install
+                // Import certificate if available
                 if (_newcertificate is not null)
                 {
-                    PivPublicKey? publicKey = null;
+                    IPublicKey? publicKey = null;
                     try
                     {
-                        publicKey = pivSession.GetMetadata(Slot).PublicKey;
+                        publicKey = pivSession.GetMetadata(Slot).PublicKeyParameters;
                     }
                     catch { }
                     X509Certificate2? slotCertificate = null;
@@ -248,22 +262,16 @@ namespace powershellYK.Cmdlets.PIV
                     {
                         throw new Exception("No public key found, not uploading certificate.");
                     }
-                    else if ((_newcertificate.PublicKey.Oid.FriendlyName == "RSA" && publicKey is PivEccPublicKey) ||
-                        (_newcertificate.PublicKey.Oid.FriendlyName == "ECC" && publicKey is PivRsaPublicKey))
+                    else if ((_newcertificate.PublicKey.Oid.FriendlyName == "RSA" && publicKey is not RSAPublicKey) ||
+                        (_newcertificate.PublicKey.Oid.FriendlyName == "ECC" && publicKey is not ECPublicKey))
                     {
                         throw new Exception("Private key does match certificate type: RSA / ECDSA.");
                     }
-                    else if (publicKey is PivRsaPublicKey)
+                    else if (publicKey is RSAPublicKey)
                     {
                         WriteDebug("Verifying that the RSA key matches the public key...");
                         RSA certificatePublicKey = _newcertificate.GetRSAPublicKey()!;
-                        RSA keypublicKey;
-                        var rsaParams = new RSAParameters
-                        {
-                            Modulus = ((PivRsaPublicKey)publicKey).Modulus.ToArray(),
-                            Exponent = ((PivRsaPublicKey)publicKey).PublicExponent.ToArray()
-                        };
-                        keypublicKey = RSA.Create(rsaParams);
+                        RSA keypublicKey = (RSA)Converter.YubiKeyPublicKeyToDotNet(publicKey);
 
                         if (certificatePublicKey.ExportParameters(false).Modulus!.SequenceEqual(keypublicKey.ExportParameters(false).Modulus!) &&
                                                certificatePublicKey.ExportParameters(false).Exponent!.SequenceEqual(keypublicKey.ExportParameters(false).Exponent!))
@@ -275,13 +283,13 @@ namespace powershellYK.Cmdlets.PIV
                             throw new Exception("Public key DOES NOT match certificate key!");
                         }
                     }
-                    else
+                    else if (publicKey is ECPublicKey)
                     {
                         WriteDebug("Verifying that the ECDSA key matches the public key");
-                        using AsymmetricAlgorithm dotNetPublicKey = KeyConverter.GetDotNetFromPivPublicKey(publicKey);
+                        ECParameters ecParams = ((ECPublicKey)publicKey).Parameters;
                         ECDsa certificatePublicKey = _newcertificate.GetECDsaPublicKey()!;
-                        if (certificatePublicKey.ExportParameters(false).Q.X!.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.X!) &&
-                                               certificatePublicKey.ExportParameters(false).Q.Y!.SequenceEqual(((ECDsa)dotNetPublicKey).ExportParameters(false).Q.Y!))
+                        if (certificatePublicKey.ExportParameters(false).Q.X!.SequenceEqual(ecParams.Q.X!) &&
+                                               certificatePublicKey.ExportParameters(false).Q.Y!.SequenceEqual(ecParams.Q.Y!))
                         {
                             WriteDebug("Public key matches certificate key.");
                         }
@@ -289,6 +297,14 @@ namespace powershellYK.Cmdlets.PIV
                         {
                             throw new Exception("Public key DOES NOT match certificate key!");
                         }
+                    }
+                    else if (publicKey is Curve25519PublicKey)
+                    {
+                        throw new Exception("Unimplemented public Key algorithm, Curve25519PublicKey");
+                    }
+                    else
+                    {
+                        throw new Exception("Unknown public Key algorithm");
                     }
 
                     // If we have a certificate in the slot, check if we should overwrite it

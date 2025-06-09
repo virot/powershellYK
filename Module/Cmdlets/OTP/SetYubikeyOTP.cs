@@ -58,6 +58,7 @@
 /// Set-YubiKeyOTP -Slot ShortPress -HOTP -Use8Digits -SendTabFirst -AppendCarriageReturn
 /// </summary>
 
+
 using System.Management.Automation;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -116,6 +117,7 @@ namespace powershellYK.Cmdlets.OTP
         public SwitchParameter Upload { get; set; }
 
         // Static password to be configured (1-38 characters)
+
         [ValidateYubikeyPassword(1, 38)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Static password that will be set", ParameterSetName = "Static Password")]
         public SecureString? Password { get; set; }

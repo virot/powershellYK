@@ -1,4 +1,18 @@
-﻿using System;
+﻿/// <summary>
+/// Generates SSH key identifiers from RSA and ECDSA public keys.
+/// Formats keys according to SSH protocol specifications.
+/// 
+/// .EXAMPLE
+/// $rsa = [System.Security.Cryptography.RSA]::Create()
+/// $identifier = [powershellYK.support.GenerateIdentifier]::SSHIdentifier($rsa, "user@host")
+/// 
+/// .EXAMPLE
+/// $ecdsa = [System.Security.Cryptography.ECDsa]::Create()
+/// $identifier = [powershellYK.support.GenerateIdentifier]::SSHIdentifier($ecdsa, "user@host")
+/// </summary>
+
+// Imports
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation.Language;
@@ -11,21 +25,27 @@ using System.Threading.Tasks.Dataflow;
 
 namespace powershellYK.support
 {
+    // Utility class for generating SSH key identifiers
     internal class GenerateIdentifier
     {
+        // Storage for curve bytes in ECDSA key generation
         private static byte[]? curveBytes;
 
+        // Generate SSH identifier from RSA public key
         public static string SSHIdentifier(RSA publicKey, string description = "")
         {
+            // Get RSA parameters
             RSAParameters publicKeyParam = publicKey.ExportParameters(false);
 
-            // SSH-RSA keys are encoded in a specific format
+            // Prepare SSH-RSA key components
             byte[] sshrsaBytes = Encoding.Default.GetBytes("ssh-rsa");
             byte[] lengthBytes = BitConverter.GetBytes(sshrsaBytes.Length);
             byte[] exponentBytes = publicKeyParam.Exponent!;
             byte[] exponentBytesLength = BitConverter.GetBytes((UInt32)exponentBytes.Length);
             byte[] keyLength = BitConverter.GetBytes((publicKey.KeySize / 8) + 1);
             byte[] modulusBytes = publicKeyParam.Modulus!;
+
+            // Handle endianness
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(lengthBytes);
@@ -44,17 +64,19 @@ namespace powershellYK.support
             Buffer.BlockCopy(keyLength, 0, totalBytes, lengthBytes.Length + sshrsaBytes.Length + exponentBytesLength.Length + exponentBytes.Length, keyLength.Length);
             Buffer.BlockCopy(modulusBytes, 0, totalBytes, lengthBytes.Length + sshrsaBytes.Length + exponentBytesLength.Length + exponentBytes.Length + keyLength.Length + 1, modulusBytes.Length);
 
-            // Convert to base64
+            // Convert to base64 and format
             string sshKey = Convert.ToBase64String(totalBytes);
-
-            // Format as an SSH-RSA key
             return $"ssh-rsa {sshKey} {description}";
         }
+
+        // Generate SSH identifier from ECDSA public key
         public static string SSHIdentifier(ECDsa publicKey, string description = "")
         {
-
+            // Get ECDSA parameters
             ECParameters publicKeyParam = publicKey.ExportParameters(false);
             string? keyType = null;
+
+            // Determine key type and curve
             switch (publicKeyParam.Curve.Oid.FriendlyName)
             {
                 case "nistP256":
@@ -72,6 +94,8 @@ namespace powershellYK.support
                 default:
                     throw new Exception("Unknown curve");
             }
+
+            // Prepare ECDSA key components
             byte[] typeBytes = Encoding.Default.GetBytes(keyType);
             byte[] lengthBytes = BitConverter.GetBytes(typeBytes.Length);
             byte keyForm = 0x04;
@@ -79,6 +103,8 @@ namespace powershellYK.support
             byte[] publicKeyValueQX = publicKeyParam.Q.X!;
             byte[] publicKeyValueQY = publicKeyParam.Q.Y!;
             byte[] publicKeyLength = BitConverter.GetBytes(publicKeyValueQX.Length + publicKeyValueQY.Length);
+
+            // Handle endianness
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(lengthBytes);
@@ -87,23 +113,30 @@ namespace powershellYK.support
                 Array.Reverse(curveBytes);
             }
 
-            //return $"QX:{(publicKeyParam.Q.X)[0]}, QY:{(publicKeyParam.Q.Y)[0]} ";
+            // Combine key components
+            byte[] totalBytes = new byte[lengthBytes.Length + typeBytes.Length + curveByteLength.Length +
+                curveBytes.Length + publicKeyLength.Length + 1 + publicKeyValueQX.Length + publicKeyValueQY.Length];
 
-            // Combine the bytes together
-            byte[] totalBytes = new byte[lengthBytes.Length + typeBytes.Length + curveByteLength.Length + curveBytes.Length + publicKeyLength.Length + 1 + publicKeyValueQX.Length + publicKeyValueQY.Length];
-            Buffer.BlockCopy(lengthBytes, 0, totalBytes, 0, lengthBytes.Length);
-            Buffer.BlockCopy(typeBytes, 0, totalBytes, lengthBytes.Length, typeBytes.Length);
-            Buffer.BlockCopy(curveByteLength, 0, totalBytes, lengthBytes.Length + typeBytes.Length, curveByteLength.Length);
-            Buffer.BlockCopy(curveBytes, 0, totalBytes, lengthBytes.Length + typeBytes.Length + curveByteLength.Length, curveBytes.Length);
-            Buffer.BlockCopy(publicKeyLength, 0, totalBytes, lengthBytes.Length + typeBytes.Length + curveByteLength.Length + curveBytes.Length, publicKeyLength.Length);
-            Buffer.SetByte(totalBytes, lengthBytes.Length + typeBytes.Length + curveByteLength.Length + curveBytes.Length + publicKeyLength.Length, keyForm);
-            Buffer.BlockCopy(publicKeyValueQX, 0, totalBytes, lengthBytes.Length + typeBytes.Length + curveByteLength.Length + curveBytes.Length + publicKeyLength.Length + 1, publicKeyValueQX.Length);
-            Buffer.BlockCopy(publicKeyValueQY, 0, totalBytes, lengthBytes.Length + typeBytes.Length + curveByteLength.Length + curveBytes.Length + publicKeyLength.Length + 1 + publicKeyValueQX.Length, publicKeyValueQY.Length);
+            // Copy components in order
+            int offset = 0;
+            Buffer.BlockCopy(lengthBytes, 0, totalBytes, offset, lengthBytes.Length);
+            offset += lengthBytes.Length;
+            Buffer.BlockCopy(typeBytes, 0, totalBytes, offset, typeBytes.Length);
+            offset += typeBytes.Length;
+            Buffer.BlockCopy(curveByteLength, 0, totalBytes, offset, curveByteLength.Length);
+            offset += curveByteLength.Length;
+            Buffer.BlockCopy(curveBytes, 0, totalBytes, offset, curveBytes.Length);
+            offset += curveBytes.Length;
+            Buffer.BlockCopy(publicKeyLength, 0, totalBytes, offset, publicKeyLength.Length);
+            offset += publicKeyLength.Length;
+            Buffer.SetByte(totalBytes, offset, keyForm);
+            offset += 1;
+            Buffer.BlockCopy(publicKeyValueQX, 0, totalBytes, offset, publicKeyValueQX.Length);
+            offset += publicKeyValueQX.Length;
+            Buffer.BlockCopy(publicKeyValueQY, 0, totalBytes, offset, publicKeyValueQY.Length);
 
-            // Convert to base64
+            // Convert to base64 and format
             string sshKey = Convert.ToBase64String(totalBytes);
-
-            // Format as an SSH-RSA key
             return $"{keyType} {sshKey} {description}";
         }
     }
