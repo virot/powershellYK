@@ -18,7 +18,7 @@ using System.Management.Automation;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using Yubico.YubiKey.Piv;                    
+using Yubico.YubiKey.Piv;
 
 namespace powershellYK.support.transform
 {
@@ -43,7 +43,7 @@ namespace powershellYK.support.transform
                 // Check for PEM format
                 Regex regex = new Regex(pemFormatRegex, RegexOptions.Singleline);
                 Match match = regex.Match(inputData.ToString()!);
-                
+
                 if (match.Success)
                 {
                     return CertificateRequest.LoadSigningRequestPem((string)inputData, HashAlgorithmName.SHA256, CertificateRequestLoadOptions.Default);

@@ -142,7 +142,7 @@ namespace powershellYK.Cmdlets.OATH
 
                     // Set new password from parameters
                     YubiKeyModule._OATHPasswordNew = (SecureString)this.MyInvocation.BoundParameters["NewPassword"];
-                    
+
                     // Apply password change to YubiKey
                     oathSession.SetPassword();
 

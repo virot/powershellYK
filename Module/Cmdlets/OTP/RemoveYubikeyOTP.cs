@@ -60,7 +60,7 @@ namespace powershellYK.Cmdlets.OTP
                 using (var otpSession = new OtpSession((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
                     // Check if the slot is configured
-                    if ((Slot == Slot.ShortPress && !otpSession.IsShortPressConfigured) || 
+                    if ((Slot == Slot.ShortPress && !otpSession.IsShortPressConfigured) ||
                         (Slot == Slot.LongPress && !otpSession.IsLongPressConfigured))
                     {
                         WriteWarning($"Slot {Slot.ToString("d")} ({Slot}) is not configured.");

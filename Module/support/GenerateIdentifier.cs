@@ -114,9 +114,9 @@ namespace powershellYK.support
             }
 
             // Combine key components
-            byte[] totalBytes = new byte[lengthBytes.Length + typeBytes.Length + curveByteLength.Length + 
+            byte[] totalBytes = new byte[lengthBytes.Length + typeBytes.Length + curveByteLength.Length +
                 curveBytes.Length + publicKeyLength.Length + 1 + publicKeyValueQX.Length + publicKeyValueQY.Length];
-            
+
             // Copy components in order
             int offset = 0;
             Buffer.BlockCopy(lengthBytes, 0, totalBytes, offset, lengthBytes.Length);

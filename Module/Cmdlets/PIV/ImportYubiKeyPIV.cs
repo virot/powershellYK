@@ -114,7 +114,7 @@ namespace powershellYK.Cmdlets.PIV
             if (ParameterSetName == "P12" && P12Path is not null && P12Path.Exists)
             {
                 WriteDebug($"Loading P12 from {P12Path}");
-                
+
                 // Load P12 with exportable private key
                 X509Certificate2 p12Data = new X509Certificate2(P12Path.FullName, Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!)), X509KeyStorageFlags.Exportable);
                 this._newcertificate = p12Data;
@@ -185,7 +185,7 @@ namespace powershellYK.Cmdlets.PIV
                         throw new Exception("No private key found in file!");
                     }
                 }
-                
+
                 // Handle unencrypted private keys
                 else
                 {

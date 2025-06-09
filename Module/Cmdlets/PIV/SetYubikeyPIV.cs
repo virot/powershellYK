@@ -137,13 +137,13 @@ namespace powershellYK.Cmdlets.PIV
                         }
                         // powershellYK does more than the SDK here, it also blocks the PUK if the Management key is PIN protected.
                         pivSession.ChangePinAndPukRetryCounts((byte)PinRetries!, (byte)PukRetries!);
-                        
+
                         // Yubikey disables the PUK if the Management key is PIN protected, we do the same if not KeepPUKUnlocked is set
                         if (pivSession.GetPinOnlyMode().HasFlag(PivPinOnlyMode.PinProtected) && !(KeepPukUnlocked.IsPresent))
                         {
                             WriteDebug("Management Key is PIN protected, Blocking PUK...");
                             retriesLeft = 1;
-                            
+
                             // Block PUK by setting it to a known value
                             while (retriesLeft > 0)
                             {
@@ -154,7 +154,7 @@ namespace powershellYK.Cmdlets.PIV
                             if (YubiKeyModule._pivPIN is not null && YubiKeyModule._pivPIN.Length > 0 && Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._pivPIN!)) != "123456")
                             {
                                 WriteDebug("Trying to revert PIN...");
-                                
+
                                 // Reset PIN to original value
                                 pivSession.TryChangePin(System.Text.Encoding.UTF8.GetBytes("123456"), System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(YubiKeyModule._pivPIN!))!), out retriesLeft);
                             }
@@ -233,7 +233,7 @@ namespace powershellYK.Cmdlets.PIV
                         }
                         break;
                     case "ChangeManagement":
-                    
+
                         // Convert management keys from PSObject to byte arrays
                         byte[] ManagementKeyarray = (byte[])ManagementKey.BaseObject;
                         byte[] NewManagementKeyarray = (byte[])NewManagementKey.BaseObject;
@@ -262,7 +262,7 @@ namespace powershellYK.Cmdlets.PIV
                         break;
 
                     case "newCHUID":
-                    
+
                         // Generate and write new CHUID
                         CardholderUniqueId chuid = new CardholderUniqueId();
                         chuid.SetRandomGuid();
@@ -282,7 +282,7 @@ namespace powershellYK.Cmdlets.PIV
 
                         // Determine appropriate algorithm based on YubiKey capabilities
                         PivAlgorithm mgmtKeyAlgorithm = ((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivAesManagementKey) ? PivAlgorithm.Aes256 : PivAlgorithm.TripleDes;
-                       
+
                         // Set management key to be PIN protected
                         pivSession.SetPinOnlyMode(PivPinOnlyMode.PinProtected, mgmtKeyAlgorithm);
                         WriteInformation($"Management key set to PIN protected.", new string[] { "PIV", "Info" });

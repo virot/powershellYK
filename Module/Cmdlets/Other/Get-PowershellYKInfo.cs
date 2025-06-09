@@ -29,12 +29,12 @@ namespace powershellYK.Cmdlets.Other
             if (loadedAssemblies is not null)
             {
                 // Find YubiKey SDK assembly
-                Assembly? yubicoAssembly = loadedAssemblies.Where(assembly => 
+                Assembly? yubicoAssembly = loadedAssemblies.Where(assembly =>
                     assembly.GetName().Name!.Equals("Yubico.YubiKey", StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefault();
 
                 // Find PowerShell automation assembly
-                Assembly? automationAssembly = loadedAssemblies.Where(assembly => 
+                Assembly? automationAssembly = loadedAssemblies.Where(assembly =>
                     assembly.GetName().Name!.Equals("System.Management.Automation", StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefault();
 

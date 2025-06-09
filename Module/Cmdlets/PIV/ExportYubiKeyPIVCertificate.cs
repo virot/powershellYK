@@ -93,7 +93,7 @@ namespace powershellYK.Cmdlets.PIV
 
                     // Export the certificate in DER format
                     byte[] slotAttestationCertificateBytes = certificate!.Export(X509ContentType.Cert);
-                    
+
                     // Convert to PEM format if needed
                     string pemData = PemEncoding.WriteString("CERTIFICATE", slotAttestationCertificateBytes);
 
