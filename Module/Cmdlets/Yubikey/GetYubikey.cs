@@ -64,7 +64,7 @@ namespace powershellYK.Cmdlets.Yubikey
             }
             else
             {
-                WriteError(new ErrorRecord(new Exception("None YubiKeys selected, Use Connect-Yubikey to specify which Yubikey to use."), "0x00020001", ErrorCategory.InvalidResult, null));
+                WriteError(new ErrorRecord(new Exception("No YubiKey(s) selected, Use Connect-Yubikey to specify which Yubikey to use."), "0x00020001", ErrorCategory.InvalidResult, null));
             }
         }
     }
