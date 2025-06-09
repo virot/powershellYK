@@ -1,3 +1,18 @@
+/// <summary>
+/// Verifies the attestation of a YubiKey PIV certificate or CSR.
+/// Validates that the key was generated on the YubiKey and checks the attestation chain.
+/// Supports both built-in and external attestation verification.
+/// 
+/// .EXAMPLE
+/// Confirm-YubiKeyPIVAttestation -CertificateRequest $csr -AttestationCertificate $attestCert -IntermediateCertificate $intermediateCert
+/// Verifies attestation using external certificates
+/// 
+/// .EXAMPLE
+/// Confirm-YubiKeyPIVAttestation -CertificateIncludingAttestation $cert
+/// Verifies attestation from a certificate containing embedded attestation
+/// </summary>
+
+// Imports
 using powershellYK.support.transform;
 using powershellYK.support.validators;
 using System.Management.Automation;           // Windows PowerShell namespace.
@@ -17,53 +32,62 @@ namespace powershellYK.Cmdlets.Other
     [Cmdlet(VerbsLifecycle.Confirm, "YubiKeyPIVAttestation")]
     public class ConfirmYubikeyPIVAttestationCmdlet : PSCmdlet
     {
+        // Parameter for the certificate request to verify
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithExternalAttestation-Object")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithBuiltinAttestation-Object")]
         public CertificateRequest? CertificateRequest { get; set; }
 
+        // Parameter for the certificate request file to verify
         [TransformPath]
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithExternalAttestation-File")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CSR to check", ParameterSetName = "requestWithBuiltinAttestation-File")]
         public System.IO.FileInfo? CertificateRequestFile { get; set; }
 
+        // Parameter for the attestation certificate
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "AttestationCertificate", ParameterSetName = "requestWithExternalAttestation-Object")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "AttestationCertificate", ParameterSetName = "JustAttestCertificate-Object")]
         public X509Certificate2? AttestationCertificate { get; set; }
 
+        // Parameter for the attestation certificate file
         [TransformPath]
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "AttestationCertificate", ParameterSetName = "requestWithExternalAttestation-File")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "AttestationCertificate", ParameterSetName = "JustAttestCertificate-File")]
         public System.IO.FileInfo? AttestationCertificateFile { get; set; }
 
+        // Parameter for the intermediate certificate
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "IntermediateCertificate", ParameterSetName = "requestWithExternalAttestation-Object")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "IntermediateCertificate", ParameterSetName = "JustAttestCertificate-Object")]
         public X509Certificate2? IntermediateCertificate { get; set; }
 
+        // Parameter for the intermediate certificate file
         [TransformPath]
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "IntermediateCertificate", ParameterSetName = "requestWithExternalAttestation-File")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "IntermediateCertificate", ParameterSetName = "JustAttestCertificate-File")]
         public System.IO.FileInfo? IntermediateCertificateFile { get; set; }
 
+        // Parameter for a certificate that includes attestation
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CertificateIncludingAttestation", ParameterSetName = "CertificateIncludingAttestation-Object")]
         public X509Certificate2? CertificateIncludingAttestation { get; set; }
 
+        // Parameter for a certificate file that includes attestation
         [TransformPath]
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "CertificateIncludingAttestation", ParameterSetName = "CertificateIncludingAttestation-File")]
         public System.IO.FileInfo? CertificateIncludingAttestationFile { get; set; }
 
-
+        // Internal storage for loaded certificates and requests
         private CertificateRequest? _CertificateRequest;
         private X509Certificate2? _AttestationCertificate;
         private X509Certificate2? _IntermediateCertificate;
         private X509Certificate2? _CertificateIncludingAttestation;
 
+        // Regular expression for parsing PEM format
         private static string pemFormatRegex = "^-----[^-]*-----(?<certificateContent>.*)-----[^-]*-----$";
 
-        // temp storage for the attestation objectdata
+        // Storage for attestation data
         private uint? _out_SerialNumber;
         private FirmwareVersion? _out_FirmwareVersion;
         private PivPinPolicy? _out_PinPolicy;
@@ -75,10 +99,13 @@ namespace powershellYK.Cmdlets.Other
         private bool? _out_AttestationMatchesCSR = null;
         private PivAlgorithm? _out_Algorithm;
         private string? _out_AttestationDataLocation = null;
+
+        // Called when the cmdlet begins processing
         protected override void BeginProcessing()
         {
         }
 
+        // Main logic for verifying attestation
         protected override void ProcessRecord()
         {
             Regex regex = new Regex(pemFormatRegex, RegexOptions.Singleline);
@@ -88,6 +115,7 @@ namespace powershellYK.Cmdlets.Other
             WriteDebug($"Cmdlet triggered with ParameterSetName={ParameterSetName}");
 
             #region // Load to internal objects
+            // Load certificate request from object or file
             if (ParameterSetName == "requestWithBuiltinAttestation-Object" || ParameterSetName == "requestWithExternalAttestation-Object")
             {
                 _CertificateRequest = CertificateRequest;
@@ -100,10 +128,11 @@ namespace powershellYK.Cmdlets.Other
                     {
                         string request = reader.ReadToEnd();
                         _CertificateRequest = LoadSigningRequestPem(request, HashAlgorithmName.SHA256, CertificateRequestLoadOptions.UnsafeLoadCertificateExtensions);
-
                     }
                 }
             }
+
+            // Load attestation and intermediate certificates from objects or files
             if (ParameterSetName == "requestWithExternalAttestation-Object" || ParameterSetName == "JustAttestCertificate-Object")
             {
                 _AttestationCertificate = AttestationCertificate;
@@ -111,6 +140,7 @@ namespace powershellYK.Cmdlets.Other
             }
             if (ParameterSetName == "requestWithExternalAttestation-File" || ParameterSetName == "JustAttestCertificate-File")
             {
+                // Load attestation certificate from file
                 WriteDebug($"Reading Attestation certificate from file {AttestationCertificateFile}");
                 using (FileStream fileStream = AttestationCertificateFile!.OpenRead())
                 {
@@ -130,6 +160,7 @@ namespace powershellYK.Cmdlets.Other
                     }
                 }
 
+                // Load intermediate certificate from file
                 WriteDebug($"Reading intermediate certificate from file {IntermediateCertificateFile}");
                 using (FileStream fileStream = IntermediateCertificateFile!.OpenRead())
                 {
@@ -155,6 +186,7 @@ namespace powershellYK.Cmdlets.Other
             }
             else if (ParameterSetName == "CertificateIncludingAttestation-File")
             {
+                // Load certificate with embedded attestation from file
                 using (FileStream fileStream = CertificateIncludingAttestationFile!.OpenRead())
                 {
                     using (StreamReader reader = new StreamReader(fileStream))
@@ -180,16 +212,18 @@ namespace powershellYK.Cmdlets.Other
                     }
                 }
             }
-
             #endregion // Load to internal objects
+
             #region // For all BuiltInAttestion extract the Attestation and Intermediate certificates
+            // Extract attestation data from built-in attestation
             if ((ParameterSetName == "requestWithBuiltinAttestation-Object" || ParameterSetName == "requestWithBuiltinAttestation-File") && _CertificateRequest is not null)
             {
+                // Check for standard attestation extension
                 if (_CertificateRequest!.CertificateExtensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.1"))
                 {
                     extensioncsr = _CertificateRequest!.CertificateExtensions
-                                       .Cast<X509Extension>()
-                                       .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.1", new X509Extension(new AsnEncodedData("1.3.6.1.4.1.41482.3.1", new byte[] { 0x00 }), false));
+                                   .Cast<X509Extension>()
+                                   .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.1", new X509Extension(new AsnEncodedData("1.3.6.1.4.1.41482.3.1", new byte[] { 0x00 }), false));
                     _out_AttestationDataLocation = "1.3.6.1.4.1.41482.3.1";
                     try
                     {
@@ -200,11 +234,12 @@ namespace powershellYK.Cmdlets.Other
                         throw new Exception("Failed to parse the embedded attestation certificate");
                     }
                 }
+                // Check for legacy attestation extension
                 else if (_CertificateRequest!.CertificateExtensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.11"))
                 {
                     extensioncsr = _CertificateRequest!.CertificateExtensions
-                                       .Cast<X509Extension>()
-                                       .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.11", new X509Extension(new AsnEncodedData("1.3.6.1.4.1.41482.3.11", new byte[] { 0x00 }), false));
+                                   .Cast<X509Extension>()
+                                   .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.11", new X509Extension(new AsnEncodedData("1.3.6.1.4.1.41482.3.11", new byte[] { 0x00 }), false));
                     _out_AttestationDataLocation = "1.3.6.1.4.1.41482.3.11";
                     try
                     {
@@ -220,9 +255,9 @@ namespace powershellYK.Cmdlets.Other
                     throw new ArgumentException("The CertificateRequest does not contain embedded attestation data");
                 }
 
+                // Extract intermediate certificate
                 if (_CertificateRequest.CertificateExtensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.2"))
                 {
-                    // Read from CSR 1.3.6.1.4.1.41482.3.2
                     extensioncsr = _CertificateRequest.CertificateExtensions
                     .Cast<X509Extension>()
                     .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.2", new X509Extension(new AsnEncodedData("1.3.6.1.4.1.41482.3.2", new byte[] { 0x00 }), false));
@@ -243,8 +278,10 @@ namespace powershellYK.Cmdlets.Other
             #endregion // For all BuiltInAttestion extract the Attestation and Intermediate certificates
 
             #region // For CertificateIncludingAttestation extract the Attestation and Intermediate certificates
+            // Extract attestation data from certificate with embedded attestation
             if (ParameterSetName.StartsWith("Certificate") && _CertificateIncludingAttestation is not null)
             {
+                // Extract attestation certificate
                 if (_CertificateIncludingAttestation.Extensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.1"))
                 {
                     WriteDebug("Found 1.3.6.1.4.1.41482.3.1 extension, trying to extract attestationdata certificate");
@@ -264,10 +301,10 @@ namespace powershellYK.Cmdlets.Other
                     throw new Exception("Certificate does not contain attestation data");
                 }
 
+                // Extract intermediate certificate
                 if (_CertificateIncludingAttestation!.Extensions.Any(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.2"))
                 {
                     WriteDebug("Found 1.3.6.1.4.1.41482.3.2 extension, trying to extract intermediate certificate");
-                    // Read from CSR 1.3.6.1.4.1.41482.3.2
                     extensioncsr = _CertificateIncludingAttestation.Extensions.Cast<X509Extension>().FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.2", new X509Extension(new AsnEncodedData("1.3.6.1.4.1.41482.3.2", new byte[] { 0x00 }), false));
                     try
                     {
@@ -277,18 +314,17 @@ namespace powershellYK.Cmdlets.Other
                     {
                         throw new ArgumentException("Failed to parse the embedded intermediate attestation certificate");
                     }
-
                 }
             }
             #endregion // For CertificateIncludingAttestation extract the Attestation and Intermediate certificates
 
+            // Verify that we have both required certificates
             if (_AttestationCertificate is null || _IntermediateCertificate is null)
             {
-                // Is this still needed??
                 throw new Exception("Attestation Certificate or Intermediate Certificate is missing!");
             }
 
-            // Check the entire chain up to Yubico's root CA
+            // Build and verify the certificate chain
             X509Chain chain = new X509Chain();
             chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
             chain.ChainPolicy.ExtraStore.Add(_IntermediateCertificate);
@@ -332,6 +368,7 @@ namespace powershellYK.Cmdlets.Other
                 }
             }
 
+            // Verify the attestation certificate chain
             if (chain.Build(_AttestationCertificate) == false)
             {
                 Attestation returnObject = new Attestation(false);
@@ -339,6 +376,7 @@ namespace powershellYK.Cmdlets.Other
             }
             else
             {
+                // Extract slot information from attestation certificate subject
                 WriteDebug($"Slot {_AttestationCertificate.Subject}");
                 string slotPattern = @"CN=YubiKey PIV Attestation (?<slot>[0-9A-Fa-f]{2})";
                 Regex slotRegex = new Regex(slotPattern);
@@ -352,6 +390,7 @@ namespace powershellYK.Cmdlets.Other
                     _out_Slot = 0x00;
                 }
 
+                // Extract attestation data from certificate extensions
                 foreach (X509Extension extension in _AttestationCertificate.Extensions)
                 {
                     switch (extension.Oid!.Value)
@@ -378,10 +417,11 @@ namespace powershellYK.Cmdlets.Other
                     }
                 }
 
-                // Make sure that the default type is Normal.
+                // Initialize YubiKey series flags
                 _out_isFIPSSeries = false;
                 _out_isCSPNSeries = false;
 
+                // Check for FIPS and CSPN series indicators
                 foreach (X509Extension extension in _IntermediateCertificate.Extensions)
                 {
                     switch (extension.Oid!.Value)
@@ -397,7 +437,7 @@ namespace powershellYK.Cmdlets.Other
                     }
                 }
 
-                // Check if the public key in the CSR matches the public key in the attestation certificate
+                // Verify that the public key matches between attestation and request/certificate
                 if (ParameterSetName.StartsWith("request") && _CertificateRequest is not null)
                 {
                     _out_AttestationMatchesCSR = _AttestationCertificate.PublicKey.EncodedKeyValue.RawData.SequenceEqual(_CertificateRequest.PublicKey.EncodedKeyValue.RawData);
@@ -407,7 +447,7 @@ namespace powershellYK.Cmdlets.Other
                     _out_AttestationMatchesCSR = _AttestationCertificate.PublicKey.EncodedKeyValue.RawData.SequenceEqual(_CertificateIncludingAttestation.PublicKey.EncodedKeyValue.RawData);
                 }
 
-                // Figure out the PublicKey algorithm
+                // Determine the key algorithm used
                 if (_AttestationCertificate.PublicKey.Oid.FriendlyName == "RSA")
                 {
                     switch (_AttestationCertificate.PublicKey.GetRSAPublicKey()!.KeySize)
@@ -460,11 +500,11 @@ namespace powershellYK.Cmdlets.Other
                 List<string> attestionPath = chain.ChainElements.Cast<X509ChainElement>().Skip(2).Select(e => e.Certificate.Subject.ToString()).Where(subj => subj != null).Select(item => item!).ToList();
                 attestionPath.Reverse();
 
+                // Create and return the attestation result
                 Attestation returnObject = new Attestation(true, _out_SerialNumber, _out_FirmwareVersion, _out_PinPolicy, _out_TouchPolicy, _out_FormFactor, _out_Slot, _out_Algorithm, _out_isFIPSSeries, _out_isCSPNSeries, AttestationMatchesCSR: _out_AttestationMatchesCSR, attestationDataLocation: _out_AttestationDataLocation, attestationPath: attestionPath);
 
                 WriteObject(returnObject);
             }
         }
-
     }
 }

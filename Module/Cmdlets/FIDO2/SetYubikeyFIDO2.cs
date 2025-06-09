@@ -1,4 +1,27 @@
-﻿using System.Management.Automation;           // Windows PowerShell namespace.
+﻿/// <summary>
+/// Configures FIDO2 settings on a YubiKey.
+/// Supports setting/changing PIN, minimum PIN length, and force PIN change.
+/// Requires a YubiKey with FIDO2 support and administrator privileges on Windows.
+/// Note: Setting PIN is deprecated, use Set-YubiKeyFIDO2PIN instead.
+/// 
+/// .EXAMPLE
+/// Set-YubiKeyFIDO2 -SetPIN -NewPIN (ConvertTo-SecureString "123456" -AsPlainText -Force)
+/// Sets a new FIDO2 PIN (deprecated, use Set-YubiKeyFIDO2PIN instead)
+/// 
+/// .EXAMPLE
+/// Set-YubiKeyFIDO2 -MinimumPINLength 8
+/// Sets the minimum PIN length to 8 characters
+/// 
+/// .EXAMPLE
+/// Set-YubiKeyFIDO2 -ForcePINChange
+/// Forces PIN change on next use
+/// 
+/// .EXAMPLE
+/// Set-YubiKeyFIDO2 -MinimumPINRelyingParty "example.com"
+/// Sends minimum PIN length to specified relying party
+/// </summary>
+
+using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
 using powershellYK.FIDO2;
@@ -9,13 +32,12 @@ using System.Collections.ObjectModel;
 using Yubico.YubiKey.Piv;
 using Microsoft.VisualBasic;
 
-
 namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommon.Set, "YubiKeyFIDO2")]
-
     public class SetYubikeyFIDO2Cmdlet : PSCmdlet, IDynamicParameters
     {
+        // Parameters for PIN configuration
         [Parameter(Mandatory = false, ParameterSetName = "Set PIN", ValueFromPipeline = false, HelpMessage = "Easy access to Set new PIN")]
         public SwitchParameter SetPIN;
 
@@ -30,6 +52,7 @@ namespace powershellYK.Cmdlets.Fido
         [Parameter(Mandatory = true, ParameterSetName = "Send MinimumPIN to RelyingParty", ValueFromPipeline = false, HelpMessage = "To which RelyingParty should minimum PIN be sent")]
         public string? MinimumPINRelyingParty { get; set; }
 
+        // Get dynamic parameters based on YubiKey state
         public object GetDynamicParameters()
         {
             Collection<Attribute> oldPIN, newPIN;
@@ -37,7 +60,7 @@ namespace powershellYK.Cmdlets.Fido
             {
                 using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
                 {
-                    // if no minimum pin length is set, then set it to 63.
+                    // Set minimum PIN length based on YubiKey capabilities
                     int minPinLength = fido2Session.AuthenticatorInfo.MinimumPinLength ?? 4;
                     // Verify that the yubikey FIDO2 has a PIN already set. If there is a PIN set then make sure we get the old PIN.
                     if (fido2Session.AuthenticatorInfo.Options!.Any(x => x.Key == AuthenticatorOptions.clientPin && x.Value == true) && (YubiKeyModule._fido2PIN is null))
@@ -55,6 +78,7 @@ namespace powershellYK.Cmdlets.Fido
                         };
                     }
 
+                    // Configure new PIN parameter with minimum length
                     newPIN = new Collection<Attribute>() {
                         new ParameterAttribute() { Mandatory = true, HelpMessage = "New PIN code to set for the FIDO2 module.", ParameterSetName = "Set PIN", ValueFromPipeline = false},
                         new ValidateYubikeyPIN(minPinLength, 63)
@@ -63,6 +87,7 @@ namespace powershellYK.Cmdlets.Fido
             }
             else
             {
+                // Default parameters when no YubiKey is connected
                 oldPIN = new Collection<Attribute>() {
                     new ParameterAttribute() { Mandatory = false, HelpMessage = "Old PIN, required to change the PIN code.", ParameterSetName = "Set PIN", ValueFromPipeline = false},
                     new ValidateYubikeyPIN(4, 63)
@@ -72,6 +97,8 @@ namespace powershellYK.Cmdlets.Fido
                     new ValidateYubikeyPIN(4, 63)
                 };
             }
+
+            // Create and return dynamic parameters
             var runtimeDefinedParameterDictionary = new RuntimeDefinedParameterDictionary();
             var runtimeDefinedOldPIN = new RuntimeDefinedParameter("OldPIN", typeof(SecureString), oldPIN);
             var runtimeDefinedNewPIN = new RuntimeDefinedParameter("NewPIN", typeof(SecureString), newPIN);
@@ -80,12 +107,13 @@ namespace powershellYK.Cmdlets.Fido
             return runtimeDefinedParameterDictionary;
         }
 
+        // Initialize processing and verify requirements
         protected override void BeginProcessing()
         {
-            // If we are setting the PIN, make sure we have a YubiKey connected.
-            // Otherwise make sure we have a FIDO2 session authenticated.
+            // Connect to appropriate interface based on operation
             if (ParameterSetName == "Set PIN")
             {
+                // Connect to YubiKey if not already connected
                 if (YubiKeyModule._yubikey is null)
                 {
                     WriteDebug("No Yubikey selected, calling Connect-Yubikey...");
@@ -100,7 +128,7 @@ namespace powershellYK.Cmdlets.Fido
             }
             else
             {
-                // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
+                // Connect to FIDO2 if not already authenticated
                 if (YubiKeyModule._fido2PIN is null)
                 {
                     WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
@@ -124,6 +152,7 @@ namespace powershellYK.Cmdlets.Fido
             }
         }
 
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
@@ -133,17 +162,17 @@ namespace powershellYK.Cmdlets.Fido
                 switch (ParameterSetName)
                 {
                     case "Set PIN minimum length":
+                        // Verify support for minimum PIN length
                         if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.setMinPINLength) == OptionValue.True)
                         {
-                            // Code to set minimum PIN length here.
-
+                            // Set minimum PIN length
                             if (!fido2Session.TrySetPinConfig(MinimumPINLength, null, null))
                             {
                                 throw new Exception("Failed to change the minimum PIN length.");
                             }
-                            // Do it once more to force PIN change.
+                            // Force PIN change
                             fido2Session.TrySetPinConfig(null, null, null);
-                            WriteInformation("Minimum PIN length set.", new string[] { "FIDO2", "Info" }); ;
+                            WriteInformation("Minimum PIN length set.", new string[] { "FIDO2", "Info" });
                         }
                         else
                         {
@@ -153,14 +182,14 @@ namespace powershellYK.Cmdlets.Fido
 
                     // Set force PIN change will expire the PIN on initial use forcing the user to set a new PIN.
                     case "Set force PIN change":
-                        // Check if the YubiKey supports the feature.
+                        // Verify support for force PIN change
                         if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.setMinPINLength) == OptionValue.True)
                         {
-                            // Use TrySetPinConfig to enable Force PIN Change.
+                            // Enable force PIN change
                             bool? forceChangePin = true;
                             if (fido2Session.TrySetPinConfig(null, null, forceChangePin))
                             {
-                                WriteInformation("Force PIN Change set.", new string[] { "FIDO2", "Info" }); ;
+                                WriteInformation("Force PIN Change set.", new string[] { "FIDO2", "Info" });
                             }
                             else
                             {
@@ -176,7 +205,7 @@ namespace powershellYK.Cmdlets.Fido
                         break;
 
                     case "Set PIN":
-
+                        // Handle PIN setting/changing
                         if (this.MyInvocation.BoundParameters.ContainsKey("OldPIN"))
                         {
                             YubiKeyModule._fido2PIN = (SecureString)this.MyInvocation.BoundParameters["OldPIN"];
@@ -208,9 +237,10 @@ namespace powershellYK.Cmdlets.Fido
                         YubiKeyModule._fido2PIN = (SecureString)this.MyInvocation.BoundParameters["NewPIN"];
                         WriteWarning("Changing FIDO2 PIN using Set-YubiKeyFIDO2 has been deprecated, use Set-YubiKeyFIDO2PIN instead.");
                         WriteInformation("FIDO PIN updated.", new string[] { "FIDO2", "Info" });
-
                         break;
+
                     case "Send MinimumPIN to RelyingParty":
+                        // Send minimum PIN length to relying party
                         var rpidList = new List<string>(1);
                         RelyingParty rp = new RelyingParty(MinimumPINRelyingParty!);
                         rpidList.Add(rp.Id);
@@ -218,10 +248,8 @@ namespace powershellYK.Cmdlets.Fido
                         {
                             throw new Exception("Failed to set RelyingParty that will be sent Minimum PIN length.");
                         }
-
                         break;
                 }
-
             }
         }
     }

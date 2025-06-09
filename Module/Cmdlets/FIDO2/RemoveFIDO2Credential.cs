@@ -1,4 +1,20 @@
-﻿using System.Management.Automation;
+﻿/// <summary>
+/// Removes a FIDO2 credential from a YubiKey.
+/// Supports removing credentials by either their ID or by username and relying party.
+/// Requires a YubiKey with FIDO2 support and administrator privileges on Windows.
+/// 
+/// .EXAMPLE
+/// $cred = Get-YubiKeyFIDO2Credential | Select-Object -First 1
+/// Remove-YubiKeyFIDO2Credential -CredentialId $cred.CredentialId
+/// Removes a specific FIDO2 credential using its ID
+/// 
+/// .EXAMPLE
+/// Remove-YubiKeyFIDO2Credential -Username "user@example.com" -RelayingParty "example.com"
+/// Removes a FIDO2 credential by username and relying party
+/// </summary>
+
+// Imports
+using System.Management.Automation;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
 using System.Linq;
@@ -9,7 +25,7 @@ namespace powershellYK.Cmdlets.Fido
     [Cmdlet(VerbsCommon.Remove, "YubikeyFIDO2Credential", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High, DefaultParameterSetName = "Remove with CredentialID")]
     public class RemoveYubikeyFIDO2CredentialCmdlet : PSCmdlet
     {
-        // Credential ID is required when calling the cmdlet.
+        // Parameters for credential identification
         [Parameter(Mandatory = true, ValueFromPipeline = true, HelpMessage = "Credential ID to remove", ParameterSetName = "Remove with CredentialID")]
         public powershellYK.FIDO2.CredentialID CredentialId { get; set; }
 
@@ -19,9 +35,10 @@ namespace powershellYK.Cmdlets.Fido
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "RelayingParty to remove user from", ParameterSetName = "Remove with username and RelayingParty")]
         public string RelayingParty { get; set; } = String.Empty;
 
+        // Initialize processing and verify requirements
         protected override void BeginProcessing()
         {
-            // If no FIDO2 PIN exists, we need to connect to the FIDO2 application
+            // Connect to FIDO2 if not already authenticated
             if (YubiKeyModule._fido2PIN is null)
             {
                 WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
@@ -37,24 +54,25 @@ namespace powershellYK.Cmdlets.Fido
                 }
             }
 
-
+            // Check if running as Administrator
             if (Windows.IsRunningAsAdministrator() == false)
             {
                 throw new Exception("FIDO access on Windows requires running as Administrator.");
             }
         }
 
+        // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
+                // Set up key collector for PIN operations
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                // Since we cannot construct a CredentialID object, we need to find it. This unfortunately requires a full enumeration of all credentials.
-
+                // Enumerate all relying parties and their credentials
                 var relyingParties = fido2Session.EnumerateRelyingParties();
 
-                if (!relyingParties.Any()) // Check if there are no relying parties
+                if (!relyingParties.Any())
                 {
                     WriteWarning("No credentials found on the YubiKey.");
                     return;
