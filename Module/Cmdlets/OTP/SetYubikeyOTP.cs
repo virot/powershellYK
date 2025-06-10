@@ -364,7 +364,7 @@ namespace powershellYK.Cmdlets.OTP
                             configureHOTP.Execute();
 
                             // Return both Hex and Base32 representations of the secret key.
-                            var secretKeyHex = string.Concat(_HOTPsecretKey.ToArray().Select(b => b.ToString("X2")));
+                            var secretKeyHex = string.Concat(_HOTPsecretKey.ToArray().Select(b => b.ToString("x2")));
                             WriteObject(new
                             {
                                 HexSecret = secretKeyHex,
