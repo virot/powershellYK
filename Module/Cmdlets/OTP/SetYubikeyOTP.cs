@@ -360,15 +360,18 @@ namespace powershellYK.Cmdlets.OTP
                                 configureHOTP = configureHOTP.Use8Digits();
                             }
 
+
                             configureHOTP.Execute();
 
-                            // Return both raw and Base32 representations of the key
+                            // Return both Hex and Base32 representations of the secret key.
+                            var secretKeyHex = string.Concat(_HOTPsecretKey.ToArray().Select(b => b.ToString("X2")));
                             WriteObject(new
                             {
-                                SecretKey = _HOTPsecretKey.ToArray(),
+                                HexSecret = secretKeyHex,
                                 Base32Secret = powershellYK.support.Base32.Encode(_HOTPsecretKey.ToArray())
                             });
                             break;
+
                     }
                 }
             }
