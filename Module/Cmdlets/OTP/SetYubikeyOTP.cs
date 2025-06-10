@@ -1,7 +1,7 @@
 ﻿/// <summary>
-/// Configures OTP (One-Time Password) settings on a YubiKey device.
-/// Supports multiple OTP modes including Yubico OTP, Static Password, and Challenge-Response.
-/// Can configure either the short-press or long-press slot on the YubiKey.
+/// Configures OTP (One-Time Password) and/or fixed password on a YubiKey.
+/// Supports multiple modes including Yubico OTP, Static Password, and Challenge-Response.
+/// Can configure either the short-press (1) or long-press slot (2) on the YubiKey.
 /// 
 /// .EXAMPLE
 /// # Configure Yubico OTP with default settings
