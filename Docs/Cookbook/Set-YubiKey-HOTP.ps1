@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Programs HOTP to a slot on a YubiKey and outputs to seed file.
+Programs HOTP to a slot on a YubiKey and outputs to seed file in Hex or Base32 format.
 
 .DESCRIPTION
 This Cmdlet programs HOTP (HMAC-based One-Time Password) to a selected slot on a YubiKey.
@@ -23,17 +23,28 @@ Appends a carriage return (Enter) after the passcode
 .PARAMETER Use8Digits
 Use 8 digits instead of 6 for the passcode
 
+.PARAMETER SecretFormat
+Secret format to use (Base32 or Hex)
+
 .EXAMPLE
 .\Set-YubiKey-HOTP.ps1 -ShortPress
-Programs HOTP to slot 1 (short press) on the YubiKey.
+Programs HOTP to slot 1 (short press) on the YubiKey using Base32 format (default).
 
 .EXAMPLE
 .\Set-YubiKey-HOTP.ps1 -LongPress -SendTabFirst -AppendCarriageReturn
-Programs HOTP to slot 2 (long press) with TAB before the code and Enter after.
+Programs HOTP to slot 2 (long press) with TAB before the code and Enter after, using Base32 format.
 
 .EXAMPLE
 .\Set-YubiKey-HOTP.ps1 -ShortPress -Use8Digits
-Programs HOTP to slot 1 with 8-digit passcodes.
+Programs HOTP to slot 1 with 8-digit passcodes using Base32 format.
+
+.EXAMPLE
+.\Set-YubiKey-HOTP.ps1 -ShortPress -SecretFormat Hex
+Programs HOTP to slot 1 using hex format (recommended for Cisco Duo and Ping Identity).
+
+.EXAMPLE
+.\Set-YubiKey-HOTP.ps1 -LongPress -SecretFormat Hex -SendTabFirst -AppendCarriageReturn
+Programs HOTP to slot 2 using hex format with TAB and Enter, suitable for Cisco Duo.
 
 .NOTES
 - Requires the powerShellYK module
@@ -41,19 +52,22 @@ Programs HOTP to slot 1 with 8-digit passcodes.
 - Each configuration generates a new secret key
 - If a YubiKey with the same serial number is programmed again, its entry will be updated
 - After programming, prompts to program another YubiKey (Y/n)
+- For Cisco Duo and Ping Identity, use hex format with "-SecretFormat Hex"
 
 .LINK
 https://github.com/virot/powershellYK/
 #>
 
 # Function to program a single YubiKey
-function Program-YubiKey {
+function Set-YubiKeyHOTPConfig {
     param (
         [Yubico.YubiKey.Otp.Slot]$Slot,
         [switch]$SendTabFirst,
         [switch]$AppendCarriageReturn,
         [switch]$Use8Digits,
-        [string]$CsvFilePath
+        [string]$CsvFilePath,
+        [ValidateSet('Base32', 'Hex')]
+        [string]$SecretFormat = 'Base32'
     )
 
     # Connect to YubiKey
@@ -77,7 +91,7 @@ function Program-YubiKey {
     # Create new configuration object
     $newConfig = [PSCustomObject]@{
         'Serial' = $yubiKey.SerialNumber
-        'Secret' = $result.Base32Secret
+        'Secret' = if ($SecretFormat -eq 'Hex') { $result.HexSecret } else { $result.Base32Secret }
         'Counter' = 0
         'Length' = if ($Use8Digits) { 8 } else { 6 }
     }
@@ -153,7 +167,13 @@ function Set-YubiKeyHOTP {
         [Parameter(Mandatory=$False,
                   HelpMessage = "Use 8 digits instead of 6 for the passcode")]
         [switch]
-        $Use8Digits
+        $Use8Digits,
+
+        [Parameter(Mandatory=$False,
+                  HelpMessage = "Secret format to use (Base32 or Hex)")]
+        [ValidateSet('Base32', 'Hex')]
+        [string]
+        $SecretFormat = 'Base32'
     )
 
     begin {
@@ -178,7 +198,7 @@ function Set-YubiKeyHOTP {
         [System.Console]::ReadKey() > $null
         Clear-Host
 
-        if (-not (Program-YubiKey -Slot $slot -SendTabFirst:$SendTabFirst -AppendCarriageReturn:$AppendCarriageReturn -Use8Digits:$Use8Digits -CsvFilePath $csvFilePath)) {
+        if (-not (Set-YubiKeyHOTPConfig -Slot $slot -SendTabFirst:$SendTabFirst -AppendCarriageReturn:$AppendCarriageReturn -Use8Digits:$Use8Digits -CsvFilePath $csvFilePath -SecretFormat $SecretFormat)) {
             return
         }
 
@@ -205,7 +225,7 @@ function Set-YubiKeyHOTP {
                 [System.Console]::ReadKey() > $null
                 Clear-Host
 
-                if (-not (Program-YubiKey -Slot $slot -SendTabFirst:$SendTabFirst -AppendCarriageReturn:$AppendCarriageReturn -Use8Digits:$Use8Digits -CsvFilePath $csvFilePath)) {
+                if (-not (Set-YubiKeyHOTPConfig -Slot $slot -SendTabFirst:$SendTabFirst -AppendCarriageReturn:$AppendCarriageReturn -Use8Digits:$Use8Digits -CsvFilePath $csvFilePath -SecretFormat $SecretFormat)) {
                     continue
                 }
             }
