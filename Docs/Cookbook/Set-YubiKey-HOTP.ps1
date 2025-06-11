@@ -73,9 +73,17 @@ function Set-YubiKeyHOTPConfig {
     # Connect to YubiKey
     try {
         Connect-Yubikey
-        $yubiKey = Get-YubiKey
-        if ($null -eq $yubiKey) {
+        $yubiKeyInfo = Get-YubiKey
+        if ($null -eq $yubiKeyInfo) {
             throw "No YubiKey found."
+        }
+
+        # Check if the insertedYubiKey supports OTP
+        if (-not $yubiKeyInfo.AvailableUsbCapabilities.HasFlag([Yubico.YubiKey.YubiKeyCapabilities]::Otp)) {
+            Clear-Host
+            Write-Host "This YubiKey does not support OTP functionality." -ForegroundColor Red
+            Write-Host ""
+            return $false
         }
     }
     catch {
@@ -90,7 +98,7 @@ function Set-YubiKeyHOTPConfig {
 
     # Create new configuration object
     $newConfig = [PSCustomObject]@{
-        'Serial' = $yubiKey.SerialNumber
+        'Serial' = $yubiKeyInfo.SerialNumber
         'Secret' = if ($SecretFormat -eq 'Hex') { $result.HexSecret } else { $result.Base32Secret }
         'Counter' = 0
         'Length' = if ($Use8Digits) { 8 } else { 6 }
@@ -102,7 +110,7 @@ function Set-YubiKeyHOTPConfig {
 
     # Check if serial exists and update if found
     $updatedData = @($existingData | ForEach-Object {
-        if ($_.Serial -eq $yubiKey.SerialNumber) {
+        if ($_.Serial -eq $yubiKeyInfo.SerialNumber) {
             $serialExists = $true
             $newConfig
         } else {
@@ -127,9 +135,9 @@ function Set-YubiKeyHOTPConfig {
     Write-Host "YUBIKEY SUCCESSFULLY PROGRAMMED WITH HOTP TO SLOT!" -ForegroundColor Yellow
     Write-Host "*****************************************************************" -ForegroundColor Yellow
     if ($serialExists) {
-        Write-Host "ℹ️ Updated existing entry for YubiKey with serial: $($yubiKey.SerialNumber)" -ForegroundColor Yellow
+        Write-Host "ℹ️ Updated existing entry for YubiKey with serial: $($yubiKeyInfo.SerialNumber)" -ForegroundColor Yellow
     } else {
-        Write-Host "ℹ️ Added new entry for YubiKey with serial: $($yubiKey.SerialNumber)" -ForegroundColor Yellow
+        Write-Host "ℹ️ Added new entry for YubiKey with serial: $($yubiKeyInfo.SerialNumber)" -ForegroundColor Yellow
     }
     Write-Host "📝 Information saved to: $CsvFilePath" -ForegroundColor Yellow
     Write-Host ""
