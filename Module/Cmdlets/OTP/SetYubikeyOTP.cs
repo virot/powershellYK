@@ -46,6 +46,10 @@
 /// Set-YubiKeyOTP -Slot ShortPress -HOTP -Base32Secret "QRFJ7DTIVASL3PNYXWFIQAQN5RKUJD4U" -AppendCarriageReturn
 /// 
 /// .EXAMPLE
+/// # Configure HOTP with hex encoded secret and carriage return
+/// Set-YubiKeyOTP -Slot ShortPress -HOTP -HexSecret "0102030405060708090a0b0c0d0e0f1011121314" -AppendCarriageReturn
+/// 
+/// .EXAMPLE
 /// # Configure HOTP with TAB before OTP code for easier form navigation
 /// Set-YubiKeyOTP -Slot ShortPress -HOTP -Base32Secret "QRFJ7DTIVASL3PNYXWFIQAQN5RKUJD4U" -SendTabFirst
 /// 
@@ -157,6 +161,10 @@ namespace powershellYK.Cmdlets.OTP
         // Base32 encoded secret key for HOTP mode
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Base32 encoded secret key for HOTP", ParameterSetName = "HOTP")]
         public string? Base32Secret { get; set; }
+
+        // Hex encoded secret key for HOTP mode
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Hex encoded secret key for HOTP", ParameterSetName = "HOTP")]
+        public string? HexSecret { get; set; }
 
         // Use 8 digits instead of 6 for HOTP mode
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Use 8 digits instead of 6 for HOTP", ParameterSetName = "HOTP")]
@@ -326,10 +334,16 @@ namespace powershellYK.Cmdlets.OTP
                             Memory<byte> _HOTPsecretKey = new Memory<byte>(new byte[20]);
                             ConfigureHotp configureHOTP = otpSession.ConfigureHotp(Slot);
 
-                            // Handle Secret Key configuration
+                            // Handle Secret Key configuration using Base32
                             if (Base32Secret != null)
                             {
                                 _HOTPsecretKey = powershellYK.support.Base32.Decode(Base32Secret);
+                                configureHOTP = configureHOTP.UseKey(_HOTPsecretKey);
+                            }
+                            // Handle Secret Key configuration using Hex
+                            else if (HexSecret != null)
+                            {
+                                _HOTPsecretKey = powershellYK.support.Hex.Decode(HexSecret);
                                 configureHOTP = configureHOTP.UseKey(_HOTPsecretKey);
                             }
                             else if (SecretKey is null)
@@ -362,10 +376,10 @@ namespace powershellYK.Cmdlets.OTP
 
                             configureHOTP.Execute();
 
-                            // Return both raw and Base32 representations of the key
+                            // Return both Hex and Base32 representations of the key
                             WriteObject(new
                             {
-                                SecretKey = _HOTPsecretKey.ToArray(),
+                                HexSecret = powershellYK.support.Hex.Encode(_HOTPsecretKey.ToArray()),
                                 Base32Secret = powershellYK.support.Base32.Encode(_HOTPsecretKey.ToArray())
                             });
                             break;
