@@ -108,6 +108,7 @@ CmdletsToExport = @(
  'Request-YubiKeyOTPChallange',
  'Switch-YubiKeyOTP',
  'Set-YubiKeyOTP',
+ 'Set-YubiKeySlotAccessCode',
  'Assert-YubiKeyPIV',
  'Block-YubiKeyPIV',
  'Build-YubiKeyPIVCertificateSigningRequest',

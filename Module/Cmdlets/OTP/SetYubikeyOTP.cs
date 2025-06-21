@@ -62,7 +62,7 @@
 /// Set-YubiKeyOTP -Slot ShortPress -HOTP -Use8Digits -SendTabFirst -AppendCarriageReturn
 /// </summary>
 
-
+// Imports
 using System.Management.Automation;
 using System.Runtime.InteropServices;
 using System.Security;
