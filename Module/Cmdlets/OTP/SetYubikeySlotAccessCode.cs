@@ -8,17 +8,12 @@
 /// Set-YubiKeySlotAccessCode -Slot LongPress -AccessCode "010203040506"
 /// 
 /// .EXAMPLE
-/// # Change an existing access code
+/// # Change an existing slot access code
 /// Set-YubiKeySlotAccessCode -Slot ShortPress -CurrentAccessCode "010203040506" -AccessCode "060504030201"
 /// 
 /// .EXAMPLE
-/// # Remove access code protection (set to all zeros)
+/// # Remove slot access code protection (set to all zeros)
 /// Set-YubiKeySlotAccessCode -Slot LongPress -CurrentAccessCode "010203040506" -RemoveAccessCode
-/// 
-/// .EXAMPLE
-/// # Set access code using byte array (6 bytes)
-/// $accessCodeBytes = [byte[]]@(1,2,3,4,5,6)
-/// Set-YubiKeySlotAccessCode -Slot ShortPress -AccessCodeBytes $accessCodeBytes
 /// 
 /// .NOTES
 /// Setting or changing the access code will overwrite the selected slot's configuration.
@@ -65,18 +60,6 @@ namespace powershellYK.Cmdlets.OTP
         // Flag to remove access code protection (set to all zeros)
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Remove access code protection", ParameterSetName = "RemoveAccessCode")]
         public SwitchParameter RemoveAccessCode { get; set; }
-
-        // Access code as byte array (6 bytes)
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Access code as byte array (6 bytes)", ParameterSetName = "SetNewAccessCode")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Access code as byte array (6 bytes)", ParameterSetName = "ChangeAccessCode")]
-        [ValidateCount(6, 6)]
-        public byte[]? AccessCodeBytes { get; set; }
-
-        // Current access code as byte array (6 bytes)
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Current access code as byte array (6 bytes)", ParameterSetName = "ChangeAccessCode")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Current access code as byte array (6 bytes)", ParameterSetName = "RemoveAccessCode")]
-        [ValidateCount(6, 6)]
-        public byte[]? CurrentAccessCodeBytes { get; set; }
 
         // Initialize processing and verify requirements
         protected override void BeginProcessing()
@@ -137,10 +120,6 @@ namespace powershellYK.Cmdlets.OTP
                 {
                     newAccessCodeBytes = ConvertAccessCodeString(AccessCode, nameof(AccessCode));
                 }
-                else if (AccessCodeBytes != null)
-                {
-                    newAccessCodeBytes = AccessCodeBytes;
-                }
                 else if (RemoveAccessCode.IsPresent)
                 {
                     // Set to all zeros to remove access code protection
@@ -150,10 +129,6 @@ namespace powershellYK.Cmdlets.OTP
                 if (CurrentAccessCode != null)
                 {
                     currentAccessCodeBytes = ConvertAccessCodeString(CurrentAccessCode, nameof(CurrentAccessCode));
-                }
-                else if (CurrentAccessCodeBytes != null)
-                {
-                    currentAccessCodeBytes = CurrentAccessCodeBytes;
                 }
 
                 // Create SlotAccessCode objects
@@ -197,18 +172,16 @@ namespace powershellYK.Cmdlets.OTP
                     configureHOTP.Execute();
                     WriteInformation("YubiKey slot access code operation completed.", new[] { "OTP", "Info" });
                 }
-                catch (InvalidOperationException invEx)
-                {
-                    var errorRecord = new ErrorRecord(
-                        new InvalidOperationException("A slot access code is already set, call again using -CurrentAccessCode."),
-                        "AccessCodeAlreadySet",
-                        ErrorCategory.InvalidOperation,
-                        null);
-                    WriteError(errorRecord);
-                }
                 catch (Exception ex)
                 {
-                    WriteError(new ErrorRecord(ex, "SetYubiKeySlotAccessCodeError", ErrorCategory.InvalidOperation, null));
+                    if (ex.Message.Contains("YubiKey Operation Failed") && ex.Message.Contains("state of non-volatile memory is unchanged"))
+                    {
+                        WriteWarning("A slot access code is already set, call cmdlet again using -CurrentAccessCode.");
+                    }
+                    else
+                    {
+                        WriteError(new ErrorRecord(ex, "SetYubiKeySlotAccessCodeError", ErrorCategory.InvalidOperation, null));
+                    }
                 }
             }
         }
