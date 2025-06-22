@@ -25,9 +25,6 @@
 /// This operation cannot be undone and will erase any existing secret or configuration in the slot.
 /// Access codes must be provided as 12-character hex strings representing 6 bytes.
 /// 
-/// .LINK
-/// https://docs.yubico.com/yesdk/users-manual/application-otp/how-to-slot-access-codes.html
-/// 
 /// </summary>
 
 // Imports
@@ -91,6 +88,10 @@ namespace powershellYK.Cmdlets.OTP
                 try
                 {
                     var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                    {
+                        myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                    }
                     myPowersShellInstance.Invoke();
                     WriteDebug($"Successfully connected.");
                 }
@@ -98,6 +99,19 @@ namespace powershellYK.Cmdlets.OTP
                 {
                     throw new Exception(e.Message, e);
                 }
+            }
+
+            // Verify that the YubiKey supports OTP
+            var yk = (YubiKeyDevice)YubiKeyModule._yubikey!;
+            bool hasOtp = false;
+            if (yk.AvailableUsbCapabilities.HasFlag(YubiKeyCapabilities.Otp))
+            {
+                hasOtp = true;
+            }
+            WriteDebug($"YubiKey OTP support: {hasOtp}");
+            if (!hasOtp)
+            {
+                throw new Exception("The connected YubiKey does not support OTP functionality.");
             }
         }
 
@@ -169,7 +183,6 @@ namespace powershellYK.Cmdlets.OTP
                     var hmacKey = new byte[20];
                     configureHOTP.UseKey(hmacKey);
 
-
                     // Apply access code changes
                     if (currentAccessCode != null)
                     {
@@ -183,6 +196,15 @@ namespace powershellYK.Cmdlets.OTP
 
                     configureHOTP.Execute();
                     WriteInformation("YubiKey slot access code operation completed.", new[] { "OTP", "Info" });
+                }
+                catch (InvalidOperationException invEx)
+                {
+                    var errorRecord = new ErrorRecord(
+                        new InvalidOperationException("A slot access code is already set, call again using -CurrentAccessCode."),
+                        "AccessCodeAlreadySet",
+                        ErrorCategory.InvalidOperation,
+                        null);
+                    WriteError(errorRecord);
                 }
                 catch (Exception ex)
                 {
