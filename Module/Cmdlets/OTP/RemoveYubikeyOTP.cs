@@ -90,6 +90,7 @@ namespace powershellYK.Cmdlets.OTP
                     }
                     catch (Exception ex)
                     {
+                        // Show a message to guide the user into providing or correcting a slot access code
                         if (ex.Message.Contains("YubiKey Operation Failed") && ex.Message.Contains("state of non-volatile memory is unchanged"))
                         {
                             WriteWarning("The requested slot is protected with a slot access code. Either no access code was provided, or the provided code was incorrect. Please call the cmdlet again using -CurrentAccessCode with the correct code.");

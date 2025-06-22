@@ -195,194 +195,209 @@ namespace powershellYK.Cmdlets.OTP
         {
             using (var otpSession = new OtpSession((YubiKeyDevice)YubiKeyModule._yubikey!))
             {
-                WriteDebug($"Working with {ParameterSetName}");
-                if ((Slot == Yubico.YubiKey.Otp.Slot.ShortPress && !otpSession.IsShortPressConfigured) ||
-                    (Slot == Yubico.YubiKey.Otp.Slot.LongPress && !otpSession.IsLongPressConfigured) ||
-                    ShouldProcess($"Yubikey OTP {Slot}", "Set"))
+                try
                 {
-                    switch (ParameterSetName)
+                    WriteDebug($"Working with {ParameterSetName}");
+                    if ((Slot == Yubico.YubiKey.Otp.Slot.ShortPress && !otpSession.IsShortPressConfigured) ||
+                        (Slot == Yubico.YubiKey.Otp.Slot.LongPress && !otpSession.IsLongPressConfigured) ||
+                        ShouldProcess($"Yubikey OTP {Slot}", "Set"))
                     {
-                        case "Yubico OTP":
-                            // Configure Yubico OTP mode
-                            Memory<byte> _publicID = new Memory<byte>(new byte[6]);
-                            Memory<byte> _privateID = new Memory<byte>(new byte[6]);
-                            Memory<byte> _secretKey = new Memory<byte>(new byte[16]);
-                            ConfigureYubicoOtp configureyubicoOtp = otpSession.ConfigureYubicoOtp(Slot);
-                            int? serial = YubiKeyModule._yubikey!.SerialNumber;
+                        switch (ParameterSetName)
+                        {
+                            case "Yubico OTP":
+                                // Configure Yubico OTP mode
+                                Memory<byte> _publicID = new Memory<byte>(new byte[6]);
+                                Memory<byte> _privateID = new Memory<byte>(new byte[6]);
+                                Memory<byte> _secretKey = new Memory<byte>(new byte[16]);
+                                ConfigureYubicoOtp configureyubicoOtp = otpSession.ConfigureYubicoOtp(Slot);
+                                int? serial = YubiKeyModule._yubikey!.SerialNumber;
 
-                            // Handle Public ID configuration
-                            if (PublicID is null)
-                            {
-                                configureyubicoOtp = configureyubicoOtp.UseSerialNumberAsPublicId(_publicID);
-                            }
-                            else
-                            {
-                                _publicID = PublicID;
-                                configureyubicoOtp = configureyubicoOtp.UsePublicId(PublicID);
-                            }
+                                // Handle Public ID configuration
+                                if (PublicID is null)
+                                {
+                                    configureyubicoOtp = configureyubicoOtp.UseSerialNumberAsPublicId(_publicID);
+                                }
+                                else
+                                {
+                                    _publicID = PublicID;
+                                    configureyubicoOtp = configureyubicoOtp.UsePublicId(PublicID);
+                                }
 
-                            // Handle Private ID configuration
-                            if (PrivateID is null)
-                            {
-                                configureyubicoOtp = configureyubicoOtp.GeneratePrivateId(_privateID);
-                            }
-                            else
-                            {
-                                _privateID = PrivateID;
-                                configureyubicoOtp = configureyubicoOtp.UsePublicId(PrivateID);
-                            }
+                                // Handle Private ID configuration
+                                if (PrivateID is null)
+                                {
+                                    configureyubicoOtp = configureyubicoOtp.GeneratePrivateId(_privateID);
+                                }
+                                else
+                                {
+                                    _privateID = PrivateID;
+                                    configureyubicoOtp = configureyubicoOtp.UsePublicId(PrivateID);
+                                }
 
-                            // Handle Secret Key configuration
-                            if (SecretKey is null)
-                            {
-                                configureyubicoOtp = configureyubicoOtp.GenerateKey(_secretKey);
-                            }
-                            else
-                            {
-                                _secretKey = SecretKey;
-                                configureyubicoOtp = configureyubicoOtp.UseKey(SecretKey);
-                            }
+                                // Handle Secret Key configuration
+                                if (SecretKey is null)
+                                {
+                                    configureyubicoOtp = configureyubicoOtp.GenerateKey(_secretKey);
+                                }
+                                else
+                                {
+                                    _secretKey = SecretKey;
+                                    configureyubicoOtp = configureyubicoOtp.UseKey(SecretKey);
+                                }
 
-                            configureyubicoOtp.Execute();
+                                configureyubicoOtp.Execute();
 
-                            // Return configuration if any defaults were used
-                            if (PublicID is null || PrivateID is null || SecretKey is null)
-                            {
-                                YubicoOTP retur = new YubicoOTP(serial, _publicID.ToArray(), _privateID.ToArray(), _secretKey.ToArray(), "");
-                                WriteObject(retur);
-                            }
+                                // Return configuration if any defaults were used
+                                if (PublicID is null || PrivateID is null || SecretKey is null)
+                                {
+                                    YubicoOTP retur = new YubicoOTP(serial, _publicID.ToArray(), _privateID.ToArray(), _secretKey.ToArray(), "");
+                                    WriteObject(retur);
+                                }
 
-                            // Handle YubiCloud upload
-                            if (Upload.IsPresent)
-                            {
-                                // https://github.com/Yubico/yubikey-manager/blob/fbdae2bc12ba0451bcfc62372bc9191c10ecad0c/ykman/otp.py#L95
-                                // TODO: Implement Upload to YubiCloud
-                                // @virot: upload is no longer supported. Need to output a CSV file for manual upload.
-                                WriteWarning("Upload to YubiCloud is not implemented yet!");
-                            }
-                            break;
+                                // Handle YubiCloud upload
+                                if (Upload.IsPresent)
+                                {
+                                    // https://github.com/Yubico/yubikey-manager/blob/fbdae2bc12ba0451bcfc62372bc9191c10ecad0c/ykman/otp.py#L95
+                                    // TODO: Implement Upload to YubiCloud
+                                    // @virot: upload is no longer supported. Need to output a CSV file for manual upload.
+                                    WriteWarning("Upload to YubiCloud is not implemented yet!");
+                                }
+                                break;
 
-                        case "Static Password":
-                            // Configure static password mode
-                            ConfigureStaticPassword staticpassword = otpSession.ConfigureStaticPassword(Slot);
-                            staticpassword = staticpassword.WithKeyboard(KeyboardLayout);
-                            staticpassword = staticpassword.SetPassword((Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!))!).AsMemory());
-                            if (AppendCarriageReturn.IsPresent)
-                            {
-                                staticpassword = staticpassword.AppendCarriageReturn();
-                            }
-                            staticpassword.Execute();
-                            break;
+                            case "Static Password":
+                                // Configure static password mode
+                                ConfigureStaticPassword staticpassword = otpSession.ConfigureStaticPassword(Slot);
+                                staticpassword = staticpassword.WithKeyboard(KeyboardLayout);
+                                staticpassword = staticpassword.SetPassword((Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!))!).AsMemory());
+                                if (AppendCarriageReturn.IsPresent)
+                                {
+                                    staticpassword = staticpassword.AppendCarriageReturn();
+                                }
+                                staticpassword.Execute();
+                                break;
 
-                        case "Static Generated Password":
-                            // Configure static generated password mode
-                            ConfigureStaticPassword staticgenpassword = otpSession.ConfigureStaticPassword(Slot);
-                            Memory<char> generatedPassword = new Memory<char>(new char[PasswordLength]);
-                            staticgenpassword = staticgenpassword.WithKeyboard(KeyboardLayout);
-                            staticgenpassword = staticgenpassword.GeneratePassword(generatedPassword);
-                            if (AppendCarriageReturn.IsPresent)
-                            {
-                                staticgenpassword = staticgenpassword.AppendCarriageReturn();
-                            }
-                            staticgenpassword.Execute();
-                            break;
+                            case "Static Generated Password":
+                                // Configure static generated password mode
+                                ConfigureStaticPassword staticgenpassword = otpSession.ConfigureStaticPassword(Slot);
+                                Memory<char> generatedPassword = new Memory<char>(new char[PasswordLength]);
+                                staticgenpassword = staticgenpassword.WithKeyboard(KeyboardLayout);
+                                staticgenpassword = staticgenpassword.GeneratePassword(generatedPassword);
+                                if (AppendCarriageReturn.IsPresent)
+                                {
+                                    staticgenpassword = staticgenpassword.AppendCarriageReturn();
+                                }
+                                staticgenpassword.Execute();
+                                break;
 
-                        case "ChallengeResponse":
-                            // Configure challenge-response mode
-                            Memory<byte> _CRsecretKey = new Memory<byte>(new byte[20]);
-                            ConfigureChallengeResponse configureCR = otpSession.ConfigureChallengeResponse(Slot);
+                            case "ChallengeResponse":
+                                // Configure challenge-response mode
+                                Memory<byte> _CRsecretKey = new Memory<byte>(new byte[20]);
+                                ConfigureChallengeResponse configureCR = otpSession.ConfigureChallengeResponse(Slot);
 
-                            // Handle Secret Key configuration
-                            if (SecretKey is null)
-                            {
-                                configureCR = configureCR.GenerateKey(_CRsecretKey);
-                            }
-                            else
-                            {
-                                _CRsecretKey = SecretKey;
-                                configureCR = configureCR.UseKey(SecretKey);
-                            }
+                                // Handle Secret Key configuration
+                                if (SecretKey is null)
+                                {
+                                    configureCR = configureCR.GenerateKey(_CRsecretKey);
+                                }
+                                else
+                                {
+                                    _CRsecretKey = SecretKey;
+                                    configureCR = configureCR.UseKey(SecretKey);
+                                }
 
-                            // Configure touch requirement
-                            if (RequireTouch.IsPresent)
-                            {
-                                configureCR = configureCR.UseButton();
-                            }
+                                // Configure touch requirement
+                                if (RequireTouch.IsPresent)
+                                {
+                                    configureCR = configureCR.UseButton();
+                                }
 
-                            // Configure algorithm
-                            if (Algorithm == ChallengeResponseAlgorithm.HmacSha1)
-                            {
-                                configureCR = configureCR.UseHmacSha1();
-                            }
-                            else if (Algorithm == ChallengeResponseAlgorithm.YubicoOtp)
-                            {
-                                configureCR = configureCR.UseYubiOtp();
-                            }
+                                // Configure algorithm
+                                if (Algorithm == ChallengeResponseAlgorithm.HmacSha1)
+                                {
+                                    configureCR = configureCR.UseHmacSha1();
+                                }
+                                else if (Algorithm == ChallengeResponseAlgorithm.YubicoOtp)
+                                {
+                                    configureCR = configureCR.UseYubiOtp();
+                                }
 
-                            configureCR.Execute();
+                                configureCR.Execute();
 
-                            // Return configuration if default key was used
-                            if (SecretKey is null)
-                            {
-                                ChallangeResponse retur = new ChallangeResponse(_CRsecretKey.ToArray());
-                                WriteObject(retur);
-                            }
-                            break;
+                                // Return configuration if default key was used
+                                if (SecretKey is null)
+                                {
+                                    ChallangeResponse retur = new ChallangeResponse(_CRsecretKey.ToArray());
+                                    WriteObject(retur);
+                                }
+                                break;
 
-                        case "HOTP":
-                            // Configure HOTP mode
-                            Memory<byte> _HOTPsecretKey = new Memory<byte>(new byte[20]);
-                            ConfigureHotp configureHOTP = otpSession.ConfigureHotp(Slot);
+                            case "HOTP":
+                                // Configure HOTP mode
+                                Memory<byte> _HOTPsecretKey = new Memory<byte>(new byte[20]);
+                                ConfigureHotp configureHOTP = otpSession.ConfigureHotp(Slot);
 
-                            // Handle Secret Key configuration using Base32
-                            if (Base32Secret != null)
-                            {
-                                _HOTPsecretKey = powershellYK.support.Base32.Decode(Base32Secret);
-                                configureHOTP = configureHOTP.UseKey(_HOTPsecretKey);
-                            }
-                            // Handle Secret Key configuration using Hex
-                            else if (HexSecret != null)
-                            {
-                                _HOTPsecretKey = powershellYK.support.Hex.Decode(HexSecret);
-                                configureHOTP = configureHOTP.UseKey(_HOTPsecretKey);
-                            }
-                            else if (SecretKey is null)
-                            {
-                                configureHOTP = configureHOTP.GenerateKey(_HOTPsecretKey);
-                            }
-                            else
-                            {
-                                _HOTPsecretKey = SecretKey;
-                                configureHOTP = configureHOTP.UseKey(SecretKey);
-                            }
+                                // Handle Secret Key configuration using Base32
+                                if (Base32Secret != null)
+                                {
+                                    _HOTPsecretKey = powershellYK.support.Base32.Decode(Base32Secret);
+                                    configureHOTP = configureHOTP.UseKey(_HOTPsecretKey);
+                                }
+                                // Handle Secret Key configuration using Hex
+                                else if (HexSecret != null)
+                                {
+                                    _HOTPsecretKey = powershellYK.support.Hex.Decode(HexSecret);
+                                    configureHOTP = configureHOTP.UseKey(_HOTPsecretKey);
+                                }
+                                else if (SecretKey is null)
+                                {
+                                    configureHOTP = configureHOTP.GenerateKey(_HOTPsecretKey);
+                                }
+                                else
+                                {
+                                    _HOTPsecretKey = SecretKey;
+                                    configureHOTP = configureHOTP.UseKey(SecretKey);
+                                }
 
-                            // Configure TAB before OTP if requested
-                            if (SendTabFirst.IsPresent)
-                            {
-                                configureHOTP = configureHOTP.SendTabFirst();
-                            }
+                                // Configure TAB before OTP if requested
+                                if (SendTabFirst.IsPresent)
+                                {
+                                    configureHOTP = configureHOTP.SendTabFirst();
+                                }
 
-                            // Configure carriage return if requested
-                            if (AppendCarriageReturn.IsPresent)
-                            {
-                                configureHOTP = configureHOTP.AppendCarriageReturn();
-                            }
+                                // Configure carriage return if requested
+                                if (AppendCarriageReturn.IsPresent)
+                                {
+                                    configureHOTP = configureHOTP.AppendCarriageReturn();
+                                }
 
-                            // Configure 8 digits if requested
-                            if (Use8Digits.IsPresent)
-                            {
-                                configureHOTP = configureHOTP.Use8Digits();
-                            }
+                                // Configure 8 digits if requested
+                                if (Use8Digits.IsPresent)
+                                {
+                                    configureHOTP = configureHOTP.Use8Digits();
+                                }
 
-                            configureHOTP.Execute();
+                                configureHOTP.Execute();
 
-                            // Return both Hex and Base32 representations of the key
-                            WriteObject(new
-                            {
-                                HexSecret = powershellYK.support.Hex.Encode(_HOTPsecretKey.ToArray()),
-                                Base32Secret = powershellYK.support.Base32.Encode(_HOTPsecretKey.ToArray())
-                            });
-                            break;
+                                // Return both Hex and Base32 representations of the key
+                                WriteObject(new
+                                {
+                                    HexSecret = powershellYK.support.Hex.Encode(_HOTPsecretKey.ToArray()),
+                                    Base32Secret = powershellYK.support.Base32.Encode(_HOTPsecretKey.ToArray())
+                                });
+                                break;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Show a message to guide the user into providing or correcting a slot access code
+                    if (ex.Message.Contains("YubiKey Operation Failed") && ex.Message.Contains("state of non-volatile memory is unchanged"))
+                    {
+                        WriteWarning("The requested slot is protected with a slot access code. Either no access code was provided, or the provided code was incorrect. Please call the cmdlet again using -CurrentAccessCode with the correct code.");
+                    }
+                    else
+                    {
+                        WriteError(new ErrorRecord(ex, "SetYubiKeyOTPError", ErrorCategory.InvalidOperation, null));
                     }
                 }
             }

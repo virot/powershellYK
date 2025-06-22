@@ -174,6 +174,7 @@ namespace powershellYK.Cmdlets.OTP
                 }
                 catch (Exception ex)
                 {
+                    // Show a meaningful message if the slot is already protected with a slot access code
                     if (ex.Message.Contains("YubiKey Operation Failed") && ex.Message.Contains("state of non-volatile memory is unchanged"))
                     {
                         WriteWarning("A slot access code is already set, call cmdlet again using -CurrentAccessCode.");
