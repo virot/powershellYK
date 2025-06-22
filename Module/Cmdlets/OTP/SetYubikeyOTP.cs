@@ -60,6 +60,18 @@
 /// .EXAMPLE
 /// # Configure HOTP with 8 digits, TAB, and carriage return
 /// Set-YubiKeyOTP -Slot ShortPress -HOTP -Use8Digits -SendTabFirst -AppendCarriageReturn
+/// 
+/// .EXAMPLE
+/// # Set a new access code for a slot (when no access code exists)
+/// Set-YubiKeyOTP -Slot LongPress -HOTP -AccessCode "010203040506"
+/// 
+/// .EXAMPLE
+/// # Change an existing slot access code
+/// Set-YubiKeyOTP -Slot ShortPress -HOTP -CurrentAccessCode "010203040506" -AccessCode "060504030201"
+/// 
+/// .EXAMPLE
+/// # Authenticate with an existing access code to update slot configuration
+/// Set-YubiKeyOTP -Slot LongPress -HOTP -CurrentAccessCode "010203040506" -Base32Secret "QRFJ7DTIVASL3PNYXWFIQAQN5RKUJD4U"
 /// </summary>
 
 // Imports
@@ -169,6 +181,16 @@ namespace powershellYK.Cmdlets.OTP
         // Use 8 digits instead of 6 for HOTP mode
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Use 8 digits instead of 6 for HOTP", ParameterSetName = "HOTP")]
         public SwitchParameter Use8Digits { get; set; }
+
+        // The new access code to set (will be converted to bytes, max 6 bytes)
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "New access code (12-character hex string)")]
+        [ValidateCount(12, 12)]
+        public string? AccessCode { get; set; }
+
+        // The current access code (required when changing or authenticating)
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Current access code (12-character hex string)")]
+        [ValidateCount(12, 12)]
+        public string? CurrentAccessCode { get; set; }
 
         // Initializes the cmdlet by ensuring a YubiKey is connected
         protected override void BeginProcessing()
@@ -358,6 +380,36 @@ namespace powershellYK.Cmdlets.OTP
                                     configureHOTP = configureHOTP.UseKey(SecretKey);
                                 }
 
+                                // Handle access code logic
+                                byte[]? newAccessCodeBytes = null;
+                                byte[]? currentAccessCodeBytes = null;
+                                if (AccessCode != null)
+                                {
+                                    newAccessCodeBytes = powershellYK.support.Hex.Decode(AccessCode);
+                                }
+                                if (CurrentAccessCode != null)
+                                {
+                                    currentAccessCodeBytes = powershellYK.support.Hex.Decode(CurrentAccessCode);
+                                }
+                                SlotAccessCode? newAccessCode = null;
+                                SlotAccessCode? currentAccessCode = null;
+                                if (currentAccessCodeBytes != null)
+                                {
+                                    currentAccessCode = new SlotAccessCode(currentAccessCodeBytes);
+                                    configureHOTP = configureHOTP.UseCurrentAccessCode(currentAccessCode);
+                                    // If AccessCode is not provided, preserve the current code
+                                    if (newAccessCodeBytes == null)
+                                    {
+                                        newAccessCode = currentAccessCode;
+                                        configureHOTP = configureHOTP.SetNewAccessCode(newAccessCode);
+                                    }
+                                }
+                                if (newAccessCodeBytes != null)
+                                {
+                                    newAccessCode = new SlotAccessCode(newAccessCodeBytes);
+                                    configureHOTP = configureHOTP.SetNewAccessCode(newAccessCode);
+                                }
+
                                 // Configure TAB before OTP if requested
                                 if (SendTabFirst.IsPresent)
                                 {
@@ -395,10 +447,10 @@ namespace powershellYK.Cmdlets.OTP
                     {
                         WriteWarning("The requested slot is protected with a slot access code. Either no access code was provided, or the provided code was incorrect. Please call the cmdlet again using -CurrentAccessCode with the correct code.");
                     }
-                    else
-                    {
+                     else
+                     {
                         WriteError(new ErrorRecord(ex, "SetYubiKeyOTPError", ErrorCategory.InvalidOperation, null));
-                    }
+                     }
                 }
             }
         }
