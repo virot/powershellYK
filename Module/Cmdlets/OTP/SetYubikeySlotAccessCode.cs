@@ -1,19 +1,19 @@
 /// <summary>
 /// Sets, changes or removes the OTP slot access code for a YubiKey.
 /// The access code protects OTP slot configurations from unauthorized modifications.
-/// Access codes are 6 bytes in length.
+/// Access codes are 6 bytes in length, provided as 12-character hex strings.
 /// 
 /// .EXAMPLE
 /// # Set a new access code for a slot (when no access code exists)
-/// Set-YubiKeySlotAccessCode -Slot LongPress -AccessCode "123456"
+/// Set-YubiKeySlotAccessCode -Slot LongPress -AccessCode "010203040506"
 /// 
 /// .EXAMPLE
 /// # Change an existing access code
-/// Set-YubiKeySlotAccessCode -Slot ShortPress -CurrentAccessCode "123456" -AccessCode "654321"
+/// Set-YubiKeySlotAccessCode -Slot ShortPress -CurrentAccessCode "010203040506" -AccessCode "060504030201"
 /// 
 /// .EXAMPLE
 /// # Remove access code protection (set to all zeros)
-/// Set-YubiKeySlotAccessCode -Slot LongPress -CurrentAccessCode "123456" -RemoveAccessCode
+/// Set-YubiKeySlotAccessCode -Slot LongPress -CurrentAccessCode "010203040506" -RemoveAccessCode
 /// 
 /// .EXAMPLE
 /// # Set access code using byte array (6 bytes)
@@ -23,6 +23,7 @@
 /// .NOTES
 /// Setting or changing the access code will overwrite the selected slot's configuration.
 /// This operation cannot be undone and will erase any existing secret or configuration in the slot.
+/// Access codes must be provided as 12-character hex strings representing 6 bytes.
 /// 
 /// .LINK
 /// https://docs.yubico.com/yesdk/users-manual/application-otp/how-to-slot-access-codes.html
@@ -53,13 +54,15 @@ namespace powershellYK.Cmdlets.OTP
         public Slot Slot { get; set; }
 
         // The new access code to set (will be converted to bytes, max 6 bytes)
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "New access code (max 6 bytes as string)", ParameterSetName = "SetNewAccessCode")]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "New access code (max 6 bytes as string)", ParameterSetName = "ChangeAccessCode")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "New access code (12-character hex string)", ParameterSetName = "SetNewAccessCode")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "New access code (12-character hex string)", ParameterSetName = "ChangeAccessCode")]
+        [ValidateCount(12, 12)]
         public string? AccessCode { get; set; }
 
         // The current access code (required when changing or removing)
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Current access code (max 6 bytes as string)", ParameterSetName = "ChangeAccessCode")]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Current access code (max 6 bytes as string)", ParameterSetName = "RemoveAccessCode")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Current access code (12-character hex string)", ParameterSetName = "ChangeAccessCode")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Current access code (12-character hex string)", ParameterSetName = "RemoveAccessCode")]
+        [ValidateCount(12, 12)]
         public string? CurrentAccessCode { get; set; }
 
         // Flag to remove access code protection (set to all zeros)
@@ -109,19 +112,11 @@ namespace powershellYK.Cmdlets.OTP
                 byte[]? newAccessCodeBytes = null;
                 byte[]? currentAccessCodeBytes = null;
 
-                // Helper for string to byte[] conversion with validation
+                // Helper for string to byte[] conversion
                 byte[] ConvertAccessCodeString(string code, string paramName)
                 {
-                    var bytes = System.Text.Encoding.ASCII.GetBytes(code);
-                    if (bytes.Length != SlotAccessCode.MaxAccessCodeLength)
-                    {
-                        ThrowTerminatingError(new ErrorRecord(
-                            new ArgumentException($"{paramName} must be exactly {SlotAccessCode.MaxAccessCodeLength} bytes when encoded as ASCII."),
-                            "AccessCodeInvalidLength",
-                            ErrorCategory.InvalidArgument,
-                            code));
-                    }
-                    return bytes;
+                    // Convert hex string to byte array using Hex helper class
+                    return powershellYK.support.Hex.Decode(code);
                 }
 
                 if (AccessCode != null)
