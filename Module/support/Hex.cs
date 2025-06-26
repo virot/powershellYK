@@ -50,7 +50,14 @@ namespace powershellYK.support
             for (int i = 0; i < result.Length; i++)
             {
                 string hexPair = hexString.Substring(i * 2, 2);
-                result[i] = Convert.ToByte(hexPair, 16);
+                try
+                {
+                    result[i] = Convert.ToByte(hexPair, 16);
+                }
+                catch (FormatException e)
+                {
+                    throw new ArgumentException("The hex string contains invalid characters.", nameof(hexString), e);
+                }
             }
 
             return result;

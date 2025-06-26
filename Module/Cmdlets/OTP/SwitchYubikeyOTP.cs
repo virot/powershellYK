@@ -58,7 +58,15 @@ namespace powershellYK.Cmdlets.OTP
                 }
                 catch (Exception ex)
                 {
-                    WriteError(new ErrorRecord(ex, "OTPSwapError", ErrorCategory.OperationStopped, null));
+                    // If either slot is protected with an access code show a meaningful error
+                    if (ex.Message.Contains("Warning, state of non-volatile memory is unchanged."))
+                    {
+                        WriteError(new ErrorRecord(new Exception("Either one or both slots are protected with a slot access code."), "OTPSwapAccessCodeError", ErrorCategory.SecurityError, null));
+                    }
+                    else
+                    {
+                        WriteError(new ErrorRecord(ex, "OTPSwapError", ErrorCategory.OperationStopped, null));
+                    }
                 }
             }
         }
