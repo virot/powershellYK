@@ -16,8 +16,6 @@
 /// Set-YubiKeySlotAccessCode -Slot LongPress -CurrentAccessCode "010203040506" -RemoveAccessCode
 /// 
 /// .NOTES
-/// Setting or changing the access code will overwrite the selected slot's configuration.
-/// This operation cannot be undone and will erase any existing secret or configuration in the slot.
 /// Access codes must be provided as 12-character hex strings representing 6 bytes.
 /// 
 /// </summary>
@@ -146,30 +144,27 @@ namespace powershellYK.Cmdlets.OTP
                 }
 
                 // Confirm the operation if ShouldProcess is enabled
-                if (!ShouldProcess("This will overwrite the current slot configuration including secrets!", "Continue?", "Confirm"))
+                if (!ShouldProcess("Update the slot access code?", "Continue?", "Confirm"))
                 {
                     return;
                 }
 
                 try
                 {
-                    // Create a basic HOTP configuration with access code support
-                    var configureHOTP = otpSession.ConfigureHotp(Slot);
-                    var hmacKey = new byte[20];
-                    configureHOTP.UseKey(hmacKey);
+                    // Use UpdateSlot to change/remove access code without overwriting the key
+                    var updateSlot = otpSession.UpdateSlot(Slot);
 
-                    // Apply access code changes
                     if (currentAccessCode != null)
                     {
-                        configureHOTP.UseCurrentAccessCode(currentAccessCode);
+                        updateSlot = updateSlot.UseCurrentAccessCode(currentAccessCode);
                     }
 
                     if (newAccessCode != null)
                     {
-                        configureHOTP.SetNewAccessCode(newAccessCode);
+                        updateSlot = updateSlot.SetNewAccessCode(newAccessCode);
                     }
 
-                    configureHOTP.Execute();
+                    updateSlot.Execute();
                     WriteInformation("YubiKey slot access code operation completed.", new[] { "OTP", "Info" });
                 }
                 catch (Exception ex)
