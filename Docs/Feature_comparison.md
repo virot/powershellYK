@@ -24,7 +24,7 @@
 | **Reset applet** | 🟢 | 🟢 | 🟢 | 🟢 |
 
 
-### OATH (TOTP & HOTP)
+### OATH (TOTP)
 | Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator |
 | :--- | --- | --- | --- | --- |
 | **Basic info** | 🟢 | 🔴 | 🟢 |🟢 |
@@ -35,13 +35,14 @@
 | **Remove accounts** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Reset applet** | 🟢 | 🔴 | 🟢 | 🟢 |
 
-### YubiOTP, Challenge-Response & Static Password
+### YubiOTP, HOTP, Challenge-Response & Static Password
 | Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator |
 | :--- | --- | --- | --- | --- |
 | **Program challenge-response** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Perform challenge-response** | 🔴 | 🔴 | 🔴 | 🔴 |
 | **Delete slot configuration** | 🟢 | 🟢 | 🟢 | 🟢 |
-| **Display YubiOTP slot status** | 🟢 | 🟢 | 🟢 | 🟢 |
+| **Portect slot configuration** | 🟢 | 🔴 | 🟢 | 🔴 |
+| **Display slot status** | 🟢 | 🟢 | 🟢 | 🟢 |
 | **Configure static password** | 🟢 | 🟢 | 🟢 | 🟢 |
 | **Configure NDEF (NFC) slot** | 🔴| 🔴 | 🟢 | 🔴 |
 | **Update slot settings** | 🔴 | 🟢 | 🔴 | 🔴 |
