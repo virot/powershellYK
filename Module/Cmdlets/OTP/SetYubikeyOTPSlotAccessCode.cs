@@ -9,11 +9,11 @@
 /// 
 /// .EXAMPLE
 /// # Change an existing slot access code
-/// Set-YubiKeySlotAccessCode -Slot ShortPress -CurrentAccessCode "010203040506" -AccessCode "060504030201"
+/// Set-YubiKeyOTPSlotAccessCode -Slot ShortPress -CurrentAccessCode "010203040506" -AccessCode "060504030201"
 /// 
 /// .EXAMPLE
 /// # Remove slot access code protection (set to all zeros)
-/// Set-YubiKeySlotAccessCode -Slot LongPress -CurrentAccessCode "010203040506" -RemoveAccessCode
+/// Set-YubiKeyOTPSlotAccessCode -Slot LongPress -CurrentAccessCode "010203040506" -RemoveAccessCode
 /// 
 /// .NOTES
 /// Access codes must be provided as 12-character hex strings representing 6 bytes.
@@ -22,21 +22,12 @@
 
 // Imports
 using System.Management.Automation;
-using System.Runtime.InteropServices;
-using System.Security;
-using powershellYK.OTP;
-using powershellYK.support.validators;
-using powershellYK.support.transform;
-using powershellYK.support;
-using Yubico.Core.Buffers;
-using Yubico.Core.Devices.Hid;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Otp;
-using Yubico.YubiKey.Otp.Operations;
 
 namespace powershellYK.Cmdlets.OTP
 {
-    [Cmdlet(VerbsCommon.Set, "YubiKeySlotAccessCode", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsCommon.Set, "YubiKeyOTPSlotAccessCode", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class SetYubiKeySlotAccessCodeCmdlet : PSCmdlet
     {
         // Specifies which YubiKey OTP slot to configure (ShortPress or LongPress)
@@ -182,4 +173,4 @@ namespace powershellYK.Cmdlets.OTP
             }
         }
     }
-} 
+}

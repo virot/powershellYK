@@ -120,7 +120,7 @@ Removes a FIDO2 credential from the YubiKey.
 ### [Remove-YubikeyOATHAccount](Remove-YubikeyOATHAccount.md)
 Removes an account from the YubiKey OATH application.
 
-### [Remove-YubikeyOTP](Remove-YubikeyOTP.md)
+### [Remove-YubiKeyOTP](Remove-YubiKeyOTP.md)
 Remove YubiKey OTP slot.
 
 ### [Remove-YubikeyPIVKey](Remove-YubikeyPIVKey.md)
@@ -162,8 +162,12 @@ Set the PIN for the FIDO2 application on the YubiKey.
 ### [Set-YubiKeyOATHPassword](Set-YubiKeyOATHPassword.md)
 Set the password for the YubiKey OATH application.
 
-### [Set-YubikeyOTP](Set-YubikeyOTP.md)
+### [Set-YubiKeyOTP](Set-YubiKeyOTP.md)
 Configure OTP slots
+
+### [Set-YubiKeyOTPSlotAccessCode](Set-YubiKeyOTPSlotAccessCode.md)
+Sets, changes or removes the OTP slot access code for a YubiKey.
+he access code protects OTP slot configurations from unauthorized modifications.
 
 ### [Set-YubikeyPIV](Set-YubikeyPIV.md)
 Allows the updating of PIV settings
