@@ -8,8 +8,9 @@
 /// Removes the OTP configuration from the short-press slot
 /// 
 /// .EXAMPLE
-/// Remove-YubiKeyOTP -Slot LongPress
-/// Removes the OTP configuration from the long-press slot
+/// Remove-YubiKeyOTP -Slot LongPress -CurrentAccessCode "010203040506"
+/// Removes the OTP configuration from the long-press slot when a slot access code is set
+/// 
 /// </summary>
 
 // Imports
@@ -28,6 +29,11 @@ namespace powershellYK.Cmdlets.OTP
         // Parameters for slot selection
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "YubiOTP Slot", ParameterSetName = "Remove")]
         public Slot Slot { get; set; }
+
+        // The current access code (12-character hex string) if the slot is protected
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Current access code (12-character hex string)", ParameterSetName = "Remove")]
+        [ValidateCount(12, 12)]
+        public string? CurrentAccessCode { get; set; }
 
         // Connect to YubiKey when cmdlet starts
         protected override void BeginProcessing()
@@ -69,8 +75,28 @@ namespace powershellYK.Cmdlets.OTP
 
                     // Delete the slot configuration
                     var deleteSlot = otpSession.DeleteSlotConfiguration(Slot);
-                    deleteSlot.Execute(); // Note: Deletion may return an error even when successful
-                    WriteInformation($"Removed OTP configuration from slot {Slot.ToString("d")}", new string[] { "OTP", "Info" });
+                    // If CurrentAccessCode is provided, use it
+                    if (CurrentAccessCode != null)
+                    {
+                        // Convert hex string to byte array using Hex helper class
+                        var currentAccessCodeBytes = powershellYK.support.Hex.Decode(CurrentAccessCode);
+                        var slotAccessCode = new SlotAccessCode(currentAccessCodeBytes);
+                        deleteSlot = deleteSlot.UseCurrentAccessCode(slotAccessCode);
+                    }
+                    try
+                    {
+                        deleteSlot.Execute(); // Note: Deletion may return an error even when successful
+                        WriteInformation($"Removed OTP configuration from slot {Slot.ToString("d")}", new string[] { "OTP", "Info" });
+                    }
+                    catch (Exception ex)
+                    {
+                        // Show a message to guide the user into providing or correcting a slot access code
+                        // if (ex.Message.Contains("YubiKey Operation Failed") && ex.Message.Contains("state of non-volatile memory is unchanged"))
+                        // {
+                        //     WriteWarning("The requested slot is protected with a slot access code. Either no access code was provided, or the provided code was incorrect. Please call the cmdlet again using -CurrentAccessCode with the correct code.");
+                        // }
+                        WriteError(new ErrorRecord(ex, "RemoveYubiKeyOTPError", ErrorCategory.InvalidOperation, null));
+                    }
                 }
             }
         }
