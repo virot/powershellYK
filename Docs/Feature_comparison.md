@@ -41,7 +41,7 @@
 | **Program challenge-response** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Perform challenge-response** | 🔴 | 🔴 | 🔴 | 🔴 |
 | **Delete slot configuration** | 🟢 | 🟢 | 🟢 | 🟢 |
-| **Portect slot configuration** | 🟢 | 🔴 | 🟢 | 🔴 |
+| **Protect slot configuration** | 🟢 | 🔴 | 🟢 | 🔴 |
 | **Display slot status** | 🟢 | 🟢 | 🟢 | 🟢 |
 | **Configure static password** | 🟢 | 🟢 | 🟢 | 🟢 |
 | **Configure NDEF (NFC) slot** | 🔴| 🔴 | 🟢 | 🔴 |
