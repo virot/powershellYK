@@ -12,8 +12,8 @@
 /// Connects to a specific YubiKey by serial number
 /// 
 /// .EXAMPLE
-/// $yubikey = Get-YubiKey | Select-Object -First 1
-/// Connect-YubiKey -YubiKey $yubikey
+/// $YubiKey = Find-YubiKey | Select-Object -First 1
+/// Connect-YubiKey -YubiKey $YubiKey
 /// Connects to a specific YubiKey by device object
 /// </summary>
 
