@@ -55,7 +55,7 @@ namespace powershellYK.Cmdlets.Yubikey
                 try
                 {
                     // Get and return YubiKey information
-                    WriteObject(new YubikeyInformation(yubiKey: (YubiKeyDevice)YubiKeyDevice.FindAll().Where(yk => yk.SerialNumber == YubiKeyModule._yubikey!.SerialNumber).First()));
+                    WriteObject(new YubikeyInformation(yubiKey: YubiKeyModule._yubikey));
                 }
                 catch (System.InvalidOperationException e)
                 {

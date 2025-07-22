@@ -16,6 +16,7 @@
 /// </summary>
 
 // Imports
+using powershellYK.YubiKey;
 using System.Management.Automation;           // Windows PowerShell namespace.
 using Yubico.YubiKey;
 
@@ -57,7 +58,7 @@ namespace powershellYK.Cmdlets.Yubikey
                 // Return found YubiKeys
                 foreach (var yubiKey in yubiKeys)
                 {
-                    WriteObject((YubiKeyDevice)yubiKey);
+                    WriteObject(new YubikeyInformation(yubiKey: (YubiKeyDevice)yubiKey));
                 }
 
                 // Handle case when no YubiKeys are found

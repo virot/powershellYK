@@ -25,6 +25,7 @@ using Yubico.YubiKey.Fido2.PinProtocols;
 using Yubico.YubiKey.Fido2.Cose;
 using powershellYK.support;
 using Yubico.YubiKey;
+using powershellYK.PIV;
 
 namespace powershellYK.YubiKey
 {
@@ -110,5 +111,14 @@ namespace powershellYK.YubiKey
             this.YubiKeyDevice = yubiKey;
             this.PrettyName = PowershellYKText.FriendlyName(yubiKey);
         }
+
+        #region Operators
+
+        public static implicit operator YubiKeyDevice(YubikeyInformation info)
+        {
+            return info.YubiKeyDevice;
+        }
+
+        #endregion
     }
 }
