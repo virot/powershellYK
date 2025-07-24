@@ -34,7 +34,8 @@ namespace powershellYK.Cmdlets.Fido
         // Get dynamic parameters based on YubiKey state
         public object GetDynamicParameters()
         {
-            try { YubiKeyModule.ConnectYubikey(); } catch { }
+            // Block this out so that Cmdlet tab completion does not call Connect-Yubikey
+            // try { YubiKeyModule.ConnectYubikey(); } catch { }
 
             Collection<Attribute> PIN;
             if (YubiKeyModule._yubikey is not null)
