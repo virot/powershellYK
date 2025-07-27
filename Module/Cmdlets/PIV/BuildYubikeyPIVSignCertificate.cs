@@ -141,27 +141,37 @@ namespace powershellYK.Cmdlets.PIV
                 // If a subject name override is provided, create a new CertificateRequest
                 if (Subjectname is null)
                 {
+                    WriteDebug("No Subjectname provided, using the submitted CertificateRequest as is.");
                     _request = (CertificateRequest)CertificateRequest!.BaseObject;
                 }
                 else
                 {
                     if (((CertificateRequest)CertificateRequest!.BaseObject).PublicKey.Oid.FriendlyName == "RSA")
                     {
+                        WriteDebug("Subjectname submitted, building new RSA Certificate Request");
                         _request = new CertificateRequest(Subjectname, ((CertificateRequest)CertificateRequest!.BaseObject).PublicKey.GetRSAPublicKey()!, HashAlgorithm, RSASignaturePadding.Pkcs1);
+                    }
+                    else if (((CertificateRequest)CertificateRequest!.BaseObject).PublicKey.Oid.FriendlyName == "ECDSA")
+                    {
+                        WriteDebug("Subjectname submitted, building new ECDSA Certificate Request");
+                        _request = new CertificateRequest(Subjectname, ((CertificateRequest)CertificateRequest!.BaseObject).PublicKey.GetECDsaPublicKey()!, HashAlgorithm);
                     }
                     else
                     {
-                        _request = new CertificateRequest(Subjectname, ((CertificateRequest)CertificateRequest!.BaseObject).PublicKey.GetECDsaPublicKey()!, HashAlgorithm);
+                        WriteError(new ErrorRecord(new Exception("Unknown public key algorithm in CertificateRequest"), "UnknownPublicKeyAlgorithm", ErrorCategory.InvalidArgument, null));
+                        return;
                     }
                 }
 
                 // Add certificate extensions
                 if (CertificateAuthority.IsPresent)
                 {
+                    WriteDebug("Adding constraings for CA usage");
                     _request.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, true, 2, true));
                 }
                 else
                 {
+                    WriteDebug("Adding constraints for non CA usage");
                     _request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, true));
                     _request.CertificateExtensions.Add(new X509KeyUsageExtension(KeyUsage, true));
                     _request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection { new Oid("1.3.6.1.5.5.7.3.1"), new Oid("1.3.6.1.5.5.7.3.2"), new Oid("1.3.6.1.4.1.311.20.2.2") }, false));

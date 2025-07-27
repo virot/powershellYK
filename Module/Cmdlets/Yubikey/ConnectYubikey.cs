@@ -72,7 +72,7 @@ namespace powershellYK.Cmdlets.Yubikey
                     if (yubikeys.Count() == 1)
                     {
                         _yubikey = (YubiKeyDevice)yubikeys.First();
-                        WriteDebug($"Found only one device, using {_yubikey.SerialNumber.ToString() ?? "N/A"}.");
+                        WriteDebug($"[{MyInvocation.MyCommand.Name}] Found only one device, using {_yubikey.SerialNumber.ToString() ?? "N/A"}.");
                     }
                     break;
 

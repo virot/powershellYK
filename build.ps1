@@ -19,7 +19,7 @@ dotnet publish module --nologo --framework 'net8.0' --output "$($Directory.fulln
 
 # Only Windows Powershell use format.ps1xml
 #& "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe" sign /sha1 "8079DD82969461B1B7A8769B26262726AA0F6D89" /fd SHA256 /t http://timestamp.sectigo.com "$($Directory.fullname)\powershellYK.format.ps1xml"
-& "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe" sign /sha1 "8079DD82969461B1B7A8769B26262726AA0F6D89" /fd SHA256 /t http://timestamp.sectigo.com "$($Directory.fullname)\powershellYK.dll"
+& "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe" sign /sha1 "A502DF63C4109BE4BCAD42D8AFF43932709FB0C4" /fd SHA256 /t http://timestamp.sectigo.com "$($Directory.fullname)\powershellYK.dll"
 
 Read-Host -Prompt "Press Enter to continue"
 
