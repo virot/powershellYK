@@ -8,11 +8,10 @@ It can configure either the short press slot (1) or long press slot (2).
 The configuration includes options for sending TAB before the code and appending a carriage return.
 If a YubiKey with the same serial number already exists in the CSV file, its entry will be updated.
 
-.PARAMETER ShortPress
-Programs (H)OTP to YubiKey slot 1
-
-.PARAMETER LongPress
-Programs (H)OTP to YubiKey slot 2
+.PARAMETER Slot
+YubiKey OTP slot to configure. Valid values are:
+- 1 or ShortPress: Programs (H)OTP to YubiKey slot 1 (Short Press)
+- 2 or LongPress: Programs (H)OTP to YubiKey slot 2 (Long Press)
 
 .PARAMETER SendTabFirst
 Sends TAB before the passcode to navigate UI
@@ -26,25 +25,34 @@ Use 8 digits instead of 6 for the passcode
 .PARAMETER SecretFormat
 Secret format to use (Base32 or Hex)
 
-.EXAMPLE
-.\Set-YubiKey-HOTP.ps1 -ShortPress
-Programs HOTP to slot 1 (short press) on the YubiKey using Base32 format (default).
+.PARAMETER AccessCode
+New access code (12-character hex string) to protect the slot
+
 
 .EXAMPLE
-.\Set-YubiKey-HOTP.ps1 -LongPress -SendTabFirst -AppendCarriageReturn
-Programs HOTP to slot 2 (long press) with TAB before the code and Enter after, using Base32 format.
+.\Set-YubiKey-HOTP.ps1 -Slot 1
+Programs HOTP to slot 1 (Short Press) on the YubiKey using Base32 format (default).
 
 .EXAMPLE
-.\Set-YubiKey-HOTP.ps1 -ShortPress -Use8Digits
-Programs HOTP to slot 1 with 8-digit passcodes using Base32 format.
+.\Set-YubiKey-HOTP.ps1 -Slot 1 -SendTabFirst -AppendCarriageReturn
+Programs HOTP to slot 1 (Short Press) with TAB before the code and Enter after, using Base32 format.
 
 .EXAMPLE
-.\Set-YubiKey-HOTP.ps1 -ShortPress -SecretFormat Hex
-Programs HOTP to slot 1 using hex format (recommended for Cisco Duo and Ping Identity).
+.\Set-YubiKey-HOTP.ps1 -Slot 1 -Use8Digits
+Programs HOTP to slot 1 (Short Press) with 8-digit passcodes using Base32 format.
 
 .EXAMPLE
-.\Set-YubiKey-HOTP.ps1 -LongPress -SecretFormat Hex -SendTabFirst -AppendCarriageReturn
-Programs HOTP to slot 2 using hex format with TAB and Enter, suitable for Cisco Duo.
+.\Set-YubiKey-HOTP.ps1 -Slot 1 -SecretFormat Hex
+Programs HOTP to slot 1 (Short Press) using hex format (recommended for Cisco Duo and Ping Identity).
+
+.EXAMPLE
+.\Set-YubiKey-HOTP.ps1 -Slot 1 -SecretFormat Hex -SendTabFirst -AppendCarriageReturn
+Programs HOTP to slot 1 (Short Press) using hex format with TAB and Enter, suitable for Cisco Duo.
+
+.EXAMPLE
+.\Set-YubiKey-HOTP.ps1 -Slot 1 -AccessCode "010203040506"
+Programs HOTP to slot 1 (Short Press) with a new access code to protect the slot.
+
 
 .NOTES
 - Requires the powerShellYK module
@@ -53,6 +61,8 @@ Programs HOTP to slot 2 using hex format with TAB and Enter, suitable for Cisco 
 - If a YubiKey with the same serial number is programmed again, its entry will be updated
 - After programming, prompts to program another YubiKey (Y/n)
 - For Cisco Duo and Ping Identity, use hex format with "-SecretFormat Hex"
+- Slot parameter accepts: ShortPress, LongPress, 1, or 2
+- Access codes are 12-character hex strings that protect slots from unauthorized configuration
 
 .LINK
 https://github.com/virot/powershellYK/
@@ -67,7 +77,8 @@ function Set-YubiKeyHOTPConfig {
         [switch]$Use8Digits,
         [string]$CsvFilePath,
         [ValidateSet('Base32', 'Hex')]
-        [string]$SecretFormat = 'Base32'
+        [string]$SecretFormat = 'Base32',
+        [string]$AccessCode
     )
 
     # Connect to YubiKey
@@ -94,7 +105,28 @@ function Set-YubiKeyHOTPConfig {
     }
 
     Write-Host "Configuring HOTP..." -ForegroundColor Yellow
-    $result = Set-YubiKeyOTP -Slot $slot -HOTP -SendTabFirst:$SendTabFirst -AppendCarriageReturn:$AppendCarriageReturn -Use8Digits:$Use8Digits
+    
+    # Build the Set-YubiKeyOTP command with access code parameters if provided
+    $otpParams = @{
+        Slot = $slot
+        HOTP = $true
+        Use8Digits = $Use8Digits
+    }
+    
+    # Add switch parameters only if they are present
+    if ($SendTabFirst) {
+        $otpParams.SendTabFirst = $true
+    }
+    
+    if ($AppendCarriageReturn) {
+        $otpParams.AppendCarriageReturn = $true
+    }
+    
+    if ($AccessCode) {
+        $otpParams.AccessCode = $AccessCode
+    }
+    
+    $result = Set-YubiKeyOTP @otpParams
 
     # Create new configuration object
     $newConfig = [PSCustomObject]@{
@@ -109,14 +141,17 @@ function Set-YubiKeyHOTPConfig {
     $serialExists = $false
 
     # Check if serial exists and update if found
-    $updatedData = @($existingData | ForEach-Object {
-        if ($_.Serial -eq $yubiKeyInfo.SerialNumber) {
-            $serialExists = $true
-            $newConfig
-        } else {
-            $_
-        }
-    })
+    $updatedData = @()
+    if ($existingData) {
+        $updatedData = @($existingData | ForEach-Object {
+            if ($_.Serial -eq $yubiKeyInfo.SerialNumber) {
+                $serialExists = $true
+                $newConfig
+            } else {
+                $_
+            }
+        })
+    }
 
     # If serial didn't exist, append the new config
     if (-not $serialExists) {
@@ -147,20 +182,14 @@ function Set-YubiKeyHOTPConfig {
 
 # Main function with parameters
 function Set-YubiKeyHOTP {
-    [CmdletBinding(DefaultParameterSetName = 'ShortPress')]
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory=$True,
-                  ParameterSetName = 'ShortPress',
-                  HelpMessage = "Programs (H)OTP to YubiKey slot 1")]
-        [switch]
-        $ShortPress,
-
-        [Parameter(Mandatory=$True,
-                  ParameterSetName = 'LongPress',
-                  HelpMessage = "Programs (H)OTP to YubiKey slot 2")]
-        [switch]
-        $LongPress,
+                  HelpMessage = "YubiKey OTP slot to configure (ShortPress, LongPress, 1, or 2)")]
+        [ValidateSet('ShortPress', 'LongPress', '1', '2')]
+        [string]
+        $Slot,
 
         [Parameter(Mandatory=$False,
                   HelpMessage = "Sends TAB before the passcode to navigate UI")]
@@ -181,7 +210,14 @@ function Set-YubiKeyHOTP {
                   HelpMessage = "Secret format to use (Base32 or Hex)")]
         [ValidateSet('Base32', 'Hex')]
         [string]
-        $SecretFormat = 'Base32'
+        $SecretFormat = 'Base32',
+
+        [Parameter(Mandatory=$False,
+                  HelpMessage = "New access code (12-character hex string)")]
+        [ValidatePattern('^[0-9A-Fa-f]{12}$')]
+        [string]
+        $AccessCode
+
     )
 
     begin {
@@ -193,12 +229,23 @@ function Set-YubiKeyHOTP {
             Set-Content -Path $csvFilePath -Value "Serial,Secret,Counter,Length" -Encoding UTF8
         } else {
             Write-Debug "Found existing CSV file in the current directory. Will update if serial exists..."
+            # Ensure the file has the correct headers
+            $content = Get-Content -Path $csvFilePath -Raw
+            if (-not $content -or -not $content.Contains("Serial,Secret,Counter,Length")) {
+                Set-Content -Path $csvFilePath -Value "Serial,Secret,Counter,Length" -Encoding UTF8
+            }
         }
         # Suppress informational messages
         $InformationPreference = 'SilentlyContinue'
 
         # Determine which slot to configure
-        $slot = if ($ShortPress) { [Yubico.YubiKey.Otp.Slot]::ShortPress } else { [Yubico.YubiKey.Otp.Slot]::LongPress }
+        $slot = switch ($Slot) {
+            'ShortPress' { [Yubico.YubiKey.Otp.Slot]::ShortPress }
+            'LongPress' { [Yubico.YubiKey.Otp.Slot]::LongPress }
+            '1' { [Yubico.YubiKey.Otp.Slot]::ShortPress }
+            '2' { [Yubico.YubiKey.Otp.Slot]::LongPress }
+            default { [Yubico.YubiKey.Otp.Slot]::ShortPress }
+        }
 
         # Program first YubiKey
         Clear-Host
@@ -206,7 +253,7 @@ function Set-YubiKeyHOTP {
         [System.Console]::ReadKey() > $null
         Clear-Host
 
-        if (-not (Set-YubiKeyHOTPConfig -Slot $slot -SendTabFirst:$SendTabFirst -AppendCarriageReturn:$AppendCarriageReturn -Use8Digits:$Use8Digits -CsvFilePath $csvFilePath -SecretFormat $SecretFormat)) {
+        if (-not (Set-YubiKeyHOTPConfig -Slot $slot -SendTabFirst:$SendTabFirst -AppendCarriageReturn:$AppendCarriageReturn -Use8Digits:$Use8Digits -CsvFilePath $csvFilePath -SecretFormat $SecretFormat -AccessCode $AccessCode)) {
             return
         }
 
@@ -233,7 +280,7 @@ function Set-YubiKeyHOTP {
                 [System.Console]::ReadKey() > $null
                 Clear-Host
 
-                if (-not (Set-YubiKeyHOTPConfig -Slot $slot -SendTabFirst:$SendTabFirst -AppendCarriageReturn:$AppendCarriageReturn -Use8Digits:$Use8Digits -CsvFilePath $csvFilePath -SecretFormat $SecretFormat)) {
+                if (-not (Set-YubiKeyHOTPConfig -Slot $slot -SendTabFirst:$SendTabFirst -AppendCarriageReturn:$AppendCarriageReturn -Use8Digits:$Use8Digits -CsvFilePath $csvFilePath -SecretFormat $SecretFormat -AccessCode $AccessCode)) {
                     continue
                 }
             }
