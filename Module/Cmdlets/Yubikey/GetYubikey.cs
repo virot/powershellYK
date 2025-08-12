@@ -23,7 +23,7 @@ namespace powershellYK.Cmdlets.Yubikey
             // Check if a YubiKey is connected, if not attempt to connect
             if (YubiKeyModule._yubikey is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
+                WriteDebug("[{MyInvocation.MyCommand.Name}]No YubiKey selected, calling Connect-Yubikey...");
                 try
                 {
                     // Create a new PowerShell instance to run Connect-Yubikey
