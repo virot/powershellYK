@@ -1,5 +1,5 @@
 ﻿/// <summary>
-/// Enables enterprise attestation the YubiKey FIDO2 applet.
+/// Enables enterprise attestation on the YubiKey FIDO2 applet.
 /// Enterprise attestation (EA) allows the YubiKey to provide detailed device information
 /// during FIDO2 authentication, which can be useful for enterprise deployments.
 /// Requires a YubiKey capable of Enterprise Attestation and administrator privileges on Windows.
@@ -10,8 +10,8 @@
 /// Enables enterprise attestation on the connected YubiKey
 /// 
 /// .EXAMPLE
-/// Enable-YubiKeyFIDO2EnterpriseAttestation -Confirm:$false
-/// Enables enterprise attestation without confirmation prompt
+/// Enable-YubiKeyFIDO2EnterpriseAttestation -InformationAction Continue
+/// Enables enterprise attestation and displays informational messages
 /// </summary>
 
 // Imports
@@ -31,17 +31,20 @@ namespace powershellYK.Cmdlets.Fido
         // Initialize processing and verify requirements
         protected override void BeginProcessing()
         {
-            // Connect to a YubiKey if not already connected
-            if (YubiKeyModule._yubikey is null)
+            // Connect to FIDO2 if not already authenticated
+            if (YubiKeyModule._fido2PIN is null)
             {
-                WriteDebug("No YubiKey selected, calling Connect-Yubikey...");
-                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-Yubikey");
+                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2");
                 if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
                 {
                     myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
                 }
                 myPowersShellInstance.Invoke();
-                WriteDebug($"Successfully connected");
+                if (YubiKeyModule._fido2PIN is null)
+                {
+                    throw new Exception("Connect-YubikeyFIDO2 failed to connect to the FIDO2 applet!");
+                }
             }
 
             // Check if running as Administrator
@@ -66,27 +69,16 @@ namespace powershellYK.Cmdlets.Fido
                 // Check if enterprise attestation is already enabled
                 if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.ep) == OptionValue.True)
                 {
-                    WriteWarning("Enterprise attestation is already enabled on this YubiKey.");
+                    WriteInformation("Enterprise attestation is already enabled on this YubiKey.", new string[] { "FIDO2", "Info" });
                     return;
                 }
                 
-                // Check if PIN is required (only when alwaysUv is enabled but clientPin is not set)
-                bool alwaysUv = fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.alwaysUv) == OptionValue.True;
-                bool clientPin = fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.clientPin) == OptionValue.True;
-                
-                if (alwaysUv && !clientPin)
-                {
-                    throw new Exception("Enabling Enterprise Attestation requires a PIN to be set when alwaysUv is enabled.");
-                }
-                
-                // Set up key collector only if PIN authentication is needed
-                if (clientPin)
-                {
-                    fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                }
+                // Set up key collector for PIN operations (required by SDK)
+                fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
                 
                 // Enable enterprise attestation if supported by the YubiKey
                 fido2Session.TryEnableEnterpriseAttestation();
+                WriteInformation("Enterprise attestation has been successfully enabled on this YubiKey.", new string[] { "FIDO2", "Info" });
             }
         }
     }
