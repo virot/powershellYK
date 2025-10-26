@@ -65,17 +65,17 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     throw new Exception("Enterprise attestation not supported by this YubiKey.");
                 }
-                
+
                 // Check if enterprise attestation is already enabled
                 if (fido2Session.AuthenticatorInfo.GetOptionValue(AuthenticatorOptions.ep) == OptionValue.True)
                 {
                     WriteInformation("Enterprise attestation is already enabled on this YubiKey.", new string[] { "FIDO2", "Info" });
                     return;
                 }
-                
+
                 // Set up key collector for PIN operations (required by SDK)
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-                
+
                 // Enable enterprise attestation if supported by the YubiKey
                 fido2Session.TryEnableEnterpriseAttestation();
                 WriteInformation("Enterprise attestation has been successfully enabled on this YubiKey.", new string[] { "FIDO2", "Info" });
