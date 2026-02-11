@@ -49,7 +49,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Management.Automation" Version="7.4.11" />
-    <PackageReference Include="Yubico.YubiKey" Version="1.14.1" />
+    <PackageReference Include="Yubico.YubiKey" Version="1.15.1" />
   </ItemGroup>
 
   <ItemGroup>
