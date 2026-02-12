@@ -90,6 +90,7 @@ CmdletsToExport = @(
  'Set-YubiKeyFIDO2',
  'Set-YubiKeyFIDO2PIN',
  'New-YubiKeyFIDO2Credential',
+ 'Confirm-YubiKeyFIDO2Attestation',
  'Reset-YubiKeyFIDO2',
  'Connect-YubiKeyOATH',
  'Get-YubiKeyOATH',

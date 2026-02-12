@@ -1,4 +1,4 @@
-﻿/// <summary>
+/// <summary>
 /// Validates YubiKey PIV slot assignments.
 /// Ensures slots are valid and optionally restricts attestation slot usage.
 /// 
@@ -8,7 +8,7 @@
 /// public PIVSlot Slot { get; set; }
 /// 
 /// .EXAMPLE
-/// [ValidateYubikeyPIVSlot(DontAllowAttestion = true)]
+/// [ValidateYubikeyPIVSlot(DontAllowAttestation = true)]
 /// [Parameter(Mandatory = true)]
 /// public PIVSlot NonAttestationSlot { get; set; }
 /// </summary>
@@ -24,7 +24,7 @@ namespace powershellYK.support.validators
     class ValidateYubikeyPIVSlot : ValidateArgumentsAttribute
     {
         // Whether to allow attestation slot usage
-        public bool DontAllowAttestion { get; set; } = false;
+        public bool DontAllowAttestation { get; set; } = false;
 
         // Validate PIV slot assignment
         protected override void Validate(object arguments, EngineIntrinsics engineIntrinsics)
@@ -39,7 +39,7 @@ namespace powershellYK.support.validators
                 }
 
                 // Check attestation slot restriction
-                if (DontAllowAttestion && (PIVSlot)arguments == PivSlot.Attestation)
+                if (DontAllowAttestation && (PIVSlot)arguments == PivSlot.Attestation)
                 {
                     throw new ArgumentException("Attestation slot is not allowed");
                 }
