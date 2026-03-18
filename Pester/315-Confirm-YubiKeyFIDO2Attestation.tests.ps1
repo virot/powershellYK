@@ -3,7 +3,7 @@ Describe "Confirm-YubiKeyFIDO2Attestation paths" -Tag "Without-YubiKey" {
         $pest_return = Confirm-YubiKeyFIDO2Attestation -AttestationObject "$PSScriptRoot\TestData\attestation.bin"
         $pest_return.GetType().FullName | Should -Be 'powershellYK.FIDO2.FIDO2AttestationResult'
         $pest_return.AttestationValidated | Should -Be $true
-        $pest_return.AttestationPath | Should Not -Be $null
+        $pest_return.AttestationPath | Should -Not -Be $null
         ($pest_return.AttestationPath.Count -ge 1) | Should -Be $true
     }
 
@@ -11,7 +11,7 @@ Describe "Confirm-YubiKeyFIDO2Attestation paths" -Tag "Without-YubiKey" {
         $pest_return = Confirm-YubiKeyFIDO2Attestation -AttestationObject "$PSScriptRoot/TestData/attestation.bin"
         $pest_return.GetType().FullName | Should -Be 'powershellYK.FIDO2.FIDO2AttestationResult'
         $pest_return.AttestationValidated | Should -Be $true
-        $pest_return.AttestationPath | Should Not -Be $null
+        $pest_return.AttestationPath | Should -Not -Be $null
     }
 
     It -Name "Verify 'Confirm-YubiKeyFIDO2Attestation -AttestationObject _shortfile_' works, Windows" -Skip:(!$IsWindows) -Test {
