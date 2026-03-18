@@ -116,7 +116,11 @@ namespace powershellYK.Cmdlets.PIV
                 WriteDebug($"Loading P12 from {P12Path}");
 
                 // Load P12 with exportable private key
+#if NET9_0_OR_GREATER
+                X509Certificate2 p12Data = X509CertificateLoader.LoadPkcs12FromFile(P12Path.FullName, Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!)), X509KeyStorageFlags.Exportable);
+#else
                 X509Certificate2 p12Data = new X509Certificate2(P12Path.FullName, Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!)), X509KeyStorageFlags.Exportable);
+#endif
                 this._newcertificate = p12Data;
 
                 // Extract private key based on algorithm
