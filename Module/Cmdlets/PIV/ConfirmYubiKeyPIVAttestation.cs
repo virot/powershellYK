@@ -214,7 +214,7 @@ namespace powershellYK.Cmdlets.Other
             }
             #endregion // Load to internal objects
 
-            #region // For all BuiltInAttestion extract the Attestation and Intermediate certificates
+            #region // For all BuiltInAttestation extract the Attestation and Intermediate certificates
             // Extract attestation data from built-in attestation
             if ((ParameterSetName == "requestWithBuiltinAttestation-Object" || ParameterSetName == "requestWithBuiltinAttestation-File") && _CertificateRequest is not null)
             {
@@ -275,7 +275,7 @@ namespace powershellYK.Cmdlets.Other
                     throw new ArgumentException("The CertificateRequest does not contain embedded intermediate attestation certificate");
                 }
             }
-            #endregion // For all BuiltInAttestion extract the Attestation and Intermediate certificates
+            #endregion // For all BuiltInAttestation extract the Attestation and Intermediate certificates
 
             #region // For CertificateIncludingAttestation extract the Attestation and Intermediate certificates
             // Extract attestation data from certificate with embedded attestation
