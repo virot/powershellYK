@@ -30,8 +30,8 @@ namespace powershellYK.Cmdlets.Fido
         // Parameter for the attestation file (OpenSSH ssh-sk-attest-v01 format)
         [TransformPath]
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Path to attestation file (e.g. attestation.bin from ssh-keygen -O write-attestation)")]
-        public System.IO.FileInfo? AttestationObject { get; set; }
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Path to attestation file (e.g. attestation.bin from ssh-keygen -O write-attestation)")]
+        public required System.IO.FileInfo AttestationObject { get; set; }
 
         // Called when the cmdlet begins processing
         protected override void BeginProcessing()
@@ -44,11 +44,6 @@ namespace powershellYK.Cmdlets.Fido
             // Default to attestation.bin in current directory when not specified
             System.IO.FileInfo attestationFile = AttestationObject ?? new System.IO.FileInfo(
                 System.IO.Path.Combine(SessionState.Path.CurrentFileSystemLocation.Path, "attestation.bin"));
-
-            if (!attestationFile.Exists)
-            {
-                throw new ArgumentException($"Attestation file not found: {attestationFile.FullName}. Specify -AttestationObject or ensure attestation.bin exists.");
-            }
 
             WriteDebug($"Reading attestation from {attestationFile.FullName}");
 
