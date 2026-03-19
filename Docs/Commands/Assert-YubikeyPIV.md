@@ -68,7 +68,7 @@ HelpMessage: ''
 
 ### -PEMEncoded
 
-Encode output as PEM.
+Encode output as PEM
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter

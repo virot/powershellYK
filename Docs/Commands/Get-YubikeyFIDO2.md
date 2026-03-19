@@ -1,28 +1,43 @@
 ﻿---
+document type: cmdlet
 external help file: powershellYK.dll-Help.xml
+HelpUri: 
 Module Name: powershellYK
-online version:
-schema: 2.0.0
+ms.date: 03-19-2026
+PlatyPS schema version: 2024-05-01
 ---
 
 # Get-YubikeyFIDO2
 
 ## SYNOPSIS
+
 Get FIDO2 information from YubiKey
 
 ## SYNTAX
+
+### Default (Default)
 
 ```
 Get-YubikeyFIDO2 [<CommonParameters>]
 ```
 
+### __AllParameterSets
+
+```
+Get-YubiKeyFIDO2 [<CommonParameters>]
+```
+
+## ALIASES
+
 ## DESCRIPTION
+
 Lists information about the FIDO2 capabilities of a YubiKey.
 For instance minimum PIN length
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Get-YubikeyFIDO2
 
@@ -54,7 +69,11 @@ Yubikey 5.7 FIDO2 capabilities.
 ## PARAMETERS
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -63,6 +82,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+{{ Fill in the related links here }}
+
