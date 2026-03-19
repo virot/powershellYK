@@ -43,13 +43,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Setup .NET
+    - name: Setup .NET 8
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: '8.x.x' # Specify the .NET version you're using
 
+    - name: Setup .NET 9
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '9.x.x' # Specify the .NET version you're using
+
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '10.x.x' # Specify the .NET version you're using
+
     - name: Install dependencies
       run: dotnet restore
+
+    - name: Build loader
+      run: dotnet build --no-restore -c Release powershellYK_loader/powershellYK_loader.csproj --output release
 
     - name: Build
       run: dotnet build --no-restore -c Release Module/powershellYK.csproj --output release
