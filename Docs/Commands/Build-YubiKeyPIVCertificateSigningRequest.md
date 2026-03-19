@@ -1,36 +1,45 @@
 ﻿---
+document type: cmdlet
 external help file: powershellYK.dll-Help.xml
+HelpUri: 
 Module Name: powershellYK
-online version:
-schema: 2.0.0
+ms.date: 03-19-2026
+PlatyPS schema version: 2024-05-01
 ---
 
 # Build-YubiKeyPIVCertificateSigningRequest
 
 ## SYNOPSIS
+
 Creates a CSR for a slot in the YubiKey.
 
 ## SYNTAX
 
 ### With Attestation
-```
-Build-YubiKeyPIVCertificateSigningRequest -Slot <PIVSlot> [-Attestation] [-AttestationLocation <String>]
- [-Subjectname <String>] [-OutFile <FileInfo>] [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded]
- [<CommonParameters>]
-```
 
-### Without Attestation
 ```
-Build-YubiKeyPIVCertificateSigningRequest -Slot <PIVSlot> [-Subjectname <String>] [-OutFile <FileInfo>]
+Build-YubiKeyPIVCertificateSigningRequest -Slot <PIVSlot> -Attestation
+ [-AttestationLocation <string>] [-Subjectname <string>] [-OutFile <FileInfo>]
  [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded] [<CommonParameters>]
 ```
 
+### Without Attestation
+
+```
+Build-YubiKeyPIVCertificateSigningRequest -Slot <PIVSlot> [-Subjectname <String>]
+ [-OutFile <FileInfo>] [-HashAlgorithm <HashAlgorithmName>] [-PEMEncoded] [<CommonParameters>]
+```
+
+## ALIASES
+
 ## DESCRIPTION
+
 Cmdlet that allows the creating of CSR to send to a CA. This allows the configuration of what the CSR should contain.
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> $CSR = Build-YubiKeyPIVCertificateSigningRequest -Slot 0x9a -Subjectname 'CN=User,O=Company,C=SE'
 ```
@@ -38,6 +47,7 @@ PS C:\> $CSR = Build-YubiKeyPIVCertificateSigningRequest -Slot 0x9a -Subjectname
 Would create a CSR with the Subjectname "CN=User,O=Company,C=SE" and store it in the variable $CSR.
 
 ### Example 2
+
 ```powershell
 PS C:\> Build-YubiKeyPIVCertificateSigningRequest -Slot 0x9a -OutFile "$($env:TEMP)\certificate_request.req"
 ```
@@ -45,6 +55,7 @@ PS C:\> Build-YubiKeyPIVCertificateSigningRequest -Slot 0x9a -OutFile "$($env:TE
 Would create a CSR with the default Subjectname and store it as certificate_request.req in the temp folder.
 
 ### Example 3
+
 ```powershell
 PS C:\> $CSR = Build-YubiKeyPIVCertificateSigningRequest -Slot 0x9a -Attestation -PEMEncoded
 ```
@@ -54,117 +65,174 @@ Would create a CSR with attestation included and store it in the variable $CSR
 ## PARAMETERS
 
 ### -Attestation
-Include attestion certificate in CSR
+
+Include attestation certificate in CSR
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: With Attestation
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: With Attestation
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -AttestationLocation
-OID to store attestation in CSR
+
+OID location to store attestation in CSR.
 Legacy stores the attestation in the .11 OID as yubico-piv-tool used until 2025.
 Standard stores the attestation in the .1 OID as yubico-piv-tool uses from 2025.
 Both stores the attestation in both OIDs.
 
 ```yaml
-Type: String
-Parameter Sets: With Attestation
-Aliases:
-Accepted values: Both, Legacy, Standard
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.String
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: With Attestation
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues:
+- Both
+- Legacy
+- Standard
+HelpMessage: ''
 ```
 
 ### -HashAlgorithm
+
 HashAlgoritm, this will be forced to correct for ECC.
 
 ```yaml
-Type: HashAlgorithmName
-Parameter Sets: (All)
-Aliases:
-Accepted values: SHA1, SHA256, SHA384, SHA512
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Security.Cryptography.HashAlgorithmName
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues:
+- SHA1
+- SHA256
+- SHA384
+- SHA512
+HelpMessage: ''
 ```
 
 ### -OutFile
+
 Save CSR as file
 
 ```yaml
-Type: FileInfo
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.IO.FileInfo
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -PEMEncoded
+
 Encode output as PEM
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -Slot
+
 Create a CSR for slot
 
 ```yaml
-Type: PIVSlot
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: powershellYK.PIV.PIVSlot
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: With Attestation
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: Without Attestation
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -Subjectname
+
 Subjectname of certificate
 
 ```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.String
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -173,6 +241,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+{{ Fill in the related links here }}
+

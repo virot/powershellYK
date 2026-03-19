@@ -42,11 +42,11 @@ namespace powershellYK.Cmdlets.PIV
 
         // Parameter to specify where to store attestation in the CSR
         [ValidateSet("Both", "Legacy", "Standard", ErrorMessage = null)]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "OID to store attestation in CSR.", ParameterSetName = "With Attestation")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "OID location to store attestation in CSR.\nLegacy stores the attestation in the .11 OID as yubico-piv-tool used until 2025.\nStandard stores the attestation in the .1 OID as yubico-piv-tool uses from 2025.\nBoth stores the attestation in both OIDs.", ParameterSetName = "With Attestation")]
         public string AttestationLocation { get; set; } = "Both";
 
         // Parameter for the subject name of the certificate
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subject name of certificate")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Subjectname of certificate")]
         public string Subjectname { get; set; } = "CN=SubjectName to be supplied by Server,O=Fake";
 
         // Parameter for the output file path
@@ -57,7 +57,7 @@ namespace powershellYK.Cmdlets.PIV
 
         // Parameter for the hash algorithm to use
         [ValidateSet("SHA1", "SHA256", "SHA384", "SHA512", IgnoreCase = true)]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "HashAlgoritm")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "HashAlgoritm, this will be forced to correct for ECC.")]
         public HashAlgorithmName HashAlgorithm { get; set; } = HashAlgorithmName.SHA256;
 
         // Parameter to output CSR in PEM format

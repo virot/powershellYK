@@ -31,7 +31,7 @@ namespace powershellYK.Cmdlets.PIV
     public class RegisterYubikeyBIOFingerprintCmdlet : Cmdlet
     {
         // Parameter for the fingerprint name
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Name of the finger to register")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Name of finger to register, for example: \"left index\" or \"right index\".")]
         public String? Name;
 
         // Connect to YubiKey when cmdlet starts
