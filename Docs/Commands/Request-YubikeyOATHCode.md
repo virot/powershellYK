@@ -75,9 +75,7 @@ HelpMessage: ''
 
 ### -All
 
-Get codes for all credentials
-Get codes for all accounts
-Get codes for all accounts
+
 Get codes for all accounts
 
 ```yaml

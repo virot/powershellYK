@@ -127,7 +127,6 @@ Disable select capabilities over NFC. The command can be used to improve
 user experience by _disabling__ YubiKey features that are not in use.
 For example, an organization may want to disable OTP/OATH if only FIDO or PIV is used.
 
-
 ```yaml
 Type: Yubico.YubiKey.YubiKeyCapabilities
 DefaultValue: None
@@ -193,7 +192,6 @@ HelpMessage: ''
 Enable select capabilities over NFC. If a needed feature has been turned off,
 the command can be used to (re)enable the feature over NFC.
 
-
 ```yaml
 Type: Yubico.YubiKey.YubiKeyCapabilities
 DefaultValue: None
@@ -226,7 +224,6 @@ HelpMessage: ''
 Enable select capabilities over USB. If a needed feature has been turned off,
 the command can be used to (re)enable the feature over USB.
 
-
 ```yaml
 Type: Yubico.YubiKey.YubiKeyCapabilities
 DefaultValue: None
@@ -257,7 +254,6 @@ HelpMessage: ''
 ### -NFCCapabilities
 
 Replace current NFC capabilities with selected capabilities.
-
 
 ```yaml
 Type: System.Nullable`1[Yubico.YubiKey.YubiKeyCapabilities]
@@ -291,7 +287,6 @@ HelpMessage: ''
 Enable Restricted NFC as supported by YubiKeys with firmware `5.7` or later.
 When set, the YubiKey will limit access to capabilites over NFC until USB powered.
 This feature is typically toggled when _shipping__ YubiKeys in tamper-evident packaging.
-
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -333,8 +328,7 @@ HelpMessage: ''
 
 ### -UsbCapabilities
 
-Replace current USB capabilities with with selected capabilities.
-
+Replace current USB capabilities with selected capabilities.
 
 ```yaml
 Type: Yubico.YubiKey.YubiKeyCapabilities
@@ -364,7 +358,6 @@ HelpMessage: ''
 ```
 
 ### -WhatIf
-
 
 Runs the command in a mode that only reports what would happen without performing the actions.
 

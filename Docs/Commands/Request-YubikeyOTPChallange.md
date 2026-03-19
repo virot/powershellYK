@@ -104,6 +104,7 @@ HelpMessage: ''
 ```
 
 ### -YubikeyOTP
+
 Use YubiOTP over HMAC-SHA1
 
 ```yaml
