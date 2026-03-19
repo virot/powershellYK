@@ -261,10 +261,10 @@ namespace powershellYK.Cmdlets.Fido
 
                     // Perform GetAssertion to retrieve the largeBlobKey
                     var gaParams = new GetAssertionParameters(credentialRelyingParty, clientDataHash);
-                    
+
                     // Add the credential ID to the allow list (for non-resident keys)
                     gaParams.AllowCredential(selectedCredentialId.ToYubicoFIDO2CredentialID());
-                    
+
                     // Request the largeBlobKey extension
                     gaParams.AddExtension(Extensions.LargeBlobKey, new byte[] { 0xF5 });
 

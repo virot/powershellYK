@@ -111,14 +111,14 @@ namespace powershellYK.Cmdlets.PIV
                     // Get supported algorithms
                     List<string> supportedAlgorithms = new List<string>();
 
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa1024)) { supportedAlgorithms.Add("Rsa1024"); };
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa2048)) { supportedAlgorithms.Add("Rsa2048"); };
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa3072)) { supportedAlgorithms.Add("Rsa3072"); };
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa4096)) { supportedAlgorithms.Add("Rsa4096"); };
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { supportedAlgorithms.Add("EcP256"); };
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { supportedAlgorithms.Add("EcP384"); };
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { supportedAlgorithms.Add("Ed25519"); };
-                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { supportedAlgorithms.Add("X25519"); };
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa1024)) { supportedAlgorithms.Add("Rsa1024"); }
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa2048)) { supportedAlgorithms.Add("Rsa2048"); }
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa3072)) { supportedAlgorithms.Add("Rsa3072"); }
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa4096)) { supportedAlgorithms.Add("Rsa4096"); }
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { supportedAlgorithms.Add("EcP256"); }
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { supportedAlgorithms.Add("EcP384"); }
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { supportedAlgorithms.Add("Ed25519"); }
+                    if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { supportedAlgorithms.Add("X25519"); }
 
                     // Get CHUID information
                     CardholderUniqueId chuid;
