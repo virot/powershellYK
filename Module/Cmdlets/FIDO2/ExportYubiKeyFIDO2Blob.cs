@@ -12,15 +12,16 @@
 /// </summary>
 
 // Imports
-using System.Management.Automation;           // Windows PowerShell namespace.
-using Yubico.YubiKey;
-using Yubico.YubiKey.Fido2;
+using Newtonsoft.Json;
 using powershellYK.FIDO2;
 using powershellYK.support;
-using Yubico.YubiKey.Cryptography;
-using System.Security.Cryptography;
-using Newtonsoft.Json;
+using powershellYK.support.transform;
 using powershellYK.support.validators;
+using System.Management.Automation;           // Windows PowerShell namespace.
+using System.Security.Cryptography;
+using Yubico.YubiKey;
+using Yubico.YubiKey.Cryptography;
+using Yubico.YubiKey.Fido2;
 
 namespace powershellYK.Cmdlets.Fido
 {
@@ -46,17 +47,18 @@ namespace powershellYK.Cmdlets.Fido
         public string? RelyingPartyID { get; set; }
 
         [Parameter(
-            Mandatory = false,
+            Mandatory = true,
             ParameterSetName = "Export LargeBlob",
             ValueFromPipeline = false,
             HelpMessage = "Output file path for the exported large blob"
         )]
         [Parameter(
-            Mandatory = false,
+            Mandatory = true,
             ParameterSetName = "Export LargeBlob by RelyingPartyID",
             ValueFromPipeline = false,
             HelpMessage = "Output file path for the exported large blob"
         )]
+        [TransformPath]
         [ValidatePath(fileMustExist: false, fileMustNotExist: true)]
         public required System.IO.FileInfo OutFile { get; set; }
 
@@ -286,30 +288,21 @@ namespace powershellYK.Cmdlets.Fido
                 }
                 WriteDebug($"Step 6: Blob entry selected from index {selectedEntryIndex} ({blobData.Length} bytes).");
 
-                if (this.MyInvocation.BoundParameters.ContainsKey("OutFile"))
+                WriteDebug($"Step 7: Writing blob data to '{OutFile.FullName}'.");
+                // Write the blob data to the output file
+                string resolvedPath = GetUnresolvedProviderPathFromPSPath(OutFile.FullName);
+                try
                 {
-                    WriteDebug($"Step 7: Writing blob data to '{OutFile.FullName}'.");
-                    // Write the blob data to the output file
-                    string resolvedPath = GetUnresolvedProviderPathFromPSPath(OutFile.FullName);
-                    try
-                    {
-                        System.IO.File.WriteAllBytes(resolvedPath, blobData);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new IOException($"Failed to write large blob data to file '{OutFile}'.", ex);
-                    }
+                    System.IO.File.WriteAllBytes(resolvedPath, blobData);
                 }
-                else
+                catch (Exception ex)
                 {
-                    WriteDebug($"Step 7: Writing blob data to output.");
-                    // Write the blob data to the output
-                    WriteObject(blobData);
+                    throw new IOException($"Failed to write large blob data to file '{OutFile}'.", ex);
                 }
-
-                    WriteInformation(
-                        $"FIDO2 large blob exported successfully for Relying Party (Origin): '{credentialRelyingParty.Id}'.",
-                        new[] { "FIDO2", "LargeBlob" });
+                
+                WriteInformation(
+                    $"FIDO2 large blob exported successfully for Relying Party (Origin): '{credentialRelyingParty.Id}'.",
+                    new[] { "FIDO2", "LargeBlob" });
             }
         }
     }
