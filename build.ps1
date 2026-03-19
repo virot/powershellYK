@@ -24,25 +24,17 @@ dotnet publish module --nologo --framework 'net8.0' --output "$($Directory.fulln
 Read-Host -Prompt "Press Enter to continue"
 
 #Get-Item "$($Directory.fullname)\powershellYK.psd1" -PipelineVariable ItemFile |ForEach {(Get-Content $ItemFile).Replace('RootModule = ''powershellYK.dll''','RootModule = ''.\module\powershellYK.dll''', [System.StringComparison]::InvariantCultureIgnoreCase) | Set-Content -Path $ItemFile }
-#Update-ModuleManifest -Path "$($Directory.fullname)\powershellYK.psd1" -ModuleVersion (GI .\release\module\powershellYK.dll).VersionInfo.FileVersion.toString()
-Update-Metadata -Path "$($Directory.fullname)\powershellYK.psd1" -PropertyName ModuleVersion -Value (GI .\release\powershellYK.dll).VersionInfo.FileVersion.toString()
+Update-ModuleManifest -Path "$($Directory.fullname)\powershellYK.psd1" -ModuleVersion (GI "$($Directory.fullname)\powershellYK.dll").VersionInfo.FileVersion.toString()
+#Update-Metadata -Path "$($Directory.fullname)\powershellYK.psd1" -PropertyName ModuleVersion -Value (GI .\release\powershellYK.dll).VersionInfo.FileVersion.toString()
 #Update-Metadata -Path "$($Directory.fullname)\powershellYK.psd1" -PropertyName NestedModules -Value ".\module\powershellYK_loader.dll"
 
 Import-Module "$($Directory.fullname)\powershellYK.psd1"
 
-$parameters = @{	
-    Path = '.\Docs\Commands'
-    RefreshModulePage = $true
-    AlphabeticParamsOrder = $true
-    UpdateInputOutput = $true
-    ExcludeDontShow = $true
-    LogPath = '\temp\platyps.log'
-    Encoding = [System.Text.Encoding]::UTF8
-}
-Update-MarkdownHelpModule @parameters
-Update-MarkdownHelpModule @parameters
+Measure-PlatyPSMarkdown -Path ./docs/Commands/*.md |
+Where-Object Filetype -match 'CommandHelp' |
+Update-MarkdownCommandHelp -Path {$_.FilePath} -NoBackup
 
-New-ExternalHelp -Path '.\Docs\Commands' -OutputPath "$($Directory.fullname)" -Force
+#New-ExternalHelp -Path '.\Docs\Commands' -OutputPath "$($Directory.fullname)" -Force
 
 
 
