@@ -28,7 +28,7 @@ namespace powershellYK.Cmdlets.Yubikey
         // Parameters for YubiKey filtering
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only one YubiKey")]
         public SwitchParameter OnlyOne { get; set; }
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only YubiKey with Serial Number")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Return only YubiKey with serial number")]
         public int? Serialnumber { get; set; }
 
         // Process the main cmdlet logic

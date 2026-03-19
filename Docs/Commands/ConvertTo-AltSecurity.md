@@ -1,33 +1,42 @@
 ﻿---
+document type: cmdlet
 external help file: powershellYK.dll-Help.xml
+HelpUri: 
 Module Name: powershellYK
-online version:
-schema: 2.0.0
+ms.date: 03-19-2026
+PlatyPS schema version: 2024-05-01
 ---
 
 # ConvertTo-AltSecurity
 
 ## SYNOPSIS
+
 Generate the alt security security identities for a certificate
 
 ## SYNTAX
 
 ### From Certificate (Default)
+
 ```
 ConvertTo-AltSecurity [-Certificate] <PSObject> [<CommonParameters>]
 ```
 
 ### From CertificateRequest
+
 ```
 ConvertTo-AltSecurity -CertificateRequest <PSObject> [<CommonParameters>]
 ```
 
+## ALIASES
+
 ## DESCRIPTION
+
 Creates all altSecurityIdentities and ssh keys for a given certificate. The altSecurityIdentities are created by taking the certificate's subject and issuer and creating a UPN and SPN from them. The ssh keys are created by taking the certificate's public key and creating the public part of a ssh key pair from it.
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\>  ConvertTo-AltSecurity -Certificate SignedCertificate.cer
 
@@ -48,37 +57,53 @@ Create all versions of altSecurityIdentities and ssh keys for the certificate Si
 ## PARAMETERS
 
 ### -Certificate
+
 Certificate to extract info from
 
 ```yaml
-Type: PSObject
-Parameter Sets: From Certificate
-Aliases:
-
-Required: True
-Position: 0
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
+Type: System.Management.Automation.PSObject
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: From Certificate
+  Position: 0
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -CertificateRequest
+
 Certificate request
 
 ```yaml
-Type: PSObject
-Parameter Sets: From CertificateRequest
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Management.Automation.PSObject
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: From CertificateRequest
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -87,6 +112,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+{{ Fill in the related links here }}
+

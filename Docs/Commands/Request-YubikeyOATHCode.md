@@ -1,33 +1,42 @@
 ﻿---
+document type: cmdlet
 external help file: powershellYK.dll-Help.xml
+HelpUri: 
 Module Name: powershellYK
-online version:
-schema: 2.0.0
+ms.date: 03-19-2026
+PlatyPS schema version: 2024-05-01
 ---
 
 # Request-YubikeyOATHCode
 
 ## SYNOPSIS
+
 Displays TOTP / HOTP codes for YubiKey OATH credentials.
 
 ## SYNTAX
 
 ### All (Default)
+
 ```
-Request-YubikeyOATHCode [-All] [<CommonParameters>]
+Request-YubiKeyOATHCode -All [<CommonParameters>]
 ```
 
 ### Specific
+
 ```
-Request-YubikeyOATHCode -Account <Credential> [<CommonParameters>]
+Request-YubiKeyOATHCode -Account <Credential> [<CommonParameters>]
 ```
 
+## ALIASES
+
 ## DESCRIPTION
+
 Displays TOTP / HOTP codes for Yubikey OATH credentials
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Request-YubikeyOATHCode
 
@@ -43,37 +52,54 @@ List the current code for all OATH credentials
 ## PARAMETERS
 
 ### -Account
+
 Account to generate code for
 
 ```yaml
-Type: Credential
-Parameter Sets: Specific
-Aliases: Credential
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
+Type: Yubico.YubiKey.Oath.Credential
+DefaultValue: None
+SupportsWildcards: false
+Aliases:
+- Credential
+ParameterSets:
+- Name: Specific
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -All
-Get codes for all credentials
+
+Get codes for all accounts
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: All
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: All
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -82,6 +108,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+{{ Fill in the related links here }}
+
