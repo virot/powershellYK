@@ -49,7 +49,6 @@ Removes the configuration lock on the Yubikey
 
 ### -LockCode
 
-LockCode for Yubikey
 Lock Code for YubiKey
 
 ```yaml

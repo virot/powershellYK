@@ -72,7 +72,6 @@ Connect to FIDO2 module with a stored pin requested constructed from code
 
 ### -PIN
 
-FIDO2 PIN
 PIN
 
 ```yaml

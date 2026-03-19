@@ -1,62 +1,77 @@
 ﻿---
+document type: cmdlet
 external help file: powershellYK.dll-Help.xml
+HelpUri: 
 Module Name: powershellYK
-online version:
-schema: 2.0.0
+ms.date: 03-19-2026
+PlatyPS schema version: 2024-05-01
 ---
 
 # Set-YubikeyPIV
 
 ## SYNOPSIS
+
 Allows the updating of PIV settings
 
 ## SYNTAX
 
 ### ChangeRetries
+
 ```
-Set-YubikeyPIV -PinRetries <Byte> -PukRetries <Byte> [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-YubiKeyPIV -PinRetries <byte> -PukRetries <byte> [-KeepPukUnlocked] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### ChangePIN
+
 ```
-Set-YubikeyPIV -PIN <SecureString> -NewPIN <SecureString> [-ChangePIN] [-WhatIf] [-Confirm]
+Set-YubiKeyPIV -PIN <securestring> -NewPIN <securestring> [-ChangePIN] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### UnblockPIN
+
 ```
-Set-YubikeyPIV -NewPIN <SecureString> -PUK <SecureString> [-UnblockPIN] [-WhatIf] [-Confirm]
+Set-YubiKeyPIV -NewPIN <securestring> -PUK <securestring> [-UnblockPIN] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### ChangePUK
+
 ```
-Set-YubikeyPIV -PUK <SecureString> -NewPUK <SecureString> [-ChangePUK] [-WhatIf] [-Confirm]
+Set-YubiKeyPIV -PUK <securestring> -NewPUK <securestring> [-ChangePUK] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### ChangeManagement
+
 ```
-Set-YubikeyPIV -ManagementKey <PSObject> -NewManagementKey <PSObject> -Algorithm <PivAlgorithm>
+Set-YubiKeyPIV -ManagementKey <psobject> -NewManagementKey <psobject> -Algorithm <PivAlgorithm>
  -TouchPolicy <PivTouchPolicy> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### newCHUID
+
 ```
-Set-YubikeyPIV [-newCHUID] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-YubiKeyPIV -newCHUID [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Set Managementkey to PIN protected
+
 ```
-Set-YubikeyPIV [-PINProtectedManagementkey] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-YubiKeyPIV -PINProtectedManagementkey [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+## ALIASES
+
 ## DESCRIPTION
+
 Allows the modification of PIV settings like: PIN, PUK, ManagementKey and CHUID.
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Set-YubikeyPIV -PinRetries 8 -PukRetries 4
 WARNING: PIN and PUK codes reset to default, remember to change.
@@ -65,6 +80,7 @@ WARNING: PIN and PUK codes reset to default, remember to change.
 Updates the PIV to 8 PIN retries and 4 PUK retries.
 
 ### Example 3
+
 ```powershell
 PS C:\GIT-VS\Yubikey_Powershell> Set-YubikeyPIV -ChangePIN
 
@@ -80,264 +96,415 @@ Change PIN with a easy way of requesting the new codes.
 ## PARAMETERS
 
 ### -Algorithm
+
 Algoritm
 
 ```yaml
-Type: PivAlgorithm
-Parameter Sets: ChangeManagement
-Aliases:
-Accepted values: TripleDES, AES128, AES192, AES256
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: Yubico.YubiKey.Piv.PivAlgorithm
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangeManagement
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues:
+- TripleDES
+- AES128
+- AES192
+- AES256
+HelpMessage: ''
 ```
 
 ### -ChangePIN
+
 Easy access to ChangePIN
 
-```yaml
-Type: SwitchParameter
-Parameter Sets: ChangePIN
-Aliases:
 
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangePIN
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -ChangePUK
+
 Easy access to ChangePUK
 
-```yaml
-Type: SwitchParameter
-Parameter Sets: ChangePUK
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ManagementKey
-Current ManagementKey
 
 ```yaml
-Type: PSObject
-Parameter Sets: ChangeManagement
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -newCHUID
-Generate new CHUID
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: newCHUID
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -NewManagementKey
-New ManagementKey
-
-```yaml
-Type: PSObject
-Parameter Sets: ChangeManagement
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -NewPIN
-New PIN
-
-```yaml
-Type: SecureString
-Parameter Sets: ChangePIN, UnblockPIN
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -NewPUK
-New PUK
-
-```yaml
-Type: SecureString
-Parameter Sets: ChangePUK
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PIN
-Current PIN
-
-```yaml
-Type: SecureString
-Parameter Sets: ChangePIN
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PINProtectedManagementkey
-PIN protect the Managementkey
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: Set Managementkey to PIN protected
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PinRetries
-{{ Fill PinRetries Description }}
-
-```yaml
-Type: Byte
-Parameter Sets: ChangeRetries
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PUK
-Current PUK
-
-```yaml
-Type: SecureString
-Parameter Sets: UnblockPIN, ChangePUK
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PukRetries
-{{ Fill PukRetries Description }}
-
-```yaml
-Type: Byte
-Parameter Sets: ChangeRetries
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -TouchPolicy
-TouchPolicy
-
-```yaml
-Type: PivTouchPolicy
-Parameter Sets: ChangeManagement
-Aliases:
-Accepted values: Default, Never, Always, Cached
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -UnblockPIN
-Easy access to UnblockPIN
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: UnblockPIN
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangePUK
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -Confirm
+
 Prompts you for confirmation before running the cmdlet.
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: cf
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases:
+- cf
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
 
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+### -KeepPukUnlocked
+
+Keep PUK unlocked
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangeRetries
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -ManagementKey
+
+Current Management key
+
+```yaml
+Type: System.Management.Automation.PSObject
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangeManagement
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -newCHUID
+
+Generate new CHUID
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: newCHUID
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -NewManagementKey
+
+
+New Management key
+
+```yaml
+Type: System.Management.Automation.PSObject
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangeManagement
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -NewPIN
+
+New PIN
+
+```yaml
+Type: System.Security.SecureString
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangePIN
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: UnblockPIN
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -NewPUK
+
+New PUK
+
+```yaml
+Type: System.Security.SecureString
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangePUK
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PIN
+
+Current PIN
+
+```yaml
+Type: System.Security.SecureString
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangePIN
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PINProtectedManagementkey
+
+PIN protect the Management key
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Set Managementkey to PIN protected
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PinRetries
+
+Change the number of PIN retries
+
+```yaml
+Type: System.Nullable`1[System.Byte]
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangeRetries
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PUK
+
+Current PUK
+
+```yaml
+Type: System.Security.SecureString
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: UnblockPIN
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: ChangePUK
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PukRetries
+
+Change the number of PUK retries
+
+```yaml
+Type: System.Nullable`1[System.Byte]
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangeRetries
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -TouchPolicy
+
+Touch policy
+
+```yaml
+Type: Yubico.YubiKey.Piv.PivTouchPolicy
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ChangeManagement
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues:
+- Default
+- Never
+- Always
+- Cached
+HelpMessage: ''
+```
+
+### -UnblockPIN
+
+
+Unblock the PIN
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: UnblockPIN
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -WhatIf
-Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+Runs the command in a mode that only reports what would happen without performing the actions.
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: wi
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases:
+- wi
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -346,6 +513,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+{{ Fill in the related links here }}
+

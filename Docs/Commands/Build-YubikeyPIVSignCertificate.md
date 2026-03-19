@@ -324,7 +324,6 @@ HelpMessage: ''
 
 SubjectAlternativeNames for the certificate
 Start each string with DNS, MAIL or UPN and a space before the value.
-SubjectAlternativeNames for the certificate
 
 ```yaml
 Type: System.String[]
@@ -346,7 +345,6 @@ HelpMessage: ''
 ### -Subjectname
 
 Subjectname of certificate
-Subject name of certificate
 
 ```yaml
 Type: System.String

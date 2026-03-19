@@ -1,27 +1,44 @@
 ﻿---
+document type: cmdlet
 external help file: powershellYK.dll-Help.xml
+HelpUri: 
 Module Name: powershellYK
-online version:
-schema: 2.0.0
+ms.date: 03-19-2026
+PlatyPS schema version: 2024-05-01
 ---
 
 # Request-YubikeyOTPChallange
 
 ## SYNOPSIS
+
 Send Challaenge to YubiKey.
 
 ## SYNTAX
 
+### Default (Default)
+
 ```
-Request-YubikeyOTPChallange -Slot <Slot> -Phrase <PSObject> [-YubikeyOTP <Boolean>] [<CommonParameters>]
+Request-YubikeyOTPChallange -Slot <Slot> -Phrase <PSObject> [-YubikeyOTP <Boolean>]
+ [<CommonParameters>]
 ```
 
+### __AllParameterSets
+
+```
+Request-YubiKeyOTPChallange -Slot <Slot> -Phrase <psobject> [-YubikeyOTP <bool>]
+ [<CommonParameters>]
+```
+
+## ALIASES
+
 ## DESCRIPTION
+
 Allow the sending of a yubikey challenge to the yubikey device.
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Request-YubikeyOTPChallange -Slot ShortPress -Phrase "01"
 08D0DDD5DA2CC01566947555AA49F400F4F6F8A4
@@ -30,6 +47,7 @@ PS C:\> Request-YubikeyOTPChallange -Slot ShortPress -Phrase "01"
 Sending the challenge phrase "01" to the yubikey device in the ShortPress slot.
 
 ### Example 2
+
 ```powershell
 PS C:\> $Challaenge = [byte[]](01)
 PS C:\> Request-YubikeyOTPChallange -Slot ShortPress -Phrase $Challaenge
@@ -41,53 +59,76 @@ Sending the challenge phrase "01" to the yubikey device in the ShortPress slot.
 ## PARAMETERS
 
 ### -Phrase
+
 Phrase
 
 ```yaml
-Type: PSObject
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Management.Automation.PSObject
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -Slot
-Yubikey OTP Slot
+
+YubiOTP Slot
 
 ```yaml
-Type: Slot
-Parameter Sets: (All)
-Aliases:
-Accepted values: None, ShortPress, LongPress
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: Yubico.YubiKey.Otp.Slot
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues:
+- None
+- ShortPress
+- LongPress
+HelpMessage: ''
 ```
 
 ### -YubikeyOTP
-Use YubicoOTP over HMAC-SHA1
+Use YubiOTP over HMAC-SHA1
 
 ```yaml
-Type: Boolean
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Boolean
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -96,6 +137,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+{{ Fill in the related links here }}
+

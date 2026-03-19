@@ -47,7 +47,6 @@ Connect to the OATH part of the connected YubiKey.
 
 ### -Password
 
-Password
 Password provided as a SecureString.
 
 ```yaml

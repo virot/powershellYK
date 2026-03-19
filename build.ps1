@@ -34,7 +34,21 @@ Measure-PlatyPSMarkdown -Path ./docs/Commands/*.md |
 Where-Object Filetype -match 'CommandHelp' |
 Update-MarkdownCommandHelp -Path {$_.FilePath} -NoBackup
 
-#New-ExternalHelp -Path '.\Docs\Commands' -OutputPath "$($Directory.fullname)" -Force
+# Update the module file
+Measure-PlatyPSMarkdown -Path ./docs/Commands/*.md |
+    Where-Object Filetype -match 'CommandHelp' |
+    Import-MarkdownCommandHelp -Path {$_.FilePath} |
+    Update-MarkdownModuleFile -Path ./docs/Commands/powershellYK.md -NoBackup -Force -HelpVersion (GI "$($Directory.fullname)\powershellYK.dll").VersionInfo.FileVersion.toString()
+
+New-Item -Type 'Directory' -Path "$($Directory.fullname)\en-US"
+
+Measure-PlatyPSMarkdown -Path ./docs/Commands/*.md |
+    Where-Object Filetype -match 'CommandHelp' |
+    Import-MarkdownCommandHelp -Path {$_.FilePath} |
+    Export-MamlCommandHelp -OutputFolder  "$($Directory.fullname)"
+
+Move-Item "$($Directory.fullname)\powershellYK\powershellYK.dll-help.xml" "$($Directory.fullname)\en-US\powershellYK.dll-help.xml"
+Remove-Item "$($Directory.fullname)\powershellYK"
 
 
 
