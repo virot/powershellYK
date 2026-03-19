@@ -132,6 +132,7 @@ CmdletsToExport = @(
  'Remove-YubiKeyBIOFingerprint',
  'Rename-YubiKeyBIOFingerprint',
  'ConvertTo-AltSecurity',
+ 'New-Challenge',
  'Enable-PowershellYKSDKLogging',
  'Get-PowershellYKInfo'
 )
