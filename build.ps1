@@ -4,11 +4,11 @@ if (Test-Path 'release') {
 $Directory = New-Item -Type Directory 'release'
 
 dotnet publish module --nologo --framework 'net8.0' --output "$($Directory.fullname)"
-#dotnet publish powershellYK_loader --nologo --framework 'net8.0' --output "$($Directory.fullname)\loader"
+dotnet publish powershellYK_loader --nologo --framework 'net8.0' --output "$($Directory.fullname)\loader"
 
-#Copy-Item "$($Directory.fullname)\loader\powershellYK_loader.dll" "$($Directory.fullname)\module"
+Copy-Item "$($Directory.fullname)\loader\powershellYK_loader.dll" "$($Directory.fullname)"
 #Copy-Item "$($Directory.fullname)\loader\powershellYK_loader.pdb" "$($Directory.fullname)\module"
-#Remove-Item -Recurse "$($Directory.fullname)\loader"
+Remove-Item -Recurse "$($Directory.fullname)\loader"
 #Move-Item "$($Directory.fullname)\module\powershellYK.psd1" "$($Directory.fullname)"
 #Move-Item "$($Directory.fullname)\module\powershellYK.format.ps1xml" "$($Directory.fullname)"
 
