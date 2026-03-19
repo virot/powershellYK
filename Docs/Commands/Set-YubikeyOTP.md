@@ -131,9 +131,6 @@ HelpMessage: ''
 
 ### -Algorithm
 
-Algorithm for Challange-Response.
-Algorithm for Challenge-Response
-Algorithm for Challenge-Response
 Algorithm for Challenge-Response
 
 ```yaml
@@ -161,9 +158,6 @@ HelpMessage: ''
 Append carriage return (Enter). This parameter can improve user experience
 and login performance by effectively submitting the credential on the input
 field and "pressing Enter" on behalf of the user.
-Append carriage return (Enter)
-Append carriage return (Enter)
-Append carriage return (Enter)
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -217,9 +211,6 @@ HelpMessage: ''
 
 ### -ChallengeResponse
 
-Allows for Challenge-Response configuration with all defaults.
-Allows for Challenge-Response configuration with all defaults
-Allows for Challenge-Response configuration with all defaults
 Allows for Challenge-Response configuration with all defaults
 
 ```yaml
@@ -326,9 +317,6 @@ HelpMessage: ''
 
 ### -KeyboardLayout
 
-Keyboard layout to be used.
-Keyboard layout to be used
-Keyboard layout to be used
 Keyboard layout to be used
 
 ```yaml
@@ -364,9 +352,6 @@ HelpMessage: ''
 
 ### -Password
 
-Static password that will be set.
-Static password that will be set
-Static password that will be set
 Static password that will be set
 
 ```yaml
@@ -389,9 +374,6 @@ HelpMessage: ''
 ### -PasswordLength
 
 Length of static password that will be set.
-Static password that will be set
-Static password that will be set
-Static password that will be set
 
 ```yaml
 Type: System.Int32
@@ -412,9 +394,6 @@ HelpMessage: ''
 
 ### -PrivateID
 
-Sets the Private ID, defaults to random 6 bytes.
-Sets the Private ID, defaults to random 6 bytes
-Sets the Private ID, defaults to random 6 bytes
 Sets the Private ID, defaults to random 6 bytes
 
 ```yaml
@@ -436,9 +415,6 @@ HelpMessage: ''
 
 ### -PublicID
 
-Sets the Public ID, defaults to the YubiKey serial number.
-Sets the Public ID, defaults to YubiKey serial number
-Sets the Public ID, defaults to YubiKey serial number
 Sets the Public ID, defaults to YubiKey serial number
 
 ```yaml
@@ -460,9 +436,6 @@ HelpMessage: ''
 
 ### -RequireTouch
 
-Require Touch.
-Require Touch
-Require Touch
 Require Touch
 
 ```yaml
@@ -484,9 +457,6 @@ HelpMessage: ''
 
 ### -SecretKey
 
-Sets the Secret Key, defaults to random 16 bytes.
-Sets the Secret Key, defaults to random 16 bytes
-Sets the Secret Key, defaults to random 16 bytes
 Sets the Secret Key, defaults to random 16 bytes
 
 ```yaml
@@ -541,9 +511,6 @@ HelpMessage: ''
 
 ### -Slot
 
-Yubikey OTP Slot.
-Yubikey OTP Slot
-Yubikey OTP Slot
 Yubikey OTP Slot
 
 ```yaml
@@ -568,9 +535,6 @@ HelpMessage: ''
 
 ### -StaticGeneratedPassword
 
-Allows configuration with all defaults.
-Allows configuration with all defaults
-Allows configuration with all defaults
 Allows configuration with all defaults
 
 ```yaml
@@ -592,9 +556,6 @@ HelpMessage: ''
 
 ### -StaticPassword
 
-Allows configuration with all defaults.
-Allows configuration with all defaults
-Allows configuration with all defaults
 Allows configuration with all defaults
 
 ```yaml
@@ -616,9 +577,6 @@ HelpMessage: ''
 
 ### -Upload
 
-Upload to YubiCloud.
-Upload to YubiCloud
-Upload to YubiCloud
 Upload to YubiCloud
 
 ```yaml
@@ -661,9 +619,6 @@ HelpMessage: ''
 
 ### -WhatIf
 
-Shows what would happen if the cmdlet runs. The cmdlet is not run.
-Runs the command in a mode that only reports what would happen without performing the actions.
-Runs the command in a mode that only reports what would happen without performing the actions.
 Runs the command in a mode that only reports what would happen without performing the actions.
 
 ```yaml
@@ -686,9 +641,6 @@ HelpMessage: ''
 
 ### -YubicoOTP
 
-Allows configuration with all defaults.
-Allows configuration with all defaults
-Allows configuration with all defaults
 Allows configuration with all defaults
 
 ```yaml

@@ -101,6 +101,7 @@ HelpMessage: ''
 ```
 
 ### -Name
+
 Name of fingerprint to remove
 
 ```yaml
@@ -121,6 +122,7 @@ HelpMessage: ''
 ```
 
 ### -WhatIf
+
 Runs the command in a mode that only reports what would happen without performing the actions.
 
 ```yaml

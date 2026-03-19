@@ -344,7 +344,7 @@ HelpMessage: ''
 
 ### -Subjectname
 
-Subjectname of certificate
+Subject name of certificate
 
 ```yaml
 Type: System.String

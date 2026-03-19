@@ -44,15 +44,12 @@ PS C:\> New-YubikeyOATHAccount -TOTP -Accountname "powershellYK" -Issuer "Demo" 
 Secret: *****************
 ```
 
-Creates en entry
+Creates an entry
 
 ## PARAMETERS
 
 ### -Accountname
 
-Accountname
-Account name
-Account name
 Account name
 
 ```yaml

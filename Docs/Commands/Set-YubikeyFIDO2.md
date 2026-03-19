@@ -179,7 +179,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 Enable the **_forceChangePin__** flag as supported by YubiKeys with firmware `5.7` or later.
 When set, the feature will force the user to change the FIDO2 applet PIN on first use.
 
-
 ```yaml
 Type: System.Management.Automation.SwitchParameter
 DefaultValue: None

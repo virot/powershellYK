@@ -75,7 +75,6 @@ HelpMessage: ''
 
 ### -All
 
-
 Get codes for all accounts
 
 ```yaml

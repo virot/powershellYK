@@ -45,7 +45,7 @@ namespace powershellYK.Cmdlets.Fido
         [Parameter(Mandatory = true, ParameterSetName = "Set PIN minimum length", ValueFromPipeline = false, HelpMessage = "Set the minimum length of the PIN")]
         public int? MinimumPINLength { get; set; }
 
-        [Parameter(Mandatory = true, ParameterSetName = "Set force PIN change", HelpMessage = "Enable or disable the forceChangePin flag")]
+        [Parameter(Mandatory = true, ParameterSetName = "Set force PIN change", HelpMessage = "Enable the **_forceChangePin__** flag as supported by YubiKeys with firmware `5.7` or later.\nWhen set, the feature will force the user to change the FIDO2 applet PIN on first use.")]
         public SwitchParameter ForcePINChange { get; set; }
 
         [ValidateLength(4, 63)]

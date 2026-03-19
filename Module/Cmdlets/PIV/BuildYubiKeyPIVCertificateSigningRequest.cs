@@ -42,7 +42,7 @@ namespace powershellYK.Cmdlets.PIV
 
         // Parameter to specify where to store attestation in the CSR
         [ValidateSet("Both", "Legacy", "Standard", ErrorMessage = null)]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "OID location to store attestation in CSR.\r\nLegacy stores the attestation in the .11 OID as yubico-piv-tool used until 2025.\r\nStandard stores the attestation in the .1 OID as yubico-piv-tool uses from 2025.\r\nBoth stores the attestation in both OIDs.", ParameterSetName = "With Attestation")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "OID location to store attestation in CSR.\nLegacy stores the attestation in the .11 OID as yubico-piv-tool used until 2025.\nStandard stores the attestation in the .1 OID as yubico-piv-tool uses from 2025.\nBoth stores the attestation in both OIDs.", ParameterSetName = "With Attestation")]
         public string AttestationLocation { get; set; } = "Both";
 
         // Parameter for the subject name of the certificate

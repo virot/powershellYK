@@ -140,7 +140,7 @@ namespace powershellYK.Cmdlets.OTP
 
         // Length of the generated static password (1-38 characters)
         [ValidateRange(1, 38)]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Static password that will be set", ParameterSetName = "Static Generated Password")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Length of static password that will be set.", ParameterSetName = "Static Generated Password")]
         public int PasswordLength { get; set; }
 
         // Keyboard layout to use for static passwords
@@ -149,9 +149,9 @@ namespace powershellYK.Cmdlets.OTP
         public KeyboardLayout KeyboardLayout { get; set; } = KeyboardLayout.ModHex;
 
         // Flag to append carriage return (Enter) after credential output
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter)", ParameterSetName = "Static Password")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter)", ParameterSetName = "Static Generated Password")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter)", ParameterSetName = "HOTP")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter). This parameter can improve user experience\nand login performance by effectively submitting the credential on the input\nfield and \"pressing Enter\" on behalf of the user.", ParameterSetName = "Static Password")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter). This parameter can improve user experience\nand login performance by effectively submitting the credential on the input\nfield and \"pressing Enter\" on behalf of the user.", ParameterSetName = "Static Generated Password")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Append carriage return (Enter). This parameter can improve user experience\nand login performance by effectively submitting the credential on the input\nfield and \"pressing Enter\" on behalf of the user.", ParameterSetName = "HOTP")]
         public SwitchParameter AppendCarriageReturn { get; set; }
 
         // Sends a TAB character before the OTP passcode when using HOTP mode

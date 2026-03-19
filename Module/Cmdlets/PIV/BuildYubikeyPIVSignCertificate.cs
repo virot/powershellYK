@@ -78,7 +78,7 @@ namespace powershellYK.Cmdlets.PIV
         public SwitchParameter CertificateAuthority { get; set; }
 
         // Parameter for Subject Alternative Names
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "SubjectAlternativeNames for the certificate")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "SubjectAlternativeNames for the certificate\nStart each string with DNS, MAIL or UPN and a space before the value.")]
         public string[] SubjectAltName { get; set; } = new string[] { };
 
         // Parameter for key usage flags

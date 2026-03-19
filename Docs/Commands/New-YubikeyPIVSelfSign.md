@@ -71,9 +71,6 @@ HelpMessage: ''
 
 ### -HashAlgorithm
 
-HashAlgoritm
-Hash algoritm
-Hash algoritm
 Hash algoritm
 
 ```yaml
@@ -120,7 +117,7 @@ HelpMessage: ''
 
 ### -Subjectname
 
-Subjectname of certificate
+Subject name of certificate
 
 ```yaml
 Type: System.String

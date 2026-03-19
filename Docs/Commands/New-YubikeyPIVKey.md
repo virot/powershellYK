@@ -135,7 +135,6 @@ HelpMessage: ''
 
 ### -PinPolicy
 
-
 Pin policy
 
 ```yaml
@@ -163,6 +162,7 @@ HelpMessage: ''
 ```
 
 ### -Slot
+
 What slot to create a new key in
 
 ```yaml
@@ -183,7 +183,6 @@ HelpMessage: ''
 ```
 
 ### -TouchPolicy
-
 
 Touch policy
 

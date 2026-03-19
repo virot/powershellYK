@@ -122,8 +122,7 @@ HelpMessage: ''
 
 ### -ChangePIN
 
-Easy access to ChangePIN
-
+Change the PIN
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -144,8 +143,7 @@ HelpMessage: ''
 
 ### -ChangePUK
 
-Easy access to ChangePUK
-
+Change the PUK (PIN Unblocking Key)
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -250,7 +248,6 @@ HelpMessage: ''
 ```
 
 ### -NewManagementKey
-
 
 New Management key
 
@@ -456,7 +453,6 @@ HelpMessage: ''
 ```
 
 ### -UnblockPIN
-
 
 Unblock the PIN
 
