@@ -17,34 +17,49 @@
 /// </summary>
 
 // Imports
+using powershellYK.support.transform;
+using powershellYK.support.validators;
+using System.IO;
 using System.Management.Automation;
 using System.Security.Cryptography;
 
 namespace powershellYK.Cmdlets.Other
 {
-    [Cmdlet(VerbsCommon.Get, "Challenge")]
-    public class GetChallengeCommand : Cmdlet
+    [Cmdlet(VerbsCommon.New, "Challenge")]
+    public class NewChallengeCommand : Cmdlet
     {
         [Parameter(Mandatory = false, HelpMessage = "Length of the challenge in bytes")]
         [ValidateRange(1, 4096)]
         public int Length { get; set; } = 128;
 
-        [Parameter(Mandatory = false, HelpMessage = "Path for the output file. Defaults to challenge.bin")]
-        public string? OutFile { get; set; }
+        [TransformPath]
+        [Parameter(Mandatory = true, HelpMessage = "Path for the output file.")]
+        public required System.IO.FileInfo OutFile { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Force overwriting existing files.")]
+        public SwitchParameter Force { get; set; } = false;
 
         // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
+            if (OutFile.Exists && !Force.IsPresent)
+            {
+                var ex = new IOException($"File already exists: {OutFile.FullName}");
+                ex.HResult = unchecked((int)0x80070050); // ERROR_FILE_EXISTS
+                throw ex;
+            }
+
             // Generate cryptographically secure random challenge bytes
             byte[] challenge = new byte[Length];
             RandomNumberGenerator.Fill(challenge);
 
             // Determine output path; default to challenge.bin when not specified
-            string path = string.IsNullOrEmpty(OutFile) ? "challenge.bin" : OutFile;
-            System.IO.File.WriteAllBytes(path, challenge);
-
+            using (var file = OutFile.OpenWrite())
+            {
+                file.Write(challenge);
+            }
             // Confirm completion to the user
-            WriteInformation($"Challenge of length {Length} generated and written to file '{path}'.", new[] { "Challenge", "Info" });
+            WriteInformation($"Challenge of length {Length} generated and written to file '{OutFile.FullName}'.", new[] { "Challenge", "Info" });
         }
     }
 }
