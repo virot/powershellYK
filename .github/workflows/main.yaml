@@ -61,9 +61,6 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
 
-    - name: Build loader
-      run: dotnet build --no-restore -c Release powershellYK_loader/powershellYK_loader.csproj --output release
-
     - name: Build
       run: dotnet build --no-restore -c Release Module/powershellYK.csproj
 
