@@ -349,7 +349,7 @@ namespace powershellYK.Cmdlets.Other
                     }
                 }
             }
-#endregion // For CertificateIncludingAttestation extract the Attestation and Intermediate certificates
+            #endregion // For CertificateIncludingAttestation extract the Attestation and Intermediate certificates
 
             // Verify that we have both required certificates
             if (_AttestationCertificate is null || _IntermediateCertificate is null)

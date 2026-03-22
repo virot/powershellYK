@@ -73,7 +73,7 @@ namespace powershellYK.Cmdlets.PIV
 
                     default:
                         throw new Exception("Invalid ParameterSetName");
-                };
+                }
 
                 if (fingerprint is not null)
                 {
