@@ -26,7 +26,7 @@ jobs:
         dotnet-version: '8.x.x' # Specify the .NET version you're using
 
     - name: Run dotnet format
-      run: dotnet format --no-restore Module/powershellYK.csproj
+      run: dotnet format --no-restore --verbosity normal Module/powershellYK.csproj
       continue-on-error: false
 
     - name: Check for uncommitted changes
@@ -60,9 +60,6 @@ jobs:
 
     - name: Install dependencies
       run: dotnet restore
-
-    - name: Build loader
-      run: dotnet build --no-restore -c Release powershellYK_loader/powershellYK_loader.csproj --output release
 
     - name: Build
       run: dotnet build --no-restore -c Release Module/powershellYK.csproj
