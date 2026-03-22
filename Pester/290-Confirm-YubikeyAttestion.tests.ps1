@@ -49,7 +49,7 @@ $pest_input = [byte[]](0x30, 0x82, 0x6, 0xEC, 0x30, 0x82, 0x6, 0x72, 0x2, 0x1, 0
 
 }
 
-Describe "Confirm-YubikeyAttestation Attestation/Intermediate Certificates CSPN" -Tag 'Dry' {
+Describe "Confirm-YubikeyAttestation Attestation/Intermediate Certificates CSPN" -Tag 'Without-YubiKey' {
     BeforeEach -Scriptblock {
     }
 
@@ -64,7 +64,7 @@ Describe "Confirm-YubikeyAttestation Attestation/Intermediate Certificates CSPN"
     }
 }
 
-Describe "Confirm-YubikeyAttestation Attestation/Intermediate Certificates FIPS" -Tag 'Dry' {
+Describe "Confirm-YubikeyAttestation Attestation/Intermediate Certificates FIPS" -Tag 'Without-YubiKey' {
     BeforeEach -Scriptblock {
     }
 
@@ -79,7 +79,7 @@ Describe "Confirm-YubikeyAttestation Attestation/Intermediate Certificates FIPS"
     }
 }
 
-Describe "Confirm-YubikeyAttestation ParameterSetName tests" -Tag 'Dry' {
+Describe "Confirm-YubikeyAttestation ParameterSetName tests" -Tag 'Without-YubiKey' {
     BeforeEach -Scriptblock {
         $pest_return = $Null
     }
@@ -145,7 +145,7 @@ Describe "Confirm-YubikeyAttestation ParameterSetName tests" -Tag 'Dry' {
 
 }
 
-Describe "Confirm-YubikeyAttestation Errors" -Tag 'Dry' {
+Describe "Confirm-YubikeyAttestation Errors" -Tag 'Without-YubiKey' {
        It -Name "Incorrect string on CertificateRequest" -Test {
         {Confirm-YubikeyAttestation -CertificateRequest ""} | Should -Throw
     }

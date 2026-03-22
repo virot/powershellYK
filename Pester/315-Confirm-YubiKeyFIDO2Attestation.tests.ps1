@@ -27,14 +27,14 @@ Describe "Confirm-YubiKeyFIDO2Attestation paths" -Tag "Without-YubiKey" {
     }
 }
 
-Describe "Confirm-YubiKeyFIDO2Attestation output" -Tag 'Dry' {
+Describe "Confirm-YubiKeyFIDO2Attestation output" -Tag 'Without-YubiKey' {
     It -Name "Verify AttestationPath contains Yubico root" -Test {
         $pest_return = Confirm-YubiKeyFIDO2Attestation -AttestationObject "$PSScriptRoot\TestData\attestation.bin"
         ($pest_return.AttestationPath -join ' ') | Should -Match 'Yubico'
     }
 }
 
-Describe "Confirm-YubiKeyFIDO2Attestation Errors" -Tag 'Dry' {
+Describe "Confirm-YubiKeyFIDO2Attestation Errors" -Tag 'Without-YubiKey' {
     It -Name "Missing file throws" -Test {
         $badPath = Join-Path $PSScriptRoot "TestData\nonexistent_attestation_315_test.bin"
         (Test-Path $badPath) | Should -Be $false
