@@ -365,3 +365,4 @@ FodyWeavers.xsd
 /powershellYK.psd1
 /.cursorrules
 /Docs/Cookbook/Set-BIO-random-PIN.ps1
+/Docs/Cookbook/Enroll-FIDO2-On-Behalf-Of-Mock-IdP.ps1
