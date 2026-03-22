@@ -66,7 +66,7 @@ PowerShellVersion = '7.0'
 # FormatsToProcess = @('powershellYK.format.ps1xml')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-NestedModules = @()
+# NestedModules = @('')
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 # FunctionsToExport = @()
@@ -83,13 +83,16 @@ CmdletsToExport = @(
  'Unlock-YubiKey',
  'Connect-YubiKeyFIDO2',
  'Enable-YubiKeyFIDO2EnterpriseAttestation',
+ 'Export-YubiKeyFIDO2Blob',
  'Get-YubiKeyFIDO2',
  'Get-YubiKeyFIDO2Credential',
+ 'Import-YubiKeyFIDO2Blob',
  'New-YubiKeyFIDO2Credential',
  'Remove-YubiKeyFIDO2Credential'
  'Set-YubiKeyFIDO2',
  'Set-YubiKeyFIDO2PIN',
  'New-YubiKeyFIDO2Credential',
+ 'Confirm-YubiKeyFIDO2Attestation',
  'Reset-YubiKeyFIDO2',
  'Connect-YubiKeyOATH',
  'Get-YubiKeyOATH',
@@ -131,6 +134,7 @@ CmdletsToExport = @(
  'Remove-YubiKeyBIOFingerprint',
  'Rename-YubiKeyBIOFingerprint',
  'ConvertTo-AltSecurity',
+ 'New-Challenge',
  'Enable-PowershellYKSDKLogging',
  'Get-PowershellYKInfo'
 )

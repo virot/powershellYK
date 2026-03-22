@@ -35,7 +35,7 @@ namespace powershellYK.Cmdlets.PIV
     {
         // Parameters for slot selection
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slotnumber")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Slot number")]
         public PIVSlot Slot { get; set; }
 
         // Parameters for certificate import
@@ -64,9 +64,9 @@ namespace powershellYK.Cmdlets.PIV
 
         // Parameters for key policies
         [ValidateSet("Default", "Never", "None", "Once", IgnoreCase = true)]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy", ParameterSetName = "Privatekey")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy", ParameterSetName = "CertificateAndKey")]
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "PinPolicy", ParameterSetName = "P12")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Pin policy", ParameterSetName = "Privatekey")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Pin policy", ParameterSetName = "CertificateAndKey")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Pin policy", ParameterSetName = "P12")]
         public PivPinPolicy PinPolicy { get; set; } = PivPinPolicy.Default;
 
         // Parameter for touch policy
@@ -116,7 +116,11 @@ namespace powershellYK.Cmdlets.PIV
                 WriteDebug($"Loading P12 from {P12Path}");
 
                 // Load P12 with exportable private key
+#if NET9_0_OR_GREATER
+                X509Certificate2 p12Data = X509CertificateLoader.LoadPkcs12FromFile(P12Path.FullName, Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!)), X509KeyStorageFlags.Exportable);
+#else
                 X509Certificate2 p12Data = new X509Certificate2(P12Path.FullName, Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(Password!)), X509KeyStorageFlags.Exportable);
+#endif
                 this._newcertificate = p12Data;
 
                 // Extract private key based on algorithm

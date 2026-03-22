@@ -32,7 +32,7 @@ namespace powershellYK.Cmdlets.Yubikey
         [Parameter(Position = 0, Mandatory = false, ValueFromPipeline = true, HelpMessage = "Which YubiKey to connect to", ParameterSetName = "Connect provided Yubikey")]
         public YubiKeyDevice? YubiKey { get; set; }
 
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Connect to YubiKey with Serial Number", ParameterSetName = "Connect Yubikey with Serialnumber")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Connect to YubiKey with Serialnumber", ParameterSetName = "Connect Yubikey with Serialnumber")]
         public int? Serialnumber { get; set; }
 
         // Private field for YubiKey
