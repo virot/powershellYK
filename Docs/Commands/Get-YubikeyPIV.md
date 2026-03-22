@@ -1,27 +1,42 @@
 ﻿---
+document type: cmdlet
 external help file: powershellYK.dll-Help.xml
+HelpUri: 
 Module Name: powershellYK
-online version:
-schema: 2.0.0
+ms.date: 03-19-2026
+PlatyPS schema version: 2024-05-01
 ---
 
 # Get-YubikeyPIV
 
 ## SYNOPSIS
+
 Gets information about the PIV module and specific slots.
 
 ## SYNTAX
+
+### Default (Default)
 
 ```
 Get-YubikeyPIV [-Slot <PIVSlot>] [<CommonParameters>]
 ```
 
+### __AllParameterSets
+
+```
+Get-YubiKeyPIV [-Slot <PIVSlot>] [<CommonParameters>]
+```
+
+## ALIASES
+
 ## DESCRIPTION
+
 Gets information from both the yubikey and specific slots.
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Get-YubikeyPIV
 
@@ -36,6 +51,7 @@ SlotsWithPrivateKeys : {154, 158}
 Displays the number of retires left and total for PIN and PUK code. Aswell as Slots with private keys and the CHUID.
 
 ### Example 2
+
 ```powershell
 PS C:\> Get-YubikeyPIV -Slot 0x9e
 
@@ -55,22 +71,32 @@ Displays information about the PIV slot and any contained certificate
 ## PARAMETERS
 
 ### -Slot
+
 Retrive a info from specific slot
 
 ```yaml
-Type: PIVSlot
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Nullable`1[powershellYK.PIV.PIVSlot]
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -79,6 +105,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+{{ Fill in the related links here }}
+
