@@ -1,4 +1,4 @@
-﻿/// <summary>
+/// <summary>
 /// Creates a new key pair in a specified YubiKey PIV slot.
 /// Supports various algorithms and policies for PIN and touch requirements.
 /// Requires a YubiKey with PIV support.
@@ -31,7 +31,7 @@ namespace powershellYK.Cmdlets.PIV
     {
         // Parameters for key creation
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [ValidateYubikeyPIVSlot(DontAllowAttestion = true)]
+        [ValidateYubikeyPIVSlot(DontAllowAttestation = true)]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to create a new key in")]
         public PIVSlot Slot { get; set; }
 

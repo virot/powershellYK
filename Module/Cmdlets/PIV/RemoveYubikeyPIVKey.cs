@@ -1,4 +1,4 @@
-﻿/// <summary>
+/// <summary>
 /// Removes a key pair from a specified YubiKey PIV slot.
 /// Requires a YubiKey with PIV support and a firmware that supports key deletion.
 /// 
@@ -25,7 +25,7 @@ namespace powershellYK.Cmdlets.PIV
     {
         // Parameter for the PIV slot
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [ValidateYubikeyPIVSlot(DontAllowAttestion = true)]
+        [ValidateYubikeyPIVSlot(DontAllowAttestation = true)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to remove a key from")]
         public PIVSlot Slot { get; set; }
 

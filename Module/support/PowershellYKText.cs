@@ -82,50 +82,34 @@ namespace powershellYK.support
                         if (isPIV) // Multi-Protocol Edition (AKA "MPE")
                         {
                             if (formFactor == FormFactor.UsbABiometricKeychain) { return "YubiKey Bio - Multi-Protocol Edition"; }
-                            ;
                             if (formFactor == FormFactor.UsbCBiometricKeychain) { return "YubiKey C Bio - Multi-Protocol Edition"; }
-                            ;
                         }
                         else // FIDO Edition
                         {
                             if (formFactor == FormFactor.UsbABiometricKeychain) { return "YubiKey Bio - FIDO Edition"; }
-                            ;
                             if (formFactor == FormFactor.UsbCBiometricKeychain) { return "YubiKey C Bio - FIDO Edition"; }
-                            ;
                         }
                     }
                     else if (isFips) // YubiKey 5 Series (FIPS)
                     {
                         if (formFactor == FormFactor.UsbAKeychain) { return "YubiKey 5 NFC FIPS"; }
-                        ;
                         if (formFactor == FormFactor.UsbANano) { return "YubiKey 5 Nano FIPS"; }
-                        ;
                         if (formFactor == FormFactor.UsbCKeychain) { return "YubiKey 5C FIPS"; }
-                        ;
                         if (formFactor == FormFactor.UsbCNano) { return "YubiKey 5C Nano FIPS"; }
-                        ;
                         if (formFactor == FormFactor.UsbCLightning) { return "YubiKey 5Ci FIPS"; }
-                        ;
                     }
                     else if (isNFC) // YubiKey 5 Series (standard)
                     {
                         if (formFactor == FormFactor.UsbAKeychain) { return "YubiKey 5 NFC"; }
-                        ;
                         if (formFactor == FormFactor.UsbCKeychain) { return "YubiKey 5C NFC"; }
-                        ;
                     }
                     else
                     {
                         if (formFactor == FormFactor.UsbAKeychain) { return "YubiKey 5"; }
-                        ;
                         if (formFactor == FormFactor.UsbANano) { return "YubiKey 5 Nano"; }
-                        ;
                         if (formFactor == FormFactor.UsbCKeychain) { return "YubiKey 5C"; }
-                        ;
                         if (formFactor == FormFactor.UsbCNano) { return "YubiKey 5C Nano"; }
-                        ;
                         if (formFactor == FormFactor.UsbCLightning) { return "YubiKey 5Ci"; }
-                        ;
                     }
                 }
             }
