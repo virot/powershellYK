@@ -29,7 +29,7 @@ Describe "Confirm-YubiKeyFIDO2Attestation paths" -Tag "Without-YubiKey" {
 
 Describe "Confirm-YubiKeyFIDO2Attestation output" -Tag 'Without-YubiKey' {
     It -Name "Verify AttestationPath contains Yubico root" -Test {
-        $pest_return = Confirm-YubiKeyFIDO2Attestation -AttestationObject "$PSScriptRoot\TestData\attestation.bin"
+        $pest_return = Confirm-YubiKeyFIDO2Attestation -AttestationObject "$PSScriptRoot/TestData/attestation.bin"
         ($pest_return.AttestationPath -join ' ') | Should -Match 'Yubico'
     }
 }
