@@ -299,7 +299,7 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     throw new IOException($"Failed to write large blob data to file '{OutFile}'.", ex);
                 }
-                
+
                 WriteInformation(
                     $"FIDO2 large blob exported successfully for Relying Party (Origin): '{credentialRelyingParty.Id}'.",
                     new[] { "FIDO2", "LargeBlob" });

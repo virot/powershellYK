@@ -24,14 +24,12 @@ using powershellYK.FIDO2;
 using powershellYK.support;
 using powershellYK.support.transform;
 using powershellYK.support.validators;
-using System.Collections.ObjectModel;
 using System.Management.Automation;           // Windows PowerShell namespace.
 using System.Security;
 using System.Security.Cryptography;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Cryptography;
 using Yubico.YubiKey.Fido2;
-using Yubico.YubiKey.Piv;
 
 namespace powershellYK.Cmdlets.Fido
 {
@@ -110,7 +108,7 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     throw new Exception("Connect-YubikeyFIDO2 failed to connect to the FIDO2 applet!");
                 }
-            }  
+            }
         }
 
         // Process the main cmdlet logic
