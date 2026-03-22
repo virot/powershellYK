@@ -36,7 +36,7 @@ Describe "Confirm-YubiKeyFIDO2Attestation output" -Tag 'Without-YubiKey' {
 
 Describe "Confirm-YubiKeyFIDO2Attestation Errors" -Tag 'Without-YubiKey' {
     It -Name "Missing file throws" -Test {
-        $badPath = Join-Path $PSScriptRoot "TestData\nonexistent_attestation_315_test.bin"
+        $badPath = Join-Path $PSScriptRoot "TestData/nonexistent_attestation_315_test.bin"
         (Test-Path $badPath) | Should -Be $false
         $threw = $false
         try { Confirm-YubiKeyFIDO2Attestation -AttestationObject $badPath } catch { $threw = $true }
@@ -45,7 +45,7 @@ Describe "Confirm-YubiKeyFIDO2Attestation Errors" -Tag 'Without-YubiKey' {
 
     It -Name "Invalid format throws" -Test {
         $threw = $false
-        try { Confirm-YubiKeyFIDO2Attestation -AttestationObject "$PSScriptRoot\TestData\rsa_2048_cert.pem" } catch { $threw = $true }
+        try { Confirm-YubiKeyFIDO2Attestation -AttestationObject "$PSScriptRoot/TestData/rsa_2048_cert.pem" } catch { $threw = $true }
         $threw | Should -Be $true
     }
 }

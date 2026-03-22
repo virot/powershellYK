@@ -54,7 +54,7 @@ Describe "Confirm-YubikeyAttestation Attestation/Intermediate Certificates CSPN"
     }
 
     It -Name "Verify Files" -Test {
-        $pest_return = Confirm-YubikeyAttestation -AttestationCertificateFile "$PSScriptRoot\TestData\piv_attestion_cspn_attestioncertificate.cer" -IntermediateCertificateFile "$PSScriptRoot\TestData\piv_attestion_cspn_intermediatecertificate.cer"
+        $pest_return = Confirm-YubikeyAttestation -AttestationCertificateFile "$PSScriptRoot/TestData/piv_attestion_cspn_attestioncertificate.cer" -IntermediateCertificateFile "$PSScriptRoot/TestData/piv_attestion_cspn_intermediatecertificate.cer"
         $pest_return | Should -BeOfType powershellYK.Attestation
         $pest_return.Slot | Should -Be 0x9a
         $pest_return.isFIPSSeries | Should -BeFalse
@@ -69,7 +69,7 @@ Describe "Confirm-YubikeyAttestation Attestation/Intermediate Certificates FIPS"
     }
 
     It -Name "Verify '-AttestationCertificate _x509_ -IntermediateCertificate _x509_' works" -Test {
-        $pest_return = Confirm-YubikeyAttestation -AttestationCertificateFile "$PSScriptRoot\TestData\piv_attestion_fips_attestioncertificate.cer" -IntermediateCertificateFile "$PSScriptRoot\TestData\piv_attestion_fips_intermediatecertificate.cer"
+        $pest_return = Confirm-YubikeyAttestation -AttestationCertificateFile "$PSScriptRoot/TestData/piv_attestion_fips_attestioncertificate.cer" -IntermediateCertificateFile "$PSScriptRoot/TestData/piv_attestion_fips_intermediatecertificate.cer"
         $pest_return | Should -BeOfType powershellYK.Attestation
         $pest_return.Slot | Should -Be 0x9a
         $pest_return.isFIPSSeries | Should -BeTrue
@@ -85,7 +85,7 @@ Describe "Confirm-YubikeyAttestation ParameterSetName tests" -Tag 'Without-YubiK
     }
 
     It -Name "Verify 'JustAttestCertificate-File' works" -Test {
-        $pest_return = Confirm-YubikeyAttestation -AttestationCertificateFile "$PSScriptRoot\TestData\piv_attestion_attestioncertificate.cer" -IntermediateCertificateFile "$PSScriptRoot\TestData\piv_attestion_intermediatecertificate.cer"
+        $pest_return = Confirm-YubikeyAttestation -AttestationCertificateFile "$PSScriptRoot/TestData/piv_attestion_attestioncertificate.cer" -IntermediateCertificateFile "$PSScriptRoot/TestData/piv_attestion_intermediatecertificate.cer"
         $pest_return | Should -BeOfType powershellYK.Attestation
         $pest_return.Slot | Should -Be 0x9a
         $pest_return.isFIPSSeries | Should -BeFalse
@@ -95,8 +95,8 @@ Describe "Confirm-YubikeyAttestation ParameterSetName tests" -Tag 'Without-YubiK
     }
 
     It -Name "Verify 'JustAttestCertificate-Object' works" -Test {
-        $pest_att = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New("$PSScriptRoot\TestData\piv_attestion_attestioncertificate.cer")
-        $pest_int = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New("$PSScriptRoot\TestData\piv_attestion_intermediatecertificate.cer")
+        $pest_att = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New("$PSScriptRoot/TestData/piv_attestion_attestioncertificate.cer")
+        $pest_int = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New("$PSScriptRoot/TestData/piv_attestion_intermediatecertificate.cer")
 
         $pest_return = Confirm-YubikeyAttestation -AttestationCertificate $pest_att -IntermediateCertificate $pest_int
         $pest_return | Should -BeOfType powershellYK.Attestation
@@ -106,7 +106,7 @@ Describe "Confirm-YubikeyAttestation ParameterSetName tests" -Tag 'Without-YubiK
     }
 
     It -Name "Verify 'requestWithBuiltinAttestation-File' works" -Test {
-        $pest_return = Confirm-YubikeyAttestation -CertificateRequestFile "$PSScriptRoot\TestData\piv_attestion_certificaterequest_with_attestion.req"
+        $pest_return = Confirm-YubikeyAttestation -CertificateRequestFile "$PSScriptRoot/TestData/piv_attestion_certificaterequest_with_attestion.req"
         $pest_return | Should -BeOfType powershellYK.Attestation
         $pest_return.Slot | Should -Be 0x9a
         $pest_return.AttestationValidated | Should -Be $True
@@ -114,7 +114,7 @@ Describe "Confirm-YubikeyAttestation ParameterSetName tests" -Tag 'Without-YubiK
     }
 
     It -Name "Verify 'requestWithBuiltinAttestation-Object' works" -Test {
-        $pest_req = [System.Security.Cryptography.X509Certificates.CertificateRequest]::LoadSigningRequestPem((Get-Content "$PSScriptRoot\TestData\piv_attestion_certificaterequest_with_attestion.req"),[System.Security.Cryptography.HashAlgorithmName]::SHA256, [System.Security.Cryptography.X509Certificates.CertificateRequestLoadOptions]::UnsafeLoadCertificateExtensions)
+        $pest_req = [System.Security.Cryptography.X509Certificates.CertificateRequest]::LoadSigningRequestPem((Get-Content "$PSScriptRoot/TestData/piv_attestion_certificaterequest_with_attestion.req"),[System.Security.Cryptography.HashAlgorithmName]::SHA256, [System.Security.Cryptography.X509Certificates.CertificateRequestLoadOptions]::UnsafeLoadCertificateExtensions)
         $pest_return = Confirm-YubikeyAttestation -CertificateRequest $pest_req
         $pest_return | Should -BeOfType powershellYK.Attestation
         $pest_return.Slot | Should -Be 0x9a
@@ -123,7 +123,7 @@ Describe "Confirm-YubikeyAttestation ParameterSetName tests" -Tag 'Without-YubiK
     }
 
     It -Name "Verify 'requestWithExternalAttestation-File' works" -Test {
-        $pest_return = Confirm-YubikeyAttestation -CertificateRequestFile "$PSScriptRoot\TestData\piv_attestion_5_4_3_9a_request.req" -AttestationCertificateFile "$PSScriptRoot\TestData\piv_attestion_5_4_3_9a_slot_attestation.cer" -IntermediateCertificateFile "$PSScriptRoot\TestData\piv_attestion_5_4_3_9a_AttestationIntermediateCertificate.cer"
+        $pest_return = Confirm-YubikeyAttestation -CertificateRequestFile "$PSScriptRoot/TestData/piv_attestion_5_4_3_9a_request.req" -AttestationCertificateFile "$PSScriptRoot/TestData/piv_attestion_5_4_3_9a_slot_attestation.cer" -IntermediateCertificateFile "$PSScriptRoot/TestData/piv_attestion_5_4_3_9a_AttestationIntermediateCertificate.cer"
 
         $pest_return | Should -BeOfType powershellYK.Attestation
         $pest_return.Slot | Should -Be 0x9a
@@ -132,9 +132,9 @@ Describe "Confirm-YubikeyAttestation ParameterSetName tests" -Tag 'Without-YubiK
     }
 
     It -Name "Verify 'requestWithExternalAttestation-Object' works" -Test {
-        $pest_req = [System.Security.Cryptography.X509Certificates.CertificateRequest]::LoadSigningRequestPem((Get-Content "$PSScriptRoot\TestData\piv_attestion_certificaterequest_with_attestion.req"),[System.Security.Cryptography.HashAlgorithmName]::SHA256, [System.Security.Cryptography.X509Certificates.CertificateRequestLoadOptions]::UnsafeLoadCertificateExtensions)
-        $pest_att = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New("$PSScriptRoot\TestData\piv_attestion_attestioncertificate.cer")
-        $pest_int = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New("$PSScriptRoot\TestData\piv_attestion_intermediatecertificate.cer")
+        $pest_req = [System.Security.Cryptography.X509Certificates.CertificateRequest]::LoadSigningRequestPem((Get-Content "$PSScriptRoot/TestData/piv_attestion_certificaterequest_with_attestion.req"),[System.Security.Cryptography.HashAlgorithmName]::SHA256, [System.Security.Cryptography.X509Certificates.CertificateRequestLoadOptions]::UnsafeLoadCertificateExtensions)
+        $pest_att = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New("$PSScriptRoot/TestData/piv_attestion_attestioncertificate.cer")
+        $pest_int = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New("$PSScriptRoot/TestData/piv_attestion_intermediatecertificate.cer")
 
         $pest_return = Confirm-YubikeyAttestation -CertificateRequest $pest_req -AttestationCertificate $pest_att -IntermediateCertificate $pest_int
         $pest_return | Should -BeOfType powershellYK.Attestation
