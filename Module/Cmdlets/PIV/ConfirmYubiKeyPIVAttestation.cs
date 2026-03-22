@@ -147,11 +147,15 @@ namespace powershellYK.Cmdlets.Other
                     using (StreamReader reader = new StreamReader(fileStream))
                     {
                         string attestation = reader.ReadToEnd();
-                        byte[] decodedBytes = Array.Empty<byte>();
                         if (PemEncoding.TryFind(attestation, out PemFields pemFields))
                         {
                             string base64Payload = attestation.Substring(pemFields.Base64Data.Start.Value, (pemFields.Base64Data.End.Value - pemFields.Base64Data.Start.Value));
+#if NET9_0_OR_GREATER
+                            byte[] decodedBytes = Convert.FromBase64String(base64Payload);
+                            _AttestationCertificate = X509CertificateLoader.LoadCertificate(decodedBytes);
+#else
                             _AttestationCertificate = new X509Certificate2(Convert.FromBase64String(base64Payload));
+#endif
                         }
                         else
                         {
@@ -171,7 +175,12 @@ namespace powershellYK.Cmdlets.Other
                         if (PemEncoding.TryFind(intermediate, out PemFields pemFields))
                         {
                             string base64Payload = intermediate.Substring(pemFields.Base64Data.Start.Value, (pemFields.Base64Data.End.Value - pemFields.Base64Data.Start.Value));
+#if NET9_0_OR_GREATER
+                            _IntermediateCertificate = X509CertificateLoader.LoadCertificate(Convert.FromBase64String(base64Payload));
+#else
                             _IntermediateCertificate = new X509Certificate2(Convert.FromBase64String(base64Payload));
+#endif
+
                         }
                         else
                         {
@@ -198,7 +207,11 @@ namespace powershellYK.Cmdlets.Other
                             try
                             {
                                 byte[] certificateAttBytes = Convert.FromBase64String(match.Groups["certificateContent"].Value);
+#if NET9_0_OR_GREATER
+                                _CertificateIncludingAttestation = X509CertificateLoader.LoadCertificate(certificateAttBytes);
+#else
                                 _CertificateIncludingAttestation = new X509Certificate2(certificateAttBytes);
+#endif
                             }
                             catch
                             {
@@ -227,7 +240,11 @@ namespace powershellYK.Cmdlets.Other
                     _out_AttestationDataLocation = "1.3.6.1.4.1.41482.3.1";
                     try
                     {
+#if NET9_0_OR_GREATER
+                        _AttestationCertificate = X509CertificateLoader.LoadCertificate(extensioncsr.RawData);
+#else
                         _AttestationCertificate = new X509Certificate2(extensioncsr.RawData);
+#endif
                     }
                     catch
                     {
@@ -243,7 +260,11 @@ namespace powershellYK.Cmdlets.Other
                     _out_AttestationDataLocation = "1.3.6.1.4.1.41482.3.11";
                     try
                     {
+#if NET9_0_OR_GREATER
+                        _AttestationCertificate = X509CertificateLoader.LoadCertificate(extensioncsr.RawData);
+#else
                         _AttestationCertificate = new X509Certificate2(extensioncsr.RawData);
+#endif
                     }
                     catch
                     {
@@ -263,7 +284,11 @@ namespace powershellYK.Cmdlets.Other
                     .FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.2", new X509Extension(new AsnEncodedData("1.3.6.1.4.1.41482.3.2", new byte[] { 0x00 }), false));
                     try
                     {
+#if NET9_0_OR_GREATER
+                        _IntermediateCertificate = X509CertificateLoader.LoadCertificate(extensioncsr.RawData);
+#else
                         _IntermediateCertificate = new X509Certificate2(extensioncsr.RawData);
+#endif
                     }
                     catch
                     {
@@ -289,7 +314,11 @@ namespace powershellYK.Cmdlets.Other
                     _out_AttestationDataLocation = "1.3.6.1.4.1.41482.3.1";
                     try
                     {
+#if NET9_0_OR_GREATER
+                        _AttestationCertificate = X509CertificateLoader.LoadCertificate(extensioncsr.RawData);
+#else
                         _AttestationCertificate = new X509Certificate2(extensioncsr.RawData);
+#endif
                     }
                     catch
                     {
@@ -308,7 +337,11 @@ namespace powershellYK.Cmdlets.Other
                     extensioncsr = _CertificateIncludingAttestation.Extensions.Cast<X509Extension>().FirstOrDefault(e => e.Oid!.Value == "1.3.6.1.4.1.41482.3.2", new X509Extension(new AsnEncodedData("1.3.6.1.4.1.41482.3.2", new byte[] { 0x00 }), false));
                     try
                     {
+#if NET9_0_OR_GREATER
+                        _IntermediateCertificate = X509CertificateLoader.LoadCertificate(extensioncsr.RawData);
+#else
                         _IntermediateCertificate = new X509Certificate2(extensioncsr.RawData);
+#endif
                     }
                     catch
                     {
@@ -347,7 +380,7 @@ namespace powershellYK.Cmdlets.Other
                         if (resourceStream is not null)
                         {
                             byte[] resourceBytes = new byte[resourceStream.Length];
-                            resourceStream.Read(resourceBytes, 0, resourceBytes.Length);
+                            resourceStream.ReadExactly(resourceBytes);
                             string resourceText = Encoding.UTF8.GetString(resourceBytes);
                             chain.ChainPolicy.CustomTrustStore.ImportFromPem(resourceText.AsSpan());
                         }
@@ -360,7 +393,7 @@ namespace powershellYK.Cmdlets.Other
                         if (resourceStream is not null)
                         {
                             byte[] resourceBytes = new byte[resourceStream.Length];
-                            resourceStream.Read(resourceBytes, 0, resourceBytes.Length);
+                            resourceStream.ReadExactly(resourceBytes);
                             string resourceText = Encoding.UTF8.GetString(resourceBytes);
                             chain.ChainPolicy.ExtraStore.ImportFromPem(resourceText.AsSpan());
                         }
