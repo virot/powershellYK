@@ -1,4 +1,4 @@
-﻿/// <summary>
+/// <summary>
 /// Retrieves FIDO2 credentials stored on a YubiKey.
 /// Lists all credentials or retrieves a specific credential by ID.
 /// Requires a YubiKey with FIDO2 support and administrator privileges on Windows.
@@ -14,6 +14,10 @@
 /// .EXAMPLE
 /// Get-YubiKeyFIDO2Credential -CredentialIdBase64Url "base64url_encoded_id"
 /// Retrieves a specific FIDO2 credential using its Base64URL encoded ID
+/// 
+/// .EXAMPLE
+/// Get-YubiKeyFIDO2Credential -RelyingPartyID "demo.yubico.com"
+/// Lists credentials for a specific Relying Party ID (or Origin)
 /// </summary>
 
 // Imports
@@ -38,6 +42,11 @@ namespace powershellYK.Cmdlets.Fido
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Credential ID to remove int Base64 URL encoded format", ParameterSetName = "List-CredentialID-Base64URL")]
         public string? CredentialIdBase64Url { get; set; } = string.Empty;
+
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Filter credentials by relying party ID", ParameterSetName = "List-RelyingPartyID")]
+        [Alias("RP", "Origin")]
+        [ValidateNotNullOrEmpty]
+        public string? RelyingPartyID { get; set; }
 
         // Initialize processing and verify requirements
         protected override void BeginProcessing()
@@ -69,7 +78,9 @@ namespace powershellYK.Cmdlets.Fido
         protected override void ProcessRecord()
         {
             // Convert Base64URL credential ID if provided
-            if (!this.CredentialID.HasValue && CredentialIdBase64Url is not null)
+            if (ParameterSetName == "List-CredentialID-Base64URL" &&
+                !this.CredentialID.HasValue &&
+                !string.IsNullOrWhiteSpace(CredentialIdBase64Url))
             {
                 this.CredentialID = powershellYK.FIDO2.CredentialID.FromStringBase64URL(CredentialIdBase64Url);
             }
@@ -81,6 +92,12 @@ namespace powershellYK.Cmdlets.Fido
 
                 // Enumerate all relying parties
                 var relyingParties = fido2Session.EnumerateRelyingParties();
+                if (ParameterSetName == "List-RelyingPartyID")
+                {
+                    relyingParties = relyingParties
+                        .Where(rp => string.Equals(rp.Id, RelyingPartyID, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
 
                 if (!relyingParties.Any()) // Check if there are no relying parties
                 {
@@ -105,7 +122,13 @@ namespace powershellYK.Cmdlets.Fido
 
                         foreach (CredentialUserInfo user in relayCredentials)
                         {
-                            if (ParameterSetName == "List-All" || (user.CredentialId.Id.ToArray().SequenceEqual(this.CredentialID!.Value.ToByte())))
+                            bool includeCredential =
+                                ParameterSetName == "List-All" ||
+                                ParameterSetName == "List-RelyingPartyID" ||
+                                (this.CredentialID.HasValue &&
+                                 user.CredentialId.Id.ToArray().SequenceEqual(this.CredentialID.Value.ToByte()));
+
+                            if (includeCredential)
                             {
                                 Credential credential = new Credential(relyingParty: relyingParty, credentialUserInfo: user);
                                 WriteObject(credential);

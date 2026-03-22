@@ -1,4 +1,4 @@
-﻿/// <summary>
+/// <summary>
 /// Retrieves information about the FIDO2 applet on a YubiKey.
 /// Returns details about supported features, capabilities, and current settings.
 /// Requires a YubiKey with FIDO2 support and administrator privileges on Windows.
