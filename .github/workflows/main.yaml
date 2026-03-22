@@ -62,13 +62,13 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --no-restore -c Release Module/powershellYK.csproj --output release
+      run: dotnet build --no-restore -c Release Module/powershellYK.csproj
 
     - name: Save Build Output
       uses: actions/upload-artifact@v4
       with:
         name: build-output
-        path: release/
+        path: Module/bin/module/Release/net8.0/
 
   pester-windows:
     runs-on: windows-latest
