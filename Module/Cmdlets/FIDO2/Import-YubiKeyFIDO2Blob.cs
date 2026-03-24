@@ -1,21 +1,18 @@
-﻿/// <summary>
+/// <summary>
 /// Allows uploading of large blobs to the YubiKey FIDO2 applet, associated with a specific credential ID or relying party.
 /// Requires a YubiKey with FIDO2 support and administrator privileges on Windows.
-/// 
-/// Sends minimum PIN length to specified relying party
-/// 
+///
 /// .EXAMPLE
-/// Set-YubiKeyFIDO2 -LargeBlob test.txt -RelyingPartyID "demo.yubico.com"
-/// Imports a file as a large blob when there is no more than one credential for the Relying Party on the YubiKey
-/// 
+/// Import-YubiKeyFIDO2Blob -LargeBlob test.txt -RelyingPartyID "demo.yubico.com"
+/// Imports a file as a large blob when there is no more than one credential for the Relying Party on the YubiKey.
+///
 /// .EXAMPLE
-/// Set-YubiKeyFIDO2 -LargeBlob test.txt -CredentialId "19448fe...67ab9207071e"
-/// Imports a file as a large blob for a specified FIDO2 Credential by ID (handles multiple entries for the same Relying Party)
-/// 
+/// Import-YubiKeyFIDO2Blob -LargeBlob test.txt -CredentialId "19448fe...67ab9207071e"
+/// Imports a file as a large blob for a specified FIDO2 credential by ID (use when the RP has multiple credentials).
+///
 /// .EXAMPLE
-/// cd C:\CODE
-/// Set-YubiKeyFIDO2 -LargeBlob test.txt -CredentialId "19448fe...67ab9207071e" -Force
-/// Imports a file as a large blob and overwrites any existing blob entry for that credential without prompting
+/// Import-YubiKeyFIDO2Blob -LargeBlob test.txt -CredentialId "19448fe...67ab9207071e" -Force
+/// Imports a file as a large blob and overwrites any existing blob entry for that credential without prompting.
 /// </summary>
 
 using Microsoft.VisualBasic;

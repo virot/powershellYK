@@ -1,14 +1,14 @@
 /// <summary>
 /// Allows the return of a large blob associated with a FIDO2 credential, which may contain additional metadata or state information for that credential.
-/// Requires a YubiKey with FIDO2 support and administrator privileges on Windows´.
-/// 
+/// Requires a YubiKey with FIDO2 support and administrator privileges on Windows.
+///
 /// .EXAMPLE
-/// Export-YubiKeyFIDO2Blob -OutFile fileName.txt -RelyingPartyID "demo.yubico.com"
-/// Exports a large blob to file when there is no more than one credential for the Relying Party on the YubiKey
-/// 
+/// Export-YubiKeyFIDO2Blob -RelyingPartyID "demo.yubico.com" -OutFile fileName.txt
+/// Exports a large blob to a file when there is no more than one credential for the relying party on the YubiKey.
+///
 /// .EXAMPLE
-/// Export-YubiKeyFIDO2Blob -OutFile fileName.txt -CredentialId "19448fe...67ab9207071e"
-/// Exports a large blob to file for a specified FIDO2 Credential by ID (handles multiple entries for the same Relying Party)
+/// Export-YubiKeyFIDO2Blob -CredentialId "19448fe...67ab9207071e" -OutFile fileName.txt
+/// Exports a large blob to a file for a specified FIDO2 credential by ID (use when the RP has multiple credentials).
 /// </summary>
 
 // Imports
