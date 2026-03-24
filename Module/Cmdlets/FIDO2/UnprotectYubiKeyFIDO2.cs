@@ -71,8 +71,29 @@ namespace powershellYK.Cmdlets.Fido
         // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
-            // Read and parse the encrypted file header
-            byte[] fileData = File.ReadAllBytes(Path.FullName);
+            string resolvedInputPath = GetUnresolvedProviderPathFromPSPath(Path.FullName);
+            string resolvedDefaultOutput = resolvedInputPath.EndsWith(".enc", StringComparison.OrdinalIgnoreCase)
+                ? resolvedInputPath[..^4]
+                : resolvedInputPath + ".dec";
+            string resolvedOutputPath = OutFile is not null
+                ? GetUnresolvedProviderPathFromPSPath(OutFile.FullName)
+                : resolvedDefaultOutput;
+
+            FileInfo displayOutput = OutFile ?? new FileInfo(
+                Path.FullName.EndsWith(".enc", StringComparison.OrdinalIgnoreCase)
+                    ? Path.FullName[..^4]
+                    : Path.FullName + ".dec");
+
+            // Read and parse the encrypted file (provider-aware path, same as Import-YubiKeyFIDO2Blob / Protect-YubiKeyFIDO2)
+            byte[] fileData;
+            try
+            {
+                fileData = File.ReadAllBytes(resolvedInputPath);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"Failed to read encrypted file from '{Path}'.", ex);
+            }
 
             PRFEncryptedFile encryptedFile;
             try
@@ -85,14 +106,8 @@ namespace powershellYK.Cmdlets.Fido
                 return;
             }
 
-            // Determine output path: strip .enc extension or append .dec
-            FileInfo outputFile = OutFile ?? new FileInfo(
-                Path.FullName.EndsWith(".enc", StringComparison.OrdinalIgnoreCase)
-                    ? Path.FullName[..^4]
-                    : Path.FullName + ".dec");
-
             string decryptConfirm =
-                $"This will decrypt '{Path.FullName}' using the FIDO Pseudo-Random Function (PRF) extension (to: '{outputFile.FullName}'). Proceed?";
+                $"This will decrypt '{Path.FullName}' using the FIDO Pseudo-Random Function (PRF) extension (to: '{displayOutput.FullName}'). Proceed?";
             if (!ShouldProcess(decryptConfirm, decryptConfirm, "WARNING!"))
                 return;
 
@@ -138,10 +153,17 @@ namespace powershellYK.Cmdlets.Fido
                 }
 
                 // Write decrypted output
-                File.WriteAllBytes(outputFile.FullName, plaintext);
+                try
+                {
+                    File.WriteAllBytes(resolvedOutputPath, plaintext);
+                }
+                catch (Exception ex)
+                {
+                    throw new IOException($"Failed to write decrypted file to '{resolvedOutputPath}'.", ex);
+                }
 
-                WriteInformation(new InformationRecord($"Decrypted file written to {outputFile.FullName}", "Unprotect-YubiKeyFIDO2"));
-                WriteObject(new FileInfo(outputFile.FullName));
+                WriteInformation(new InformationRecord($"Decrypted file written to {resolvedOutputPath}", "Unprotect-YubiKeyFIDO2"));
+                WriteObject(new FileInfo(resolvedOutputPath));
             }
         }
     }
