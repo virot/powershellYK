@@ -1,4 +1,4 @@
-﻿---
+---
 document type: cmdlet
 external help file: powershellYK.dll-Help.xml
 HelpUri: ''
@@ -40,11 +40,11 @@ Requires YubiKey firmware version 5.7.4 or later.
 ### Example 1
 
 ```powershell
-PS C:\> Export-YubiKeyFIDO2Blob -RelyingPartyID  "powershellYK" -OutFile storedfile.txt
+PS C:\> Export-YubiKeyFIDO2Blob -RelyingPartyID "powershellYK" -OutFile storedfile.txt
 Touch the YubiKey...
 ```
 
-Exports the large blob for the credential with the specified Credential ID to the specified output file.
+Exports the large blob for the credential associated with the specified Relying Party ID (or unique display name) to the output file.
 
 ## PARAMETERS
 
