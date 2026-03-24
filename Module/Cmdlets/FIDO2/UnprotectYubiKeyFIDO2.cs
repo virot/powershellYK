@@ -91,7 +91,9 @@ namespace powershellYK.Cmdlets.Fido
                     ? Path.FullName[..^4]
                     : Path.FullName + ".dec");
 
-            if (!ShouldProcess(Path.FullName, "Decrypt file with FIDO2 PRF"))
+            string decryptConfirm =
+                $"This will decrypt '{Path.FullName}' using the FIDO Pseudo-Random Function (PRF) extension (to: '{outputFile.FullName}'). Proceed?";
+            if (!ShouldProcess(decryptConfirm, decryptConfirm, "WARNING!"))
                 return;
 
             using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
@@ -113,6 +115,7 @@ namespace powershellYK.Cmdlets.Fido
                 getParams.AllowCredential(new CredentialID(encryptedFile.CredentialId).ToYubicoFIDO2CredentialID());
 
                 WriteDebug("Requesting assertion with hmac-secret extension for decryption...");
+                Console.WriteLine("Touch the YubiKey...");
                 IReadOnlyList<GetAssertionData> assertions = fido2Session.GetAssertions(getParams);
 
                 byte[] prfOutput = assertions[0].AuthenticatorData.GetHmacSecretExtension(fido2Session.AuthProtocol);

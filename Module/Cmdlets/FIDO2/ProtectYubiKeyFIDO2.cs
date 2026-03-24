@@ -99,7 +99,9 @@ namespace powershellYK.Cmdlets.Fido
 
             FileInfo outputFile = OutFile ?? new FileInfo(Path.FullName + ".enc");
 
-            if (!ShouldProcess(Path.FullName, "Encrypt file with FIDO2 PRF"))
+            string encryptConfirm =
+                $"This will encrypt '{Path.FullName}' using the FIDO Pseudo-Random Function (PRF) extension (to: '{outputFile.FullName}'). Proceed?";
+            if (!ShouldProcess(encryptConfirm, encryptConfirm, "WARNING!"))
                 return;
 
             // Read input file and generate per-file random salt
@@ -125,6 +127,7 @@ namespace powershellYK.Cmdlets.Fido
                 getParams.AllowCredential(new CredentialID(credIdBytes).ToYubicoFIDO2CredentialID());
 
                 WriteDebug("Requesting assertion with hmac-secret extension...");
+                Console.WriteLine("Touch the YubiKey...");
                 IReadOnlyList<GetAssertionData> assertions = fido2Session.GetAssertions(getParams);
 
                 byte[] prfOutput = assertions[0].AuthenticatorData.GetHmacSecretExtension(fido2Session.AuthProtocol);
