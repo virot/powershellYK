@@ -43,23 +43,23 @@ namespace powershellYK.Cmdlets.OTP
     public class SetYubikeyCommand : PSCmdlet
     {
         // Parameters for USB capabilities
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Replace current USB capabilities with.", ParameterSetName = "Replace USB capabilities")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Replace current USB capabilities with selected capabilities.", ParameterSetName = "Replace USB capabilities")]
         public YubiKeyCapabilities UsbCapabilities { get; set; }
 
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Enable capabilities over USB", ParameterSetName = "Update USB capabilities")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Enable select capabilities over USB. If a needed feature has been turned off,\nthe command can be used to (re)enable the feature over USB.", ParameterSetName = "Update USB capabilities")]
         public YubiKeyCapabilities EnableUsbCapabilities { get; set; } = YubiKeyCapabilities.None;
 
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Disable capabilities over USB", ParameterSetName = "Update USB capabilities")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Disable select capabilities over USB.  The command can be used to improve\nuser experience by _disabling__ YubiKey features that are not in use.\nFor example, an organization may want to disable OTP/OATH if only FIDO or PIV is used.", ParameterSetName = "Update USB capabilities")]
         public YubiKeyCapabilities DisableUsbCapabilities { get; set; } = YubiKeyCapabilities.None;
 
         // Parameters for NFC capabilities
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Replace current NFC capabilities with.", ParameterSetName = "Replace NFC capabilities")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Replace current NFC capabilities with selected capabilities.", ParameterSetName = "Replace NFC capabilities")]
         public YubiKeyCapabilities? NFCCapabilities { get; set; }
 
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Enable capabilities over NFC", ParameterSetName = "Update NFC capabilities")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Enable select capabilities over NFC. If a needed feature has been turned off,\nthe command can be used to (re)enable the feature over NFC.", ParameterSetName = "Update NFC capabilities")]
         public YubiKeyCapabilities EnableNFCCapabilities { get; set; } = YubiKeyCapabilities.None;
 
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Disable capabilities over NFC", ParameterSetName = "Update NFC capabilities")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Disable select capabilities over NFC. The command can be used to improve\nuser experience by _disabling__ YubiKey features that are not in use.\nFor example, an organization may want to disable OTP/OATH if only FIDO or PIV is used.", ParameterSetName = "Update NFC capabilities")]
         public YubiKeyCapabilities DisableNFCCapabilities { get; set; } = YubiKeyCapabilities.None;
 
         // Parameters for touch eject settings
@@ -70,7 +70,7 @@ namespace powershellYK.Cmdlets.OTP
         public UInt16 AutoEjectTimeout = 0;
 
         // Parameters for secure transport mode
-        [Parameter(Mandatory = true, ParameterSetName = "Set Restricted NFC", HelpMessage = "Enable Restricted NFC / Secure Transport Mode")]
+        [Parameter(Mandatory = true, ParameterSetName = "Set Restricted NFC", HelpMessage = "Enable Restricted NFC as supported by YubiKeys with firmware `5.7` or later.\nWhen set, the YubiKey will limit access to capabilites over NFC until USB powered.\nThis feature is typically toggled when _shipping__ YubiKeys in tamper-evident packaging.")]
         public SwitchParameter SecureTransportMode { get; set; }
 
         // Initialize processing

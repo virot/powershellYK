@@ -34,8 +34,8 @@ namespace powershellYK.Cmdlets.PIV
         // Parameter for the PIV Management Key
         [TransformHexInput()]
         [ValidatePIVManagementKey()]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Management Key", ParameterSetName = "PIN&Management")]
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Management Key", ParameterSetName = "Management")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Management key", ParameterSetName = "PIN&Management")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Management key", ParameterSetName = "Management")]
         public PSObject? ManagementKey;
 
         // Parameter for the PIV PIN

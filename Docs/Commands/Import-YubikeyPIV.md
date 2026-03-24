@@ -1,46 +1,60 @@
 ﻿---
+document type: cmdlet
 external help file: powershellYK.dll-Help.xml
+HelpUri: 
 Module Name: powershellYK
-online version:
-schema: 2.0.0
+ms.date: 03-19-2026
+PlatyPS schema version: 2024-05-01
 ---
 
 # Import-YubiKeyPIV
 
 ## SYNOPSIS
+
 Import certificate
 
 ## SYNTAX
 
 ### CertificateOnly
+
 ```
 Import-YubiKeyPIV -Slot <PIVSlot> -Certificate <Object> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### CertificateAndKey
+
 ```
-Import-YubiKeyPIV -Slot <PIVSlot> -Certificate <Object> -PrivateKeyPath <FileInfo> [-Password <SecureString>]
- [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-YubiKeyPIV -Slot <PIVSlot> -Certificate <Object> -PrivateKeyPath <FileInfo>
+ [-Password <SecureString>] [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### P12
+
 ```
-Import-YubiKeyPIV -Slot <PIVSlot> -P12Path <FileInfo> [-Password <SecureString>] [-PinPolicy <PivPinPolicy>]
- [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Import-YubiKeyPIV -Slot <PIVSlot> -P12Path <FileInfo> [-Password <SecureString>]
+ [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### Privatekey
+
 ```
 Import-YubiKeyPIV -Slot <PIVSlot> -PrivateKeyPath <FileInfo> [-Password <SecureString>]
- [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PinPolicy <PivPinPolicy>] [-TouchPolicy <PivTouchPolicy>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
+## ALIASES
+
 ## DESCRIPTION
+
 Imports a certicate into the Yubikey
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Import-YubikeyPIV -Slot 0x9a -Certificate certificate.cer
 ```
@@ -48,6 +62,7 @@ PS C:\> Import-YubikeyPIV -Slot 0x9a -Certificate certificate.cer
 Import certificate.cer into the certificate slot 0x9a
 
 ### Example 2
+
 ```powershell
 PS C:\> Import-YubikeyPIV -Slot "Digital Signature" -PrivateKeyPath .\ecc_384.pem -Password (Read-Host -AsSecureString "Password")
 ```
@@ -57,144 +72,258 @@ Import certificate.cer into the certificate slot 0x9a
 ## PARAMETERS
 
 ### -Certificate
+
 Certificate to be stored
 
 ```yaml
-Type: Object
-Parameter Sets: CertificateOnly, CertificateAndKey
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -P12Path
-P12 file to be stored
-
-```yaml
-Type: FileInfo
-Parameter Sets: P12
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Password
-Private key password
-
-```yaml
-Type: SecureString
-Parameter Sets: CertificateAndKey, P12, Privatekey
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PinPolicy
-PinPolicy
-
-```yaml
-Type: PivPinPolicy
-Parameter Sets: CertificateAndKey, P12, Privatekey
-Aliases:
-Accepted values: Default, Never, None, Once
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PrivateKeyPath
-Private key to be stored
-
-```yaml
-Type: FileInfo
-Parameter Sets: CertificateAndKey, Privatekey
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Slot
-Slotnumber
-
-```yaml
-Type: PIVSlot
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -TouchPolicy
-TouchPolicy
-
-```yaml
-Type: PivTouchPolicy
-Parameter Sets: CertificateAndKey, P12, Privatekey
-Aliases:
-Accepted values: Default, Never, Always, Cached
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Object
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: CertificateOnly
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: CertificateAndKey
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -Confirm
+
 Prompts you for confirmation before running the cmdlet.
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: cf
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases:
+- cf
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
 
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+### -P12Path
+
+P12 file to be stored
+
+```yaml
+Type: System.IO.FileInfo
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: P12
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Password
+
+Private key password
+
+```yaml
+Type: System.Security.SecureString
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Privatekey
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: CertificateAndKey
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: P12
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PinPolicy
+
+Pin policy
+
+```yaml
+Type: Yubico.YubiKey.Piv.PivPinPolicy
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Privatekey
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: CertificateAndKey
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: P12
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues:
+- Default
+- Never
+- None
+- Once
+HelpMessage: ''
+```
+
+### -PrivateKeyPath
+
+Private key to be stored
+
+```yaml
+Type: System.IO.FileInfo
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Privatekey
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: CertificateAndKey
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Slot
+
+Slot number
+
+```yaml
+Type: powershellYK.PIV.PIVSlot
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -TouchPolicy
+
+Touch policy
+
+```yaml
+Type: Yubico.YubiKey.Piv.PivTouchPolicy
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Privatekey
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: CertificateAndKey
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: P12
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues:
+- Default
+- Never
+- Always
+- Cached
+HelpMessage: ''
 ```
 
 ### -WhatIf
-Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+Runs the command in a mode that only reports what would happen without performing the actions.
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: wi
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: None
+SupportsWildcards: false
+Aliases:
+- wi
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -203,6 +332,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+{{ Fill in the related links here }}
+

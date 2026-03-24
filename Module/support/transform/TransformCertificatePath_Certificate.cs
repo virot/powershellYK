@@ -49,7 +49,11 @@ namespace powershellYK.support.transform
                     {
                         // Convert PEM content to certificate
                         byte[] certificateAttBytes = Convert.FromBase64String(match.Groups["certificateContent"].Value);
+#if NET9_0_OR_GREATER
+                        return X509CertificateLoader.LoadCertificate(certificateAttBytes);
+#else
                         return new X509Certificate2(certificateAttBytes);
+#endif
                     }
                     catch
                     {
@@ -63,7 +67,12 @@ namespace powershellYK.support.transform
                     {
                         try
                         {
+#if NET9_0_OR_GREATER
+                            byte[] bytes=Convert.FromBase64String((string)inputData);
+                            return X509CertificateLoader.LoadCertificate(bytes);
+#else
                             return new X509Certificate2((string)inputData);
+#endif
                         }
                         catch
                         {
@@ -84,7 +93,12 @@ namespace powershellYK.support.transform
                     {
                         try
                         {
+#if NET9_0_OR_GREATER
+                            byte[] bytes=Convert.FromBase64String(newPath);
+                            return X509CertificateLoader.LoadCertificate(bytes);
+#else
                             return new X509Certificate2(newPath);
+#endif
                         }
                         catch
                         {

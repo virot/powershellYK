@@ -1,4 +1,4 @@
-﻿/// <summary>
+/// <summary>
 /// Moves a key pair from one YubiKey PIV slot to another.
 /// Optionally migrates the associated certificate to the new slot.
 /// Requires a YubiKey with PIV support and key movement capability.
@@ -27,13 +27,13 @@ namespace powershellYK.Cmdlets.PIV
     {
         // Parameter for source slot
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [ValidateYubikeyPIVSlot(DontAllowAttestion = true)]
+        [ValidateYubikeyPIVSlot(DontAllowAttestation = true)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to move a key from")]
         public PIVSlot SourceSlot { get; set; }
 
         // Parameter for destination slot
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [ValidateYubikeyPIVSlot(DontAllowAttestion = true)]
+        [ValidateYubikeyPIVSlot(DontAllowAttestation = true)]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to move a key to")]
         public PIVSlot DestinationSlot { get; set; }
 

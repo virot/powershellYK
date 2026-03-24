@@ -1,33 +1,42 @@
 ﻿---
+document type: cmdlet
 external help file: powershellYK.dll-Help.xml
+HelpUri: 
 Module Name: powershellYK
-online version:
-schema: 2.0.0
+ms.date: 03-19-2026
+PlatyPS schema version: 2024-05-01
 ---
 
 # Rename-YubiKeyBIOFingerprint
 
 ## SYNOPSIS
+
 Changes the template name of a registered fingerprint on the YubiKey Bio or YubiKey Bio Multi-Protocol Edition (MPE).
 
 ## SYNTAX
 
 ### Rename using Name
+
 ```
 Rename-YubiKeyBIOFingerprint -Name <String> -NewName <String> [<CommonParameters>]
 ```
 
 ### Rename using ID
+
 ```
 Rename-YubiKeyBIOFingerprint -ID <String> -NewName <String> [<CommonParameters>]
 ```
 
+## ALIASES
+
 ## DESCRIPTION
+
 You can update the friendly name of a fingerprint on the yubikey Bio.
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Get-YubikeyBIOFingerprint
 
@@ -42,6 +51,7 @@ Fingerprint renamed (left index finger).
 Changes the friendly name of the fingerprint with name "left index" to "left index finger".
 
 ### Example 2
+
 ```powershell
 PS C:\> Get-YubikeyBIOFingerprint
 
@@ -58,52 +68,80 @@ Changes the friendly name of the fingerprint with name "left index to "thumb".
 ## PARAMETERS
 
 ### -ID
-ID of finger to rename
+
+ID of fingerprint to rename
 
 ```yaml
-Type: String
-Parameter Sets: Rename using ID
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.String
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Rename using ID
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -Name
-Friendly name of finger to rename
+
+Friendly name of fingerprint to rename
 
 ```yaml
-Type: String
-Parameter Sets: Rename using Name
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.String
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Rename using Name
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### -NewName
+
 New friendly name
 
 ```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+Type: System.String
+DefaultValue: None
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Rename using ID
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: Rename using Name
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -112,6 +150,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
+
+{{ Fill in the related links here }}
+

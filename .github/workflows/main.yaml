@@ -26,7 +26,7 @@ jobs:
         dotnet-version: '8.x.x' # Specify the .NET version you're using
 
     - name: Run dotnet format
-      run: dotnet format Module/powershellYK.csproj
+      run: dotnet format --no-restore --verbosity normal Module/powershellYK.csproj
       continue-on-error: false
 
     - name: Check for uncommitted changes
@@ -43,22 +43,32 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Setup .NET
+    - name: Setup .NET 8
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: '8.x.x' # Specify the .NET version you're using
+
+    - name: Setup .NET 9
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '9.x.x' # Specify the .NET version you're using
+
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '10.x.x' # Specify the .NET version you're using
 
     - name: Install dependencies
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --no-restore -c Release Module/powershellYK.csproj --output release
+      run: dotnet build --no-restore -c Release Module/powershellYK.csproj
 
     - name: Save Build Output
       uses: actions/upload-artifact@v4
       with:
         name: build-output
-        path: release/
+        path: Module/bin/module/Release/net8.0/
 
   pester-windows:
     runs-on: windows-latest

@@ -1,4 +1,4 @@
-﻿/// <summary>
+/// <summary>
 /// Creates a new key pair in a specified YubiKey PIV slot.
 /// Supports various algorithms and policies for PIN and touch requirements.
 /// Requires a YubiKey with PIV support.
@@ -31,7 +31,7 @@ namespace powershellYK.Cmdlets.PIV
     {
         // Parameters for key creation
         [ArgumentCompletions("\"PIV Authentication\"", "\"Digital Signature\"", "\"Key Management\"", "\"Card Authentication\"", "0x9a", "0x9c", "0x9d", "0x9e")]
-        [ValidateYubikeyPIVSlot(DontAllowAttestion = true)]
+        [ValidateYubikeyPIVSlot(DontAllowAttestation = true)]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipeline = false, HelpMessage = "What slot to create a new key in")]
         public PIVSlot Slot { get; set; }
 
@@ -56,16 +56,16 @@ namespace powershellYK.Cmdlets.PIV
             if (YubiKeyModule._yubikey is not null)
             {
                 // Check for supported RSA algorithms
-                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa1024)) { availableAlgorithms.Add("Rsa1024"); };
-                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa2048)) { availableAlgorithms.Add("Rsa2048"); };
-                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa3072)) { availableAlgorithms.Add("Rsa3072"); };
-                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa4096)) { availableAlgorithms.Add("Rsa4096"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa1024)) { availableAlgorithms.Add("Rsa1024"); }
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa2048)) { availableAlgorithms.Add("Rsa2048"); }
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa3072)) { availableAlgorithms.Add("Rsa3072"); }
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivRsa4096)) { availableAlgorithms.Add("Rsa4096"); }
 
                 // Check for supported ECC algorithms
-                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { availableAlgorithms.Add("EcP256"); };
-                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { availableAlgorithms.Add("EcP384"); };
-                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { availableAlgorithms.Add("Ed25519"); };
-                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { availableAlgorithms.Add("X25519"); };
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP256)) { availableAlgorithms.Add("EcP256"); }
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivEccP384)) { availableAlgorithms.Add("EcP384"); }
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { availableAlgorithms.Add("Ed25519"); }
+                if (((YubiKeyDevice)YubiKeyModule._yubikey!).HasFeature(YubiKeyFeature.PivCurve25519)) { availableAlgorithms.Add("X25519"); }
             }
             else
             {
