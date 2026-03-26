@@ -35,7 +35,7 @@ using powershellYK.FIDO2;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsSecurity.Protect, "YubiKeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High, DefaultParameterSetName = "WithCredential")]
+    [Cmdlet(VerbsSecurity.Protect, "YubiKeyFIDO2File", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High, DefaultParameterSetName = "WithCredential")]
     public class ProtectYubiKeyFIDO2FileCmdlet : PSCmdlet
     {
         // Parameters for file input/output

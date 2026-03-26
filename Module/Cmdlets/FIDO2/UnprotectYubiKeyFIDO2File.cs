@@ -25,7 +25,7 @@ using powershellYK.FIDO2;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsSecurity.Unprotect, "YubiKeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet(VerbsSecurity.Unprotect, "YubiKeyFIDO2File", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     public class UnProtectYubiKeyFIDO2FileCmdlet : PSCmdlet
     {
         // Parameters for file input/output
