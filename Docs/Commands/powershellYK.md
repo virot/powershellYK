@@ -5,7 +5,7 @@ HelpInfoUri: ''
 Locale: en-US
 Module Guid: d947dd9b-87eb-49ea-a373-b91c7acc0917
 Module Name: powershellYK
-ms.date: 03-19-2026
+ms.date: 03-27-2026
 PlatyPS schema version: 2024-05-01
 System.Collections.Generic.Dictionary`2[System.Object,System.Object]: ''
 ---
@@ -33,6 +33,10 @@ Creates a CSR for a slot in the YubiKey.
 ### [Build-YubiKeyPIVSignCertificate](Build-YubiKeyPIVSignCertificate.md)
 
 Sign a certificate request with a YubiKey.
+
+### [Confirm-YubiKeyFIDO2Attestation](Confirm-YubiKeyFIDO2Attestation.md)
+
+{{ Fill in the Synopsis }}
 
 ### [Confirm-YubiKeyPIVAttestation](Confirm-YubiKeyPIVAttestation.md)
 
@@ -69,6 +73,10 @@ Enables logging from the Yubico SDK.
 ### [Enable-YubikeyFIDO2EnterpriseAttestation](Enable-YubikeyFIDO2EnterpriseAttestation.md)
 
 Enables the Enterprise Attestion feature on the YubiKey FIDO2 device.
+
+### [Export-YubiKeyFIDO2Blob](Export-YubiKeyFIDO2Blob.md)
+
+Exports large blob from YubiKey FIDO2 by Credential ID or Relying Party ID (Origin).
 
 ### [Export-YubiKeyPIVCertificate](Export-YubiKeyPIVCertificate.md)
 
@@ -114,6 +122,10 @@ YubiKey OTP Information
 
 Gets information about the PIV module and specific slots.
 
+### [Import-YubiKeyFIDO2Blob](Import-YubiKeyFIDO2Blob.md)
+
+Imports large blob to YubiKey FIDO2 by Credential ID or Relying Party ID (Origin).
+
 ### [Import-YubiKeyPIV](Import-YubiKeyPIV.md)
 
 Import certificate
@@ -125,6 +137,10 @@ Lock the YubiKey configuration
 ### [Move-YubikeyPIV](Move-YubikeyPIV.md)
 
 Move a key from one slot to another
+
+### [New-Challenge](New-Challenge.md)
+
+Creates a pseudo random challenge to support FIDO2 attestation output (among other things).
 
 ### [New-YubiKeyFIDO2Credential](New-YubiKeyFIDO2Credential.md)
 
