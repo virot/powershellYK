@@ -1,14 +1,14 @@
 /// <summary>
-/// Decrypts a file previously encrypted with Protect-YubiKeyFIDO2.
+/// Decrypts a file previously encrypted with Protect-YubiKeyFIDO2File.
 /// Reads the credential ID and relying party ID from the encrypted file header,
 /// then uses the YubiKey's FIDO2 hmac-secret extension to derive the decryption key.
 ///
 /// .EXAMPLE
-/// Unprotect-YubiKeyFIDO2 -Path .\secret.txt.enc
+/// Unprotect-YubiKeyFIDO2File -Path .\secret.txt.enc
 /// Decrypts the file, writing output to secret.txt
 ///
 /// .EXAMPLE
-/// Unprotect-YubiKeyFIDO2 -Path .\secret.txt.enc -OutFile .\recovered.txt
+/// Unprotect-YubiKeyFIDO2File -Path .\secret.txt.enc -OutFile .\recovered.txt
 /// Decrypts the file to a specific output path
 /// </summary>
 
@@ -26,7 +26,7 @@ using powershellYK.FIDO2;
 namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsSecurity.Unprotect, "YubiKeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
-    public class UnprotectYubiKeyFIDO2Cmdlet : PSCmdlet
+    public class UnProtectYubiKeyFIDO2FileCmdlet : PSCmdlet
     {
         // Parameters for file input/output
         [Parameter(Mandatory = true, ValueFromPipeline = true, HelpMessage = "Encrypted file to decrypt.")]
@@ -84,7 +84,7 @@ namespace powershellYK.Cmdlets.Fido
                     ? Path.FullName[..^4]
                     : Path.FullName + ".dec");
 
-            // Read and parse the encrypted file (provider-aware path, same as Import-YubiKeyFIDO2Blob / Protect-YubiKeyFIDO2)
+            // Read and parse the encrypted file (provider-aware path, same as Import-YubiKeyFIDO2Blob / Protect-YubiKeyFIDO2File)
             byte[] fileData;
             try
             {
@@ -162,7 +162,7 @@ namespace powershellYK.Cmdlets.Fido
                     throw new IOException($"Failed to write decrypted file to '{resolvedOutputPath}'.", ex);
                 }
 
-                WriteInformation(new InformationRecord($"Decrypted file written to {resolvedOutputPath}", "Unprotect-YubiKeyFIDO2"));
+                WriteInformation(new InformationRecord($"Decrypted file written to {resolvedOutputPath}", "Unprotect-YubiKeyFIDO2File"));
                 WriteObject(new FileInfo(resolvedOutputPath));
             }
         }

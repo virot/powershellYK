@@ -5,20 +5,20 @@
 ///
 /// .EXAMPLE
 /// $cred = Get-YubiKeyFIDO2Credential | Where-Object { $_.RelyingParty.Id -eq "demo.yubico.com" }
-/// Protect-YubiKeyFIDO2 -Path .\secret.txt -Credential $cred
+/// Protect-YubiKeyFIDO2File -Path .\secret.txt -Credential $cred
 /// Encrypts secret.txt using the specified FIDO2 credential
 ///
 /// .EXAMPLE
-/// Get-Item .\secret.txt | Protect-YubiKeyFIDO2 -Credential $cred
+/// Get-Item .\secret.txt | Protect-YubiKeyFIDO2File -Credential $cred
 /// Encrypts a file via pipeline input
 ///
 /// .EXAMPLE
-/// Protect-YubiKeyFIDO2 -Path .\secret.txt -RelyingPartyID "demo.yubico.com"
+/// Protect-YubiKeyFIDO2File -Path .\secret.txt -RelyingPartyID "demo.yubico.com"
 /// Encrypts using the sole credential for that relying party (aliases -RP and -Origin).
 ///
 /// .EXAMPLE
 /// Get-YubiKeyFIDO2Credential -RelyingPartyID "demo.yubico.com"
-/// Protect-YubiKeyFIDO2 -Path .\secret.txt -CredentialId "19448fe...67ab9207071e" -RelyingPartyID "demo.yubico.com"
+/// Protect-YubiKeyFIDO2File -Path .\secret.txt -CredentialId "19448fe...67ab9207071e" -RelyingPartyID "demo.yubico.com"
 /// When the RP has several credentials, list them with Get-YubiKeyFIDO2Credential, then pass the chosen -CredentialId (hex or base64url) together with -RelyingPartyID.
 /// </summary>
 
@@ -36,7 +36,7 @@ using powershellYK.FIDO2;
 namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsSecurity.Protect, "YubiKeyFIDO2", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High, DefaultParameterSetName = "WithCredential")]
-    public class ProtectYubiKeyFIDO2Cmdlet : PSCmdlet
+    public class ProtectYubiKeyFIDO2FileCmdlet : PSCmdlet
     {
         // Parameters for file input/output
         [Parameter(Mandatory = true, ValueFromPipeline = true, HelpMessage = "Input file to encrypt.")]
@@ -244,7 +244,7 @@ namespace powershellYK.Cmdlets.Fido
                     throw new IOException($"Failed to write encrypted file to '{resolvedOutputPath}'.", ex);
                 }
 
-                WriteInformation(new InformationRecord($"Encrypted file written to {resolvedOutputPath}", "Protect-YubiKeyFIDO2"));
+                WriteInformation(new InformationRecord($"Encrypted file written to {resolvedOutputPath}", "Protect-YubiKeyFIDO2File"));
                 WriteObject(new FileInfo(resolvedOutputPath));
             }
         }
