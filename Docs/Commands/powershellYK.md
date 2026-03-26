@@ -70,6 +70,10 @@ Enables logging from the Yubico SDK.
 
 Enables the Enterprise Attestion feature on the YubiKey FIDO2 device.
 
+### [Export-YubiKeyFIDO2Blob](Export-YubiKeyFIDO2Blob.md)
+
+Exports large blob from YubiKey FIDO2 by Credential ID or Relying Party ID (Origin).
+
 ### [Export-YubiKeyPIVCertificate](Export-YubiKeyPIVCertificate.md)
 
 Export certificate from YubiKey PIV
@@ -114,6 +118,10 @@ YubiKey OTP Information
 
 Gets information about the PIV module and specific slots.
 
+### [Import-YubiKeyFIDO2Blob](Import-YubiKeyFIDO2Blob.md)
+
+Imports large blob to YubiKey FIDO2 by Credential ID or Relying Party ID (Origin).
+
 ### [Import-YubiKeyPIV](Import-YubiKeyPIV.md)
 
 Import certificate
@@ -142,6 +150,10 @@ Create a new private key
 ### [New-YubikeyPIVSelfSign](New-YubikeyPIVSelfSign.md)
 
 Create a self signed certificate
+
+### [Protect-YubiKeyFIDO2File](Protect-YubiKeyFIDO2File.md)
+
+Encrypts a file using FIDO2 PRF (hmac-secret) extension on a YubiKey.
 
 ### [Protect-YubiKeyOATH](Protect-YubiKeyOATH.md)
 
@@ -243,6 +255,10 @@ Unblock a PIN locked YubiKey PIV.
 ### [Unlock-Yubikey](Unlock-Yubikey.md)
 
 Unlocks the configuration lock on the YubiKey.
+
+### [Unprotect-YubiKeyFIDO2File](Unprotect-YubiKeyFIDO2File.md)
+
+Decrypts a file previously encrypted with Protect-YubiKeyFIDO2.
 
 ### [Unprotect-YubiKeyOATH](Unprotect-YubiKeyOATH.md)
 
