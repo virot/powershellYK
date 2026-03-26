@@ -15,6 +15,22 @@ Describe "New-Challenge" -Tag "Without-YubiKey" {
         (Get-Item $outFile).Length | Should -Be 128
     }
 
+    It -Name "Defaults to challenge.bin in current directory when -OutFile omitted" -Test {
+        $tempDir = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [Guid]::NewGuid().ToString('n'))
+        New-Item -ItemType Directory -Path $tempDir | Out-Null
+        try {
+            Push-Location $tempDir
+            New-Challenge
+            $defaultPath = Join-Path $tempDir 'challenge.bin'
+            (Test-Path $defaultPath) | Should -Be $true
+            (Get-Item $defaultPath).Length | Should -Be 128
+        }
+        finally {
+            Pop-Location
+            Remove-Item -LiteralPath $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
     It -Name "Creates file with -Length 256" -Test {
         New-Challenge -Length 256 -OutFile $outFile
         (Get-Item $outFile).Length | Should -Be 256

@@ -5,7 +5,7 @@ HelpInfoUri: ''
 Locale: en-US
 Module Guid: d947dd9b-87eb-49ea-a373-b91c7acc0917
 Module Name: powershellYK
-ms.date: 03-19-2026
+ms.date: 03-27-2026
 PlatyPS schema version: 2024-05-01
 System.Collections.Generic.Dictionary`2[System.Object,System.Object]: ''
 ---
@@ -33,6 +33,10 @@ Creates a CSR for a slot in the YubiKey.
 ### [Build-YubiKeyPIVSignCertificate](Build-YubiKeyPIVSignCertificate.md)
 
 Sign a certificate request with a YubiKey.
+
+### [Confirm-YubiKeyFIDO2Attestation](Confirm-YubiKeyFIDO2Attestation.md)
+
+{{ Fill in the Synopsis }}
 
 ### [Confirm-YubiKeyPIVAttestation](Confirm-YubiKeyPIVAttestation.md)
 
@@ -133,6 +137,10 @@ Lock the YubiKey configuration
 ### [Move-YubikeyPIV](Move-YubikeyPIV.md)
 
 Move a key from one slot to another
+
+### [New-Challenge](New-Challenge.md)
+
+Creates a pseudo random challenge to support FIDO2 attestation output (among other things).
 
 ### [New-YubiKeyFIDO2Credential](New-YubiKeyFIDO2Credential.md)
 
