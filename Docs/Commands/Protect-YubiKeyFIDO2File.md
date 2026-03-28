@@ -257,7 +257,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## NOTES
 
-{{ Fill in the Notes }}
+FIDO private keys are non-exportable and never leave the YubiKey. Decryption therefore depends entirely on continued access to the original YubiKey _and_ the specific credential used for encryption. If the YubiKey is lost, reset, or if the credential is removed, the encrypted data cannot be recovered.
 
 ## RELATED LINKS
 
