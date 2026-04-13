@@ -1,16 +1,28 @@
 /// <summary>
 /// Encrypts a file using FIDO2 PRF (hmac-secret) extension on a YubiKey.
 /// Uses HKDF-SHA256 for key derivation and AES-256-GCM for authenticated encryption.
-/// Requires a YubiKey with FIDO2 hmac-secret support and administrator privileges on Windows.
+/// Requires a YubiKey with FIDO2 hmac-secret support, a FIDO2 PIN, and administrator
+/// privileges on Windows.
+/// When no credential or relying party is provided, the cmdlet automatically creates a
+/// synthetic FIDO2 credential (RP and username both set to <c>prf-encryption</c>) and
+/// uses it for encryption.
+///
+/// .EXAMPLE
+/// Protect-YubiKeyFIDO2File -Path .\secret.txt
+/// Encrypts secret.txt, automatically creating a FIDO2 credential (prf-encryption) for file encryption.
+///
+/// .EXAMPLE
+/// Protect-YubiKeyFIDO2File -Path .\secret.txt -Force
+/// Same as above but skips the credential-creation confirmation prompt.
 ///
 /// .EXAMPLE
 /// $cred = Get-YubiKeyFIDO2Credential | Where-Object { $_.RelyingParty.Id -eq "demo.yubico.com" }
 /// Protect-YubiKeyFIDO2File -Path .\secret.txt -Credential $cred
-/// Encrypts secret.txt using the specified FIDO2 credential
+/// Encrypts secret.txt using the specified FIDO2 credential.
 ///
 /// .EXAMPLE
 /// Get-Item .\secret.txt | Protect-YubiKeyFIDO2File -Credential $cred
-/// Encrypts a file via pipeline input
+/// Encrypts a file via pipeline input.
 ///
 /// .EXAMPLE
 /// Protect-YubiKeyFIDO2File -Path .\secret.txt -RelyingPartyID "demo.yubico.com"
@@ -35,7 +47,7 @@ using powershellYK.FIDO2;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsSecurity.Protect, "YubiKeyFIDO2File", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High, DefaultParameterSetName = "WithCredential")]
+    [Cmdlet(VerbsSecurity.Protect, "YubiKeyFIDO2File", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High, DefaultParameterSetName = "AutoCreate")]
     public class ProtectYubiKeyFIDO2FileCmdlet : PSCmdlet
     {
         // Parameters for file input/output
@@ -67,6 +79,12 @@ namespace powershellYK.Cmdlets.Fido
         [Alias("RP", "Origin")]
         [ValidateNotNullOrEmpty]
         public string? RelyingPartyID { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Suppress the confirmation prompt when auto-creating a credential.")]
+        public SwitchParameter Force { get; set; }
+
+        private const string AutoCreateRpId = "prf-encryption";
+        private const string AutoCreateUsername = "prf-encryption";
 
         // HKDF domain separation info string for key derivation
         private static readonly byte[] HkdfInfo = "powershellYK/fido2prf/v1"u8.ToArray();
@@ -131,7 +149,35 @@ namespace powershellYK.Cmdlets.Fido
                 byte[] credIdBytes;
                 string rpId;
 
-                if (ParameterSetName == "WithCredential")
+                if (ParameterSetName == "AutoCreate")
+                {
+                    string username = AutoCreateUsername;
+                    rpId = AutoCreateRpId;
+
+                    if (!Force.IsPresent && !ShouldContinue(
+                        $"No credential or relying party was provided. A new FIDO2 credential will be created on RP '{rpId}' for user '{username}'. Continue?",
+                        "Create FIDO2 credential"))
+                    {
+                        return;
+                    }
+
+                    WriteDebug($"AutoCreate: invoking New-YubiKeyFIDO2Credential for RP '{rpId}', user '{username}'...");
+                    var ps = PowerShell.Create(RunspaceMode.CurrentRunspace)
+                        .AddCommand("New-YubiKeyFIDO2Credential")
+                        .AddParameter("RelyingPartyID", rpId)
+                        .AddParameter("Username", username)
+                        .AddParameter("Confirm", false);
+                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                        ps.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+
+                    var results = ps.Invoke();
+                    if (results.Count == 0 || results[0].BaseObject is not CredentialData credData)
+                        throw new InvalidOperationException("Failed to create a FIDO2 credential for file encryption.");
+
+                    credIdBytes = credData.CredentialId!.Value.ToArray();
+                    WriteDebug($"AutoCreate: credential created, ID {Convert.ToHexString(credIdBytes).ToLowerInvariant()}");
+                }
+                else if (ParameterSetName == "WithCredential")
                 {
                     credIdBytes = Credential!.CredentialID.ToByte();
                     rpId = Credential.RelyingParty.Id!;
