@@ -4,12 +4,12 @@
 /// Requires a YubiKey with FIDO2 hmac-secret support, a FIDO2 PIN, and administrator
 /// privileges on Windows.
 /// When no credential or relying party is provided, the cmdlet automatically creates a
-/// synthetic FIDO2 credential (RP and username both set to <c>prf-encryption</c>) and
+/// synthetic FIDO2 credential (RP and username both set to "prf-encryption" and
 /// uses it for encryption.
 ///
 /// .EXAMPLE
 /// Protect-YubiKeyFIDO2File -Path .\secret.txt
-/// Encrypts secret.txt, automatically creating a FIDO2 credential (prf-encryption) for file encryption.
+/// Encrypts secret.txt, automatically creating or reusing a "prf-encryption" credential.
 ///
 /// .EXAMPLE
 /// Protect-YubiKeyFIDO2File -Path .\secret.txt -Force
@@ -142,20 +142,38 @@ namespace powershellYK.Cmdlets.Fido
 
             byte[] salt = RandomNumberGenerator.GetBytes(PRFEncryptedFile.SaltLength);
 
-            using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
+            byte[] credIdBytes;
+            string rpId;
+
+            if (ParameterSetName == "AutoCreate")
             {
-                fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+                rpId = AutoCreateRpId;
+                credIdBytes = null!;
 
-                byte[] credIdBytes;
-                string rpId;
+                using (var lookupSession = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
+                {
+                    lookupSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                if (ParameterSetName == "AutoCreate")
+                    var rps = lookupSession.EnumerateRelyingParties();
+                    var match = rps.FirstOrDefault(rp =>
+                        string.Equals(rp.Id, rpId, StringComparison.OrdinalIgnoreCase));
+                    if (match is not null)
+                    {
+                        var creds = lookupSession.EnumerateCredentialsForRelyingParty(match);
+                        if (creds.Count > 0)
+                        {
+                            credIdBytes = creds[0].CredentialId.Id.ToArray();
+                            WriteDebug($"AutoCreate: reusing existing credential {Convert.ToHexString(credIdBytes).ToLowerInvariant()} for RP '{rpId}'.");
+                        }
+                    }
+                }
+
+                if (credIdBytes is null)
                 {
                     string username = AutoCreateUsername;
-                    rpId = AutoCreateRpId;
 
                     if (!Force.IsPresent && !ShouldContinue(
-                        $"No credential or relying party was provided. A new FIDO2 credential will be created on RP '{rpId}' for user '{username}'. Continue?",
+                        $"No credential or relying party was provided. A new FIDO2 credential will be created on RP '{rpId}'. Continue?",
                         "Create FIDO2 credential"))
                     {
                         return;
@@ -177,19 +195,24 @@ namespace powershellYK.Cmdlets.Fido
                     credIdBytes = credData.CredentialId!.Value.ToArray();
                     WriteDebug($"AutoCreate: credential created, ID {Convert.ToHexString(credIdBytes).ToLowerInvariant()}");
                 }
-                else if (ParameterSetName == "WithCredential")
+            }
+            else if (ParameterSetName == "WithCredential")
+            {
+                credIdBytes = Credential!.CredentialID.ToByte();
+                rpId = Credential.RelyingParty.Id!;
+            }
+            else if (ParameterSetName == "ByRelyingPartyID")
+            {
+                if (string.IsNullOrWhiteSpace(RelyingPartyID))
                 {
-                    credIdBytes = Credential!.CredentialID.ToByte();
-                    rpId = Credential.RelyingParty.Id!;
+                    throw new ArgumentNullException(nameof(RelyingPartyID), "A relying party ID or name must be provided.");
                 }
-                else if (ParameterSetName == "ByRelyingPartyID")
-                {
-                    if (string.IsNullOrWhiteSpace(RelyingPartyID))
-                    {
-                        throw new ArgumentNullException(nameof(RelyingPartyID), "A relying party ID or name must be provided.");
-                    }
 
-                    var relyingParties = fido2Session.EnumerateRelyingParties();
+                using (var resolveSession = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
+                {
+                    resolveSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+
+                    var relyingParties = resolveSession.EnumerateRelyingParties();
                     var matchingRps = relyingParties.Where(rpMatch =>
                             string.Equals(rpMatch.Id, RelyingPartyID, StringComparison.OrdinalIgnoreCase) ||
                             (!string.IsNullOrWhiteSpace(rpMatch.Name) && string.Equals(rpMatch.Name, RelyingPartyID, StringComparison.OrdinalIgnoreCase)))
@@ -211,7 +234,7 @@ namespace powershellYK.Cmdlets.Fido
                     RelyingParty credentialRelyingParty = matchingRps[0];
                     try
                     {
-                        var credentialsForOrigin = fido2Session.EnumerateCredentialsForRelyingParty(credentialRelyingParty);
+                        var credentialsForOrigin = resolveSession.EnumerateCredentialsForRelyingParty(credentialRelyingParty);
                         if (credentialsForOrigin.Count == 0)
                         {
                             throw new InvalidOperationException($"No credentials found for relying party '{credentialRelyingParty.Id}'.");
@@ -235,11 +258,17 @@ namespace powershellYK.Cmdlets.Fido
                             $"Unable to enumerate credentials for relying party '{credentialRelyingParty.Id}' due to unsupported algorithm.");
                     }
                 }
-                else
-                {
-                    credIdBytes = CredentialID.ToByte();
-                    rpId = RelyingPartyID!;
-                }
+            }
+            else
+            {
+                credIdBytes = CredentialID.ToByte();
+                rpId = RelyingPartyID!;
+            }
+
+            // Fresh session for the assertion -- not contaminated by credential creation
+            using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
+            {
+                fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
                 // Build client data hash for the assertion
                 var relyingParty = new RelyingParty(rpId);
