@@ -25,18 +25,20 @@
 using System.IO;
 using System.Management.Automation;
 using System.Security.Cryptography;
+using powershellYK.support.transform;
 
 namespace powershellYK.Cmdlets.Other
 {
     [Cmdlet(VerbsCommon.New, "Challenge")]
-    public class NewChallengeCommand : Cmdlet
+    public class NewChallengeCommand : PSCmdlet
     {
         [Parameter(Mandatory = false, HelpMessage = "Length of the challenge in bytes")]
         [ValidateRange(1, 4096)]
         public int Length { get; set; } = 128;
 
         [Parameter(Mandatory = false, HelpMessage = "Path for the output file. Defaults to challenge.bin")]
-        public string? OutFile { get; set; }
+        [TransformPath]
+        public FileInfo? OutFile { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Force overwriting existing files.")]
         public SwitchParameter Force { get; set; } = false;
@@ -44,21 +46,24 @@ namespace powershellYK.Cmdlets.Other
         // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
-            // Determine output path; default to challenge.bin when not specified
-            string path = string.IsNullOrEmpty(OutFile) ? "challenge.bin" : OutFile;
-
-            if (File.Exists(path) && !Force.IsPresent)
+            // Determine output path; default to challenge.bin in the current PowerShell location
+            if (OutFile is null)
             {
-                var ex = new IOException($"File already exists: {path}");
-                ex.HResult = unchecked((int)0x80070050); // ERROR_FILE_EXISTS
-                throw ex;
+                string pswd = SessionState.Path.CurrentFileSystemLocation.Path;
+                OutFile = new FileInfo(Path.Combine(pswd, "challenge.bin"));
             }
+
+            string path = OutFile.FullName;
 
             // Generate cryptographically secure random challenge bytes
             byte[] challenge = new byte[Length];
             RandomNumberGenerator.Fill(challenge);
 
-            File.WriteAllBytes(path, challenge);
+            // CreateNew fails atomically if file exists; Create allows overwrite
+            using (var fs = new FileStream(path, Force.IsPresent ? FileMode.Create : FileMode.CreateNew))
+            {
+                fs.Write(challenge, 0, challenge.Length);
+            }
 
             WriteInformation($"Challenge of length {Length} generated and written to file '{path}'.", new[] { "Challenge", "Info" });
         }
