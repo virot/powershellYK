@@ -6,6 +6,10 @@
 /// .EXAMPLE
 /// Get-YubiKey
 /// Returns information about the currently connected YubiKey
+/// 
+/// .EXAMPLE
+/// Get-YubiKey | Select-Object SerialNumber, NfcIdDec, NfcIdHex
+/// Returns information about select attributes of the YubiKey: serial number, NFC ID (decimal) and NFC ID (hex)
 /// </summary>
 
 using System.Management.Automation;           // Windows PowerShell namespace.

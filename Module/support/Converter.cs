@@ -9,6 +9,17 @@
 /// .EXAMPLE
 /// $bytes = [byte[]]@(0x1A, 0x2B, 0x3C, 0x4D)
 /// $hexString = [powershellYK.support.Converter]::ByteArrayToString($bytes)
+/// 
+/// .EXAMPLE
+/// $uid = [powershellYK.support.Converter]::SerialToNfcUid(12345678)
+/// $hex = [powershellYK.support.Converter]::ByteArrayToString($uid)
+/// Returns NFC ID in hex: "274E61BC00614E"
+/// 
+/// .EXAMPLE
+/// $uid = [powershellYK.support.Converter]::SerialToNfcUid(12345678)
+/// $dec = [powershellYK.support.Converter]::NfcUidToDecimal($uid)
+/// Returns NFC ID in decimal: 11161651036004942
+/// 
 /// </summary>
 
 // Imports
@@ -94,6 +105,33 @@ namespace powershellYK.support
                 base64 += new string('=', paddingCount);
             }
             return base64;
+        }
+
+        // Derive the 7-byte NFC UID from a YubiKey serial number
+        public static byte[] SerialToNfcUid(uint serial)
+        {
+            byte b0 = (byte)(serial >> 24);
+            byte b1 = (byte)(serial >> 16);
+            byte b2 = (byte)(serial >> 8);
+            byte b3 = (byte)serial;
+
+            return new byte[] { 0x27, b3, b2, b1, b0, b2, b3 };
+        }
+
+        // Derive the decimal representation of a 7-byte NFC UID
+        public static ulong NfcUidToDecimal(byte[] uid)
+        {
+            if (uid.Length != 7)
+            {
+                throw new ArgumentException("NFC UID must be 7 bytes long", nameof(uid));
+            }
+
+            ulong value = 0;
+            for (int i = 0; i < uid.Length; i++)
+            {
+                value = (value << 8) | uid[i];
+            }
+            return value;
         }
 
         // Convert YubiKey public key to .NET asymmetric algorithm
