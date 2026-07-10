@@ -4,7 +4,6 @@ external help file: powershellYK.dll-Help.xml
 HelpUri: ''
 Locale: en-SE
 Module Name: powershellYK
-ms.date: 03-26-2026
 PlatyPS schema version: 2024-05-01
 title: Unprotect-YubiKeyFIDO2File
 ---
@@ -25,9 +24,6 @@ Unprotect-YubiKeyFIDO2File -Path <FileInfo> [-OutFile <FileInfo>] [-WhatIf] [-Co
 ```
 
 ## ALIASES
-
-This cmdlet has the following aliases,
-  {{Insert list of aliases}}
 
 ## DESCRIPTION
 
