@@ -141,7 +141,7 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
         // Compute the message digest of the data using the given hashAlgorithm.
         private byte[] DigestData(byte[] data, HashAlgorithmName hashAlgorithm)
         {
-            using HashAlgorithm digester = hashAlgorithm.Name switch
+            HashAlgorithm digester = hashAlgorithm.Name switch
             {
                 "SHA1" => CryptographyProviders.Sha1Creator(),
                 "SHA256" => CryptographyProviders.Sha256Creator(),
@@ -176,8 +176,16 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
                         InvalidAlgorithmMessage));
             }
 
+            if (digester.Hash is null)
+            {
+                throw new ArgumentException(
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        InvalidAlgorithmMessage));
+            }
+
             _ = digester.TransformFinalBlock(data, 0, data.Length);
-            Array.Copy(digester.Hash!, 0, digest, offset, digester.Hash.Length);
+            Array.Copy(digester.Hash, 0, digest, offset, digester.Hash.Length);
 
             return digest;
         }
