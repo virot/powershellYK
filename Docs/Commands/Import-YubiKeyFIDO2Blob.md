@@ -19,14 +19,13 @@ Imports large blob to YubiKey FIDO2 by Credential ID or Relying Party ID (Origin
 ### Set LargeBlob
 
 ```
-Import-YubiKeyFIDO2Blob -LargeBlob <FileInfo> -CredentialId <CredentialID> [-Force]
- [<CommonParameters>]
+Import-YubiKeyFIDO2Blob -Path <FileInfo> -CredentialId <CredentialID> [-Force] [<CommonParameters>]
 ```
 
 ### Set LargeBlob by RelyingPartyID
 
 ```
-Import-YubiKeyFIDO2Blob -LargeBlob <FileInfo> -RelyingPartyID <string> [-Force] [<CommonParameters>]
+Import-YubiKeyFIDO2Blob -Path <FileInfo> -RelyingPartyID <string> [-Force] [<CommonParameters>]
 ```
 
 ## ALIASES
@@ -105,6 +104,35 @@ Type: System.IO.FileInfo
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
+ParameterSets:
+- Name: Set LargeBlob
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: Set LargeBlob by RelyingPartyID
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Path
+
+File to import as large blob
+
+```yaml
+Type: System.IO.FileInfo
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- File
+- LargeBlob
 ParameterSets:
 - Name: Set LargeBlob
   Position: Named
