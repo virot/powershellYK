@@ -47,8 +47,9 @@ namespace powershellYK.Cmdlets.Fido
             HelpMessage = "File to import as large blob"
         )]
         [TransformPath]
+        [Alias("LargeBlob","File")]
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
-        public required System.IO.FileInfo LargeBlob { get; set; }
+        public required System.IO.FileInfo Path { get; set; }
 
         [Parameter(
             Mandatory = true,
@@ -126,22 +127,22 @@ namespace powershellYK.Cmdlets.Fido
                         }
                         WriteDebug($"Step 1: Large blob support verified (max {fido2Session.AuthenticatorInfo.MaximumSerializedLargeBlobArray.Value} bytes).");
 
-                        if (LargeBlob is null)
+                        if (Path is null)
                         {
-                            throw new ArgumentException("You must enter a valid file path.", nameof(LargeBlob));
+                            throw new ArgumentException("You must enter a valid file path.", nameof(Path));
                         }
 
                         // Resolve and read the input file
-                        string resolvedPath = GetUnresolvedProviderPathFromPSPath(LargeBlob.FullName);
+                        string resolvedPath = GetUnresolvedProviderPathFromPSPath(Path.FullName);
                         byte[] blobData;
                         try
                         {
                             blobData = System.IO.File.ReadAllBytes(resolvedPath);
-                            WriteDebug($"Step 2: Input file loaded from '{LargeBlob.FullName}' ({blobData.Length} bytes).");
+                            WriteDebug($"Step 2: Input file loaded from '{Path.FullName}' ({blobData.Length} bytes).");
                         }
                         catch (Exception ex)
                         {
-                            throw new IOException($"Failed to read large blob data from file '{LargeBlob}'.", ex);
+                            throw new IOException($"Failed to read large blob data from file '{Path}'.", ex);
                         }
 
                         // Resolve target credential and corresponding relying party.
@@ -332,7 +333,7 @@ namespace powershellYK.Cmdlets.Fido
 
                         WriteInformation(
                             $"FIDO2 large blob entry added successfully for Relying Party (Origin): '{credentialRelyingParty.Id}'.",
-                            new[] { "FIDO2", "LargeBlob" });
+                            new[] { "FIDO2", "Path" });
                         break;
                 }
             }
