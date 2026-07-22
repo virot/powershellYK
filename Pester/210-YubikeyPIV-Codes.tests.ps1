@@ -1,12 +1,11 @@
 Describe "Test YubikeyPIV PIV/PUK management" -Tag "Destructive" {
     BeforeEach {
+       Reset-YubikeyPIV -Confirm:$false
     }
     It "outputs 'Verify that connect works'" {
-        {Reset-YubikeyPIV -Confirm:$false} | Should -Not -Throw
         Get-YubikeyPIV|Select -ExpandProperty PinRetries | Should -Be 3
     }
     It "outputs 'Test Set-YubikeyPIV -PINRetries 8 -PUKRetries 6'" {
-        {Reset-YubikeyPIV -Confirm:$false} | Should -Not -Throw
         {Connect-YubikeyPIV -PIN (ConvertTo-SecureString -String "123456" -AsPlainText -Force)} | Should -Not -Throw
 	{Set-YubikeyPIV -PinRetries 8 -PukRetries 6} | Should -Not -Throw
         Get-YubikeyPIV|Select -ExpandProperty PinRetries | Should -Be 8
@@ -16,21 +15,26 @@ Describe "Test YubikeyPIV PIV/PUK management" -Tag "Destructive" {
         {Block-YubikeyPIV} | Should -Throw
     }
     It "outputs 'Test Block-YubikeyPIV -PIN'" {
-        {Reset-YubikeyPIV -Confirm:$false} | Should -Not -Throw
         {Connect-YubikeyPIV -PIN (ConvertTo-SecureString -String "123456" -AsPlainText -Force)} | Should -Not -Throw
         {Block-YubikeyPIV -PIN } | Should -Not -Throw
         Get-YubikeyPIV|Select -ExpandProperty PinRetries | Should -Be 3
         Get-YubikeyPIV|Select -ExpandProperty PinRetriesLeft | Should -Be 0
     }
+    It "outputs 'Test Set-YubiKeyPIV UnblockPIN'" {
+        Connect-YubikeyPIV -PIN (ConvertTo-SecureString -String "123456" -AsPlainText -Force)
+        Block-YubikeyPIV -PIN
+        Get-YubikeyPIV|Select -ExpandProperty PinRetries | Should -Be 3
+        Get-YubikeyPIV|Select -ExpandProperty PinRetriesLeft | Should -Be 0
+        Set-YubiKeyPIV -UnblockPIN -NewPIN  (ConvertTo-SecureString -String "123456" -AsPlainText -Force) -PUK  (ConvertTo-SecureString -String "12345678" -AsPlainText -Force)
+        Get-YubikeyPIV|Select -ExpandProperty PinRetriesLeft | Should -Be 3
+    }
     It "outputs 'Test Block-YubikeyPIV -PUK'" {
-        {Reset-YubikeyPIV -Confirm:$false} | Should -Not -Throw
         {Connect-YubikeyPIV -PIN (ConvertTo-SecureString -String "123456" -AsPlainText -Force)} | Should -Not -Throw
         {Block-YubikeyPIV -PUK } | Should -Not -Throw
         Get-YubikeyPIV|Select -ExpandProperty PUKRetries | Should -Be 3
         Get-YubikeyPIV|Select -ExpandProperty PUKRetriesLeft | Should -Be 0
     }
     It "outputs 'Test Block-YubikeyPIV -PIN -PUK'" {
-        {Reset-YubikeyPIV -Confirm:$false} | Should -Not -Throw
         {Connect-YubikeyPIV -PIN (ConvertTo-SecureString -String "123456" -AsPlainText -Force)} | Should -Not -Throw
 	{Set-YubikeyPIV -PinRetries 4 -PukRetries 5} | Should -Not -Throw
         {Block-YubikeyPIV -PIN -PUK } | Should -Not -Throw
@@ -40,7 +44,6 @@ Describe "Test YubikeyPIV PIV/PUK management" -Tag "Destructive" {
         Get-YubikeyPIV|Select -ExpandProperty PUKRetriesLeft | Should -Be 0
     }
     It "outputs 'Change PIN and Verify'" {
-        {Reset-YubikeyPIV -Confirm:$false} | Should -Not -Throw
 	{Set-YubikeyPIV -PIN (ConvertTo-SecureString -String "123456" -AsPlainText -Force) -NewPIN (ConvertTo-SecureString -String "654321" -AsPlainText -Force)} | Should -Not -Throw
         {Connect-YubikeyPIV -PIN (ConvertTo-SecureString -String "123456" -AsPlainText -Force)} | Should -Throw
         {Connect-YubikeyPIV -PIN (ConvertTo-SecureString -String "654321" -AsPlainText -Force)} | Should -Not -Throw
