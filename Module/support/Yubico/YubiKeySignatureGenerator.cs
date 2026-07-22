@@ -35,7 +35,7 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
 
         private readonly PivSession _pivSession;
         private readonly byte _slotNumber;
-        private readonly IPublicKey _publicKey;
+        private readonly KeyType _algorithm;
 
         private readonly RSASignaturePaddingMode _rsaPaddingMode;
         private readonly X509SignatureGenerator _defaultGenerator;
@@ -50,17 +50,13 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
         public YubiKeySignatureGenerator(
             PivSession pivSession,
             byte slotNumber,
-            IPublicKey pivPublicKey,
+            IPublicKey publicKey,
             RSASignaturePaddingMode rsaPaddingMode = RSASignaturePaddingMode.Pss)
         {
-            if (pivSession is null)
-            {
-                throw new ArgumentNullException(nameof(pivSession));
-            }
-            if (pivPublicKey is null)
-            {
-                throw new ArgumentNullException(nameof(pivPublicKey));
-            }
+
+            ArgumentNullException.ThrowIfNull(pivSession);
+            ArgumentNullException.ThrowIfNull(publicKey);
+
             if (!PivSlot.IsValidSlotNumberForSigning(slotNumber))
             {
                 throw new ArgumentException(
@@ -71,28 +67,20 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
 
             _pivSession = pivSession;
             _slotNumber = slotNumber;
-            _publicKey = pivPublicKey;
+            _algorithm = publicKey.KeyType;
             _rsaPaddingMode = rsaPaddingMode;
 
-            if (_publicKey is RSAPublicKey)
+            using var dotNetPublicKey = KeyConverter.GetDotNetFromPublicKey(publicKey);
+
+            if (_algorithm.IsRSA())
             {
                 var paddingScheme = rsaPaddingMode == RSASignaturePaddingMode.Pss ?
                     RSASignaturePadding.Pss : RSASignaturePadding.Pkcs1;
-
-                using (RSA rsa = RSA.Create())
-                {
-                    rsa.ImportSubjectPublicKeyInfo(_publicKey.ExportSubjectPublicKeyInfo(), out _);
-                    _defaultGenerator = X509SignatureGenerator.CreateForRSA(rsa, paddingScheme);
-                }
+                _defaultGenerator = X509SignatureGenerator.CreateForRSA((RSA)dotNetPublicKey, paddingScheme);
             }
-            else if (_publicKey is ECPublicKey)
+            else if (_algorithm.IsEllipticCurve())
             {
-                using (ECDsa ecc = ECDsa.Create())
-                {
-                    ecc.ImportSubjectPublicKeyInfo(_publicKey.ExportSubjectPublicKeyInfo(), out _);
-                    _defaultGenerator = X509SignatureGenerator.CreateForECDsa(ecc);
-                }
-
+                _defaultGenerator = X509SignatureGenerator.CreateForECDsa((ECDsa)dotNetPublicKey);
             }
             else
             {
@@ -130,7 +118,7 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
 
             byte[] dataToSign = DigestData(data, hashAlgorithm);
 
-            if (_publicKey is RSAPublicKey)
+            if (_algorithm.IsRSA())
             {
                 dataToSign = PadRsa(dataToSign, hashAlgorithm);
             }
@@ -139,36 +127,28 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
         }
 
         // Compute the message digest of the data using the given hashAlgorithm.
-        private byte[] DigestData(byte[] data, HashAlgorithmName hashAlgorithm)
+        // For RSA keys, returns the raw digest (PadRsa handles signature padding).
+        // For ECC keys, pads the digest to key size with leading zeros if needed.
+        public byte[] DigestData(byte[] data, HashAlgorithmName hashAlgorithm)
         {
-            using HashAlgorithm digester = hashAlgorithm.Name switch
+            byte[] digest = MessageDigestOperations.ComputeMessageDigest(data, hashAlgorithm);
+
+            // For RSA, return the raw digest - PadRsa handles the signature padding
+            if (_algorithm.IsRSA())
             {
-                "SHA1" => CryptographyProviders.Sha1Creator(),
-                "SHA256" => CryptographyProviders.Sha256Creator(),
-                "SHA384" => CryptographyProviders.Sha384Creator(),
-                "SHA512" => CryptographyProviders.Sha512Creator(),
-                _ => throw new ArgumentException(
-                         string.Format(
-                             CultureInfo.CurrentCulture,
-                             InvalidAlgorithmMessage)),
-            };
+                return digest;
+            }
 
-            // If the algorithm is P-256, then make sure the digest is exactly 32
-            // bytes. If it's P-384, the digest must be exactly 48 bytes.
-            // We'll prepend 00 bytes if necessary.
-            int bufferSize = _publicKey.KeyType switch
+            // For ECC, the digest must match the key size (e.g., 32 bytes for P-256)
+            // Pad with leading zeros if necessary
+            int keySizeBytes = _algorithm.GetKeySizeBytes();
+
+            if (digest.Length == keySizeBytes)
             {
-                KeyType.ECP256 => 32,
-                KeyType.ECP384 => 48,
-                KeyType.ECP521 => 65,
-                _ => digester.HashSize / 8,
-            };
+                return digest;
+            }
 
-            byte[] digest = new byte[bufferSize];
-            int offset = bufferSize - (digester.HashSize / 8);
-
-            // If offset < 0, that means the digest is too big.
-            if (offset < 0)
+            if (digest.Length > keySizeBytes)
             {
                 throw new ArgumentException(
                     string.Format(
@@ -176,10 +156,12 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
                         InvalidAlgorithmMessage));
             }
 
-            _ = digester.TransformFinalBlock(data, 0, data.Length);
-            Array.Copy(digester.Hash!, 0, digest, offset, digester.Hash.Length);
+            // Pad with leading zeros
+            byte[] paddedDigest = new byte[keySizeBytes];
+            int offset = keySizeBytes - digest.Length;
+            Array.Copy(digest, 0, paddedDigest, offset, digest.Length);
 
-            return digest;
+            return paddedDigest;
         }
 
         // Create a block of data that is the data to sign padded following the
@@ -199,11 +181,10 @@ namespace Yubico.YubiKey.Sample.PivSampleCode
 
             if (_rsaPaddingMode == RSASignaturePaddingMode.Pss)
             {
-                return RsaFormat.FormatPkcs1Pss(digest, digestAlgorithm, ((RSAPublicKey)_publicKey).KeyType.GetKeySizeBits());
+                return RsaFormat.FormatPkcs1Pss(digest, digestAlgorithm, _algorithm.GetKeySizeBits());
             }
 
-            return RsaFormat.FormatPkcs1Sign(digest, digestAlgorithm, ((RSAPublicKey)_publicKey).KeyType.GetKeySizeBits());
-
+            return RsaFormat.FormatPkcs1Sign(digest, digestAlgorithm, _algorithm.GetKeySizeBits());
         }
     }
 }

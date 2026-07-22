@@ -5,7 +5,6 @@ HelpInfoUri: ''
 Locale: en-US
 Module Guid: d947dd9b-87eb-49ea-a373-b91c7acc0917
 Module Name: powershellYK
-ms.date: 03-27-2026
 PlatyPS schema version: 2024-05-01
 System.Collections.Generic.Dictionary`2[System.Object,System.Object]: ''
 ---
@@ -34,9 +33,13 @@ Creates a CSR for a slot in the YubiKey.
 
 Sign a certificate request with a YubiKey.
 
+### [Clear-YubiKeyFIDO2Blob](Clear-YubiKeyFIDO2Blob.md)
+
+Removes all BLOBs from the YubiKey FIDO2 application.
+
 ### [Confirm-YubiKeyFIDO2Attestation](Confirm-YubiKeyFIDO2Attestation.md)
 
-{{ Fill in the Synopsis }}
+Confirm YubiKey FIDO2 Attestation.
 
 ### [Confirm-YubiKeyPIVAttestation](Confirm-YubiKeyPIVAttestation.md)
 
@@ -162,10 +165,6 @@ Create a self signed certificate
 ### [Protect-YubiKeyFIDO2File](Protect-YubiKeyFIDO2File.md)
 
 Encrypts a file using FIDO2 PRF (hmac-secret) extension on a YubiKey.
-
-### [Protect-YubiKeyOATH](Protect-YubiKeyOATH.md)
-
-Set password
 
 ### [Register-YubikeyBIOFingerprint](Register-YubikeyBIOFingerprint.md)
 

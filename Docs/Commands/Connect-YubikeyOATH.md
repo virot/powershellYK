@@ -1,9 +1,8 @@
-﻿---
+---
 document type: cmdlet
 external help file: powershellYK.dll-Help.xml
 HelpUri: 
 Module Name: powershellYK
-ms.date: 03-19-2026
 PlatyPS schema version: 2024-05-01
 ---
 
@@ -24,7 +23,7 @@ Connect-YubiKeyOATH -Password <SecureString> [<CommonParameters>]
 ### Password (Default)
 
 ```
-Connect-YubiKeyOATH -Password <securestring> [<CommonParameters>]
+Connect-YubiKeyOATH [-Password <securestring>] [<CommonParameters>]
 ```
 
 ## ALIASES
@@ -57,7 +56,7 @@ Aliases: []
 ParameterSets:
 - Name: Password
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false

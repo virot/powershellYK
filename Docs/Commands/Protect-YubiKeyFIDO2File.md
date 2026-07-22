@@ -4,7 +4,6 @@ external help file: powershellYK.dll-Help.xml
 HelpUri: ''
 Locale: en-SE
 Module Name: powershellYK
-ms.date: 03-26-2026
 PlatyPS schema version: 2024-05-01
 title: Protect-YubiKeyFIDO2File
 ---
@@ -17,31 +16,35 @@ Encrypts a file using FIDO2 PRF (hmac-secret) extension on a YubiKey.
 
 ## SYNTAX
 
-### WithCredential (Default)
+### WithCredential
 
 ```
-Protect-YubiKeyFIDO2File -Path <FileInfo> -Credential <Credential> [-OutFile <FileInfo>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Protect-YubiKeyFIDO2File -Path <FileInfo> -Credential <Credential> [-OutFile <FileInfo>] [-Force]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### WithCredentialID
 
 ```
 Protect-YubiKeyFIDO2File -Path <FileInfo> -CredentialID <CredentialID> -RelyingPartyID <string>
- [-OutFile <FileInfo>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-OutFile <FileInfo>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByRelyingPartyID
 
 ```
-Protect-YubiKeyFIDO2File -Path <FileInfo> -RelyingPartyID <string> [-OutFile <FileInfo>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Protect-YubiKeyFIDO2File -Path <FileInfo> -RelyingPartyID <string> [-OutFile <FileInfo>] [-Force]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### AutoCreate (Default)
+
+```
+Protect-YubiKeyFIDO2File -Path <FileInfo> [-OutFile <FileInfo>] [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## ALIASES
-
-This cmdlet has the following aliases,
-  {{Insert list of aliases}}
 
 ## DESCRIPTION
 
@@ -131,6 +134,27 @@ ParameterSets:
 - Name: WithCredentialID
   Position: Named
   IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Force
+
+Suppress the confirmation prompt when auto-creating a credential.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false

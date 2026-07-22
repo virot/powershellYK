@@ -1,10 +1,11 @@
-﻿---
+---
 document type: cmdlet
 external help file: powershellYK.dll-Help.xml
-HelpUri: 
+HelpUri: ''
+Locale: en-US
 Module Name: powershellYK
-ms.date: 03-19-2026
 PlatyPS schema version: 2024-05-01
+title: Assert-YubiKeyPIV
 ---
 
 # Assert-YubiKeyPIV

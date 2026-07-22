@@ -4,7 +4,6 @@ external help file: powershellYK.dll-Help.xml
 HelpUri: ''
 Locale: en-SE
 Module Name: powershellYK
-ms.date: 03-26-2026
 PlatyPS schema version: 2024-05-01
 title: Confirm-YubiKeyFIDO2Attestation
 ---
@@ -13,7 +12,7 @@ title: Confirm-YubiKeyFIDO2Attestation
 
 ## SYNOPSIS
 
-{{ Fill in the Synopsis }}
+Confirm YubiKey FIDO2 Attestation.
 
 ## SYNTAX
 
@@ -24,9 +23,6 @@ Confirm-YubiKeyFIDO2Attestation -AttestationObject <FileInfo> [<CommonParameters
 ```
 
 ## ALIASES
-
-This cmdlet has the following aliases,
-  {{Insert list of aliases}}
 
 ## DESCRIPTION
 

@@ -1,9 +1,8 @@
-﻿---
+---
 document type: cmdlet
 external help file: powershellYK.dll-Help.xml
 HelpUri: 
 Module Name: powershellYK
-ms.date: 03-19-2026
 PlatyPS schema version: 2024-05-01
 ---
 
@@ -49,6 +48,14 @@ New-YubiKeyFIDO2Credential -RelyingParty <RelyingParty> -Challenge <Challenge>
  [-RequestedAlgorithms <List`1[CoseAlgorithmIdentifier]>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+### Synthetic
+
+```
+New-YubiKeyFIDO2Credential -RelyingPartyID <string> -Username <string> [-RelyingPartyName <string>]
+ [-UserDisplayName <string>] [-Discoverable <bool>]
+ [-RequestedAlgorithms <List`1[CoseAlgorithmIdentifier]>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
 ## ALIASES
 
 ## DESCRIPTION
@@ -70,6 +77,7 @@ PS C:\> {{ Add example code here }}
 ### -Challenge
 
 Challange.
+Challenge for credential registration.
 
 ```yaml
 Type: powershellYK.FIDO2.Challenge
@@ -77,7 +85,25 @@ DefaultValue: None
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
+- Name: UserData-HostData
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: UserData-RelyingParty
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: UserEntity-HostData
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: UserEntity-RelyingParty
   Position: Named
   IsRequired: true
   ValueFromPipeline: false
@@ -180,6 +206,12 @@ ParameterSets:
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
+- Name: Synthetic
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
 HelpMessage: ''
@@ -202,6 +234,12 @@ ParameterSets:
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 - Name: UserEntity-HostData
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: Synthetic
   Position: Named
   IsRequired: false
   ValueFromPipeline: false
@@ -257,6 +295,12 @@ ParameterSets:
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 - Name: UserData-HostData
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: Synthetic
   Position: Named
   IsRequired: false
   ValueFromPipeline: false
@@ -338,6 +382,12 @@ ParameterSets:
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 - Name: UserData-HostData
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: Synthetic
   Position: Named
   IsRequired: true
   ValueFromPipeline: false

@@ -1,74 +1,53 @@
 ---
 document type: cmdlet
 external help file: powershellYK.dll-Help.xml
-HelpUri: 
+HelpUri: ''
+Locale: en-SE
 Module Name: powershellYK
 PlatyPS schema version: 2024-05-01
+title: Clear-YubiKeyFIDO2Blob
 ---
 
-# Connect-Yubikey
+# Clear-YubiKeyFIDO2Blob
 
 ## SYNOPSIS
 
-Connect the module to the YubiKey.
+Removes all BLOBs from the YubiKey FIDO2 application.
 
 ## SYNTAX
 
-### Connect single Yubikey (Default)
+### __AllParameterSets
 
 ```
-Connect-YubiKey [<CommonParameters>]
-```
-
-### Connect provided Yubikey
-
-```
-Connect-YubiKey [[-YubiKey] <YubiKeyDevice>] [<CommonParameters>]
-```
-
-### Connect Yubikey with Serialnumber
-
-```
-Connect-YubiKey [-Serialnumber <int>] [<CommonParameters>]
+Clear-YubiKeyFIDO2Blob [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## ALIASES
 
 ## DESCRIPTION
 
-The `Connect-Yubikey` cmdlet allows the module connect to a YubiKey. The command allows specific YubiKey to be connected.
+Removes all BLOBs from the YubiKey FIDO2 application. This cmdlet will prompt for confirmation before proceeding with the deletion of all BLOBs.
 
 ## EXAMPLES
 
 ### Example 1
 
-```powershell
-PS C:\> Connect-Yubikey
-```
-
-Try to connect to a single YubiKey, will fail if number of connected YubiKeys aren't one.
-
-### Example 2
-
-```powershell
-PS C:\> Connect-Yubikey -Serialnumber -Serialnumber 12345
-```
-
-Connect to a specific YubiKey with serial 12345
+{{ Add example description here }}
 
 ## PARAMETERS
 
-### -Serialnumber
+### -Confirm
 
-Connect to YubiKey with Serialnumber
+Prompts you for confirmation before running the cmdlet.
 
 ```yaml
-Type: System.Nullable`1[System.Int32]
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- cf
 ParameterSets:
-- Name: Connect Yubikey with Serialnumber
+- Name: (All)
   Position: Named
   IsRequired: false
   ValueFromPipeline: false
@@ -79,20 +58,21 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -YubiKey
+### -WhatIf
 
-Which YubiKey to connect to
+Runs the command in a mode that only reports what would happen without performing the actions.
 
 ```yaml
-Type: Yubico.YubiKey.YubiKeyDevice
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- wi
 ParameterSets:
-- Name: Connect provided Yubikey
-  Position: 0
+- Name: (All)
+  Position: Named
   IsRequired: false
-  ValueFromPipeline: true
+  ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
@@ -109,13 +89,15 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Yubico.YubiKey.YubiKeyDevice
-
 ## OUTPUTS
 
 ### System.Object
 
+{{ Fill in the Description }}
+
 ## NOTES
+
+{{ Fill in the Notes }}
 
 ## RELATED LINKS
 
