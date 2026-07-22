@@ -284,8 +284,8 @@ namespace powershellYK.Cmdlets.Fido
 
                         // Get the current serialized Large Blob array from the authenticator
                         var blobArray = fido2Session.GetSerializedLargeBlobArray();
-                        WriteDebug($"Step 6: Current large blob array loaded ({blobArray.Entries.Count} entries).");
-
+                        WriteDebug($"Step 6: Current large blob array loaded! {blobArray.Entries.Count} entries, {blobArray.Encode().Length} bytes");
+                        
                         // Enforce one entry per credential key by detecting existing decryptable entries.
                         var matchingEntryIndexes = new List<int>();
                         for (int i = 0; i < blobArray.Entries.Count; i++)
@@ -327,7 +327,9 @@ namespace powershellYK.Cmdlets.Fido
                         // Add a new encrypted entry, binding the data to the retrieved largeBlobKey
                         blobArray.AddEntry(blobData, retrievedKey.Value);
 
-                        WriteDebug("Step 8: Writing updated large blob array to YubiKey...");
+
+
+                        WriteDebug($"Step 8: Writing updated large blob array ({blobArray.Encode().Length}) bytes to YubiKey...");
                         // Write the updated Large Blob array back to the authenticator
                         fido2Session.SetSerializedLargeBlobArray(blobArray);
 
