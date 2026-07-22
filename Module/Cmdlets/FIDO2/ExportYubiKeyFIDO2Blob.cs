@@ -1,6 +1,11 @@
 /// <summary>
 /// Allows the return of a large blob associated with a FIDO2 credential, which may contain additional metadata or state information for that credential.
 /// Requires a YubiKey with FIDO2 support and administrator privileges on Windows.
+/// When no credential or relying party is provided, the cmdlet automatically looks up the "blob-storage" credential.
+///
+/// .EXAMPLE
+/// Export-YubiKeyFIDO2Blob -OutFile fileName.txt
+/// Exports the large blob stored under the "blob-storage" credential.
 ///
 /// .EXAMPLE
 /// Export-YubiKeyFIDO2Blob -RelyingPartyID "demo.yubico.com" -OutFile fileName.txt
@@ -25,7 +30,7 @@ using Yubico.YubiKey.Fido2;
 
 namespace powershellYK.Cmdlets.Fido
 {
-    [Cmdlet(VerbsData.Export, "YubiKeyFIDO2Blob")]
+    [Cmdlet(VerbsData.Export, "YubiKeyFIDO2Blob", DefaultParameterSetName = "AutoLookup")]
     public class ExportYubikeyFIDO2BlobCmdlet : PSCmdlet
     {
         [Parameter(
@@ -48,6 +53,12 @@ namespace powershellYK.Cmdlets.Fido
 
         [Parameter(
             Mandatory = true,
+            ParameterSetName = "AutoLookup",
+            ValueFromPipeline = false,
+            HelpMessage = "Output file path for the exported large blob"
+        )]
+        [Parameter(
+            Mandatory = true,
             ParameterSetName = "Export LargeBlob",
             ValueFromPipeline = false,
             HelpMessage = "Output file path for the exported large blob"
@@ -61,6 +72,8 @@ namespace powershellYK.Cmdlets.Fido
         [TransformPath]
         [ValidatePath(fileMustExist: false, fileMustNotExist: true)]
         public required System.IO.FileInfo OutFile { get; set; }
+
+        private const string AutoCreateRpId = "blob-storage";
 
         // Initialize processing and verify requirements
         protected override void BeginProcessing()
@@ -84,22 +97,19 @@ namespace powershellYK.Cmdlets.Fido
                 WriteDebug($"Successfully connected");
             }
 
-            // Connect to FIDO2 if exporting large blob
-            if (ParameterSetName == "Export LargeBlob" || ParameterSetName == "Export LargeBlob by RelyingPartyID")
+            // Connect to FIDO2 if not already authenticated
+            if (YubiKeyModule._fido2PIN is null)
             {
+                WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
+                var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2");
+                if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                {
+                    myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                }
+                myPowersShellInstance.Invoke();
                 if (YubiKeyModule._fido2PIN is null)
                 {
-                    WriteDebug("No FIDO2 session has been authenticated, calling Connect-YubikeyFIDO2...");
-                    var myPowersShellInstance = PowerShell.Create(RunspaceMode.CurrentRunspace).AddCommand("Connect-YubikeyFIDO2");
-                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
-                    {
-                        myPowersShellInstance = myPowersShellInstance.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
-                    }
-                    myPowersShellInstance.Invoke();
-                    if (YubiKeyModule._fido2PIN is null)
-                    {
-                        throw new Exception("Connect-YubikeyFIDO2 failed to connect to the FIDO2 applet!");
-                    }
+                    throw new Exception("Connect-YubikeyFIDO2 failed to connect to the FIDO2 applet!");
                 }
             }
         }
@@ -122,7 +132,35 @@ namespace powershellYK.Cmdlets.Fido
                 RelyingParty? credentialRelyingParty = null;
                 var relyingParties = fido2Session.EnumerateRelyingParties();
                 powershellYK.FIDO2.CredentialID selectedCredentialId;
-                if (ParameterSetName == "Export LargeBlob by RelyingPartyID")
+                if (ParameterSetName == "AutoLookup")
+                {
+                    var match = relyingParties.FirstOrDefault(rp =>
+                        string.Equals(rp.Id, AutoCreateRpId, StringComparison.OrdinalIgnoreCase));
+                    if (match is null)
+                    {
+                        throw new InvalidOperationException(
+                            $"No '{AutoCreateRpId}' credential found on this YubiKey. " +
+                            "Use Import-YubiKeyFIDO2Blob to store a blob first, or specify -CredentialId / -RelyingPartyID.");
+                    }
+
+                    try
+                    {
+                        var creds = fido2Session.EnumerateCredentialsForRelyingParty(match);
+                        if (creds.Count == 0)
+                        {
+                            throw new InvalidOperationException(
+                                $"No credentials found for relying party '{match.Id}'.");
+                        }
+                        credentialRelyingParty = match;
+                        selectedCredentialId = (powershellYK.FIDO2.CredentialID)creds[0].CredentialId;
+                    }
+                    catch (NotSupportedException)
+                    {
+                        throw new InvalidOperationException(
+                            $"Unable to enumerate credentials for relying party '{match.Id}' due to unsupported algorithm.");
+                    }
+                }
+                else if (ParameterSetName == "Export LargeBlob by RelyingPartyID")
                 {
                     if (string.IsNullOrWhiteSpace(RelyingPartyID))
                     {
