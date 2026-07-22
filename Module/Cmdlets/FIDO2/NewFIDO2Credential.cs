@@ -1,19 +1,30 @@
 ﻿/// <summary>
-/// Creates a new FIDO2 credential on a YubiKey.
-/// Supports creating credentials with various parameters including relying party information,
-/// user data, and authentication options. Requires a YubiKey with FIDO2 support and
-/// administrator privileges on Windows.
+/// Creates a new FIDO2 discoverable credential on a YubiKey.
+/// Supports creating credentials with various parameters including Relying Party (RP) 
+/// information, user data, and authentication options. Requires a YubiKey with FIDO2 support 
+/// and administrator privileges on Windows. When used with only -RelyingPartyID and -Username 
+/// (Synthetic parameter set), the cmdlet auto-generates a cryptographic challenge and 
+/// random user ID so no external IdP is needed.
 /// 
 /// .EXAMPLE
-/// $challenge = New-YubiKeyFIDO2Challenge
-/// New-YubiKeyFIDO2Credential -RelyingPartyID "example.com" -Username "user@example.com" -Challenge $challenge
-/// Creates a new FIDO2 credential for example.com with the specified username
+/// New-YubiKeyFIDO2Credential -RelyingPartyID "example.local" -Username "alice@example.local"
+/// Creates a synthetic credential (without an actual IdP) with a default display name.
+/// 
+/// .EXAMPLE
+/// New-YubiKeyFIDO2Credential -RelyingPartyID "example.local" -Username "alice@example.local" -UserDisplayName "Alice Smith"
+/// Creates a synthetic credential (without an actual IdP) with a custom display name.
+/// 
+/// .EXAMPLE
+/// $challengeB64Url = "&lt;challenge from relying party registerBegin response&gt;"
+/// $challenge = [powershellYK.FIDO2.Challenge]::FromBase64URLEncoded($challengeB64Url)
+/// New-YubiKeyFIDO2Credential -RelyingPartyID "example.com" -RelyingPartyName "Example" -Username "user@example.com" -UserID ([byte[]](0x01)) -Challenge $challenge
+/// Creates a credential using the challenge issued by the relying party during registration.
 /// 
 /// .EXAMPLE
 /// $rp = Get-YubiKeyFIDO2Credential | Select-Object -First 1 -ExpandProperty RelyingParty
-/// $challenge = New-YubiKeyFIDO2Challenge
-/// New-YubiKeyFIDO2Credential -RelyingParty $rp -Username "user@example.com" -Challenge $challenge
-/// Creates a new FIDO2 credential using an existing relying party object
+/// $challenge = [powershellYK.FIDO2.Challenge]::CreateSyntheticChallenge($rp.Id)
+/// New-YubiKeyFIDO2Credential -RelyingParty $rp -Username "user@example.com" -UserID ([byte[]](0x01)) -Challenge $challenge
+/// Creates a credential reusing a relying party from an existing credential with a locally generated challenge.
 /// </summary>
 
 // Imports
@@ -23,6 +34,7 @@ using Yubico.YubiKey.Fido2;
 using powershellYK.support;
 using Yubico.YubiKey.Cryptography;
 using powershellYK.FIDO2;
+using powershellYK.support.FIDO2;
 
 namespace powershellYK.Cmdlets.Fido
 {
@@ -32,10 +44,12 @@ namespace powershellYK.Cmdlets.Fido
         // Parameters for relying party information
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Specify which relayingParty (site) this credential is regards to.", ParameterSetName = "UserData-HostData")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Specify which relayingParty (site) this credential is regards to.", ParameterSetName = "UserEntity-HostData")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Relying party ID (domain) for the credential.", ParameterSetName = "Synthetic")]
         public required string RelyingPartyID { private get; set; }
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Friendlyname for the relayingParty.", ParameterSetName = "UserData-HostData")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Friendlyname for the relayingParty.", ParameterSetName = "UserEntity-HostData")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Friendly name for the relying party. Defaults to RelyingPartyID.", ParameterSetName = "Synthetic")]
         public required string RelyingPartyName { private get; set; }
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "RelaingParty object.", ParameterSetName = "UserData-RelyingParty")]
@@ -45,10 +59,12 @@ namespace powershellYK.Cmdlets.Fido
         // Parameters for user information
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Username to create credental for.", ParameterSetName = "UserData-RelyingParty")]
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Username to create credental for.", ParameterSetName = "UserData-HostData")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Username for the credential.", ParameterSetName = "Synthetic")]
         public required string Username { private get; set; }
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "UserDisplayName to create credental for.", ParameterSetName = "UserData-RelyingParty")]
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "UserDisplayName to create credental for.", ParameterSetName = "UserData-HostData")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Display name for the user. Defaults to Username.", ParameterSetName = "Synthetic")]
         public string? UserDisplayName { private get; set; }
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "UserID.", ParameterSetName = "UserData-RelyingParty")]
@@ -56,8 +72,11 @@ namespace powershellYK.Cmdlets.Fido
         public byte[]? UserID { private get; set; }
 
         // Parameters for credential configuration
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Challange.")]
-        public required Challenge Challenge { private get; set; }
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Challenge for credential registration.", ParameterSetName = "UserData-HostData")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Challenge for credential registration.", ParameterSetName = "UserData-RelyingParty")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Challenge for credential registration.", ParameterSetName = "UserEntity-HostData")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Challenge for credential registration.", ParameterSetName = "UserEntity-RelyingParty")]
+        public Challenge? Challenge { private get; set; }
 
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Should this credential be discoverable.")]
         public bool Discoverable { private get; set; } = true;
@@ -103,6 +122,20 @@ namespace powershellYK.Cmdlets.Fido
                 // Set up key collector for PIN operations
                 fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
+                if (ParameterSetName == "Synthetic")
+                {
+                    WriteDebug("Synthetic mode: generating Challenge and UserID automatically.");
+                    Challenge = FIDO2.Challenge.CreateSyntheticChallenge(RelyingPartyID);
+                    RelyingParty = new RelyingParty(RelyingPartyID) { Name = RelyingPartyName ?? RelyingPartyID };
+                    byte[] syntheticUserId = SyntheticCredentialHelper.GenerateUserID();
+                    WriteDebug($"Generated synthetic UserID: {Converter.ByteArrayToString(syntheticUserId)}");
+                    UserEntity = new UserEntity(syntheticUserId.AsMemory())
+                    {
+                        Name = Username,
+                        DisplayName = UserDisplayName ?? Username,
+                    };
+                }
+
                 // Configure relying party information
                 if (RelyingParty is null)
                 {
@@ -142,7 +175,7 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     type = "webauthn.create",
                     origin = $"https://{RelyingParty.Id}",
-                    challenge = Challenge.Base64URLEncode(),
+                    challenge = Challenge!.Base64URLEncode(),
                 };
 
                 var clientDataJSON = System.Text.Json.JsonSerializer.Serialize(clientData);
@@ -160,10 +193,12 @@ namespace powershellYK.Cmdlets.Fido
                 }
 
                 // Create and return the credential
-                WriteDebug($"Sending new credential data into SDK");
+                WriteDebug($"Promting for touch to complete the credential creation...");
+                Console.WriteLine("Touch the YubiKey...");
                 MakeCredentialData returnvalue = fido2Session.MakeCredential(make);
 
                 var credData = new CredentialData(returnvalue, clientDataJSON, UserEntity!, RelyingParty);
+                WriteInformation($"Credential created for {UserEntity!.DisplayName ?? UserEntity.Name} using RP: {RelyingParty.Id}.", new string[] { "FIDO2", "Info" });
                 WriteObject(credData);
             }
         }

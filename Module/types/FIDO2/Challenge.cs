@@ -3,13 +3,13 @@
 /// Handles challenge generation, encoding, and conversion between formats.
 /// 
 /// .EXAMPLE
-/// # Create a challenge from a base64 string
+/// # Create a challenge from a base64 string (from an IdP registerBegin response)
 /// $challenge = [powershellYK.FIDO2.Challenge]::new("SGVsbG8gV29ybGQ=")
 /// Write-Host $challenge.ToString()
 /// 
 /// .EXAMPLE
-/// # Create a fake challenge for testing
-/// $challenge = [powershellYK.FIDO2.Challenge]::FakeChallange("example.com")
+/// # Create a synthetic challenge locally (without an actual IdP)
+/// $challenge = [powershellYK.FIDO2.Challenge]::CreateSyntheticChallenge("example.local")
 /// Write-Host $challenge.Base64URLEncode()
 /// </summary>
 
@@ -37,10 +37,16 @@ namespace powershellYK.FIDO2
             this._challenge = value;
         }
 
-        // Generates a fake challenge for testing purposes
+        public static Challenge CreateSyntheticChallenge(string relyingPartyID)
+        {
+            return new Challenge(BuildSyntheticChallengeBytes(32));
+        }
+
+        // Kept for backward compatibility; Pester tests and earlier scripts reference this name.
+        [System.Obsolete("Use CreateSyntheticChallenge instead.")]
         public static Challenge FakeChallange(string relyingPartyID)
         {
-            return new Challenge(BuildFakeClientDataHash(relyingPartyID));
+            return CreateSyntheticChallenge(relyingPartyID);
         }
 
         // Converts the challenge to a string representation
@@ -111,23 +117,12 @@ namespace powershellYK.FIDO2
             return base64;
         }
 
-        // Builds a fake client data hash for testing
-        private static byte[] BuildFakeClientDataHash(string relyingPartyId)
+        private static byte[] BuildSyntheticChallengeBytes(int length = 32)
         {
-            // Convert relying party ID to bytes
-            byte[] idBytes = System.Text.Encoding.Unicode.GetBytes(relyingPartyId);
-
-            // Generate random challenge bytes
-            var randomObject = CryptographyProviders.RngCreator();
-            byte[] randomBytes = new byte[16];
-            randomObject.GetBytes(randomBytes);
-
-            // Create hash of random bytes and relying party ID
-            var digester = CryptographyProviders.Sha256Creator();
-            _ = digester.TransformBlock(randomBytes, 0, randomBytes.Length, null, 0);
-            _ = digester.TransformFinalBlock(idBytes, 0, idBytes.Length);
-
-            return digester.Hash!;
+            byte[] randomBytes = new byte[length];
+            var rng = CryptographyProviders.RngCreator();
+            rng.GetBytes(randomBytes);
+            return randomBytes;
         }
 
         #endregion // Support Methods
