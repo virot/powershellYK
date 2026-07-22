@@ -137,22 +137,22 @@ namespace powershellYK.Cmdlets.Fido
         // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
-            if (LargeBlob is null)
+            if (Path is null)
             {
-                throw new ArgumentException("You must enter a valid file path.", nameof(LargeBlob));
+                throw new ArgumentException("You must enter a valid file path.", nameof(Path));
             }
 
             // Resolve and read the input file
-            string resolvedPath = GetUnresolvedProviderPathFromPSPath(LargeBlob.FullName);
+            string resolvedPath = GetUnresolvedProviderPathFromPSPath(Path.FullName);
             byte[] blobData;
             try
             {
                 blobData = System.IO.File.ReadAllBytes(resolvedPath);
-                WriteDebug($"Step 1: Input file loaded from '{LargeBlob.FullName}' ({blobData.Length} bytes).");
+                WriteDebug($"Step 1: Input file loaded from '{Path.FullName}' ({blobData.Length} bytes).");
             }
             catch (Exception ex)
             {
-                throw new IOException($"Failed to read large blob data from file '{LargeBlob}'.", ex);
+                throw new IOException($"Failed to read large blob data from file '{Path}'.", ex);
             }
 
             // ── Phase 1: Resolve credential ID and RP in isolated sessions ──

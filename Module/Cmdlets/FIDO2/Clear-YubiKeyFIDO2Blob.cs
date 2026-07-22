@@ -75,7 +75,7 @@ namespace powershellYK.Cmdlets.Fido
                 var blobArray = fido2Session.GetSerializedLargeBlobArray();
                 WriteDebug($"Step 6: Current large blob array loaded! {blobArray.Entries.Count} entries");
 
-                for (int i = 0; i < blobArray.Entries.Count; i++)
+                for (int i = (blobArray.Entries.Count - 1); i >= 0; i--)
                 {
                     blobArray.RemoveEntry(i);
                 }

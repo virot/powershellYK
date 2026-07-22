@@ -19,13 +19,21 @@ Imports large blob to YubiKey FIDO2 by Credential ID or Relying Party ID (Origin
 ### Set LargeBlob
 
 ```
-Import-YubiKeyFIDO2Blob -Path <FileInfo> -CredentialId <CredentialID> [-Force] [<CommonParameters>]
+Import-YubiKeyFIDO2Blob -Path <FileInfo> -CredentialId <CredentialID> [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### Set LargeBlob by RelyingPartyID
 
 ```
-Import-YubiKeyFIDO2Blob -Path <FileInfo> -RelyingPartyID <string> [-Force] [<CommonParameters>]
+Import-YubiKeyFIDO2Blob -Path <FileInfo> -RelyingPartyID <string> [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
+```
+
+### AutoCreate (Default)
+
+```
+Import-YubiKeyFIDO2Blob -Path <FileInfo> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## ALIASES
@@ -46,6 +54,28 @@ Touch the YubiKey...
 Imports the large blob from the specified file for the credential with the specified Relying Party ID (or display name, if unique) to the YubiKey.
 
 ## PARAMETERS
+
+### -Confirm
+
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- cf
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
 
 ### -CredentialId
 
@@ -71,6 +101,7 @@ HelpMessage: ''
 ### -Force
 
 Overwrite existing large blob entry for this credential without prompting.
+Suppress confirmation prompts (credential creation and blob overwrite).
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -78,6 +109,12 @@ DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
+- Name: AutoCreate
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
 - Name: Set LargeBlob
   Position: Named
   IsRequired: false
@@ -131,9 +168,15 @@ Type: System.IO.FileInfo
 DefaultValue: ''
 SupportsWildcards: false
 Aliases:
-- File
 - LargeBlob
+- File
 ParameterSets:
+- Name: AutoCreate
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
 - Name: Set LargeBlob
   Position: Named
   IsRequired: true
@@ -166,6 +209,28 @@ ParameterSets:
 - Name: Set LargeBlob by RelyingPartyID
   Position: Named
   IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -WhatIf
+
+Runs the command in a mode that only reports what would happen without performing the actions.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- wi
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
