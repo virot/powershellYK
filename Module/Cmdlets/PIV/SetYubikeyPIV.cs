@@ -214,9 +214,10 @@ namespace powershellYK.Cmdlets.PIV
                         }
                         break;
 
-                    case "ResetPIN":
+                    case "UnblockPIN":
                         try
                         {
+                            WriteDebug("Resetting PIN...");
                             if (pivSession.TryResetPin(System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(PUK))!)
     , System.Text.Encoding.UTF8.GetBytes(Marshal.PtrToStringUni(Marshal.SecureStringToGlobalAllocUnicode(NewPIN))!)
     , out retriesLeft) == false)
