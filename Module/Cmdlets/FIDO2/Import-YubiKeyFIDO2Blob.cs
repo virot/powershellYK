@@ -47,7 +47,7 @@ namespace powershellYK.Cmdlets.Fido
             HelpMessage = "File to import as large blob"
         )]
         [TransformPath]
-        [Alias("LargeBlob","File")]
+        [Alias("LargeBlob", "File")]
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
         public required System.IO.FileInfo Path { get; set; }
 
@@ -285,7 +285,7 @@ namespace powershellYK.Cmdlets.Fido
                         // Get the current serialized Large Blob array from the authenticator
                         var blobArray = fido2Session.GetSerializedLargeBlobArray();
                         WriteDebug($"Step 6: Current large blob array loaded! {blobArray.Entries.Count} entries, {blobArray.Encode().Length} bytes");
-                        
+
                         // Enforce one entry per credential key by detecting existing decryptable entries.
                         var matchingEntryIndexes = new List<int>();
                         for (int i = 0; i < blobArray.Entries.Count; i++)
