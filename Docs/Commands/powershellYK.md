@@ -37,6 +37,10 @@ Sign a certificate request with a YubiKey.
 
 Removes all BLOBs from the YubiKey FIDO2 application.
 
+### [Confirm-YubiKeyFIDO2Attestation](Confirm-YubiKeyFIDO2Attestation.md)
+
+Confirm YubiKey FIDO2 Attestation.
+
 ### [Confirm-YubiKeyPIVAttestation](Confirm-YubiKeyPIVAttestation.md)
 
 Confirm YubiKey Attestation.
@@ -136,6 +140,10 @@ Lock the YubiKey configuration
 ### [Move-YubikeyPIV](Move-YubikeyPIV.md)
 
 Move a key from one slot to another
+
+### [New-Challenge](New-Challenge.md)
+
+Creates a pseudo random challenge to support FIDO2 attestation output (among other things).
 
 ### [New-YubiKeyFIDO2Credential](New-YubiKeyFIDO2Credential.md)
 

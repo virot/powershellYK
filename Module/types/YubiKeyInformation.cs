@@ -72,6 +72,28 @@ namespace powershellYK.YubiKey
         // YubiKey serial number
         public int? SerialNumber { get { return YubiKeyDevice.SerialNumber; } }
 
+        // NFC UID as decimal
+        public string? NfcIdDec
+        {
+            get
+            {
+                if (SerialNumber is null) return null;
+                byte[] uid = Converter.SerialToNfcUid((uint)SerialNumber.Value);
+                return Converter.NfcUidToDecimal(uid).ToString();
+            }
+        }
+
+        // NFC UID as hex
+        public string? NfcIdHex
+        {
+            get
+            {
+                if (SerialNumber is null) return null;
+                byte[] uid = Converter.SerialToNfcUid((uint)SerialNumber.Value);
+                return Converter.ByteArrayToString(uid);
+            }
+        }
+
         // FIPS series status
         public bool IsFipsSeries { get { return YubiKeyDevice.IsFipsSeries; } }
 

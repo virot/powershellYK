@@ -19,6 +19,7 @@ using System.Formats.Cbor;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Yubico.YubiKey.Fido2;
+using Yubico.YubiKey.Fido2.Cose;
 
 namespace powershellYK.FIDO2
 {
@@ -28,6 +29,8 @@ namespace powershellYK.FIDO2
         // Properties for accessing credential data
         public MakeCredentialData MakeCredentialData { get { return this._makeCredentialData; } }
         public string ClientDataJSON { get { return this._clientDataJSON; } }
+        public CoseKey? PublicKey => _makeCredentialData.AuthenticatorData.CredentialPublicKey;
+        public ReadOnlyMemory<byte>? CredentialId => _makeCredentialData.AuthenticatorData.CredentialId?.Id;
 
         // Internal storage for credential components
         private readonly string _clientDataJSON;

@@ -10,7 +10,16 @@ Describe "FIDO2 Tests" -Tag @("FIDO2")  {
         {Connect-YubikeyFIDO2 -PIN (ConvertTo-SecureString -String "654321" -AsPlainText -Force)} | Should -Not -Throw
         {Set-YubikeyFIDO2PIN -OldPIN (ConvertTo-SecureString -String "654321" -AsPlainText -Force) -NewPIN (ConvertTo-SecureString -String "123456" -AsPlainText -Force)} | Should -Not -Throw
     }
-    It -Name "Clear all credentials one after another" -Test {
+    It -Name "Create synthetic credential (no IdP)" -Test {
+        {New-YubiKeyFIDO2Credential -RelyingPartyID 'powershellYK-synthetic' -Username 'syntheticUser'} | Should -Not -Throw
+        (Get-YubiKeyFIDO2Credential | Where-Object { $_.RPId -eq 'powershellYK-synthetic' }).UserName | Should -Be 'syntheticUser'
+        {Get-YubiKeyFIDO2Credential | Where-Object { $_.RPId -eq 'powershellYK-synthetic' } | ForEach-Object { Remove-YubikeyFIDO2Credential -CredentialId $_.CredentialID -Confirm:$false }} | Should -Not -Throw
+    }
+    It -Name "Create synthetic credential with display name" -Test {
+        {New-YubiKeyFIDO2Credential -RelyingPartyID 'powershellYK-synthetic2' -Username 'synUser2' -UserDisplayName 'Synthetic User Two'} | Should -Not -Throw
+        {Get-YubiKeyFIDO2Credential | Where-Object { $_.RPId -eq 'powershellYK-synthetic2' } | ForEach-Object { Remove-YubikeyFIDO2Credential -CredentialId $_.CredentialID -Confirm:$false }} | Should -Not -Throw
+    }
+    It -Name "Clear all credentials" -Test {
         {Get-YubiKeyFIDO2Credential|%{Remove-YubikeyFIDO2Credential -CredentialId $_.CredentialID -Confirm:$false}} | Should -Not -Throw
 	Get-YubiKeyFIDO2Credential -WarningAction SilentlyContinue | Should -BeNullOrEmpty
 	#[array](Get-YubiKeyFIDO2Credential -WarningAction SilentlyContinue)).Count | Should -Be 0  # Make sure that the warning message does not trip Pester
