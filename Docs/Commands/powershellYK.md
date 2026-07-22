@@ -33,6 +33,10 @@ Creates a CSR for a slot in the YubiKey.
 
 Sign a certificate request with a YubiKey.
 
+### [Clear-YubiKeyFIDO2Blob](Clear-YubiKeyFIDO2Blob.md)
+
+Removes all BLOBs from the YubiKey FIDO2 application.
+
 ### [Confirm-YubiKeyPIVAttestation](Confirm-YubiKeyPIVAttestation.md)
 
 Confirm YubiKey Attestation.
@@ -153,10 +157,6 @@ Create a self signed certificate
 ### [Protect-YubiKeyFIDO2File](Protect-YubiKeyFIDO2File.md)
 
 Encrypts a file using FIDO2 PRF (hmac-secret) extension on a YubiKey.
-
-### [Protect-YubiKeyOATH](Protect-YubiKeyOATH.md)
-
-Set password
 
 ### [Register-YubikeyBIOFingerprint](Register-YubikeyBIOFingerprint.md)
 
