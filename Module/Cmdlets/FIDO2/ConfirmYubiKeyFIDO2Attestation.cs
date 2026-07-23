@@ -170,7 +170,11 @@ namespace powershellYK.Cmdlets.Fido
 
             try
             {
+#if NET9_0_OR_GREATER
+                return X509CertificateLoader.LoadCertificate(certDer);
+#else
                 return new X509Certificate2(certDer);
+#endif
             }
             catch
             {
