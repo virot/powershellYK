@@ -4,7 +4,6 @@ external help file: powershellYK.dll-Help.xml
 HelpUri: ''
 Locale: en-SE
 Module Name: powershellYK
-ms.date: 03-26-2026
 PlatyPS schema version: 2024-05-01
 title: New-Challenge
 ---
@@ -33,7 +32,7 @@ Creates a pseudo random challenge to support FIDO2 attestation output (among oth
 
 ### Example 1
 
-´``powershell
+ï¿½``powershell
 New-Challenge -OutFile "MyChallenge.bin" -Length 256
 ```
 Creates a 256-byte challenge and writes it to "MyChallenge.bin"

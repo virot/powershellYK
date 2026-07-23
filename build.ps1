@@ -46,7 +46,24 @@ Measure-PlatyPSMarkdown -Path ./docs/Commands/*.md |
 Move-Item "$($Directory.fullname)\powershellYK\powershellYK.dll-help.xml" "$($Directory.fullname)\en-US\powershellYK.dll-help.xml"
 Remove-Item "$($Directory.fullname)\powershellYK"
 
+#Remove ms.date from all files..
 
+Get-ChildItem "Docs\Commands" -Recurse -File |
+    ForEach-Object {
+        (Get-Content $_.FullName) |
+            Where-Object { $_ -notmatch '^ms\.date:' } |
+            Set-Content $_.FullName
+    }
+
+<#
+$newMarkdownCommandHelpSplat = @{
+    ModuleInfo = Get-Module -Name 'powershellYK'
+    OutputFolder = './docs/commands'
+    WithModulePage = $false
+}
+New-MarkdownCommandHelp @newMarkdownCommandHelpSplat
+
+#>
 
 Import-Module Pester
 $configuration = [PesterConfiguration]::Default

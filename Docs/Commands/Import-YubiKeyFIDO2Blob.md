@@ -4,7 +4,6 @@ external help file: powershellYK.dll-Help.xml
 HelpUri: ''
 Locale: en-SE
 Module Name: powershellYK
-ms.date: 03-20-2026
 PlatyPS schema version: 2024-05-01
 title: Import-YubiKeyFIDO2Blob
 ---
