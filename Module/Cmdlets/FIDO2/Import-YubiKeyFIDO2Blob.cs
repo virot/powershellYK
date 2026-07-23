@@ -25,14 +25,12 @@
 /// Imports a file as a large blob and overwrites any existing blob entry for that credential without prompting.
 /// </summary>
 
-using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using powershellYK.FIDO2;
 using powershellYK.support;
 using powershellYK.support.transform;
 using powershellYK.support.validators;
 using System.Management.Automation;           // Windows PowerShell namespace.
-using System.Security;
 using System.Security.Cryptography;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Cryptography;
@@ -64,7 +62,8 @@ namespace powershellYK.Cmdlets.Fido
         )]
         [TransformPath]
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
-        public required System.IO.FileInfo LargeBlob { get; set; }
+        [Alias("LargeBlob", "File")]
+        public required System.IO.FileInfo Path { get; set; }
 
         [Parameter(
             Mandatory = true,
@@ -136,22 +135,22 @@ namespace powershellYK.Cmdlets.Fido
         // Process the main cmdlet logic
         protected override void ProcessRecord()
         {
-            if (LargeBlob is null)
+            if (Path is null)
             {
-                throw new ArgumentException("You must enter a valid file path.", nameof(LargeBlob));
+                throw new ArgumentException("You must enter a valid file path.", nameof(Path));
             }
 
             // Resolve and read the input file
-            string resolvedPath = GetUnresolvedProviderPathFromPSPath(LargeBlob.FullName);
+            string resolvedPath = GetUnresolvedProviderPathFromPSPath(Path.FullName);
             byte[] blobData;
             try
             {
                 blobData = System.IO.File.ReadAllBytes(resolvedPath);
-                WriteDebug($"Step 1: Input file loaded from '{LargeBlob.FullName}' ({blobData.Length} bytes).");
+                WriteDebug($"Step 1: Input file loaded from '{Path.FullName}' ({blobData.Length} bytes).");
             }
             catch (Exception ex)
             {
-                throw new IOException($"Failed to read large blob data from file '{LargeBlob}'.", ex);
+                throw new IOException($"Failed to read large blob data from file '{Path}'.", ex);
             }
 
             // ── Phase 1: Resolve credential ID and RP in isolated sessions ──
