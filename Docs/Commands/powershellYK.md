@@ -5,7 +5,6 @@ HelpInfoUri: ''
 Locale: en-US
 Module Guid: d947dd9b-87eb-49ea-a373-b91c7acc0917
 Module Name: powershellYK
-ms.date: 03-27-2026
 PlatyPS schema version: 2024-05-01
 System.Collections.Generic.Dictionary`2[System.Object,System.Object]: ''
 ---
