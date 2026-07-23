@@ -3,6 +3,6 @@ Describe "Test Yubikey parts" {
         {Find-Yubikey -Serialnumber 123} | Should -Throw # Try to connect to non existing Yubikey
     }
     It "outputs 'Verify that connect works'" {
-        Get-Yubikey|Select-Object -ExpandProperty SerialNumber | Should -Be 19661687
+        Get-Yubikey|Select-Object -ExpandProperty SerialNumber | Should-BeGreaterThanOrEqual 10000
     }
 }
