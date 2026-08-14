@@ -364,3 +364,7 @@ FodyWeavers.xsd
 /.vscode/launch.json
 /powershellYK.psd1
 /.cursorrules
+/Docs/Cookbook/Measure-YubiKeyPIVKeyGeneration.ps1
+/Docs/Cookbook/Measure-YubiKeyPIVSigning.ps1
+/.cursor/plans
+/Docs/Cookbook/Convert-Serial-to-NFC-UID.ps1

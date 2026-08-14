@@ -49,6 +49,44 @@ namespace powershellYK.support
             return bytes;
         }
 
+        // Convert unpadded base64url to a byte array
+        public static byte[] Base64UrlToByteArray(string value)
+        {
+            string compact = Compact(value);
+            return Convert.FromBase64String(RemoveBase64URLSafe(AddMissingPadding(compact)));
+        }
+
+        // Convert a hex or base64url string (as printed by Format-List) to bytes
+        public static byte[] HexOrBase64UrlToByteArray(string value)
+        {
+            string compact = Compact(value);
+            return LooksLikeHex(compact) ? StringToByteArray(compact) : Base64UrlToByteArray(compact);
+        }
+
+        // Strip whitespace so wrapped Format-List copies still parse
+        private static string Compact(string value)
+        {
+            return new string(value.Where(c => !char.IsWhiteSpace(c)).ToArray());
+        }
+
+        // True when the string is even-length hexadecimal
+        private static bool LooksLikeHex(string value)
+        {
+            if (value.Length == 0 || (value.Length % 2) != 0)
+            {
+                return false;
+            }
+            foreach (char c in value)
+            {
+                bool hex = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+                if (!hex)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // Convert byte array to hex string
         public static string ByteArrayToString(byte[] bytes)
         {

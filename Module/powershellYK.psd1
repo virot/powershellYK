@@ -88,6 +88,7 @@ CmdletsToExport = @(
  'Get-YubiKeyFIDO2',
  'Get-YubiKeyFIDO2Credential',
  'Import-YubiKeyFIDO2Blob',
+ 'New-YubiKeyFIDO2Signature',
  'New-YubiKeyFIDO2Credential',
  'Protect-YubiKeyFIDO2File',
  'Remove-YubiKeyFIDO2Credential',
