@@ -6,8 +6,10 @@
 ///
 /// The signature is produced on the YubiKey via a GetAssertion previewSign request.
 /// The key handle is retained so the same key can sign additional payloads without
-/// re-provisioning. Offline ARKG-P256 verification of the signature (deriving the
-/// ESP256 verify key) is out of scope - that glue ships only in TestUtilities.
+/// re-provisioning. DerivedPublicKey is the ESP256 P-256 key that verifies Signature
+/// (the PublicKey property is the ARKG seed, not the verify key). Confirm-YubiKeyFIDO2Signature
+/// checks the signature, an optional re-hash of the original data, and decodes the
+/// generated-key attestation object.
 ///
 /// .EXAMPLE
 /// $key = New-YubiKeyFIDO2Signature -InputData (Get-Content .\data.bin -AsByteStream -Raw)
@@ -54,13 +56,17 @@ namespace powershellYK.FIDO2
         [Hidden]
         public byte[]? PublicKeyCose { get; private set; }
 
-        // Optional attestation object bytes (hidden; omitted from default view and JSON)
+        // CBOR attestation object for the generated signing key (hidden; use AttestationObject)
         [Hidden]
-        public byte[]? AttestationObject { get; private set; }
+        public byte[]? AttestationObjectBytes { get; private set; }
 
         // Digest of the input that was signed (hidden; use ToBeSigned)
         [Hidden]
         public byte[] ToBeSignedBytes { get; private set; }
+
+        // Derived ESP256 P-256 public key for this signature (hidden; use DerivedPublicKey)
+        [Hidden]
+        public byte[]? DerivedPublicKeySec1 { get; private set; }
 
         // On-device previewSign signature over ToBeSigned (hidden; use Signature)
         [Hidden]
@@ -72,8 +78,14 @@ namespace powershellYK.FIDO2
         // Base64URL rendering of the key handle
         public string? KeyHandle => KeyHandleBytes is null ? null : Base64Url(KeyHandleBytes);
 
+        // Base64URL rendering of the signing-key attestation object
+        public string? AttestationObject => AttestationObjectBytes is null ? null : Base64Url(AttestationObjectBytes);
+
         // Hex rendering of the digest that was signed
         public string ToBeSigned => Convert.ToHexString(ToBeSignedBytes).ToLowerInvariant();
+
+        // Base64URL rendering of the derived ESP256 public key that verifies Signature
+        public string? DerivedPublicKey => DerivedPublicKeySec1 is null ? null : Base64Url(DerivedPublicKeySec1);
 
         // Base64URL rendering of the signature
         public string? Signature => SignatureBytes is null ? null : Base64Url(SignatureBytes);
@@ -91,7 +103,8 @@ namespace powershellYK.FIDO2
             byte[]? keyHandle = null,
             byte[]? publicKeyCose = null,
             byte[]? attestationObject = null,
-            byte[]? signature = null)
+            byte[]? signature = null,
+            byte[]? derivedPublicKey = null)
         {
             this.CredentialID = credentialID;
             this.RelyingPartyID = relyingPartyID;
@@ -100,8 +113,9 @@ namespace powershellYK.FIDO2
             this.ToBeSignedBytes = toBeSigned;
             this.KeyHandleBytes = keyHandle;
             this.PublicKeyCose = publicKeyCose;
-            this.AttestationObject = attestationObject;
+            this.AttestationObjectBytes = attestationObject;
             this.SignatureBytes = signature;
+            this.DerivedPublicKeySec1 = derivedPublicKey;
         }
 
         // Serializes the key material to indented JSON for -OutFile (public names, Format-List order)
@@ -115,7 +129,9 @@ namespace powershellYK.FIDO2
                 HashAlgorithm = this.HashAlgorithm,
                 PublicKey = this.PublicKey,
                 KeyHandle = this.KeyHandle,
+                AttestationObject = this.AttestationObject,
                 ToBeSigned = this.ToBeSigned,
+                DerivedPublicKey = this.DerivedPublicKey,
                 Signature = this.Signature,
                 SignatureHex = this.SignatureHex,
             };
@@ -144,7 +160,9 @@ namespace powershellYK.FIDO2
                 string hashAlgorithm = OptionalString(root, "HashAlgorithm") ?? "SHA256";
                 string? publicKey = OptionalString(root, "PublicKey");
                 string? keyHandle = OptionalString(root, "KeyHandle");
+                string? attestationObject = OptionalString(root, "AttestationObject");
                 string? toBeSignedHex = OptionalString(root, "ToBeSigned");
+                string? derivedPublicKey = OptionalString(root, "DerivedPublicKey");
                 string? signature = OptionalString(root, "Signature");
 
                 if (string.IsNullOrWhiteSpace(keyHandle))
@@ -168,7 +186,9 @@ namespace powershellYK.FIDO2
                     toBeSigned: toBeSigned,
                     keyHandle: Converter.Base64UrlToByteArray(keyHandle),
                     publicKeyCose: Converter.Base64UrlToByteArray(publicKey),
-                    signature: string.IsNullOrWhiteSpace(signature) ? null : Converter.Base64UrlToByteArray(signature));
+                    attestationObject: string.IsNullOrWhiteSpace(attestationObject) ? null : Converter.Base64UrlToByteArray(attestationObject),
+                    signature: string.IsNullOrWhiteSpace(signature) ? null : Converter.Base64UrlToByteArray(signature),
+                    derivedPublicKey: string.IsNullOrWhiteSpace(derivedPublicKey) ? null : Converter.Base64UrlToByteArray(derivedPublicKey));
             }
         }
 

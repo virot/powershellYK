@@ -139,6 +139,10 @@ Move a key from one slot to another
 Creates a new FIDO2 credential on the connected YubiKey.
 For more complete examples see: https://github.com/virot/powershellYK/tree/master/Docs/Examples
 
+### [New-YubiKeyFIDO2Signature](New-YubiKeyFIDO2Signature.md)
+
+Signs data with the Yubico previewSign extension on a YubiKey (firmware 5.8+). PreviewSign is not final; do not use this in production.
+
 ### [New-YubikeyOATHAccount](New-YubikeyOATHAccount.md)
 
 Created a TOTP or HOTP account

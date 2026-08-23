@@ -14,10 +14,18 @@
 /// with an ARKG signing ticket. PublicKey is the ARKG seed, not the ESP256
 /// verify key.
 ///
+/// NOTE: This cmdlet uses the Yubico previewSign extension. Its algorithm and
+/// algorithm ID (-65539) are not final and may change before general
+/// availability. Do not use this in production.
+///
 /// .EXAMPLE
 /// New-YubiKeyFIDO2Signature -InputData "data"
 /// Provisions a previewSign credential (or reuses the stored key) and returns the signature.
 ///
+/// .EXAMPLE
+/// New-YubiKeyFIDO2Signature -InputData "data" -UserVerification
+/// Provisions a previewSign credential requiring PIN or biometric instead of only a touch.
+/// 
 /// .EXAMPLE
 /// $key = New-YubiKeyFIDO2Signature -Path .\document.pdf
 /// New-YubiKeyFIDO2Signature -Path .\other.pdf -KeyHandle $key.KeyHandle -PublicKey $key.PublicKey -CredentialID $key.CredentialID
@@ -42,10 +50,15 @@ using powershellYK.FIDO2;
 namespace powershellYK.Cmdlets.Fido
 {
     [Cmdlet(VerbsCommon.New, "YubiKeyFIDO2Signature", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium, DefaultParameterSetName = "Create")]
+    [OutputType(typeof(PreviewSignKey))]
     public class NewYubikeyFIDO2SignatureCommand : PSCmdlet
     {
         // Default relying party used when provisioning a synthetic previewSign credential
         private const string DefaultRelyingPartyID = "previewsign.powershellyk";
+
+        // Shown on every invocation: previewSign is not a stable, GA algorithm
+        private const string PreviewSignMaturityWarning =
+            "This cmdlet uses the Yubico previewSign extension. Its algorithm and algorithm ID (-65539) are not final and may change before general availability. Do not use this in production.";
 
         // Input data as raw bytes / hex string
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Raw data (hex string or byte[]) to hash before signing.")]
@@ -59,7 +72,7 @@ namespace powershellYK.Cmdlets.Fido
         public FileInfo? Path { get; set; }
 
         // Digest algorithm
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Digest algorithm used to hash the input prior to signing.")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Digest (hash) algorithm used to hash the input prior to signing.")]
         [Alias("Hash")]
         [ValidateSet("SHA256", "SHA384", "SHA512")]
         public string Digest { get; set; } = "SHA256";
@@ -110,6 +123,8 @@ namespace powershellYK.Cmdlets.Fido
         // Initialize processing and verify requirements
         protected override void BeginProcessing()
         {
+            WriteWarning(PreviewSignMaturityWarning);
+
             // Connect to FIDO2 if not already authenticated
             if (YubiKeyModule._fido2PIN is null)
             {
@@ -216,7 +231,8 @@ namespace powershellYK.Cmdlets.Fido
                         rpId,
                         stored.KeyHandleBytes,
                         stored.PublicKeyCose,
-                        stored.AlgorithmIdentifier);
+                        stored.AlgorithmIdentifier,
+                        stored.AttestationObjectBytes);
                     if (reused is not null)
                     {
                         PersistDefaultStore(reused);
@@ -278,7 +294,7 @@ namespace powershellYK.Cmdlets.Fido
             byte[] keyHandle = generatedKey.KeyHandle.ToArray();
             byte[] publicKeyCose = generatedKey.PublicKey.ToArray();
 
-            byte[] signature = SignWithKey(fido2Session, rpId, credentialID, keyHandle, toBeSigned, publicKeyCose);
+            (byte[] signature, byte[] derivedPublicKey) = SignWithKey(fido2Session, rpId, credentialID, keyHandle, toBeSigned, publicKeyCose);
 
             var result = new PreviewSignKey(
                 credentialID: credentialID,
@@ -288,7 +304,9 @@ namespace powershellYK.Cmdlets.Fido
                 toBeSigned: toBeSigned,
                 keyHandle: keyHandle,
                 publicKeyCose: publicKeyCose,
-                signature: signature);
+                attestationObject: generatedKey.AttestationObject.Encoded.ToArray(),
+                signature: signature,
+                derivedPublicKey: derivedPublicKey);
 
             WriteObject(result);
             WriteOutFile(result);
@@ -303,6 +321,7 @@ namespace powershellYK.Cmdlets.Fido
             byte[] keyHandle;
             CoseAlgorithmIdentifier algorithm;
             byte[] seedPublicKeyCose;
+            byte[]? attestationObject;
 
             if (ParameterSetName == "WithKey")
             {
@@ -319,6 +338,7 @@ namespace powershellYK.Cmdlets.Fido
                 keyHandle = PreviewSignKey.KeyHandleBytes;
                 algorithm = PreviewSignKey.AlgorithmIdentifier;
                 seedPublicKeyCose = PreviewSignKey.PublicKeyCose;
+                attestationObject = PreviewSignKey.AttestationObjectBytes;
             }
             else
             {
@@ -339,9 +359,10 @@ namespace powershellYK.Cmdlets.Fido
                 keyHandle = KeyHandle;
                 algorithm = powershellYK.support.FIDO2.PreviewSign.ArkgP256ESP256;
                 seedPublicKeyCose = PublicKey;
+                attestationObject = null;
             }
 
-            EmitSignedFromMaterial(fido2Session, toBeSigned, credentialID, rpId, keyHandle, seedPublicKeyCose, algorithm);
+            EmitSignedFromMaterial(fido2Session, toBeSigned, credentialID, rpId, keyHandle, seedPublicKeyCose, algorithm, attestationObject);
         }
 
         // Sign with already-resolved key material and emit a reusable PreviewSignKey
@@ -352,7 +373,8 @@ namespace powershellYK.Cmdlets.Fido
             string rpId,
             byte[] keyHandle,
             byte[] seedPublicKeyCose,
-            CoseAlgorithmIdentifier algorithm)
+            CoseAlgorithmIdentifier algorithm,
+            byte[]? attestationObject)
         {
             string target = $"Relying party '{rpId}'";
             string action = "Sign the input with the referenced previewSign key";
@@ -361,7 +383,7 @@ namespace powershellYK.Cmdlets.Fido
                 return null;
             }
 
-            byte[] signature = SignWithKey(fido2Session, rpId, credentialID, keyHandle, toBeSigned, seedPublicKeyCose);
+            (byte[] signature, byte[] derivedPublicKey) = SignWithKey(fido2Session, rpId, credentialID, keyHandle, toBeSigned, seedPublicKeyCose);
 
             var result = new PreviewSignKey(
                 credentialID: credentialID,
@@ -371,15 +393,17 @@ namespace powershellYK.Cmdlets.Fido
                 toBeSigned: toBeSigned,
                 keyHandle: keyHandle,
                 publicKeyCose: seedPublicKeyCose,
-                signature: signature);
+                attestationObject: attestationObject,
+                signature: signature,
+                derivedPublicKey: derivedPublicKey);
 
             WriteObject(result);
             WriteOutFile(result);
             return result;
         }
 
-        // Perform a GetAssertion previewSign request and return the on-device signature
-        private byte[] SignWithKey(Fido2Session fido2Session, string rpId, powershellYK.FIDO2.CredentialID credentialID, byte[] keyHandle, byte[] toBeSigned, ReadOnlyMemory<byte> seedPublicKeyCose)
+        // Perform a GetAssertion previewSign request and return the signature plus derived verify key
+        private (byte[] signature, byte[] derivedPublicKeySec1) SignWithKey(Fido2Session fido2Session, string rpId, powershellYK.FIDO2.CredentialID credentialID, byte[] keyHandle, byte[] toBeSigned, ReadOnlyMemory<byte> seedPublicKeyCose)
         {
             var relyingParty = new RelyingParty(rpId);
             byte[] clientDataHash = BuildClientDataHash("webauthn.get", rpId);
@@ -402,7 +426,7 @@ namespace powershellYK.Cmdlets.Fido
                 throw new InvalidOperationException("The YubiKey did not return a previewSign signature.");
             }
             WriteDebug($"Received {signature.Length}-byte previewSign signature from YubiKey.");
-            return signature;
+            return (signature, derived.DerivedPublicKeySec1);
         }
 
         // True when the stored parent credential is still on the authenticator
