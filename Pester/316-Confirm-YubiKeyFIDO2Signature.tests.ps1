@@ -48,18 +48,41 @@ Describe "Confirm-YubiKeyFIDO2Signature" -Tag "Without-YubiKey","Dry" {
         }
 
         function New-NoneAttestationObject {
-            param([string]$RelyingPartyID)
+            param(
+                [string]$RelyingPartyID,
+                [int]$SignFlags = -1
+            )
             $rpHash = [System.Security.Cryptography.SHA256]::HashData([System.Text.Encoding]::UTF8.GetBytes($RelyingPartyID))
-            $authData = New-Object byte[] 37
+
+            $ext = New-Object System.Collections.Generic.List[byte]
+            $flagsByte = 0x01
+            if ($SignFlags -ge 0) {
+                # Set the ED (extension data) bit and embed the previewSign signing-key
+                # policy: {"previewSign": {4: SignFlags}} (0b000/0b001/0b101).
+                $flagsByte = $flagsByte -bor 0x80
+                $name = [System.Text.Encoding]::ASCII.GetBytes("previewSign")
+                $ext.Add(0xa1)
+                $ext.Add([byte](0x60 -bor $name.Length))
+                $ext.AddRange($name)
+                $ext.Add(0xa1)
+                $ext.Add(0x04)
+                $ext.Add([byte]$SignFlags)
+            }
+
+            $authData = New-Object byte[] (37 + $ext.Count)
             [System.Buffer]::BlockCopy($rpHash, 0, $authData, 0, 32)
-            $authData[32] = 0x01
+            $authData[32] = [byte]$flagsByte
+            if ($ext.Count -gt 0) {
+                [System.Buffer]::BlockCopy([byte[]]$ext.ToArray(), 0, $authData, 37, $ext.Count)
+            }
+
             $cbor = New-Object System.Collections.Generic.List[byte]
             $cbor.Add(0xa3)
             $cbor.Add(0x01)
             $cbor.AddRange([byte[]](0x64, 0x6e, 0x6f, 0x6e, 0x65))
             $cbor.Add(0x02)
             $cbor.Add(0x58)
-            $cbor.Add(0x25)
+            $cbor.Add([byte]$authData.Length)
             $cbor.AddRange($authData)
             $cbor.Add(0x03)
             $cbor.Add(0xa0)
@@ -70,17 +93,15 @@ Describe "Confirm-YubiKeyFIDO2Signature" -Tag "Without-YubiKey","Dry" {
     It "Verifies a matching ECDSA signature and digest" {
         $data = [System.Text.Encoding]::UTF8.GetBytes("hello")
         $mat = New-EcdsaPreviewMaterial -Data $data
-        $att = New-NoneAttestationObject -RelyingPartyID "previewsign.powershellyk"
+        $att = New-NoneAttestationObject -RelyingPartyID "previewsign.powershellyk" -SignFlags 1
         $key = New-PreviewSignTestKey -DerivedPublicKey $mat.Sec1 -Signature $mat.Signature -ToBeSigned $mat.Digest -AttestationObject $att
 
         $result = $key | Confirm-YubiKeyFIDO2Signature -InputData $data -WarningAction SilentlyContinue
         $result.Valid | Should -Be $true
         $result.SignatureValid | Should -Be $true
         $result.DigestMatches | Should -Be $true
-        $result.AttestationDecoded | Should -Be $true
-        $result.AttestationFormat | Should -Be "none"
-        $result.RpIdHashMatches | Should -Be $true
         $result.UserPresence | Should -Be $true
+        $result.UserVerification | Should -Be $false
     }
 
     It "Reports DigestMatches false when the input does not match ToBeSigned" {
@@ -95,17 +116,16 @@ Describe "Confirm-YubiKeyFIDO2Signature" -Tag "Without-YubiKey","Dry" {
         $result.Valid | Should -Be $false
     }
 
-    It "Decodes fmt=none attestation without a document" {
+    It "Decodes attestation and reports the signing-key UV policy without a document" {
         $data = [System.Text.Encoding]::UTF8.GetBytes("hello")
         $mat = New-EcdsaPreviewMaterial -Data $data
-        $att = New-NoneAttestationObject -RelyingPartyID "previewsign.powershellyk"
+        $att = New-NoneAttestationObject -RelyingPartyID "previewsign.powershellyk" -SignFlags 5
         $key = New-PreviewSignTestKey -DerivedPublicKey $mat.Sec1 -Signature $mat.Signature -ToBeSigned $mat.Digest -AttestationObject $att
 
         $result = $key | Confirm-YubiKeyFIDO2Signature -WarningAction SilentlyContinue
         $result.DigestMatches | Should -Be $null
-        $result.AttestationDecoded | Should -Be $true
-        $result.AttestationFormat | Should -Be "none"
-        ($result.Notes -join " ") | Should -Match "none"
+        $result.UserPresence | Should -Be $true
+        $result.UserVerification | Should -Be $true
     }
 
     It "Throws when DerivedPublicKey is missing" {

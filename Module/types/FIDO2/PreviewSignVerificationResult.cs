@@ -1,8 +1,8 @@
 /// <summary>
 /// Result of offline previewSign signature verification from Confirm-YubiKeyFIDO2Signature.
 /// Valid is true when the ECDSA signature checks and, if original data was supplied,
-/// the digest of that data matches ToBeSigned. Attestation is decoded for inspection
-/// (firmware 5.8 uses fmt=none, which is not a packed Yubico certificate chain).
+/// the digest of that data matches ToBeSigned. The generated-key attestation is decoded
+/// to surface the authenticator AAGUID and the signing key's UP/UV policy.
 ///
 /// .EXAMPLE
 /// $key | Confirm-YubiKeyFIDO2Signature -InputData "data"
@@ -27,74 +27,29 @@ namespace powershellYK.FIDO2
         // Whether a re-hash of -InputData / -Path matches ToBeSigned; null when skipped
         public bool? DigestMatches { get; }
 
-        // Base64URL derived ESP256 public key used for verification
-        public string? DerivedPublicKey { get; }
-
-        // Digest algorithm recorded on the PreviewSignKey
-        public string HashAlgorithm { get; }
-
-        // Relying party id recorded on the PreviewSignKey
-        public string? RelyingPartyID { get; }
-
-        // True when the attestation object CBOR parsed
-        public bool AttestationDecoded { get; }
-
-        // Attestation statement format (e.g. none)
-        public string? AttestationFormat { get; }
-
-        // Whether SHA-256(RP id) matches authenticator data; null when not comparable
-        public bool? RpIdHashMatches { get; }
-
         // Authenticator AAGUID from attestation authData
         public string? Aaguid { get; }
 
-        // User presence flag from attestation authData
+        // Signing key requires user presence (previewSign flags policy); null when the flags output is absent
         public bool? UserPresence { get; }
 
-        // User verification flag from attestation authData
+        // Signing key requires user verification (previewSign flags policy); null when the flags output is absent
         public bool? UserVerification { get; }
-
-        // Signature counter from attestation authData
-        public uint? SignatureCounter { get; }
-
-        // CLR type name of the parsed attestation statement
-        public string? AttestationStatementType { get; }
-
-        // Short reasons (fmt=none, digest skipped, old store, decode failure)
-        public List<string> Notes { get; }
 
         // Creates a verification result
         public PreviewSignVerificationResult(
             bool signatureValid,
             bool? digestMatches,
-            string? derivedPublicKey,
-            string hashAlgorithm,
-            string? relyingPartyID,
-            bool attestationDecoded,
-            string? attestationFormat,
-            bool? rpIdHashMatches,
             string? aaguid,
             bool? userPresence,
-            bool? userVerification,
-            uint? signatureCounter,
-            string? attestationStatementType,
-            List<string>? notes = null)
+            bool? userVerification)
         {
             this.SignatureValid = signatureValid;
             this.DigestMatches = digestMatches;
             this.Valid = signatureValid && digestMatches != false;
-            this.DerivedPublicKey = derivedPublicKey;
-            this.HashAlgorithm = hashAlgorithm;
-            this.RelyingPartyID = relyingPartyID;
-            this.AttestationDecoded = attestationDecoded;
-            this.AttestationFormat = attestationFormat;
-            this.RpIdHashMatches = rpIdHashMatches;
             this.Aaguid = aaguid;
             this.UserPresence = userPresence;
             this.UserVerification = userVerification;
-            this.SignatureCounter = signatureCounter;
-            this.AttestationStatementType = attestationStatementType;
-            this.Notes = notes ?? new List<string>();
         }
 
         // String representation

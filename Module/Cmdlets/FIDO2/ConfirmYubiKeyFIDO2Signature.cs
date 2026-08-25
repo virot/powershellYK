@@ -2,7 +2,9 @@
 /// Offline-verifies a previewSign signature produced by New-YubiKeyFIDO2Signature.
 /// Checks ECDSA-P256 over ToBeSigned using DerivedPublicKey, optionally re-hashes
 /// the original data and compares it to ToBeSigned, and decodes the generated-key
-/// attestation object. Does not require a YubiKey to be present.
+/// attestation object. UserPresence/UserVerification report the signing key's fixed
+/// UP/UV policy (from the previewSign extension flags), not the creation ceremony.
+/// Does not require a YubiKey to be present.
 ///
 /// NOTE: This cmdlet uses the Yubico previewSign extension. Its algorithm and
 /// algorithm ID (-65539) are not final and may change before general
@@ -123,104 +125,51 @@ namespace powershellYK.Cmdlets.Fido
                 documentBytes = InputData;
             }
 
-            var notes = new List<string>();
             bool signatureValid = VerifyEcdsaP256(key.DerivedPublicKeySec1, key.ToBeSignedBytes, key.SignatureBytes);
-            if (!signatureValid)
-            {
-                notes.Add("ECDSA verification of Signature over ToBeSigned failed.");
-            }
 
             bool? digestMatches = null;
             if (documentBytes is not null)
             {
                 byte[] computed = ComputeDigest(documentBytes, key.HashAlgorithm);
                 digestMatches = CryptographicOperations.FixedTimeEquals(computed, key.ToBeSignedBytes);
-                if (digestMatches == false)
-                {
-                    notes.Add("Re-hashed input does not match ToBeSigned.");
-                }
-            }
-            else
-            {
-                notes.Add("Digest check skipped (no -InputData or -Path).");
             }
 
-            bool attestationDecoded = false;
-            string? attestationFormat = null;
-            bool? rpIdHashMatches = null;
             string? aaguid = null;
             bool? userPresence = null;
             bool? userVerification = null;
-            uint? signatureCounter = null;
-            string? statementType = null;
 
-            if (key.AttestationObjectBytes is null || key.AttestationObjectBytes.Length == 0)
-            {
-                notes.Add("No AttestationObject on the PreviewSignKey.");
-            }
-            else
+            if (key.AttestationObjectBytes is not null && key.AttestationObjectBytes.Length > 0)
             {
                 try
                 {
                     var att = new AttestationObject(key.AttestationObjectBytes);
-                    attestationDecoded = true;
-                    attestationFormat = att.Format;
-                    statementType = att.Statement?.GetType().Name;
                     var authData = att.AuthenticatorData;
-                    userPresence = authData.UserPresence;
-                    userVerification = authData.UserVerification;
-                    signatureCounter = (uint)authData.SignatureCounter;
                     aaguid = FormatAaguid(authData);
 
-                    if (!string.IsNullOrWhiteSpace(key.RelyingPartyID))
+                    // The signing key's fixed UP/UV policy lives in the "previewSign"
+                    // extension output of the generated-key attestation, not the authData
+                    // UP/UV bits (which describe the creation ceremony). Leave null when the
+                    // flags output is absent.
+                    if (powershellYK.support.FIDO2.PreviewSign.TryGetSigningKeyPolicy(authData, out bool requiresUserPresence, out bool requiresUserVerification))
                     {
-                        byte[] expectedRpHash = SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(key.RelyingPartyID));
-                        byte[] actualRpHash = authData.RelyingPartyIdHash.ToArray();
-                        rpIdHashMatches = CryptographicOperations.FixedTimeEquals(expectedRpHash, actualRpHash);
-                        if (rpIdHashMatches == false)
-                        {
-                            notes.Add("Attestation RP ID hash does not match RelyingPartyID.");
-                        }
-                    }
-
-                    if (string.Equals(attestationFormat, "none", StringComparison.OrdinalIgnoreCase))
-                    {
-                        notes.Add("Attestation format is none (no packed certificate chain).");
-                    }
-
-                    if (key.ARKGSeedCose is not null &&
-                        authData.EncodedCredentialPublicKey is ReadOnlyMemory<byte> encodedKey &&
-                        encodedKey.Length > 0)
-                    {
-                        byte[] encoded = encodedKey.ToArray();
-                        if (!encoded.AsSpan().SequenceEqual(key.ARKGSeedCose))
-                        {
-                            notes.Add("Attestation authData credential public key does not match ARKGSeed.");
-                        }
+                        userPresence = requiresUserPresence;
+                        userVerification = requiresUserVerification;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    attestationDecoded = false;
-                    notes.Add($"Attestation object could not be decoded: {ex.Message}");
+                    aaguid = null;
+                    userPresence = null;
+                    userVerification = null;
                 }
             }
 
             WriteObject(new PreviewSignVerificationResult(
                 signatureValid: signatureValid,
                 digestMatches: digestMatches,
-                derivedPublicKey: key.DerivedPublicKey,
-                hashAlgorithm: key.HashAlgorithm,
-                relyingPartyID: key.RelyingPartyID,
-                attestationDecoded: attestationDecoded,
-                attestationFormat: attestationFormat,
-                rpIdHashMatches: rpIdHashMatches,
                 aaguid: aaguid,
                 userPresence: userPresence,
-                userVerification: userVerification,
-                signatureCounter: signatureCounter,
-                attestationStatementType: statementType,
-                notes: notes));
+                userVerification: userVerification));
         }
 
         // Verify DER (or raw P1363) ECDSA-P256 over a digest with an uncompressed SEC1 public key

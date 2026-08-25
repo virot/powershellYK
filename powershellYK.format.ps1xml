@@ -125,24 +125,6 @@
                 <PropertyName>DigestMatches</PropertyName>
               </ListItem>
               <ListItem>
-                <PropertyName>DerivedPublicKey</PropertyName>
-              </ListItem>
-              <ListItem>
-                <PropertyName>HashAlgorithm</PropertyName>
-              </ListItem>
-              <ListItem>
-                <PropertyName>RelyingPartyID</PropertyName>
-              </ListItem>
-              <ListItem>
-                <PropertyName>AttestationDecoded</PropertyName>
-              </ListItem>
-              <ListItem>
-                <PropertyName>AttestationFormat</PropertyName>
-              </ListItem>
-              <ListItem>
-                <PropertyName>RpIdHashMatches</PropertyName>
-              </ListItem>
-              <ListItem>
                 <PropertyName>Aaguid</PropertyName>
               </ListItem>
               <ListItem>
@@ -150,15 +132,6 @@
               </ListItem>
               <ListItem>
                 <PropertyName>UserVerification</PropertyName>
-              </ListItem>
-              <ListItem>
-                <PropertyName>SignatureCounter</PropertyName>
-              </ListItem>
-              <ListItem>
-                <PropertyName>AttestationStatementType</PropertyName>
-              </ListItem>
-              <ListItem>
-                <PropertyName>Notes</PropertyName>
               </ListItem>
             </ListItems>
           </ListEntry>

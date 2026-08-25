@@ -19,6 +19,7 @@
 // Imports
 using System.Formats.Cbor;
 using System.Security.Cryptography;
+using Yubico.YubiKey.Fido2;
 using Yubico.YubiKey.Fido2.Cose;
 
 namespace powershellYK.support.FIDO2
@@ -36,6 +37,95 @@ namespace powershellYK.support.FIDO2
 
         // Default domain-separation context used when the caller does not supply one.
         public const string DefaultDerivationContext = "powershellYK-previewsign";
+
+        // Integer CBOR key of the flags member inside the generated-key attestation's
+        // "previewSign" authenticator-extension output map. Per the sign-extension spec
+        // the flags value is one of unattended=0b000, require-up=0b001, require-uv=0b101,
+        // where bit 0 is the UP requirement and bit 2 is the UV requirement.
+        private const int PreviewSignFlagsKey = 4;
+        private const int SigningKeyFlagUserPresence = 0b001;
+        private const int SigningKeyFlagUserVerification = 0b100;
+
+        // Read the signing key's fixed UP/UV policy from a generated-key attestation.
+        // Unlike the associated credential, a previewSign signing key does not sign over
+        // an authenticator-data structure, so its policy is carried in the "previewSign"
+        // extension output of the generated-key attestation authData rather than in the
+        // authData UP/UV bits (which reflect the creation ceremony instead).
+        public static bool TryGetSigningKeyPolicy(AuthenticatorData authData, out bool requiresUserPresence, out bool requiresUserVerification)
+        {
+            requiresUserPresence = false;
+            requiresUserVerification = false;
+
+            if (authData is null)
+            {
+                return false;
+            }
+
+            IReadOnlyDictionary<string, byte[]>? extensions = authData.Extensions;
+            if (extensions is null ||
+                !extensions.TryGetValue(Extensions.PreviewSign, out byte[]? encoded) ||
+                encoded is null ||
+                encoded.Length == 0)
+            {
+                return false;
+            }
+
+            int? flags = TryReadPreviewSignFlags(encoded);
+            if (flags is null)
+            {
+                return false;
+            }
+
+            requiresUserPresence = (flags.Value & SigningKeyFlagUserPresence) != 0;
+            requiresUserVerification = (flags.Value & SigningKeyFlagUserVerification) != 0;
+            return true;
+        }
+
+        // Parse the "previewSign" extension output map and return its flags integer.
+        private static int? TryReadPreviewSignFlags(byte[] encoded)
+        {
+            try
+            {
+                var reader = new CborReader(encoded, CborConformanceMode.Ctap2Canonical);
+                if (reader.PeekState() != CborReaderState.StartMap)
+                {
+                    return null;
+                }
+
+                int? entries = reader.ReadStartMap();
+                int count = entries ?? int.MaxValue;
+
+                int? flags = null;
+                for (int i = 0; i < count; i++)
+                {
+                    if (reader.PeekState() == CborReaderState.EndMap)
+                    {
+                        break;
+                    }
+
+                    long key = reader.ReadInt64();
+                    if (key == PreviewSignFlagsKey)
+                    {
+                        flags = reader.ReadInt32();
+                    }
+                    else
+                    {
+                        reader.SkipValue();
+                    }
+                }
+
+                reader.ReadEndMap();
+                return flags;
+            }
+            catch (Exception ex) when (
+                ex is CborContentException ||
+                ex is InvalidOperationException ||
+                ex is FormatException ||
+                ex is OverflowException)
+            {
+                return null;
+            }
+        }
 
         // Display name for a COSE algorithm identifier. Named SDK members keep their
         // enum name; previewSign values missing from the public enum are translated here.
