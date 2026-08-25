@@ -1,6 +1,6 @@
 /// <summary>
 /// Transforms hex or base64url string input into byte arrays.
-/// Used for previewSign KeyHandle and PublicKey values copied from Format-List.
+/// Used for previewSign KeyHandle and ARKGSeed values copied from Format-List.
 ///
 /// .EXAMPLE
 /// [TransformHexOrBase64Url()]

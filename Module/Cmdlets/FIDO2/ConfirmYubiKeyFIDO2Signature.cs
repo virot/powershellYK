@@ -2,8 +2,7 @@
 /// Offline-verifies a previewSign signature produced by New-YubiKeyFIDO2Signature.
 /// Checks ECDSA-P256 over ToBeSigned using DerivedPublicKey, optionally re-hashes
 /// the original data and compares it to ToBeSigned, and decodes the generated-key
-/// attestation object. Does not contact the YubiKey. Firmware 5.8 attestation is
-/// fmt=none (no packed certificate chain).
+/// attestation object. Does not require a YubiKey to be present.
 ///
 /// NOTE: This cmdlet uses the Yubico previewSign extension. Its algorithm and
 /// algorithm ID (-65539) are not final and may change before general
@@ -15,7 +14,7 @@
 /// Verifies the signature and that the data hashes to ToBeSigned.
 ///
 /// .EXAMPLE
-/// Confirm-YubiKeyFIDO2Signature -LiteralPath .\previewsign.json -Path .\document.pdf
+/// Confirm-YubiKeyFIDO2Signature -JsonPath .\previewsign.json -Path .\document.pdf
 /// Loads a stored PreviewSignKey JSON and checks it against the original file.
 /// </summary>
 
@@ -46,7 +45,7 @@ namespace powershellYK.Cmdlets.Fido
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Path to PreviewSignKey JSON (ToJson / ~/.powershellYK store).", ParameterSetName = "Json")]
         [TransformPath]
         [ValidatePath(fileMustExist: true, fileMustNotExist: false)]
-        public FileInfo? LiteralPath { get; set; }
+        public FileInfo? JsonPath { get; set; }
 
         // Optional original data to re-hash and compare to ToBeSigned
         [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Original data (hex string or byte[]) to re-hash and compare to ToBeSigned.")]
@@ -76,7 +75,7 @@ namespace powershellYK.Cmdlets.Fido
             PreviewSignKey key;
             if (ParameterSetName == "Json")
             {
-                string resolved = GetUnresolvedProviderPathFromPSPath(LiteralPath!.FullName);
+                string resolved = GetUnresolvedProviderPathFromPSPath(JsonPath!.FullName);
                 string json;
                 try
                 {
@@ -189,14 +188,14 @@ namespace powershellYK.Cmdlets.Fido
                         notes.Add("Attestation format is none (no packed certificate chain).");
                     }
 
-                    if (key.PublicKeyCose is not null &&
+                    if (key.ARKGSeedCose is not null &&
                         authData.EncodedCredentialPublicKey is ReadOnlyMemory<byte> encodedKey &&
                         encodedKey.Length > 0)
                     {
                         byte[] encoded = encodedKey.ToArray();
-                        if (!encoded.AsSpan().SequenceEqual(key.PublicKeyCose))
+                        if (!encoded.AsSpan().SequenceEqual(key.ARKGSeedCose))
                         {
-                            notes.Add("Attestation authData credential public key does not match seed PublicKey.");
+                            notes.Add("Attestation authData credential public key does not match ARKGSeed.");
                         }
                     }
                 }

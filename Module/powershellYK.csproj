@@ -70,7 +70,12 @@
     <None Update="powershellYK.psd1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="..\powershellYK.format.ps1xml" Link="powershellYK.format.ps1xml" CopyToOutputDirectory="Always" />
   </ItemGroup>
+
+  <Target Name="CopyFormatPs1Xml" AfterTargets="CopyFilesToOutputDirectory">
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\powershellYK.format.ps1xml" DestinationFiles="$(OutDir)powershellYK.format.ps1xml" SkipUnchangedFiles="true" />
+  </Target>
 
   <Target Name="UpdateTextFile">
     <!-- Read the file content -->

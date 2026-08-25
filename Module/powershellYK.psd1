@@ -63,7 +63,7 @@ PowerShellVersion = '7.0'
 # TypesToProcess = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
-# FormatsToProcess = @('powershellYK.format.ps1xml')
+FormatsToProcess = @('powershellYK.format.ps1xml')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 # NestedModules = @('')
@@ -83,6 +83,7 @@ CmdletsToExport = @(
  'Unlock-YubiKey',
  'Connect-YubiKeyFIDO2',
  'Confirm-YubiKeyFIDO2Attestation',
+ 'Confirm-YubiKeyFIDO2Signature',
  'Enable-YubiKeyFIDO2EnterpriseAttestation',
  'Export-YubiKeyFIDO2Blob',
  'Get-YubiKeyFIDO2',

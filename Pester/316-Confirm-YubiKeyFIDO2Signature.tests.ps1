@@ -115,7 +115,7 @@ Describe "Confirm-YubiKeyFIDO2Signature" -Tag "Without-YubiKey","Dry" {
         { $key | Confirm-YubiKeyFIDO2Signature -WarningAction SilentlyContinue } | Should -Throw -ExpectedMessage '*DerivedPublicKey*'
     }
 
-    It "Loads JSON via -LiteralPath and checks a file with -Path" {
+    It "Loads JSON via -JsonPath and checks a file with -Path" {
         $data = [System.Text.Encoding]::UTF8.GetBytes("hello")
         $mat = New-EcdsaPreviewMaterial -Data $data
         $key = New-PreviewSignTestKey -DerivedPublicKey $mat.Sec1 -Signature $mat.Signature -ToBeSigned $mat.Digest -AttestationObject $null
@@ -124,7 +124,7 @@ Describe "Confirm-YubiKeyFIDO2Signature" -Tag "Without-YubiKey","Dry" {
         Set-Content -Path $jsonPath -Value $key.ToJson() -Encoding utf8
         [System.IO.File]::WriteAllBytes($docPath, $data)
 
-        $result = Confirm-YubiKeyFIDO2Signature -LiteralPath $jsonPath -Path $docPath -WarningAction SilentlyContinue
+        $result = Confirm-YubiKeyFIDO2Signature -JsonPath $jsonPath -Path $docPath -WarningAction SilentlyContinue
         $result.Valid | Should -Be $true
         $result.SignatureValid | Should -Be $true
         $result.DigestMatches | Should -Be $true

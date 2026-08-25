@@ -23,7 +23,7 @@
                 <PropertyName>HashAlgorithm</PropertyName>
               </ListItem>
               <ListItem>
-                <PropertyName>PublicKey</PropertyName>
+                <PropertyName>ARKGSeed</PropertyName>
               </ListItem>
               <ListItem>
                 <PropertyName>KeyHandle</PropertyName>

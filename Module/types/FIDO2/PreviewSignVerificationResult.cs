@@ -9,7 +9,7 @@
 /// if ($result.Valid) { "signature and digest match" }
 ///
 /// .EXAMPLE
-/// Confirm-YubiKeyFIDO2Signature -LiteralPath ~/.powershellYK/previewsign-37290609.json
+/// Confirm-YubiKeyFIDO2Signature -JsonPath ~/.powershellYK/previewsign-37290609.json
 /// Verifies the stored signature without re-hashing the original document.
 /// </summary>
 

@@ -1,13 +1,13 @@
 /// <summary>
 /// Represents the key material and signature produced by the FIDO2 previewSign extension.
 /// This is the primary pipeline output of New-YubiKeyFIDO2Signature: it carries the
-/// generated public key, key handle, the digest that was signed and the on-device
-/// signature, so callers can store/inspect the material and re-sign new data later.
+/// ARKG seed, key handle, the digest that was signed and the on-device signature, so
+/// callers can store/inspect the material and re-sign new data later.
 ///
 /// The signature is produced on the YubiKey via a GetAssertion previewSign request.
 /// The key handle is retained so the same key can sign additional payloads without
-/// re-provisioning. DerivedPublicKey is the ESP256 P-256 key that verifies Signature
-/// (the PublicKey property is the ARKG seed, not the verify key). Confirm-YubiKeyFIDO2Signature
+/// re-provisioning. ARKGSeed is the ARKG-P256 seed used to derive a signing ticket.
+/// DerivedPublicKey is the ESP256 P-256 key that verifies Signature. Confirm-YubiKeyFIDO2Signature
 /// checks the signature, an optional re-hash of the original data, and decodes the
 /// generated-key attestation object.
 ///
@@ -52,9 +52,9 @@ namespace powershellYK.FIDO2
         [Hidden]
         public byte[]? KeyHandleBytes { get; private set; }
 
-        // COSE/ARKG public key bytes (hidden; use PublicKey)
+        // ARKG-P256 seed COSE key bytes (hidden; use ARKGSeed)
         [Hidden]
-        public byte[]? PublicKeyCose { get; private set; }
+        public byte[]? ARKGSeedCose { get; private set; }
 
         // CBOR attestation object for the generated signing key (hidden; use AttestationObject)
         [Hidden]
@@ -72,8 +72,8 @@ namespace powershellYK.FIDO2
         [Hidden]
         public byte[]? SignatureBytes { get; private set; }
 
-        // Base64URL rendering of the generated public key
-        public string? PublicKey => PublicKeyCose is null ? null : Base64Url(PublicKeyCose);
+        // Base64URL rendering of the ARKG-P256 seed (not the ECDSA verify key)
+        public string? ARKGSeed => ARKGSeedCose is null ? null : Base64Url(ARKGSeedCose);
 
         // Base64URL rendering of the key handle
         public string? KeyHandle => KeyHandleBytes is null ? null : Base64Url(KeyHandleBytes);
@@ -101,7 +101,7 @@ namespace powershellYK.FIDO2
             string hashAlgorithm,
             byte[] toBeSigned,
             byte[]? keyHandle = null,
-            byte[]? publicKeyCose = null,
+            byte[]? arkgSeedCose = null,
             byte[]? attestationObject = null,
             byte[]? signature = null,
             byte[]? derivedPublicKey = null)
@@ -112,7 +112,7 @@ namespace powershellYK.FIDO2
             this.HashAlgorithm = hashAlgorithm;
             this.ToBeSignedBytes = toBeSigned;
             this.KeyHandleBytes = keyHandle;
-            this.PublicKeyCose = publicKeyCose;
+            this.ARKGSeedCose = arkgSeedCose;
             this.AttestationObjectBytes = attestationObject;
             this.SignatureBytes = signature;
             this.DerivedPublicKeySec1 = derivedPublicKey;
@@ -127,7 +127,7 @@ namespace powershellYK.FIDO2
                 RelyingPartyID = this.RelyingPartyID,
                 Algorithm = this.Algorithm,
                 HashAlgorithm = this.HashAlgorithm,
-                PublicKey = this.PublicKey,
+                ARKGSeed = this.ARKGSeed,
                 KeyHandle = this.KeyHandle,
                 AttestationObject = this.AttestationObject,
                 ToBeSigned = this.ToBeSigned,
@@ -158,7 +158,8 @@ namespace powershellYK.FIDO2
                 string? relyingPartyID = OptionalString(root, "RelyingPartyID");
                 CoseAlgorithmIdentifier algorithm = PreviewSign.ParseAlgorithm(OptionalString(root, "Algorithm"));
                 string hashAlgorithm = OptionalString(root, "HashAlgorithm") ?? "SHA256";
-                string? publicKey = OptionalString(root, "PublicKey");
+                // Prefer ARKGSeed; accept legacy PublicKey from older host stores
+                string? arkgSeed = OptionalString(root, "ARKGSeed") ?? OptionalString(root, "PublicKey");
                 string? keyHandle = OptionalString(root, "KeyHandle");
                 string? attestationObject = OptionalString(root, "AttestationObject");
                 string? toBeSignedHex = OptionalString(root, "ToBeSigned");
@@ -169,9 +170,9 @@ namespace powershellYK.FIDO2
                 {
                     throw new ArgumentException("The previewSign key JSON does not contain KeyHandle.");
                 }
-                if (string.IsNullOrWhiteSpace(publicKey))
+                if (string.IsNullOrWhiteSpace(arkgSeed))
                 {
-                    throw new ArgumentException("The previewSign key JSON does not contain PublicKey.");
+                    throw new ArgumentException("The previewSign key JSON does not contain ARKGSeed.");
                 }
 
                 byte[] toBeSigned = string.IsNullOrWhiteSpace(toBeSignedHex)
@@ -185,7 +186,7 @@ namespace powershellYK.FIDO2
                     hashAlgorithm: hashAlgorithm,
                     toBeSigned: toBeSigned,
                     keyHandle: Converter.Base64UrlToByteArray(keyHandle),
-                    publicKeyCose: Converter.Base64UrlToByteArray(publicKey),
+                    arkgSeedCose: Converter.Base64UrlToByteArray(arkgSeed),
                     attestationObject: string.IsNullOrWhiteSpace(attestationObject) ? null : Converter.Base64UrlToByteArray(attestationObject),
                     signature: string.IsNullOrWhiteSpace(signature) ? null : Converter.Base64UrlToByteArray(signature),
                     derivedPublicKey: string.IsNullOrWhiteSpace(derivedPublicKey) ? null : Converter.Base64UrlToByteArray(derivedPublicKey));
@@ -221,8 +222,8 @@ namespace powershellYK.FIDO2
             {
                 return $"previewSign signature for RP '{rp}' ({this.Algorithm}), {this.SignatureBytes.Length}-byte signature over {this.HashAlgorithm} digest";
             }
-            return this.PublicKeyCose is not null
-                ? $"previewSign key for RP '{rp}' ({this.Algorithm}), public key {this.PublicKeyCose.Length} bytes"
+            return this.ARKGSeedCose is not null
+                ? $"previewSign key for RP '{rp}' ({this.Algorithm}), ARKG seed {this.ARKGSeedCose.Length} bytes"
                 : $"previewSign context for RP '{rp}' (no key material; create a credential to generate one)";
         }
 

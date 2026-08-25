@@ -3,16 +3,17 @@
 ///
 /// This cmdlet hashes the supplied input and signs it on the device. The first
 /// run provisions a discoverable previewSign credential, persists the key handle
-/// and seed public key under ~/.powershellYK, signs the digest, and returns the
+/// and ARKG seed under ~/.powershellYK, signs the digest, and returns the
 /// material. Later runs with no key referenced reload that store and sign without
 /// creating another credential. Pass -NewKey to provision a replacement. A
-/// previously returned PreviewSignKey can be piped in, or KeyHandle / PublicKey /
+/// previously returned PreviewSignKey can be piped in, or KeyHandle / ARKGSeed /
 /// CredentialID from a prior Format-List can be supplied explicitly.
 ///
 /// Firmware 5.8 implements previewSign as ARKG-P256/ESP256-split (-65539). The
 /// signature is produced on-device through a GetAssertion previewSign request
-/// with an ARKG signing ticket. PublicKey is the ARKG seed, not the ESP256
-/// verify key.
+/// with an ARKG signing ticket. ARKGSeed is the ARKG-P256 seed used to derive
+/// that ticket. DerivedPublicKey is the ESP256 P-256 key that verifies Signature;
+/// do not use ARKGSeed for ECDSA verification.
 ///
 /// NOTE: This cmdlet uses the Yubico previewSign extension. Its algorithm and
 /// algorithm ID (-65539) are not final and may change before general
@@ -25,10 +26,10 @@
 /// .EXAMPLE
 /// New-YubiKeyFIDO2Signature -InputData "data" -UserVerification
 /// Provisions a previewSign credential requiring PIN or biometric instead of only a touch.
-/// 
+///
 /// .EXAMPLE
 /// $key = New-YubiKeyFIDO2Signature -Path .\document.pdf
-/// New-YubiKeyFIDO2Signature -Path .\other.pdf -KeyHandle $key.KeyHandle -PublicKey $key.PublicKey -CredentialID $key.CredentialID
+/// New-YubiKeyFIDO2Signature -Path .\other.pdf -KeyHandle $key.KeyHandle -ARKGSeed $key.ARKGSeed -CredentialID $key.CredentialID
 /// Signs a file, then re-signs another file with the key handle copied from the previous output.
 ///
 /// .EXAMPLE
@@ -86,9 +87,9 @@ namespace powershellYK.Cmdlets.Fido
         [TransformHexOrBase64Url]
         public byte[]? KeyHandle { get; set; }
 
-        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Seed public key (base64url, hex, or byte[]) from a previous previewSign output.", ParameterSetName = "WithKeyHandle")]
+        [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "ARKG-P256 seed (base64url, hex, or byte[]) from a previous previewSign output.", ParameterSetName = "WithKeyHandle")]
         [TransformHexOrBase64Url]
-        public byte[]? PublicKey { get; set; }
+        public byte[]? ARKGSeed { get; set; }
 
         [Parameter(Mandatory = true, ValueFromPipeline = false, HelpMessage = "Credential id the key handle belongs to.", ParameterSetName = "WithKeyHandle")]
         public powershellYK.FIDO2.CredentialID? CredentialID { get; set; }
@@ -115,7 +116,7 @@ namespace powershellYK.Cmdlets.Fido
         public SwitchParameter NewKey { get; set; }
 
         // Optional output file for the generated key material
-        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Write the public key, key handle and signature (base64url JSON) to disk.")]
+        [Parameter(Mandatory = false, ValueFromPipeline = false, HelpMessage = "Write the ARKG seed, key handle and signature (base64url JSON) to disk.")]
         [TransformPath]
         [ValidatePath(fileMustExist: false, fileMustNotExist: true)]
         public FileInfo? OutFile { get; set; }
@@ -217,11 +218,19 @@ namespace powershellYK.Cmdlets.Fido
             if (!NewKey.IsPresent)
             {
                 PreviewSignKey? stored = TryLoadDefaultStore();
+                bool existsOnDevice = false;
                 if (stored is not null &&
                     string.Equals(stored.RelyingPartyID, rpId, StringComparison.OrdinalIgnoreCase) &&
                     stored.KeyHandleBytes is not null &&
-                    stored.PublicKeyCose is not null &&
-                    CredentialExistsOnDevice(fido2Session, stored))
+                    stored.ARKGSeedCose is not null)
+                {
+                    existsOnDevice = CredentialExistsOnDevice(fido2Session, stored);
+                }
+                if (stored is not null &&
+                    string.Equals(stored.RelyingPartyID, rpId, StringComparison.OrdinalIgnoreCase) &&
+                    stored.KeyHandleBytes is not null &&
+                    stored.ARKGSeedCose is not null &&
+                    existsOnDevice)
                 {
                     WriteDebug($"Reusing stored previewSign key from '{GetDefaultStorePath()}'.");
                     PreviewSignKey? reused = EmitSignedFromMaterial(
@@ -230,7 +239,7 @@ namespace powershellYK.Cmdlets.Fido
                         stored.CredentialID,
                         rpId,
                         stored.KeyHandleBytes,
-                        stored.PublicKeyCose,
+                        stored.ARKGSeedCose,
                         stored.AlgorithmIdentifier,
                         stored.AttestationObjectBytes);
                     if (reused is not null)
@@ -292,9 +301,9 @@ namespace powershellYK.Cmdlets.Fido
 
             powershellYK.FIDO2.CredentialID credentialID = credentialData.AuthenticatorData.CredentialId!;
             byte[] keyHandle = generatedKey.KeyHandle.ToArray();
-            byte[] publicKeyCose = generatedKey.PublicKey.ToArray();
+            byte[] arkgSeedCose = generatedKey.PublicKey.ToArray();
 
-            (byte[] signature, byte[] derivedPublicKey) = SignWithKey(fido2Session, rpId, credentialID, keyHandle, toBeSigned, publicKeyCose);
+            (byte[] signature, byte[] derivedPublicKey) = SignWithKey(fido2Session, rpId, credentialID, keyHandle, toBeSigned, arkgSeedCose);
 
             var result = new PreviewSignKey(
                 credentialID: credentialID,
@@ -303,7 +312,7 @@ namespace powershellYK.Cmdlets.Fido
                 hashAlgorithm: Digest,
                 toBeSigned: toBeSigned,
                 keyHandle: keyHandle,
-                publicKeyCose: publicKeyCose,
+                arkgSeedCose: arkgSeedCose,
                 attestationObject: generatedKey.AttestationObject.Encoded.ToArray(),
                 signature: signature,
                 derivedPublicKey: derivedPublicKey);
@@ -320,7 +329,7 @@ namespace powershellYK.Cmdlets.Fido
             string rpId;
             byte[] keyHandle;
             CoseAlgorithmIdentifier algorithm;
-            byte[] seedPublicKeyCose;
+            byte[] arkgSeedCose;
             byte[]? attestationObject;
 
             if (ParameterSetName == "WithKey")
@@ -329,15 +338,15 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     throw new ArgumentException("The supplied PreviewSignKey does not contain a key handle and cannot be used to sign.");
                 }
-                if (PreviewSignKey.PublicKeyCose is null)
+                if (PreviewSignKey.ARKGSeedCose is null)
                 {
-                    throw new ArgumentException("The supplied PreviewSignKey does not contain a seed public key, which is required to derive the ARKG signing ticket.");
+                    throw new ArgumentException("The supplied PreviewSignKey does not contain an ARKG seed, which is required to derive the ARKG signing ticket.");
                 }
                 credentialID = PreviewSignKey.CredentialID;
                 rpId = string.IsNullOrWhiteSpace(PreviewSignKey.RelyingPartyID) ? DefaultRelyingPartyID : PreviewSignKey.RelyingPartyID!;
                 keyHandle = PreviewSignKey.KeyHandleBytes;
                 algorithm = PreviewSignKey.AlgorithmIdentifier;
-                seedPublicKeyCose = PreviewSignKey.PublicKeyCose;
+                arkgSeedCose = PreviewSignKey.ARKGSeedCose;
                 attestationObject = PreviewSignKey.AttestationObjectBytes;
             }
             else
@@ -346,9 +355,9 @@ namespace powershellYK.Cmdlets.Fido
                 {
                     throw new ArgumentException("A key handle is required to sign with an existing previewSign key.");
                 }
-                if (PublicKey is null || PublicKey.Length == 0)
+                if (ARKGSeed is null || ARKGSeed.Length == 0)
                 {
-                    throw new ArgumentException("A seed public key is required to derive the ARKG signing ticket.");
+                    throw new ArgumentException("An ARKG seed is required to derive the ARKG signing ticket.");
                 }
                 if (!CredentialID.HasValue)
                 {
@@ -358,11 +367,11 @@ namespace powershellYK.Cmdlets.Fido
                 rpId = string.IsNullOrWhiteSpace(RelyingPartyID) ? DefaultRelyingPartyID : RelyingPartyID!;
                 keyHandle = KeyHandle;
                 algorithm = powershellYK.support.FIDO2.PreviewSign.ArkgP256ESP256;
-                seedPublicKeyCose = PublicKey;
+                arkgSeedCose = ARKGSeed;
                 attestationObject = null;
             }
 
-            EmitSignedFromMaterial(fido2Session, toBeSigned, credentialID, rpId, keyHandle, seedPublicKeyCose, algorithm, attestationObject);
+            EmitSignedFromMaterial(fido2Session, toBeSigned, credentialID, rpId, keyHandle, arkgSeedCose, algorithm, attestationObject);
         }
 
         // Sign with already-resolved key material and emit a reusable PreviewSignKey
@@ -372,7 +381,7 @@ namespace powershellYK.Cmdlets.Fido
             powershellYK.FIDO2.CredentialID credentialID,
             string rpId,
             byte[] keyHandle,
-            byte[] seedPublicKeyCose,
+            byte[] arkgSeedCose,
             CoseAlgorithmIdentifier algorithm,
             byte[]? attestationObject)
         {
@@ -383,7 +392,7 @@ namespace powershellYK.Cmdlets.Fido
                 return null;
             }
 
-            (byte[] signature, byte[] derivedPublicKey) = SignWithKey(fido2Session, rpId, credentialID, keyHandle, toBeSigned, seedPublicKeyCose);
+            (byte[] signature, byte[] derivedPublicKey) = SignWithKey(fido2Session, rpId, credentialID, keyHandle, toBeSigned, arkgSeedCose);
 
             var result = new PreviewSignKey(
                 credentialID: credentialID,
@@ -392,7 +401,7 @@ namespace powershellYK.Cmdlets.Fido
                 hashAlgorithm: Digest,
                 toBeSigned: toBeSigned,
                 keyHandle: keyHandle,
-                publicKeyCose: seedPublicKeyCose,
+                arkgSeedCose: arkgSeedCose,
                 attestationObject: attestationObject,
                 signature: signature,
                 derivedPublicKey: derivedPublicKey);
@@ -403,14 +412,14 @@ namespace powershellYK.Cmdlets.Fido
         }
 
         // Perform a GetAssertion previewSign request and return the signature plus derived verify key
-        private (byte[] signature, byte[] derivedPublicKeySec1) SignWithKey(Fido2Session fido2Session, string rpId, powershellYK.FIDO2.CredentialID credentialID, byte[] keyHandle, byte[] toBeSigned, ReadOnlyMemory<byte> seedPublicKeyCose)
+        private (byte[] signature, byte[] derivedPublicKeySec1) SignWithKey(Fido2Session fido2Session, string rpId, powershellYK.FIDO2.CredentialID credentialID, byte[] keyHandle, byte[] toBeSigned, ReadOnlyMemory<byte> arkgSeedCose)
         {
             var relyingParty = new RelyingParty(rpId);
             byte[] clientDataHash = BuildClientDataHash("webauthn.get", rpId);
 
             // ARKG-P256 signing requires a derived ticket (additionalArgs). Firmware 5.8
             // returns CTAP "Invalid parameters" if this is omitted.
-            var derived = powershellYK.support.FIDO2.PreviewSign.DeriveSigningKey(seedPublicKeyCose, rpId);
+            var derived = powershellYK.support.FIDO2.PreviewSign.DeriveSigningKey(arkgSeedCose, rpId);
 
             var getParams = new GetAssertionParameters(relyingParty, clientDataHash);
             getParams.AllowCredential(credentialID.ToYubicoFIDO2CredentialID());
@@ -463,8 +472,13 @@ namespace powershellYK.Cmdlets.Fido
             }
             catch (Exception ex)
             {
-                WriteDebug($"Failed to enumerate credentials for '{stored.RelyingPartyID}': {ex.Message}");
-                return false;
+                // The SDK credential-management enumeration parses each credential's public
+                // key as a standard COSE key. A previewSign credential stores the ARKG seed
+                // (COSE key type -65537), which the parser rejects with a CBOR map error.
+                // The dedicated synthetic RP exists only because our discoverable credential
+                // exists, so RP presence is sufficient to treat the credential as present.
+                WriteDebug($"Credential enumeration for '{stored.RelyingPartyID}' failed ({ex.Message}); relying party is present, so treating the previewSign credential as present.");
+                return true;
             }
 
             byte[] storedId = stored.CredentialID.ToByte();
