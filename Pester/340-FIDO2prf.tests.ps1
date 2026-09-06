@@ -1,8 +1,8 @@
 Describe "FIDO2 PRF Tests" -Tag @("FIDO2",'FIDO2prf')  {
     BeforeAll {
-        { Connect-YubiKey } | Should -Not -Throw
-        { Connect-YubiKeyFIDO2 -PIN (ConvertTo-SecureString -String '123456' -AsPlainText -Force) } | Should -Not -Throw
-        { New-YubiKeyFIDO2Credential -RelyingPartyID 'powershellYK-FIDO2-prf' -Challenge ([powershellYK.FIDO2.Challenge]::FakeChallange("powershellYK")) -Discoverable:$true -Username 'powershellYKUser' -UserID 0x01 } | Should -Not -Throw
+        Connect-YubiKey
+        Connect-YubiKeyFIDO2 -PIN (ConvertTo-SecureString -String '123456' -AsPlainText -Force)
+        New-YubiKeyFIDO2Credential -RelyingPartyID 'powershellYK-FIDO2-prf' -Challenge ([powershellYK.FIDO2.Challenge]::FakeChallange("powershellYK")) -Discoverable:$true -Username 'powershellYKUser' -UserID 0x01
         $textin = [System.IO.Path]::GetTempFileName()
         Set-Content -Value "Plaintext unencrypted file" -Path $textin
         $encrypted = [System.IO.Path]::GetTempFileName()
@@ -21,7 +21,7 @@ Describe "FIDO2 PRF Tests" -Tag @("FIDO2",'FIDO2prf')  {
 
     It -Name "Encrypt file with FIDO2 prf with specified outfile" -Test {
         $cred = Get-YubiKeyFIDO2Credential | Where-Object { $_.RelyingParty.Id -eq "powershellYK-FIDO2-prf" }
-        { Protect-YubiKeyFIDO2File -Path $textin -Credential $cred -OutFile $encrypted -Confirm:$False} | Should -Not -Throw
+        Protect-YubiKeyFIDO2File -Path $textin -Credential $cred -OutFile $encrypted -Confirm:$False
         (Test-Path $encrypted) | Should -BeTrue
     }
 
@@ -41,8 +41,8 @@ Describe "FIDO2 PRF Tests" -Tag @("FIDO2",'FIDO2prf')  {
 
 Describe "FIDO2 PRF AutoCreate Tests" -Tag @("FIDO2",'FIDO2prf')  {
     BeforeAll {
-        { Connect-YubiKey } | Should -Not -Throw
-        { Connect-YubiKeyFIDO2 -PIN (ConvertTo-SecureString -String '123456' -AsPlainText -Force) } | Should -Not -Throw
+        Connect-YubiKey
+        Connect-YubiKeyFIDO2 -PIN (ConvertTo-SecureString -String '123456' -AsPlainText -Force)
         Get-YubiKeyFIDO2Credential | Where-Object { $_.RPId -eq 'prf-encryption' } | ForEach-Object {
             Remove-YubikeyFIDO2Credential -CredentialId $_.CredentialID -Confirm:$false
         }
