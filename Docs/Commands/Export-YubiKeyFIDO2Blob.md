@@ -28,6 +28,12 @@ Export-YubiKeyFIDO2Blob -CredentialId <CredentialID> -OutFile <FileInfo> [<Commo
 Export-YubiKeyFIDO2Blob -RelyingPartyID <string> -OutFile <FileInfo> [<CommonParameters>]
 ```
 
+### AutoLookup (Default)
+
+```
+Export-YubiKeyFIDO2Blob -OutFile <FileInfo> [<CommonParameters>]
+```
+
 ## ALIASES
 
 ## DESCRIPTION
@@ -78,6 +84,12 @@ DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
+- Name: AutoLookup
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
 - Name: Export LargeBlob
   Position: Named
   IsRequired: true
@@ -139,5 +151,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[FIDO2 large blobs ("largeBlobs" option)](https://docs.yubico.com/yesdk/users-manual/application-fido2/large-blobs.html)
-
+- [FIDO2 large blobs ("largeBlobs" option)](https://docs.yubico.com/yesdk/users-manual/application-fido2/large-blobs.html)

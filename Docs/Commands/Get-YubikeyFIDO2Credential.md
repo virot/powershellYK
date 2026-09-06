@@ -32,6 +32,12 @@ Get-YubiKeyFIDO2Credential -CredentialID <CredentialID> [<CommonParameters>]
 Get-YubiKeyFIDO2Credential -CredentialIdBase64Url <String> [<CommonParameters>]
 ```
 
+### List-RelyingPartyID
+
+```
+Get-YubiKeyFIDO2Credential -RelyingPartyID <string> [<CommonParameters>]
+```
+
 ## ALIASES
 
 ## DESCRIPTION
@@ -107,6 +113,29 @@ SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: List-CredentialID-Base64URL
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -RelyingPartyID
+
+Filter credentials by relying party ID
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- RP
+- Origin
+ParameterSets:
+- Name: List-RelyingPartyID
   Position: Named
   IsRequired: true
   ValueFromPipeline: false
