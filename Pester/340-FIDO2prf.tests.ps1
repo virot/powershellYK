@@ -66,7 +66,7 @@ Describe "FIDO2 PRF AutoCreate Tests" -Tag @("FIDO2",'FIDO2prf')  {
     }
 
     It -Name "AutoCreate encrypts without -Credential (hmac-secret-mc on 5.8+, two-step hmac-secret otherwise)" -Test {
-        { Protect-YubiKeyFIDO2File -Path $autoTextIn -OutFile $autoEncrypted -Force -Confirm:$False } | Should -Not -Throw
+        { Protect-YubiKeyFIDO2File -Path $autoTextIn -OutFile $autoEncrypted -Confirm:$False } | Should -Not -Throw
         (Test-Path $autoEncrypted) | Should -BeTrue
     }
 
@@ -77,7 +77,7 @@ Describe "FIDO2 PRF AutoCreate Tests" -Tag @("FIDO2",'FIDO2prf')  {
     }
 
     It -Name "Second AutoCreate Protect reuses the prf-encryption credential" -Test {
-        { Protect-YubiKeyFIDO2File -Path $autoTextIn -OutFile $autoEncryptedReuse -Force -Confirm:$False } | Should -Not -Throw
+        { Protect-YubiKeyFIDO2File -Path $autoTextIn -OutFile $autoEncryptedReuse -Confirm:$False } | Should -Not -Throw
         (Test-Path $autoEncryptedReuse) | Should -BeTrue
         $reuseOut = [System.IO.Path]::GetTempFileName()
         if (Test-Path $reuseOut) { Remove-Item $reuseOut }

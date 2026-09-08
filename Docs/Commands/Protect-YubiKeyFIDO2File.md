@@ -19,29 +19,29 @@ Encrypts a file using FIDO2 PRF (hmac-secret / hmac-secret-mc) extension on a Yu
 ### AutoCreate (Default)
 
 ```
-Protect-YubiKeyFIDO2File -Path <FileInfo> [-OutFile <FileInfo>] [-Force] [-WhatIf] [-Confirm]
+Protect-YubiKeyFIDO2File -Path <FileInfo> [-OutFile <FileInfo>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### WithCredential
 
 ```
-Protect-YubiKeyFIDO2File -Path <FileInfo> -Credential <Credential> [-OutFile <FileInfo>] [-Force]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+Protect-YubiKeyFIDO2File -Path <FileInfo> -Credential <Credential> [-OutFile <FileInfo>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### WithCredentialID
 
 ```
 Protect-YubiKeyFIDO2File -Path <FileInfo> -CredentialID <CredentialID> -RelyingPartyID <string>
- [-OutFile <FileInfo>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-OutFile <FileInfo>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByRelyingPartyID
 
 ```
-Protect-YubiKeyFIDO2File -Path <FileInfo> -RelyingPartyID <string> [-OutFile <FileInfo>] [-Force]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+Protect-YubiKeyFIDO2File -Path <FileInfo> -RelyingPartyID <string> [-OutFile <FileInfo>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## ALIASES
@@ -59,7 +59,7 @@ When no credential or relying party is provided, a synthetic `prf-encryption` cr
 ### Example 1
 
 ```powershell
-Protect-YubiKeyFIDO2File -Path .\secret.txt -Force
+Protect-YubiKeyFIDO2File -Path .\secret.txt -Confirm:$false
 ```
 Encrypts secret.txt, automatically creating or reusing a `prf-encryption` credential. On firmware 5.8+ the first-time create+encrypt is a single touch.
 
@@ -143,30 +143,6 @@ ParameterSets:
 - Name: WithCredentialID
   Position: Named
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -Force
-
-Suppress the confirmation prompt when auto-creating a `prf-encryption` credential.
-Suppress the confirmation prompt when auto-creating a credential.
-Suppress the confirmation prompt when auto-creating a credential.
-Suppress the confirmation prompt when auto-creating a credential.
-
-```yaml
-Type: System.Management.Automation.SwitchParameter
-DefaultValue: ''
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: (All)
-  Position: Named
-  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false

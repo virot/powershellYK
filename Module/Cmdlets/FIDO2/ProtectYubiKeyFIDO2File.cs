@@ -15,7 +15,7 @@
 /// Encrypts secret.txt, automatically creating or reusing a "prf-encryption" credential.
 ///
 /// .EXAMPLE
-/// Protect-YubiKeyFIDO2File -Path .\secret.txt -Force
+/// Protect-YubiKeyFIDO2File -Path .\secret.txt -Confirm:$false
 /// Same as above but skips the credential-creation confirmation prompt.
 ///
 /// .EXAMPLE
@@ -82,9 +82,6 @@ namespace powershellYK.Cmdlets.Fido
         [Alias("RP", "Origin")]
         [ValidateNotNullOrEmpty]
         public string? RelyingPartyID { get; set; }
-
-        [Parameter(Mandatory = false, HelpMessage = "Suppress the confirmation prompt when auto-creating a credential.")]
-        public SwitchParameter Force { get; set; }
 
         private const string AutoCreateRpId = "prf-encryption";
         private const string AutoCreateUsername = "prf-encryption";
@@ -175,8 +172,7 @@ namespace powershellYK.Cmdlets.Fido
                 if (credIdBytes is null)
                 {
                     string username = AutoCreateUsername;
-
-                    if (!Force.IsPresent && !ShouldContinue(
+                    if (!ShouldProcess(
                         $"No credential or relying party was provided. A new FIDO2 credential will be created on RP '{rpId}'. Continue?",
                         "Create FIDO2 credential"))
                     {
