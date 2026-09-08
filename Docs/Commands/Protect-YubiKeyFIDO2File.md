@@ -12,42 +12,39 @@ title: Protect-YubiKeyFIDO2File
 
 ## SYNOPSIS
 
-Encrypts a file using FIDO2 PRF (hmac-secret) extension on a YubiKey.
+Encrypts a file using FIDO2 PRF (hmac-secret / hmac-secret-mc) extension on a YubiKey.
 
 ## SYNTAX
 
 ### AutoCreate (Default)
 
 ```
-Protect-YubiKeyFIDO2File -Path <FileInfo> [-OutFile <FileInfo>] [-Force] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Protect-YubiKeyFIDO2File -Path <FileInfo> [-OutFile <FileInfo>] [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### WithCredential
 
 ```
-Protect-YubiKeyFIDO2File -Path <FileInfo> -Credential <Credential> [-OutFile <FileInfo>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Protect-YubiKeyFIDO2File -Path <FileInfo> -Credential <Credential> [-OutFile <FileInfo>] [-Force]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### WithCredentialID
 
 ```
 Protect-YubiKeyFIDO2File -Path <FileInfo> -CredentialID <CredentialID> -RelyingPartyID <string>
- [-OutFile <FileInfo>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-OutFile <FileInfo>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByRelyingPartyID
 
 ```
-Protect-YubiKeyFIDO2File -Path <FileInfo> -RelyingPartyID <string> [-OutFile <FileInfo>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Protect-YubiKeyFIDO2File -Path <FileInfo> -RelyingPartyID <string> [-OutFile <FileInfo>] [-Force]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## ALIASES
-
-This cmdlet has the following aliases,
-  {{Insert list of aliases}}
 
 ## DESCRIPTION
 
@@ -157,6 +154,9 @@ HelpMessage: ''
 ### -Force
 
 Suppress the confirmation prompt when auto-creating a `prf-encryption` credential.
+Suppress the confirmation prompt when auto-creating a credential.
+Suppress the confirmation prompt when auto-creating a credential.
+Suppress the confirmation prompt when auto-creating a credential.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -164,7 +164,7 @@ DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: AutoCreate
+- Name: (All)
   Position: Named
   IsRequired: false
   ValueFromPipeline: false
