@@ -19,20 +19,24 @@ Imports large blob to YubiKey FIDO2 by Credential ID or Relying Party ID (Origin
 ### Set LargeBlob
 
 ```
-Import-YubiKeyFIDO2Blob -LargeBlob <FileInfo> -CredentialId <CredentialID> [-Force]
+Import-YubiKeyFIDO2Blob -Path <FileInfo> -CredentialId <CredentialID> [-Force] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### Set LargeBlob by RelyingPartyID
 
 ```
-Import-YubiKeyFIDO2Blob -LargeBlob <FileInfo> -RelyingPartyID <string> [-Force] [<CommonParameters>]
+Import-YubiKeyFIDO2Blob -Path <FileInfo> -RelyingPartyID <string> [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
+```
+
+### AutoCreate (Default)
+
+```
+Import-YubiKeyFIDO2Blob -Path <FileInfo> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## ALIASES
-
-This cmdlet has the following aliases,
-  {{Insert list of aliases}}
 
 ## DESCRIPTION
 
@@ -50,6 +54,28 @@ Touch the YubiKey...
 Imports the large blob from the specified file for the credential with the specified Relying Party ID (or display name, if unique) to the YubiKey.
 
 ## PARAMETERS
+
+### -Confirm
+
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- cf
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
 
 ### -CredentialId
 
@@ -75,6 +101,7 @@ HelpMessage: ''
 ### -Force
 
 Overwrite existing large blob entry for this credential without prompting.
+Suppress confirmation prompts (credential creation and blob overwrite).
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -82,6 +109,12 @@ DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
+- Name: AutoCreate
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
 - Name: Set LargeBlob
   Position: Named
   IsRequired: false
@@ -126,6 +159,41 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -Path
+
+File to import as large blob
+
+```yaml
+Type: System.IO.FileInfo
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- LargeBlob
+- File
+ParameterSets:
+- Name: AutoCreate
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: Set LargeBlob
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: Set LargeBlob by RelyingPartyID
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -RelyingPartyID
 
 Relying party ID, or relying party display name if unique, to associate with the large blob.
@@ -141,6 +209,28 @@ ParameterSets:
 - Name: Set LargeBlob by RelyingPartyID
   Position: Named
   IsRequired: true
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -WhatIf
+
+Runs the command in a mode that only reports what would happen without performing the actions.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- wi
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -170,4 +260,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[FIDO2 large blobs ("largeBlobs" option)](https://docs.yubico.com/yesdk/users-manual/application-fido2/large-blobs.html)
+- [FIDO2 large blobs ("largeBlobs" option)](https://docs.yubico.com/yesdk/users-manual/application-fido2/large-blobs.html)

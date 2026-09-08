@@ -165,7 +165,7 @@ namespace powershellYK.Cmdlets.Fido
                 }
 
                 // Add HMAC secret extension if supported
-                if (fido2Session.AuthenticatorInfo.IsExtensionSupported("hmac-secret"))
+                if (fido2Session.AuthenticatorInfo.IsExtensionSupported(Extensions.HmacSecret))
                 {
                     make.AddHmacSecretExtension(fido2Session.AuthenticatorInfo);
                 }

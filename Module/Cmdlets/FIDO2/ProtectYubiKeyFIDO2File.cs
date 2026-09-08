@@ -4,15 +4,18 @@
 /// Requires a YubiKey with FIDO2 hmac-secret support, a FIDO2 PIN, and administrator
 /// privileges on Windows.
 /// When no credential or relying party is provided, the cmdlet automatically creates a
-/// synthetic FIDO2 credential (RP and username both set to "prf-encryption" and
-/// uses it for encryption.
+/// synthetic FIDO2 credential (RP and username both set to "prf-encryption") and
+/// uses it for encryption. On YubiKey firmware 5.8+ (hmac-secret-mc), first-time
+/// AutoCreate derives the PRF during credential creation so only one touch is required.
+/// Older firmware enables hmac-secret at creation then requests the PRF with a second
+/// assertion. Reuse of an existing credential always uses a single GetAssertions call.
 ///
 /// .EXAMPLE
 /// Protect-YubiKeyFIDO2File -Path .\secret.txt
 /// Encrypts secret.txt, automatically creating or reusing a "prf-encryption" credential.
 ///
 /// .EXAMPLE
-/// Protect-YubiKeyFIDO2File -Path .\secret.txt -Force
+/// Protect-YubiKeyFIDO2File -Path .\secret.txt -Confirm:$false
 /// Same as above but skips the credential-creation confirmation prompt.
 ///
 /// .EXAMPLE
@@ -39,8 +42,8 @@ using System.Management.Automation;
 using System.Security.Cryptography;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
-using Yubico.YubiKey.Cryptography;
 using powershellYK.support;
+using powershellYK.support.FIDO2;
 using powershellYK.support.transform;
 using powershellYK.support.validators;
 using powershellYK.FIDO2;
@@ -79,9 +82,6 @@ namespace powershellYK.Cmdlets.Fido
         [Alias("RP", "Origin")]
         [ValidateNotNullOrEmpty]
         public string? RelyingPartyID { get; set; }
-
-        [Parameter(Mandatory = false, HelpMessage = "Suppress the confirmation prompt when auto-creating a credential.")]
-        public SwitchParameter Force { get; set; }
 
         private const string AutoCreateRpId = "prf-encryption";
         private const string AutoCreateUsername = "prf-encryption";
@@ -144,6 +144,7 @@ namespace powershellYK.Cmdlets.Fido
 
             byte[] credIdBytes;
             string rpId;
+            byte[]? prfOutput = null;
 
             if (ParameterSetName == "AutoCreate")
             {
@@ -171,29 +172,53 @@ namespace powershellYK.Cmdlets.Fido
                 if (credIdBytes is null)
                 {
                     string username = AutoCreateUsername;
-
-                    if (!Force.IsPresent && !ShouldContinue(
+                    if (!ShouldProcess(
                         $"No credential or relying party was provided. A new FIDO2 credential will be created on RP '{rpId}'. Continue?",
                         "Create FIDO2 credential"))
                     {
                         return;
                     }
 
-                    WriteDebug($"AutoCreate: invoking New-YubiKeyFIDO2Credential for RP '{rpId}', user '{username}'...");
-                    var ps = PowerShell.Create(RunspaceMode.CurrentRunspace)
-                        .AddCommand("New-YubiKeyFIDO2Credential")
-                        .AddParameter("RelyingPartyID", rpId)
-                        .AddParameter("Username", username)
-                        .AddParameter("Confirm", false);
-                    if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
-                        ps.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+                    using (var createSession = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
+                    {
+                        createSession.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
 
-                    var results = ps.Invoke();
-                    if (results.Count == 0 || results[0].BaseObject is not CredentialData credData)
-                        throw new InvalidOperationException("Failed to create a FIDO2 credential for file encryption.");
+                        if (createSession.AuthenticatorInfo.IsExtensionSupported(Extensions.HmacSecretMc))
+                        {
+                            WriteDebug("AutoCreate: hmac-secret-mc supported (firmware 5.8+); creating credential and deriving PRF in one operation...");
+                            Console.WriteLine("Touch the YubiKey...");
+                            var mcResult = Fido2PrfHelper.TryCreateCredentialWithHmacSecretMc(createSession, rpId, username, salt);
+                            if (mcResult is not null)
+                            {
+                                credIdBytes = mcResult.Value.CredentialId;
+                                prfOutput = mcResult.Value.PrfOutput;
+                                WriteDebug($"AutoCreate: hmac-secret-mc credential created, ID {Convert.ToHexString(credIdBytes).ToLowerInvariant()}, {prfOutput.Length}-byte PRF.");
+                            }
+                        }
+                        else
+                        {
+                            WriteDebug("AutoCreate: hmac-secret-mc not supported on this firmware.");
+                        }
+                    }
 
-                    credIdBytes = credData.CredentialId!.Value.ToArray();
-                    WriteDebug($"AutoCreate: credential created, ID {Convert.ToHexString(credIdBytes).ToLowerInvariant()}");
+                    if (prfOutput is null)
+                    {
+                        WriteDebug($"AutoCreate: falling back to New-YubiKeyFIDO2Credential + assertion for RP '{rpId}', user '{username}'...");
+                        var ps = PowerShell.Create(RunspaceMode.CurrentRunspace)
+                            .AddCommand("New-YubiKeyFIDO2Credential")
+                            .AddParameter("RelyingPartyID", rpId)
+                            .AddParameter("Username", username)
+                            .AddParameter("Confirm", false);
+                        if (this.MyInvocation.BoundParameters.ContainsKey("InformationAction"))
+                            ps.AddParameter("InformationAction", this.MyInvocation.BoundParameters["InformationAction"]);
+
+                        var results = ps.Invoke();
+                        if (results.Count == 0 || results[0].BaseObject is not CredentialData credData)
+                            throw new InvalidOperationException("Failed to create a FIDO2 credential for file encryption.");
+
+                        credIdBytes = credData.CredentialId!.Value.ToArray();
+                        WriteDebug($"AutoCreate: credential created, ID {Convert.ToHexString(credIdBytes).ToLowerInvariant()}");
+                    }
                 }
             }
             else if (ParameterSetName == "WithCredential")
@@ -265,63 +290,57 @@ namespace powershellYK.Cmdlets.Fido
                 rpId = RelyingPartyID!;
             }
 
-            // Fresh session for the assertion -- not contaminated by credential creation
-            using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
+            if (credIdBytes is null)
             {
-                fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
-
-                // Build client data hash for the assertion
-                var relyingParty = new RelyingParty(rpId);
-                var clientData = new { type = "webauthn.get", origin = $"https://{rpId}", challenge = Convert.ToBase64String(salt) };
-                var clientDataJSON = System.Text.Json.JsonSerializer.Serialize(clientData);
-                var clientDataBytes = System.Text.Encoding.UTF8.GetBytes(clientDataJSON);
-                var digester = CryptographyProviders.Sha256Creator();
-                _ = digester.TransformFinalBlock(clientDataBytes, 0, clientDataBytes.Length);
-
-                // Request assertion with hmac-secret extension to get PRF output
-                var getParams = new GetAssertionParameters(relyingParty, digester.Hash!);
-                getParams.RequestHmacSecretExtension(salt);
-                getParams.AllowCredential(new CredentialID(credIdBytes).ToYubicoFIDO2CredentialID());
-
-                WriteDebug("Requesting assertion with hmac-secret extension...");
-                Console.WriteLine("Touch the YubiKey...");
-                IReadOnlyList<GetAssertionData> assertions = fido2Session.GetAssertions(getParams);
-
-                byte[] prfOutput = assertions[0].AuthenticatorData.GetHmacSecretExtension(fido2Session.AuthProtocol);
-                WriteDebug($"Received {prfOutput.Length}-byte PRF output from YubiKey.");
-
-                // Derive AES-256 key using HKDF-SHA256 with domain separation
-                byte[] derivedKey = HKDF.DeriveKey(
-                    HashAlgorithmName.SHA256,
-                    ikm: prfOutput,
-                    outputLength: 32,
-                    salt: null,
-                    info: HkdfInfo);
-
-                // Encrypt plaintext with AES-256-GCM
-                byte[] iv = RandomNumberGenerator.GetBytes(PRFEncryptedFile.IVLength);
-                byte[] ciphertext = new byte[plaintext.Length];
-                byte[] tag = new byte[PRFEncryptedFile.TagLength];
-
-                using (var aes = new AesGcm(derivedKey, tagSizeInBytes: PRFEncryptedFile.TagLength))
-                {
-                    aes.Encrypt(iv, plaintext, ciphertext, tag);
-                }
-
-                // Write encrypted file with structured header
-                var encryptedFile = new PRFEncryptedFile(credIdBytes, rpId, salt, iv, tag, ciphertext);
-                try
-                {
-                    File.WriteAllBytes(resolvedOutputPath, encryptedFile.Serialize());
-                }
-                catch (Exception ex)
-                {
-                    throw new IOException($"Failed to write encrypted file to '{resolvedOutputPath}'.", ex);
-                }
-
-                WriteInformation(new InformationRecord($"Encrypted file written to {resolvedOutputPath}", "Protect-YubiKeyFIDO2File"));
-                WriteObject(new FileInfo(resolvedOutputPath));
+                throw new InvalidOperationException("Failed to resolve a FIDO2 credential for file encryption.");
             }
+
+            // hmac-secret-mc already returned the PRF during MakeCredential; otherwise request it via GetAssertions
+            if (prfOutput is null)
+            {
+                using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
+                {
+                    fido2Session.KeyCollector = YubiKeyModule._KeyCollector.YKKeyCollectorDelegate;
+
+                    WriteDebug("Requesting assertion with hmac-secret extension...");
+                    Console.WriteLine("Touch the YubiKey...");
+                    prfOutput = Fido2PrfHelper.GetPrfViaAssertion(fido2Session, rpId, credIdBytes, salt);
+                }
+            }
+
+            WriteDebug($"Received {prfOutput.Length}-byte PRF output from YubiKey.");
+
+            // Derive AES-256 key using HKDF-SHA256 with domain separation
+            byte[] derivedKey = HKDF.DeriveKey(
+                HashAlgorithmName.SHA256,
+                ikm: prfOutput,
+                outputLength: 32,
+                salt: null,
+                info: HkdfInfo);
+
+            // Encrypt plaintext with AES-256-GCM
+            byte[] iv = RandomNumberGenerator.GetBytes(PRFEncryptedFile.IVLength);
+            byte[] ciphertext = new byte[plaintext.Length];
+            byte[] tag = new byte[PRFEncryptedFile.TagLength];
+
+            using (var aes = new AesGcm(derivedKey, tagSizeInBytes: PRFEncryptedFile.TagLength))
+            {
+                aes.Encrypt(iv, plaintext, ciphertext, tag);
+            }
+
+            // Write encrypted file with structured header
+            var encryptedFile = new PRFEncryptedFile(credIdBytes, rpId, salt, iv, tag, ciphertext);
+            try
+            {
+                File.WriteAllBytes(resolvedOutputPath, encryptedFile.Serialize());
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"Failed to write encrypted file to '{resolvedOutputPath}'.", ex);
+            }
+
+            WriteInformation(new InformationRecord($"Encrypted file written to {resolvedOutputPath}", "Protect-YubiKeyFIDO2File"));
+            WriteObject(new FileInfo(resolvedOutputPath));
         }
     }
 }

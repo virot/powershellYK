@@ -164,7 +164,7 @@ Create a self signed certificate
 
 ### [Protect-YubiKeyFIDO2File](Protect-YubiKeyFIDO2File.md)
 
-Encrypts a file using FIDO2 PRF (hmac-secret) extension on a YubiKey.
+Encrypts a file using FIDO2 PRF (hmac-secret / hmac-secret-mc) extension on a YubiKey.
 
 ### [Register-YubikeyBIOFingerprint](Register-YubikeyBIOFingerprint.md)
 
