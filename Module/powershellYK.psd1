@@ -33,7 +33,7 @@ Copyright = '(c) Oscar Virot. All rights reserved.'
 Description = 'A unofficial powershell wrapper for Yubico .NET SDK. Allows administration of Yubikeys from Powershell.'
 
 # Minimum version of the PowerShell engine required by this module
-PowerShellVersion = '7.0'
+PowerShellVersion = '7.6'
 
 # Name of the PowerShell host required by this module
 # PowerShellHostName = ''
