@@ -28,7 +28,7 @@ jobs:
          pwsh -Command '
            [xml]$xml = Get-Content "./Module/powershellYK.csproj"
            Write-Host $xml.Project.PropertyGroup[0].AssemblyVersion 
-           $xml.Project.PropertyGroup[0].AssemblyVersion = "${{ github.event.release.tag_name }}"
+           $xml.Project.PropertyGroup[0].AssemblyVersion = ("${{ github.event.release.tag_name }}" -replace "^r", "")
            Write-Host $xml.Project.PropertyGroup[0].AssemblyVersion 
            $xml.Save("./Module/powershellYK.csproj")
          '
@@ -36,11 +36,11 @@ jobs:
     - name: Install platyPS
       run: |
          pwsh -Command '
-           Install-PSResource -Name platyPS -TrustRepository:$true
+           install-module -name Microsoft.PowerShell.PlatyPS -Force
          '
          
     - name: Build
-      run: dotnet build --no-restore -c Release Module/powershellYK.csproj --output release
+      run: dotnet build --no-restore -c Release Module/powershellYK.csproj -p:TargetFramework=net8.0 --output release
 
     - name: Replace version in the module file
       run: |
@@ -49,7 +49,13 @@ jobs:
     - name: Build MAML XML Help
       run: |
          pwsh -Command '
-           New-ExternalHelp -Path './Docs/Commands' -OutputPath ./release -Force
+           Measure-PlatyPSMarkdown -Path ./Docs/Commands/*.md |
+             Where-Object Filetype -match 'CommandHelp' |
+             Import-MarkdownCommandHelp -Path {$_.FilePath} |
+             Export-MamlCommandHelp -OutputFolder ./release 
+           New-Item -Type Directory ./release/en-US
+           Move-Item ./release/powershellYK/powershellYK.dll-Help.xml ./release/en-US
+           Remove-Item ./release/powershellYK
          '
 
     - name: Zip release folder
