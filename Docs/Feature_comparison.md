@@ -11,6 +11,7 @@
 | **Configure Touch-Eject PIV** | 🟢 | 🔴 | 🟢 | 🔴 |
 | **Configure Auto Touch-Eject** | 🟢 | 🔴 | 🟢 | 🔴 |
 | **Restrict NFC** | 🟢 | 🔴 | 🟢 | 🔴 |
+| **Calculate NFC ID** | 🟢 | 🔴 | 🔴 | 🔴 |
 
 ### FIDO (U2F & FIDO2)
 | Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator |
@@ -22,6 +23,8 @@
 | **List passkey credentials** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Remove passkey credentials** | 🟢 | 🔴 | 🟢 | 🟢 |
 | **Reset applet** | 🟢 | 🟢 | 🟢 | 🟢 |
+| **Manage blob storage** | 🟢 | 🔴 | 🔴 | 🔴 |
+| **Encrypt & decrypt files** | 🟢 | 🔴 | 🔴 | 🔴 |
 
 
 ### OATH (TOTP)
@@ -68,7 +71,7 @@
 ## Only in powershellYK
 _The following are unique features available only in powershellYK:_   
 
-💎 Validate YubiKey attestation certificates.   
+💎 Validate YubiKey PIV, FIDO and OpenSSH attestation objects.   
 💎 Validate YubiKey certificate signing requests (CSRs) with _built-in_ attestation.   
 💎 Calculate the `altSecurityIdentities` attribute for use with SSH and AD(DS).   
 💎 Calculate `NFC ID` for physical access (PACS) integration.   
