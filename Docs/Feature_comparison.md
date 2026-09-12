@@ -66,7 +66,11 @@
 
 
 ## Only in powershellYK
-_The following are custom features available only in powershellYK:_
-- Validate YubiKey attestion certificates.
-- Validate YubiKey certificate signing requests (CSRs) with _built-in_ attestion.
-- Calculate the `altSecurityIdentities` attribute for use with SSH and AD(DS).
+_The following are unique features available only in powershellYK:_   
+
+💎 Validate YubiKey attestation certificates.   
+💎 Validate YubiKey certificate signing requests (CSRs) with _built-in_ attestation.   
+💎 Calculate the `altSecurityIdentities` attribute for use with SSH and AD(DS).   
+💎 Calculate `NFC ID` for physical access (PACS) integration.   
+💎 File encryption using `hmac-secret` and `hmac-secret-mc`.
+
