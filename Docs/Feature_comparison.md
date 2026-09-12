@@ -1,8 +1,8 @@
 # powershellYK
 
-## Feature difference between powershellYK and Yubikey tools
+## Comparing powershellYK with official Yubico tools
 
-### Yubikey configuration
+### Yubikey device configuration
 | Feature | powershellYK | YubiKey Manager (GUI) | YubiKey Manager (CLI) | Yubico Authenticator |
 | :--- | --- | --- | --- | --- |
 | **Toggle applications** | 🟢 | 🟢 | 🟢 |🟢 |
