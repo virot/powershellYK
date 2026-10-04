@@ -31,7 +31,10 @@ Reset-YubiKeyFIDO2 [-WhatIf] [-Confirm] [<CommonParameters>]
 ## DESCRIPTION
 
 Resets the YubiKey FIDO2 applet to factory settings. This will remove all stored credentials and reset the applet to factory settings.
-This REQUIRES the YubiKey to be (re)inserted at a maximum `5` seconds _before_ running the command.
+
+When prompted, remove and re-insert the YubiKey, then touch it to complete the reset. The reset command must be sent shortly after reinsertion (within about 5–10 seconds depending on firmware).
+
+If the selected YubiKey has no serial number, only one YubiKey may be connected; otherwise the cmdlet aborts to avoid resetting the wrong device.
 
 ## EXAMPLES
 

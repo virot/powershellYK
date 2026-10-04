@@ -14,14 +14,12 @@
 /// Resets the FIDO2 applet without confirmation prompt
 /// </summary>
 
-using System.Management.Automation;           // Windows PowerShell namespace.
+using System.Diagnostics;
+using System.Management.Automation;
+using powershellYK.support;
 using Yubico.YubiKey;
 using Yubico.YubiKey.Fido2;
-using powershellYK.FIDO2;
-using powershellYK.support;
 using Yubico.YubiKey.Fido2.Commands;
-using powershellYK.Exceptions;
-using System.Diagnostics;
 
 namespace powershellYK.Cmdlets.Fido
 {
@@ -31,6 +29,9 @@ namespace powershellYK.Cmdlets.Fido
         // Track YubiKey removal and insertion events
         private bool _yubiKeyRemoved = false;
         private bool _yubiKeyArrived = false;
+        private int? _expectedSerial;
+        private IYubiKeyDevice? _reinsertedDevice;
+        private string? _selectionError;
 
         // Initialize processing and verify requirements
         protected override void BeginProcessing()
@@ -70,6 +71,14 @@ namespace powershellYK.Cmdlets.Fido
 
             if (ShouldProcess("This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings. Proceed?", "This will delete all FIDO credentials, including FIDO U2F credentials, and restore factory settings. Proceed?", "WARNING!"))
             {
+                _expectedSerial = YubiKeyModule._yubikey!.SerialNumber;
+
+                // Keys without a serial number cannot be matched safely when multiple YubiKeys are present
+                if (_expectedSerial is null && YubiKeyDevice.FindAll().Count() > 1)
+                {
+                    throw new Exception("The selected YubiKey has no serial number and multiple YubiKeys are connected. Disconnect other YubiKeys and try again.");
+                }
+
                 Console.WriteLine("Remove and re-insert the YubiKey to perform the reset...");
 
                 // Set up YubiKey device monitoring
@@ -77,61 +86,81 @@ namespace powershellYK.Cmdlets.Fido
                 // Use a stopwatch to make sure we wont get stuck in an infinite loop.
                 Stopwatch stopwatch = new Stopwatch();
 
-                // Register event handlers for device removal and insertion
-                yubiKeyDeviceListener.Removed += YubiKeyRemoved;
-                yubiKeyDeviceListener.Arrived += YubiKeyArrived;
-
-                // Wait for YubiKey removal (10 second timeout)
-                stopwatch.Start();
-                while (!_yubiKeyRemoved)
+                try
                 {
-                    System.Threading.Thread.Sleep(100);
-                    if (stopwatch.Elapsed.TotalSeconds > 10)
+                    // Register event handlers for device removal and insertion
+                    yubiKeyDeviceListener.Removed += YubiKeyRemoved;
+                    yubiKeyDeviceListener.Arrived += YubiKeyArrived;
+
+                    // Wait for YubiKey removal (10 second timeout)
+                    stopwatch.Start();
+                    while (!_yubiKeyRemoved)
                     {
-                        throw new Exception("YubiKey was not removed within 10 seconds. Reset aborted.");
+                        if (_selectionError is not null)
+                        {
+                            throw new Exception(_selectionError);
+                        }
+                        System.Threading.Thread.Sleep(100);
+                        if (stopwatch.Elapsed.TotalSeconds > 10)
+                        {
+                            throw new Exception("YubiKey was not removed within 10 seconds. Reset aborted.");
+                        }
+                    }
+
+                    // Wait for YubiKey reinsertion (10 second timeout)
+                    stopwatch.Restart();
+                    while (!_yubiKeyArrived)
+                    {
+                        if (_selectionError is not null)
+                        {
+                            throw new Exception(_selectionError);
+                        }
+                        System.Threading.Thread.Sleep(100);
+                        if (stopwatch.Elapsed.TotalSeconds > 10)
+                        {
+                            throw new Exception("YubiKey was not inserted within 10 seconds. Reset aborted.");
+                        }
+                    }
+
+                    if (_reinsertedDevice is null)
+                    {
+                        throw new Exception("YubiKey was reinserted but the device could not be identified. Reset aborted.");
+                    }
+
+                    // Replace the stale pre-removal device reference with the freshly arrived device
+                    YubiKeyModule._yubikey = (YubiKeyDevice)_reinsertedDevice;
+
+                    // Perform the reset operation
+                    using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
+                    {
+                        ResetCommand resetCommand = new ResetCommand();
+                        Console.WriteLine("Touch the YubiKey...");
+
+                        ResetResponse reply = fido2Session.Connection.SendCommand(resetCommand);
+                        switch (reply.Status)
+                        {
+                            default:
+                                throw new Exception("Unknown status. (Update ResetYubikeyFIDO2Cmdlet)");
+
+                            case ResponseStatus.Failed:
+                                throw new Exception("Please touch the YubiKey to complete reset.");
+
+                            case ResponseStatus.ConditionsNotSatisfied:
+                                throw new Exception("Failed to reset, YubiKey needs to be reinserted within 5 seconds.");
+
+                            case ResponseStatus.Success:
+                                break;
+                        }
+
+                        // Clear FIDO2 PIN after successful reset
+                        YubiKeyModule._fido2PIN = null;
+                        WriteInformation("YubiKey FIDO applet successfully reset.", new string[] { "FIDO2", "Reset" });
                     }
                 }
-
-                // Wait for YubiKey reinsertion (10 second timeout)
-                stopwatch.Restart();
-                while (!_yubiKeyArrived)
+                finally
                 {
-                    System.Threading.Thread.Sleep(100);
-                    if (stopwatch.Elapsed.TotalSeconds > 10)
-                    {
-                        throw new Exception("YubiKey was not inserted within 10 seconds. Reset aborted.");
-                    }
-                }
-
-                // Unregister event handlers
-                yubiKeyDeviceListener.Removed -= YubiKeyRemoved;
-                yubiKeyDeviceListener.Arrived -= YubiKeyArrived;
-
-                // Perform the reset operation
-                using (var fido2Session = new Fido2Session((YubiKeyDevice)YubiKeyModule._yubikey!))
-                {
-                    ResetCommand resetCommand = new ResetCommand();
-                    Console.WriteLine("Touch the YubiKey...");
-
-                    ResetResponse reply = fido2Session.Connection.SendCommand(resetCommand);
-                    switch (reply.Status)
-                    {
-                        default:
-                            throw new Exception("Unknown status. (Update ResetYubikeyFIDO2Cmdlet)");
-
-                        case ResponseStatus.Failed:
-                            throw new Exception("Please touch the YubiKey to complete reset.");
-
-                        case ResponseStatus.ConditionsNotSatisfied:
-                            throw new Exception("Failed to reset, YubiKey needs to be reinserted within 5 seconds.");
-
-                        case ResponseStatus.Success:
-                            break;
-                    }
-
-                    // Clear FIDO2 PIN after successful reset
-                    YubiKeyModule._fido2PIN = null;
-                    WriteInformation("YubiKey FIDO applet successfully reset.", new string[] { "FIDO2", "Reset" });
+                    yubiKeyDeviceListener.Removed -= YubiKeyRemoved;
+                    yubiKeyDeviceListener.Arrived -= YubiKeyArrived;
                 }
             }
         }
@@ -139,7 +168,7 @@ namespace powershellYK.Cmdlets.Fido
         // Event handler for YubiKey removal
         private void YubiKeyRemoved(object? sender, YubiKeyDeviceEventArgs e)
         {
-            if (YubiKeyModule._yubikey!.SerialNumber == e.Device.SerialNumber)
+            if (IsExpectedDevice(e.Device))
             {
                 _yubiKeyRemoved = true;
             }
@@ -148,10 +177,37 @@ namespace powershellYK.Cmdlets.Fido
         // Event handler for YubiKey insertion
         private void YubiKeyArrived(object? sender, YubiKeyDeviceEventArgs e)
         {
-            if (YubiKeyModule._yubikey!.SerialNumber == e.Device.SerialNumber)
+            if (_expectedSerial is not null)
             {
-                _yubiKeyArrived = true;
+                if (e.Device.SerialNumber == _expectedSerial)
+                {
+                    _reinsertedDevice = e.Device;
+                    _yubiKeyArrived = true;
+                }
+                return;
             }
+
+            // Null-serial keys: only accept when a single YubiKey is present after reinsertion
+            if (YubiKeyDevice.FindAll().Count() == 1)
+            {
+                _reinsertedDevice = e.Device;
+                _yubiKeyArrived = true;
+                return;
+            }
+
+            _selectionError = "The selected YubiKey has no serial number and multiple YubiKeys are connected after reinsertion. Disconnect other YubiKeys and try again.";
+        }
+
+        // Match the expected YubiKey by serial, or accept any removal when serial is absent and uniqueness was validated at start
+        private bool IsExpectedDevice(IYubiKeyDevice device)
+        {
+            if (_expectedSerial is not null)
+            {
+                return device.SerialNumber == _expectedSerial;
+            }
+
+            // With a null serial we already required a single connected YubiKey before waiting
+            return true;
         }
     }
 }
